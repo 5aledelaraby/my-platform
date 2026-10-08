@@ -1,18 +1,30 @@
 ---
 import { canonicalUrl, robotsDirective } from "@platform/seo";
 import type { DeployEnvironment } from "@platform/seo";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import type { Lang } from "../site.ts";
+import "../styles/global.css";
 
 interface Props {
   title: string;
   description: string;
-  lang?: "ar" | "en";
+  lang?: Lang;
+  /** Site-relative path of the same page in the other language, e.g. "/en/". */
+  altPath: string;
+  /** Optional JSON-LD, already serialized with serializeJsonLd. */
+  jsonLd?: string;
 }
 
-const { title, description, lang = "ar" } = Astro.props;
+const { title, description, lang = "ar", altPath, jsonLd } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). Set DEPLOY_ENV=staging|preview on non-production deployments.
 const env = (import.meta.env.DEPLOY_ENV ?? "production") as DeployEnvironment;
-const canonical = canonicalUrl(Astro.site!.toString(), Astro.url.pathname);
+const site = Astro.site!.toString();
+const canonical = canonicalUrl(site, Astro.url.pathname);
+const alt = canonicalUrl(site, altPath);
+const arUrl = lang === "ar" ? canonical : alt;
+const enUrl = lang === "en" ? canonical : alt;
 ---
 
 <!doctype html>
@@ -24,8 +36,23 @@ const canonical = canonicalUrl(Astro.site!.toString(), Astro.url.pathname);
     <meta name="description" content={description} />
     <meta name="robots" content={robotsDirective(env)} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="ar" href={arUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={arUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
+    <link rel="preload" href="/fonts/cairo-arabic-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+    {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
   </head>
   <body>
-    <slot />
+    <Header lang={lang} altHref={altPath} />
+    <main>
+      <slot />
+    </main>
+    <Footer lang={lang} />
   </body>
 </html>

@@ -1,0 +1,32 @@
+---
+import { site, langPath } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const wa = `https://wa.me/${site.whatsappInternational}`;
+---
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <h3>{ar ? "فيكونا" : "Vicuna"}</h3>
+      <p>{ar ? "أحزمة خصر نسائية متفصلة بإيد، وبتوصل لكل مصر." : "Women's waist belts made by hand, delivered across Egypt."}</p>
+    </div>
+    <div>
+      <h3>{ar ? "تسوقي" : "Shop"}</h3>
+      <ul>
+        <li><a href={langPath(lang, "/belts/")}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>{ar ? "تواصل" : "Contact"}</h3>
+      <ul>
+        <li><a href={wa}>WhatsApp {site.whatsappDisplay}</a></li>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        {site.social.map((s) => <li><a href={s.href} rel="noopener noreferrer">{s.label}</a></li>)}
+      </ul>
+    </div>
+  </div>
+</footer>

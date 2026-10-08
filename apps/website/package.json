@@ -6,7 +6,7 @@
   "description": "The Vicuna storefront. Astro (static) pages, React only for interactive islands (cart).",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/check-dist.mjs",
     "preview": "astro preview"
   },
   "dependencies": {

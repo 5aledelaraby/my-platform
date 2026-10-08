@@ -1,10 +1,11 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Home from "../../components/Home.astro";
+import { homeCopy } from "../../home-copy.ts";
+
+const c = homeCopy.en;
 ---
 
-<Base lang="en" title="Vicuna | Women's waist belts" description="Vicuna: tie waist belts in imported PU leather, delivered to every governorate in Egypt.">
-  <main>
-    <h1>Vicuna</h1>
-    <p>Brand introduction homepage: under construction.</p>
-  </main>
+<Base title={c.title} description={c.description} lang="en" altPath="/">
+  <Home lang="en" />
 </Base>

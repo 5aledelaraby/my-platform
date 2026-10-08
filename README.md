@@ -18,7 +18,7 @@
 | `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
 | `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
 | `apps/api` (إنشاء الطلبات، D1) | كود واختبارات جاهزة. **محتاج نشر على Cloudflare** (`apps/api/README.md`) |
-| `apps/website` | **لسه محتاج scaffold لـ Astro** (الخطوة التالية) |
+| `apps/website` | Astro شغال: تخطيط + رئيسية تعريفية عربي/إنجليزي + فحص SEO بعد البناء. `/belts/` لسه  |
 | حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
 
 ## تشغيل المشروع (أول مرة)
@@ -48,7 +48,7 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 ## الخطوة التالية
 
-1. `pnpm install` وcommit للـ lockfile.
+1. (تم) lockfile وCI.
 2. Scaffold لـ `apps/website` (الخطوات في [`apps/website/README.md`](apps/website/README.md)).
 3. نشر `apps/api` على Cloudflare (D1 + route) واختباره بـ curl.
 4. نقل المقالات والصور والصفحات من الموقع القديم (راجع `MIGRATION.md`) وربط السلة بالـ API.

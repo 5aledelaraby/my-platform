@@ -13,7 +13,7 @@ export default defineConfig([
   },
   {
     // Command-line tools print to the console on purpose.
-    files: ["tools/**/*.mjs"],
+    files: ["tools/**/*.mjs", "apps/website/scripts/**/*.mjs"],
     rules: { "no-console": "off" },
   },
 ]);

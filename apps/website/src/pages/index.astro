@@ -1,10 +1,22 @@
 ---
 import Base from "../layouts/Base.astro";
+import Home from "../components/Home.astro";
+import { homeCopy } from "../home-copy.ts";
+import { organizationJsonLd, serializeJsonLd } from "@platform/seo";
+import { site } from "../site.ts";
+
+const c = homeCopy.ar;
+const jsonLd = serializeJsonLd(
+  organizationJsonLd({
+    name: site.nameAr,
+    url: site.url,
+    logo: `${site.url}/brand/vicuna-lockup.svg`,
+    email: site.email,
+    sameAs: site.social.map((s) => s.href),
+  }),
+);
 ---
 
-<Base title="فيكونا | أحزمة خصر نسائية" description="فيكونا: أحزمة خصر نسائية بالربط من جلد PU مستورد، توصيل لكل محافظات مصر.">
-  <main>
-    <h1>فيكونا</h1>
-    <p>الصفحة الرئيسية التعريفية: قيد البناء.</p>
-  </main>
+<Base title={c.title} description={c.description} lang="ar" altPath="/en/" jsonLd={jsonLd}>
+  <Home lang="ar" />
 </Base>
