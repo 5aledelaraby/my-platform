@@ -3,7 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "The Vicuna storefront. Astro (SSG) + React islands for the cart. Scaffolded in the next step on a machine with registry access: see apps/website/README.md.",
+  "description": "The Vicuna storefront. Astro (static) pages, React only for interactive islands (cart).",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
   "dependencies": {
     "@platform/commerce": "workspace:*",
     "@platform/content": "workspace:*",

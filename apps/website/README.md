@@ -1,21 +1,22 @@
 # apps/website
 
-الواجهة الأمامية للمتجر. **لسه مفيش كود Astro هنا**: بيتضاف في الخطوة التالية من بيئة عندها وصول لـ npm registry (Codespaces أو جهازك).
+الواجهة الأمامية للمتجر: Astro (صفحات ثابتة HTML) وReact للسلة فقط لاحقًا.
 
-## الخطوات (من جذر الريبو)
+## الحالة
+
+هيكل أساسي فقط: تخطيط `Base.astro` (title وdescription وcanonical وrobots حسب البيئة) وصفحتان تجريبيتان للرئيسية (عربي `/` وإنجليزي `/en/`). باقي الصفحات تتبني حسب ADR 0009.
+
+## تشغيل
 
 ```bash
-corepack enable
-pnpm install                      # ينتج pnpm-lock.yaml: اعمله commit
-cd apps/website
-pnpm dlx create-astro@latest .    # اختار: Empty, TypeScript strict, بدون git
-pnpm add astro@latest @astrojs/react @astrojs/sitemap react react-dom
-pnpm add -D @types/react @types/react-dom
+pnpm --filter @platform/website add astro   # أول مرة فقط
+pnpm run build                              # يبني الموقع في apps/website/dist
+pnpm --filter @platform/website dev         # تجربة محلية
 ```
 
 ## قواعد
 
-- الصفحات كلها SSG (HTML جاهز وقت البناء). React بس للسلة والتفاعلات (islands).
-- أي حساب أسعار أو خصم من `@platform/commerce`، ممنوع تكرار المنطق هنا.
-- أي JSON-LD أو canonical أو sitemap من `@platform/seo`.
-- البيئات: `production` فقط تظهر للجوجل. غير كده `noindex` (`robotsDirective`).
+- الصفحات كلها ثابتة (SSG). React بس للتفاعل (السلة).
+- الأسعار والخصم من `@platform/commerce`، وcanonical وJSON-LD من `@platform/seo`.
+- غير الإنتاج يطلع `noindex`: ضع `DEPLOY_ENV=staging` (أو `preview`) عند البناء.
+- هيكل الروابط: ADR 0009 (`/`، `/belts/...`، و`/en/...` للإنجليزي).

@@ -1,0 +1,31 @@
+---
+import { canonicalUrl, robotsDirective } from "@platform/seo";
+import type { DeployEnvironment } from "@platform/seo";
+
+interface Props {
+  title: string;
+  description: string;
+  lang?: "ar" | "en";
+}
+
+const { title, description, lang = "ar" } = Astro.props;
+
+// Only the production build may be indexed (ADR 0005). Set DEPLOY_ENV=staging|preview on non-production deployments.
+const env = (import.meta.env.DEPLOY_ENV ?? "production") as DeployEnvironment;
+const canonical = canonicalUrl(Astro.site!.toString(), Astro.url.pathname);
+---
+
+<!doctype html>
+<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robotsDirective(env)} />
+    <link rel="canonical" href={canonical} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
