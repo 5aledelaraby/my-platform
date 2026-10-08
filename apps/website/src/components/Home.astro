@@ -95,17 +95,23 @@ const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا�
         <div><b>{c.founderName}</b><br /><span class="muted">{c.founderRole}</span></div>
       </div>
     </div>
-    <img
-      class="split-img"
-      src="/img/founder-collage-800.webp"
-      srcset="/img/founder-collage-800.webp 800w, /img/founder-collage-1400.webp 1400w"
-      sizes="(min-width: 960px) 46vw, 100vw"
-      alt={c.collageAlt}
-      width="800"
-      height="415"
-      loading="lazy"
-      decoding="async"
-    />
+    <div class="stack">
+      <img
+        class="split-img"
+        src="/img/founder-collage-800.webp"
+        srcset="/img/founder-collage-800.webp 800w, /img/founder-collage-1400.webp 1400w"
+        sizes="(min-width: 960px) 46vw, 100vw"
+        alt={c.collageAlt}
+        width="800"
+        height="415"
+        loading="lazy"
+        decoding="async"
+      />
+      <figure class="figure">
+        <img class="split-img" src="/img/laser-800.webp" alt={ar ? "ماكينة القصّ بالليزر أثناء تجهيز قطع الأحزمة" : "The laser cutting machine preparing belt pieces"} width="800" height="450" loading="lazy" decoding="async" />
+        <figcaption class="muted">{ar ? "قصّ بالليزر لحواف نظيفة ومتساوية" : "Laser cutting for clean, even edges"}</figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
@@ -122,10 +128,22 @@ const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا�
 <section class="section">
   <div class="band">
     <div class="wrap band-in">
-      <p class="eyebrow">{c.customEyebrow}</p>
-      <h2 class="h2">{c.customTitle}</h2>
-      <p class="lede">{c.customBody}</p>
-      <a class="btn" href={customWa} rel="noopener noreferrer">{c.customCta}</a>
+      <div>
+        <p class="eyebrow">{c.customEyebrow}</p>
+        <h2 class="h2">{c.customTitle}</h2>
+        <p class="lede">{c.customBody}</p>
+        <a class="btn" href={customWa} rel="noopener noreferrer">{c.customCta}</a>
+      </div>
+      <img
+        src="/img/leather-600.webp"
+        srcset="/img/leather-600.webp 600w, /img/leather-1000.webp 1000w"
+        sizes="(min-width: 960px) 40vw, 100vw"
+        alt={ar ? "جلود طبيعية بألوان مختلفة معلّقة في الورشة" : "Natural leather hides in different colours hanging in the workshop"}
+        width="600"
+        height="450"
+        loading="lazy"
+        decoding="async"
+      />
     </div>
   </div>
 </section>
