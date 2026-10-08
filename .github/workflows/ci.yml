@@ -25,10 +25,9 @@ jobs:
       - run: node tools/architecture/check-boundaries.mjs
       - run: node --test "packages/*/test/*.test.ts"
 
-  # Full pipeline. Starts running as soon as pnpm-lock.yaml is committed.
+  # Full pipeline (needs the committed pnpm-lock.yaml).
   full:
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('pnpm-lock.yaml') != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
