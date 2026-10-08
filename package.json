@@ -17,7 +17,7 @@
     "check": "pnpm check:secrets && pnpm check:boundaries && pnpm test && pnpm typecheck && pnpm lint && pnpm build"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^26.6.4",
     "eslint": "^9.22.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.30.0"
