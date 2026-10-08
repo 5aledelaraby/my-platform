@@ -7,33 +7,33 @@ import type { Lang } from "./site.ts";
 const styleEn: Record<string, { name: string; headline: string; intro: string }> = {
   lace: {
     name: "Lace",
-    headline: "A lace belt that turns the simplest dress into an evening set",
-    intro: "Embroidered lace on an imported PU leather lining, tied with a thin ribbon. Right for outings and occasions, and it shapes the waist without pinching.",
+    headline: "Lace PU leather belt",
+    intro: "Embroidered lace on a PU leather lining, tied with a thin ribbon.",
   },
   "wide-bow": {
     name: "Wide Bow",
-    headline: "A wide bow that draws the eye to your waist",
-    intro: "Soft stretch PU leather that wraps the waist and moulds to it, tied in a big bow at the front or a knot with a long trailing end. The belt is the star of the outfit.",
+    headline: "Wide bow PU leather belt",
+    intro: "Soft stretch PU leather that wraps the waist, tied in a big bow or a knot.",
   },
   "thin-tie": {
     name: "Thin Tie",
-    headline: "The classic belt that goes with everything",
-    intro: "A wide belt with a thin tie that wraps the waist and ties in a small bow. Soft stretch PU leather in many colours, for dresses, blouses and jackets.",
+    headline: "Thin tie PU leather belt",
+    intro: "A wide belt with a thin tie, tied in a small bow. Soft stretch PU leather.",
   },
   croc: {
     name: "Croc",
-    headline: "A croc texture that gives any outfit character",
-    intro: "Embossed croc pattern on imported PU leather, with a thin tie. A bold, rich touch for any plain outfit.",
+    headline: "Croc PU leather belt",
+    intro: "Croc pattern on PU leather, with a thin tie.",
   },
   snake: {
     name: "Snake",
-    headline: "A modern snake print that stands out",
-    intro: "Snake print on imported PU leather, with a thin tie. A different, modern touch for any plain outfit.",
+    headline: "Snake PU leather belt",
+    intro: "Snake pattern on PU leather, with a thin tie.",
   },
   ruffle: {
     name: "Ruffle",
-    headline: "Ruffles that add movement and femininity",
-    intro: "A belt with ruffles above and below and a tie in the middle. A soft, different touch for any plain dress.",
+    headline: "Ruffle PU leather belt",
+    intro: "A belt with ruffles above and below and a tie in the middle.",
   },
 };
 

@@ -160,7 +160,7 @@ p { margin: 0; }
 }
 
 /* cart */
-.cart-btn { position: relative; background: none; border: 1px solid var(--line); border-radius: 999px; min-height: 40px; padding: 0 14px; font: inherit; font-weight: 700; cursor: pointer; }
+.cart-btn { position: relative; color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; min-height: 40px; padding: 0 14px; font: inherit; font-weight: 700; cursor: pointer; }
 .cart-btn [data-cart-count] { background: var(--berry); color: #fff; border-radius: 999px; padding: 0 7px; margin-inline-start: 6px; font-size: 13px; }
 .link { background: none; border: 0; font: inherit; cursor: pointer; color: var(--berry); padding: 4px 8px; }
 dialog.cart { width: min(480px, 100vw); max-height: 100dvh; height: 100dvh; margin: 0; margin-inline-start: auto; border: 0; padding: 20px; overflow: auto; background: #fff; color: var(--ink); }
