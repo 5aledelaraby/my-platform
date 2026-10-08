@@ -14,5 +14,5 @@ database_name = "vicuna-db"
 database_id = "626197fa-3c59-48b3-944f-e2a2dd3978a0"
 migrations_dir = "migrations"
 
-# After the first deploy, attach the Worker to the site (or do it from the Cloudflare dashboard):
-# routes = [{ pattern = "vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" }]
+# The API shares the site's hostname under /api/*. Production route is added at cutover.
+routes = [{ pattern = "staging.vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" }]
