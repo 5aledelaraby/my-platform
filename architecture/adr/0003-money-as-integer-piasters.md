@@ -3,12 +3,12 @@
 Status: accepted
 
 ## Context
-The legacy site computed prices in whole pounds with floats (`Math.round(price * 0.35)`), duplicated in the browser only. Server-side order validation would need the same rules.
+The legacy site computed prices in whole pounds with floats (`Math.round(price * 0.35)`), in the browser only. If an API is added later, it will need the same rules.
 
 ## Decision
 - All domain money values are integer piasters (`Piasters`). Floats never enter domain code.
 - Discount rates are integer basis points (`[0, 2500, 3500]`).
-- `@platform/commerce` is the only place that computes subtotal, discount, shipping and total. Browser cart and Workers both call it.
+- `@platform/commerce` is the only place that computes subtotal, discount, shipping and total. The browser cart calls it today; any future server-side order validation (ADR 0007) must call the same code.
 - Orders persist a snapshot of the computed totals and unit prices.
 
 ## Consequences

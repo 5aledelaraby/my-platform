@@ -2,7 +2,7 @@
 // Architecture guard. Zero dependencies, runs on plain Node, enforced in CI.
 //
 // Rules:
-//  1. Every unit under apps/* and packages/* must be declared in RULES below (no silent new modules).
+//  1. Every unit under apps/* and packages/* must be declared in architecture/boundaries.json (no silent new modules).
 //  2. A unit may import only the internal packages listed in its `mayImport`.
 //  3. Internal packages are imported by name only (@platform/x), never by deep path or relative path.
 //  4. Relative imports must stay inside the unit.
@@ -17,14 +17,14 @@ const root = resolve(import.meta.dirname, "../..");
 const SCOPE = "@platform/";
 const UI_FRAMEWORKS = ["react", "react-dom", "preact", "astro", "vue", "svelte", "solid-js"];
 
-/** The single source of truth for allowed dependencies. Change it deliberately, with an ADR. */
-const RULES = {
-  "packages/commerce": { mayImport: [], forbiddenExternal: UI_FRAMEWORKS },
-  "packages/seo": { mayImport: [], forbiddenExternal: UI_FRAMEWORKS },
-  "packages/content": { mayImport: [], forbiddenExternal: UI_FRAMEWORKS },
-  "packages/ui": { mayImport: [], forbiddenExternal: [] },
-  "apps/website": { mayImport: ["commerce", "seo", "content", "ui"], forbiddenExternal: [] },
-};
+/** The single source of truth for allowed dependencies: architecture/boundaries.json. Change it deliberately, with an ADR. */
+const config = JSON.parse(readFileSync(join(root, "architecture/boundaries.json"), "utf8"));
+const RULES = Object.fromEntries(
+  Object.entries(config.units).map(([unit, rule]) => [
+    unit,
+    { mayImport: rule.mayImport, forbiddenExternal: rule.frameworkFree ? UI_FRAMEWORKS : [] },
+  ]),
+);
 
 const SOURCE_EXT = /\.(?:[cm]?[jt]sx?|astro)$/;
 const SKIP_DIRS = new Set(["node_modules", "dist", ".astro", ".wrangler", "coverage"]);
@@ -59,13 +59,21 @@ const units = [...listDirs("apps"), ...listDirs("packages")];
 
 // Rule 1
 for (const unit of units) {
-  if (!(unit in RULES)) fail(`${unit}: not declared in RULES (tools/architecture/check-boundaries.mjs). Add it deliberately, with an ADR.`);
+  if (!(unit in RULES)) fail(`${unit}: not declared in architecture/boundaries.json. Run: node tools/architecture/new-unit.mjs, or add it deliberately, with an ADR.`);
 }
 for (const unit of Object.keys(RULES)) {
-  if (!units.includes(unit)) fail(`${unit}: declared in RULES but the folder does not exist.`);
+  if (!units.includes(unit)) fail(`${unit}: declared in architecture/boundaries.json but the folder does not exist.`);
 }
 
 const nameToUnit = new Map(Object.keys(RULES).map((unit) => [unit.split("/")[1], unit]));
+
+// mayImport may name packages only (apps are never imported by anything).
+for (const [unit, rule] of Object.entries(RULES)) {
+  for (const name of rule.mayImport) {
+    const target = nameToUnit.get(name);
+    if (!target || !target.startsWith("packages/")) fail(`${unit}: mayImport "${name}" is not a declared package.`);
+  }
+}
 
 for (const unit of units) {
   const rule = RULES[unit];

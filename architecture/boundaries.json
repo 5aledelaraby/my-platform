@@ -1,0 +1,10 @@
+{
+  "_comment": "Single source of truth for allowed dependencies between workspace units. Edited by tools/architecture/new-unit.mjs or by hand together with an ADR. Enforced by check-boundaries.mjs in CI.",
+  "units": {
+    "packages/commerce": { "mayImport": [], "frameworkFree": true },
+    "packages/seo": { "mayImport": [], "frameworkFree": true },
+    "packages/content": { "mayImport": [], "frameworkFree": true },
+    "packages/ui": { "mayImport": [], "frameworkFree": false },
+    "apps/website": { "mayImport": ["commerce", "seo", "content", "ui"], "frameworkFree": false }
+  }
+}

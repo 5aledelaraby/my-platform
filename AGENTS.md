@@ -13,7 +13,8 @@ packages/seo        canonical, robots policy, sitemap, JSON-LD (pure TS)
 packages/content    article/page content model and validation (pure TS)
 packages/ui         design-system primitives (no domain knowledge)
 content/            products and articles as files (source of truth for now)
-tools/architecture  dependency-boundary and secret-scan guards
+tools/architecture  boundary guard, secret scan, new-unit generator
+architecture/       ADRs, boundaries.json, ROADMAP.md, HOW-TO-ADD.md
 ```
 
 ## Commands
@@ -31,14 +32,16 @@ pnpm check:boundaries            # architecture rules
 - `ui` knows nothing about commerce, content or seo.
 - Only `apps/*` may combine packages. Packages never import from apps.
 - Import packages by name only (`@platform/commerce`), never by relative or deep path.
-- A new package or a new allowed dependency needs an ADR and an edit to `RULES` in the boundary script, in the same PR.
-- Do not create packages "for the future". Extract when a second consumer actually exists.
+- Allowed dependencies live in `architecture/boundaries.json`. A new allowed dependency needs an edit there plus a short ADR, in the same PR.
+- Add units with `node tools/architecture/new-unit.mjs <package|app> <name> [--may-import a,b]`, never by hand-copying folders. Recipes: `architecture/HOW-TO-ADD.md`. Where each future domain lives: `architecture/ROADMAP.md`.
+- Do not create units "for the future". Create one only when it has a real consumer (see the three questions in ROADMAP.md).
 
 ## Commerce rules
 
 - Money is **integer piasters** (`Piasters`). Never floats, never pounds in domain code. Convert at the edges with `egp()` / `formatEgp()`.
-- Discount and totals logic exists **only** in `@platform/commerce`. The browser cart and any server/Worker order validation both call it. Never trust a price sent by the client.
-- Orders store a snapshot of prices and discount at creation time.
+- Discount and totals logic exists **only** in `@platform/commerce`. The cart calls it today; any future server-side order validation must call the same code. Never trust a price sent by the client.
+- WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. Phase 1 has no Worker, D1, admin or online payment; do not build them or abstractions for them until the owner asks.
+- When orders are eventually stored, they keep a snapshot of prices and discount at creation time.
 - Product `id` is permanent. A `slug` may change only together with a 301 redirect entry (ADR 0004).
 
 ## SEO rules

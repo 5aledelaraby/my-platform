@@ -8,7 +8,7 @@ Product, collection and article pages must be fast and fully crawlable. Orders, 
 ## Decision
 - Storefront: Astro, pre-rendered HTML (SSG), React islands only for interactive parts (cart, filters).
 - Hosting: Cloudflare Pages. Every PR gets a preview deployment; non-production environments are `noindex`.
-- Later dynamic needs: `apps/api` and `apps/*-worker` as Cloudflare Workers with D1 (data), R2 (media), Queues and Cron Triggers (jobs). No servers to manage.
+- Later dynamic needs (NOT in phase 1, see ADR 0007): `apps/api` and `apps/*-worker` as Cloudflare Workers with D1 (data), R2 (media), Queues and Cron Triggers (jobs). No servers to manage.
 - Catalogue and articles are files in `content/` until an admin UI creates real demand for a database.
 
 ## Consequences
