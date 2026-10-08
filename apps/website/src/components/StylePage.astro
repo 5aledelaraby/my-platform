@@ -1,0 +1,46 @@
+---
+import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import ProductCard from "./ProductCard.astro";
+import { beltsUrl, price, productsOfStyle, styleText } from "../store.ts";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang; styleId: string }
+const { lang, styleId } = Astro.props;
+const ar = lang === "ar";
+const t = styleText(lang, styleId);
+const list = productsOfStyle(styleId);
+const cur = ar ? "جنيه" : "EGP";
+const title = ar ? `${t.name} | أحزمة خصر نسائية | فيكونا` : `${t.name} waist belts | Vicuna`;
+const description = ar
+  ? `${t.headline}. ${list.length} لون بسعر ${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
+  : `${t.headline}. ${list.length} colours at ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
+const crumbs = [
+  { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
+  { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
+  { name: t.name },
+];
+const jsonLd = serializeJsonLd(
+  breadcrumbJsonLd([
+    { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
+    { name: crumbs[1]!.name, url: `${site.url}${crumbs[1]!.href}` },
+    { name: t.name, url: `${site.url}${beltsUrl(lang, styleId)}` },
+  ]),
+);
+---
+
+<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd}>
+  <Breadcrumbs items={crumbs} />
+  <div class="wrap page-head">
+    <h1>{t.headline}</h1>
+    <p class="muted">{t.intro}</p>
+    <p><b>{price(styleId)} {cur}</b></p>
+  </div>
+  <section class="wrap">
+    <div class="grid">
+      {list.map((p) => <ProductCard product={p} lang={lang} />)}
+    </div>
+  </section>
+</Base>

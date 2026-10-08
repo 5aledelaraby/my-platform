@@ -1,0 +1,15 @@
+---
+import type { CatalogProduct } from "@platform/commerce";
+import { beltsUrl, imageOf, priceOfProduct, productName } from "../store.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { product: CatalogProduct; lang: Lang }
+const { product, lang } = Astro.props;
+const name = productName(lang, product);
+---
+
+<a class="card" href={beltsUrl(lang, product.id)}>
+  <img src={imageOf(product)} alt={name} width="900" height="900" loading="lazy" />
+  <span class="card-name">{name}</span>
+  <span class="card-price">{priceOfProduct(product)} {lang === "ar" ? "جنيه" : "EGP"}</span>
+</a>

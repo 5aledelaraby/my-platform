@@ -1,0 +1,57 @@
+---
+import { MULTI_ITEM_RATES_BPS, SHIPPING, formatEgp } from "@platform/commerce";
+import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import ProductCard from "./ProductCard.astro";
+import { beltsUrl, price, products, styleText, styles } from "../store.ts";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const second = MULTI_ITEM_RATES_BPS[1] / 100;
+const third = MULTI_ITEM_RATES_BPS[2] / 100;
+const free = formatEgp(SHIPPING.freeOver);
+const lowest = formatEgp(Math.min(...styles.map((s) => s.price)));
+const title = ar ? "أحزمة خصر نسائية | فيكونا" : "Women's waist belts | Vicuna";
+const description = ar
+  ? `كل أحزمة فيكونا: دانتيل وفيونكة وكروكو وثعبان وكشكشة، ${products.length} حزام بأسعار من ${lowest} جنيه. توصيل لكل مصر.`
+  : `All Vicuna belts: lace, bow, croc, snake and ruffle, ${products.length} belts from ${lowest} EGP. Delivery across Egypt.`;
+const crumbs = [
+  { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
+  { name: ar ? "الأحزمة" : "Belts" },
+];
+const jsonLd = serializeJsonLd(
+  breadcrumbJsonLd([
+    { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
+    { name: crumbs[1]!.name, url: `${site.url}${beltsUrl(lang)}` },
+  ]),
+);
+---
+
+<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar")} jsonLd={jsonLd}>
+  <Breadcrumbs items={crumbs} />
+  <div class="wrap page-head">
+    <h1>{ar ? "أحزمة خصر نسائية" : "Women's waist belts"}</h1>
+    <p class="muted">{ar ? "جلد PU بألوان وخامات متعددة، متفصلة بإيد وبتوصل لكل مصر." : "PU leather in many colours and textures, made by hand and delivered across Egypt."}</p>
+    <div class="offer">
+      {ar
+        ? <><b>خصم لما تاخدي أكتر من حزام:</b> الحزام التاني خصم {second}% والتالت خصم {third}%. والشحن مجاني لأي طلب فوق {free} جنيه.</>
+        : <><b>Buy more, save more:</b> the 2nd belt is {second}% off and the 3rd {third}% off. Shipping is free on orders over {free} EGP.</>}
+    </div>
+  </div>
+  <section class="wrap">
+    <div class="style-cards">
+      {styles.map((s) => (
+        <a href={beltsUrl(lang, s.id)}><b>{styleText(lang, s.id).name}</b><span>{price(s.id)} {ar ? "جنيه" : "EGP"}</span></a>
+      ))}
+    </div>
+  </section>
+  <section class="wrap">
+    <div class="grid">
+      {products.map((p) => <ProductCard product={p} lang={lang} />)}
+    </div>
+  </section>
+</Base>

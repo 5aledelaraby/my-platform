@@ -1,0 +1,74 @@
+---
+import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import { beltsUrl, imageOf, price, productName, productsOfStyle, styleText } from "../store.ts";
+import type { CatalogProduct } from "@platform/commerce";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang; product: CatalogProduct }
+const { lang, product } = Astro.props;
+const ar = lang === "ar";
+const name = productName(lang, product);
+const st = styleText(lang, product.style);
+const cur = ar ? "جنيه" : "EGP";
+const siblings = productsOfStyle(product.style);
+const title = ar ? `${name} | حزام خصر نسائي | فيكونا` : `${name} | Women's waist belt | Vicuna`;
+const description = ar
+  ? `${name} من فيكونا بسعر ${price(product.style)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام واسترجاع خلال ${site.returnDays} يوم.`
+  : `${name} by Vicuna at ${price(product.style)} EGP. Delivery across Egypt in ${site.deliveryDays} days, ${site.returnDays}-day returns.`;
+const url = `${site.url}${beltsUrl(lang, product.id)}`;
+const crumbs = [
+  { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
+  { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
+  { name: st.name, href: beltsUrl(lang, product.style) },
+  { name: name },
+];
+const jsonLd = serializeJsonLd([
+  productJsonLd({
+    name,
+    description: st.intro,
+    url,
+    images: [`${site.url}${imageOf(product)}`],
+    sku: product.id,
+    brand: "Vicuna",
+    price: Number(price(product.style)),
+    currency: "EGP",
+    inStock: true,
+  }),
+  breadcrumbJsonLd([
+    { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
+    { name: crumbs[1]!.name, url: `${site.url}${crumbs[1]!.href}` },
+    { name: crumbs[2]!.name, url: `${site.url}${crumbs[2]!.href}` },
+    { name, url },
+  ]),
+]);
+const orderText = ar
+  ? `أهلاً فيكونا، عايزة أطلب: ${name} (${product.id})`
+  : `Hello Vicuna, I would like to order: ${name} (${product.id})`;
+const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(orderText)}`;
+---
+
+<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", product.id)} jsonLd={jsonLd}>
+  <Breadcrumbs items={crumbs} />
+  <div class="wrap product">
+    <img class="main" src={imageOf(product)} alt={name} width="900" height="900" fetchpriority="high" />
+    <div>
+      <h1>{name}</h1>
+      <div class="price">{price(product.style)} {cur}</div>
+      <p class="muted">{st.intro}</p>
+      <div class="swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
+        {siblings.map((s) => (
+          <a href={beltsUrl(lang, s.id)} style={`background:${s.hex}`} title={productName(lang, s)} aria-label={productName(lang, s)} aria-current={s.id === product.id ? "true" : undefined}></a>
+        ))}
+      </div>
+      <a class="btn" href={wa} rel="noopener noreferrer">{ar ? "اطلبي على واتساب" : "Order on WhatsApp"}</a>
+      <ul class="specs">
+        <li>{ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام` : `Delivery across Egypt in ${site.deliveryDays} days`}</li>
+        <li>{ar ? `استرجاع خلال ${site.returnDays} يوم` : `${site.returnDays}-day returns`}</li>
+        <li>{ar ? `بيلبس لحد ${site.maxWeightKg} كيلو` : `Fits up to ${site.maxWeightKg} kg`}</li>
+      </ul>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,14 @@
+---
+import ProductPage from "../../../components/ProductPage.astro";
+import StylePage from "../../../components/StylePage.astro";
+import { getProduct, products, styles } from "../../../store.ts";
+
+export function getStaticPaths() {
+  return [...styles.map((s) => ({ params: { slug: s.id } })), ...products.map((p) => ({ params: { slug: p.id } }))];
+}
+
+const { slug } = Astro.params;
+const product = getProduct(slug!);
+---
+
+{product ? <ProductPage lang="en" product={product} /> : <StylePage lang="en" styleId={slug!} />}

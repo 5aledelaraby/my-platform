@@ -100,3 +100,36 @@ p { margin: 0; }
   .links { grid-template-columns: repeat(3, 1fr); }
   .footer-grid { grid-template-columns: 2fr 1fr 1fr; }
 }
+
+/* store */
+.crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
+.crumbs a { text-decoration: none; }
+.crumbs a:hover { color: var(--berry); }
+.page-head { padding: 24px 0 0; }
+.page-head h1 { font-size: clamp(1.9rem, 5vw, 3rem); }
+.page-head p { margin-top: 10px; max-width: 40em; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; }
+.card { text-decoration: none; display: block; }
+.card img { border-radius: var(--radius); width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--soft); }
+.card-name { display: block; margin-top: 8px; font-weight: 700; font-size: 15px; line-height: 1.5; }
+.card-price { display: block; color: var(--berry); font-weight: 700; }
+.style-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+.style-cards a { display: block; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); text-decoration: none; }
+.style-cards a:hover { border-color: var(--berry); }
+.style-cards b { display: block; font-size: 17px; }
+.style-cards span { color: var(--muted); font-size: 14px; }
+.offer { background: var(--soft); border-radius: var(--radius); padding: 18px 20px; margin-top: 20px; }
+.offer b { color: var(--berry); }
+.product { display: grid; gap: 28px; margin-top: 20px; align-items: start; }
+.product img.main { border-radius: 24px; width: 100%; background: var(--soft); }
+.product h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); }
+.product .price { font-size: 1.6rem; font-weight: 800; color: var(--berry); margin: 8px 0 14px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 20px; }
+.swatches a { display: block; width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--line); }
+.swatches a[aria-current="true"] { border-color: var(--ink); outline: 2px solid #fff; outline-offset: -5px; }
+.specs { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; color: var(--muted); font-size: 15px; }
+@media (min-width: 760px) {
+  .grid { grid-template-columns: repeat(4, 1fr); }
+  .style-cards { grid-template-columns: repeat(3, 1fr); }
+  .product { grid-template-columns: 1.1fr 1fr; }
+}

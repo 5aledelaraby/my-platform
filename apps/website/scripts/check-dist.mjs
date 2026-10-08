@@ -5,7 +5,7 @@ import { join, relative } from "node:path";
 const DIST = new URL("../dist/", import.meta.url).pathname;
 const SITE = "https://vicuna-eg.com";
 // Sections that are planned (ADR 0009) but not built yet. Links into them are allowed until they exist.
-const PLANNED_PREFIXES = ["/belts/", "/en/belts/"];
+const PLANNED_PREFIXES = [];
 const JS_BUDGET_BYTES = 60 * 1024;
 
 const errors = [];
@@ -70,10 +70,25 @@ for (const file of pages) {
     }
   }
 
+  if (url.startsWith("/belts/") || url.startsWith("/en/belts/")) {
+    const other = url.startsWith("/en/") ? url.replace("/en", "") : "/en" + url;
+    if (!known.has(other)) fail(name, `no counterpart page ${other} for hreflang`);
+  }
+
   // ADR 0009: the homepage introduces the brand, it is not the store.
   if (url === "/" || url === "/en/") {
     if (/data-product|class="product-card|add-to-cart/i.test(html)) fail(name, "homepage must not contain a product grid or cart UI (ADR 0009)");
   }
+}
+
+for (const f of ["sitemap.xml", "robots.txt"]) {
+  if (!existsSync(join(DIST, f))) fail(f, "missing from build output");
+}
+if (production && existsSync(join(DIST, "sitemap.xml"))) {
+  const sm = readFileSync(join(DIST, "sitemap.xml"), "utf8");
+  const locs = [...sm.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1]);
+  for (const loc of locs) if (!known.has(loc.replace(SITE, ""))) fail("sitemap.xml", `lists a page that does not exist: ${loc}`);
+  for (const u of known) if (!locs.includes(SITE + u)) fail("sitemap.xml", `missing page ${u}`);
 }
 
 const jsBytes = files.filter((f) => f.endsWith(".js")).reduce((n, f) => n + statSync(f).size, 0);
