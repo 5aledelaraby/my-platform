@@ -3,6 +3,7 @@ import { canonicalUrl, robotsDirective } from "@platform/seo";
 import type { DeployEnvironment } from "@platform/seo";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Cart from "../components/Cart.astro";
 import type { Lang } from "../site.ts";
 import "../styles/global.css";
 
@@ -14,9 +15,11 @@ interface Props {
   altPath: string;
   /** Optional JSON-LD, already serialized with serializeJsonLd. */
   jsonLd?: string;
+  /** Pages that must never be indexed even in production (thank-you page). */
+  noindex?: boolean;
 }
 
-const { title, description, lang = "ar", altPath, jsonLd } = Astro.props;
+const { title, description, lang = "ar", altPath, jsonLd, noindex = false } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). Set DEPLOY_ENV=staging|preview on non-production deployments.
 const env = (import.meta.env.DEPLOY_ENV ?? "production") as DeployEnvironment;
@@ -34,7 +37,7 @@ const enUrl = lang === "en" ? canonical : alt;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content={robotsDirective(env)} />
+    <meta name="robots" content={noindex ? "noindex,nofollow" : robotsDirective(env)} />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="ar" href={arUrl} />
     <link rel="alternate" hreflang="en" href={enUrl} />
@@ -54,5 +57,6 @@ const enUrl = lang === "en" ? canonical : alt;
       <slot />
     </main>
     <Footer lang={lang} />
+    <Cart lang={lang} />
   </body>
 </html>

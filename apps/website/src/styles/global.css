@@ -133,3 +133,30 @@ p { margin: 0; }
   .style-cards { grid-template-columns: repeat(3, 1fr); }
   .product { grid-template-columns: 1.1fr 1fr; }
 }
+
+/* cart */
+.cart-btn { position: relative; background: none; border: 1px solid var(--line); border-radius: 999px; min-height: 40px; padding: 0 14px; font: inherit; font-weight: 700; cursor: pointer; }
+.cart-btn [data-cart-count] { background: var(--berry); color: #fff; border-radius: 999px; padding: 0 7px; margin-inline-start: 6px; font-size: 13px; }
+.link { background: none; border: 0; font: inherit; cursor: pointer; color: var(--berry); padding: 4px 8px; }
+dialog.cart { width: min(480px, 100vw); max-height: 100dvh; height: 100dvh; margin: 0; margin-inline-start: auto; border: 0; padding: 20px; overflow: auto; background: #fff; color: var(--ink); }
+dialog.cart::backdrop { background: rgba(0,0,0,.45); }
+.cart-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.cart-line { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.cart-line img { border-radius: 12px; width: 64px; height: 64px; object-fit: cover; }
+.cart-info b { display: block; font-size: 15px; line-height: 1.4; }
+.cart-qty { display: flex; align-items: center; gap: 8px; }
+.cart-qty button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: #fff; font-size: 18px; cursor: pointer; }
+.cart-line .link { grid-column: 3; justify-self: end; font-size: 13px; }
+#cart-totals { margin: 14px 0; display: grid; gap: 4px; }
+.tot { display: flex; justify-content: space-between; }
+.tot.strong { font-weight: 800; font-size: 1.15rem; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; }
+#checkout { display: grid; gap: 12px; }
+#checkout label { display: grid; gap: 4px; font-weight: 700; font-size: 15px; }
+#checkout label.radio { display: block; font-weight: 400; }
+#checkout input:not([type="radio"]), #checkout select, #checkout textarea { font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; width: 100%; }
+#checkout [aria-invalid] { border-color: var(--berry); }
+#checkout fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.err { color: var(--berry); font-weight: 400; min-height: 1em; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.thanks { max-width: 640px; margin: 40px auto 0; }
+.thanks .order-id { font-size: 1.6rem; font-weight: 800; color: var(--berry); direction: ltr; unicode-bidi: isolate; }

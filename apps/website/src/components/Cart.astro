@@ -1,0 +1,61 @@
+---
+import { GOVERNORATES, GOVERNORATES_EN, SHIPPING, formatEgp } from "@platform/commerce";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const cur = ar ? "جنيه" : "EGP";
+const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
+---
+
+<dialog id="cart" class="cart" aria-labelledby="cart-title">
+  <div class="cart-head">
+    <h2 id="cart-title">{ar ? "سلة المشتريات" : "Your cart"}</h2>
+    <button type="button" class="link" data-close-cart aria-label={ar ? "إغلاق" : "Close"}>✕</button>
+  </div>
+  <p id="cart-empty" class="muted">{ar ? "السلة فاضية." : "Your cart is empty."}</p>
+  <div id="cart-lines"></div>
+  <div id="cart-totals" hidden></div>
+  <form id="checkout" hidden novalidate>
+    <label>{ar ? "الاسم" : "Name"}
+      <input name="customer.name" autocomplete="name" maxlength="80" required />
+      <small data-error-for="customer.name" class="err"></small>
+    </label>
+    <label>{ar ? "رقم الموبايل" : "Mobile number"}
+      <input name="customer.phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required />
+      <small data-error-for="customer.phone" class="err"></small>
+    </label>
+    <label>{ar ? "المحافظة" : "Governorate"}
+      <select name="customer.governorate" required>
+        <option value="">{ar ? "اختاري" : "Choose"}</option>
+        {GOVERNORATES.map((g, i) => <option value={g}>{govs[i]}</option>)}
+      </select>
+      <small data-error-for="customer.governorate" class="err"></small>
+    </label>
+    <label>{ar ? "العنوان بالتفصيل" : "Full address"}
+      <textarea name="customer.address" rows="2" maxlength="300" autocomplete="street-address" required></textarea>
+      <small data-error-for="customer.address" class="err"></small>
+    </label>
+    <label>{ar ? "ملاحظات (اختياري)" : "Notes (optional)"}
+      <textarea name="customer.notes" rows="2" maxlength="300"></textarea>
+    </label>
+    <fieldset>
+      <legend>{ar ? "الشحن" : "Shipping"}</legend>
+      <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}, {ar ? `مجاني فوق ${formatEgp(SHIPPING.freeOver)}` : `free over ${formatEgp(SHIPPING.freeOver)}`})</label>
+      <label class="radio"><input type="radio" name="shippingMethod" value="express" /> {ar ? "سريع" : "Express"} ({formatEgp(SHIPPING.express)} {cur})</label>
+    </fieldset>
+    <fieldset>
+      <legend>{ar ? "الدفع" : "Payment"}</legend>
+      <label class="radio"><input type="radio" name="paymentMethod" value="cod" checked /> {ar ? "الدفع عند الاستلام" : "Cash on delivery"}</label>
+      <label class="radio"><input type="radio" name="paymentMethod" value="instapay" /> InstaPay</label>
+    </fieldset>
+    <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
+    <p id="checkout-status" class="err" role="status"></p>
+    <button id="checkout-submit" type="submit" class="btn">{ar ? "تأكيد الطلب" : "Place order"}</button>
+  </form>
+</dialog>
+
+<script>
+  import "../scripts/cart.ts";
+</script>

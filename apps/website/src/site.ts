@@ -6,6 +6,7 @@ export const site = {
   email: "info@vicuna-eg.com",
   whatsappDisplay: "01221988192",
   whatsappInternational: "201221988192",
+  instapay: "01221988192",
   deliveryDays: 3,
   returnDays: 14,
   maxWeightKg: 90,

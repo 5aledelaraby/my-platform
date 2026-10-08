@@ -63,7 +63,10 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
           <a href={beltsUrl(lang, s.id)} style={`background:${s.hex}`} title={productName(lang, s)} aria-label={productName(lang, s)} aria-current={s.id === product.id ? "true" : undefined}></a>
         ))}
       </div>
-      <a class="btn" href={wa} rel="noopener noreferrer">{ar ? "اطلبي على واتساب" : "Order on WhatsApp"}</a>
+      <div class="hero-actions">
+        <button type="button" class="btn" data-add={product.id}>{ar ? "أضيفي للسلة" : "Add to cart"}</button>
+        <a class="btn ghost" href={wa} rel="noopener noreferrer">{ar ? "أو اطلبي على واتساب" : "Or order on WhatsApp"}</a>
+      </div>
       <ul class="specs">
         <li>{ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام` : `Delivery across Egypt in ${site.deliveryDays} days`}</li>
         <li>{ar ? `استرجاع خلال ${site.returnDays} يوم` : `${site.returnDays}-day returns`}</li>

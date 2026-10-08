@@ -1,0 +1,51 @@
+---
+import Base from "../layouts/Base.astro";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const title = ar ? "تم استلام طلبك | فيكونا" : "Order received | Vicuna";
+const wa = `https://wa.me/${site.whatsappInternational}`;
+---
+
+<Base title={title} description={title} lang={lang} altPath={ar ? "/en/thanks/" : "/thanks/"} noindex>
+  <div class="wrap thanks">
+    <h1>{ar ? "شكرًا، طلبك اتسجّل" : "Thank you, your order is placed"}</h1>
+    <p id="t-id-wrap" hidden>{ar ? "رقم طلبك:" : "Your order number:"} <span class="order-id" id="t-id"></span></p>
+    <p id="t-fallback" class="muted">{ar ? "لو الصفحة اتفتحت من غير طلب، تقدري تتصفحي الأحزمة من تاني." : "If you opened this page without placing an order, you can keep browsing the belts."}</p>
+    <p id="t-total" hidden></p>
+    <p id="t-instapay" hidden>{ar ? `للدفع بـ InstaPay حوّلي المبلغ على ${site.instapay} وابعتي لنا صورة التحويل على واتساب مع رقم الطلب.` : `To pay by InstaPay, transfer the amount to ${site.instapay} and send us the receipt on WhatsApp with your order number.`}</p>
+    <p class="muted">{ar ? `هنتواصل معاكي لتأكيد الطلب، والتوصيل بياخد حوالي ${site.deliveryDays} أيام.` : `We will contact you to confirm, and delivery takes about ${site.deliveryDays} days.`}</p>
+    <div class="hero-actions">
+      <a class="btn" href={langPath(lang, "/belts/")}>{ar ? "كملي تسوق" : "Keep shopping"}</a>
+      <a class="btn ghost" id="t-wa" href={wa} rel="noopener noreferrer">{ar ? "كلمينا على واتساب" : "Chat on WhatsApp"}</a>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { formatEgp } from "@platform/commerce";
+  const lang = document.documentElement.lang === "en" ? "en" : "ar";
+  try {
+    const raw = sessionStorage.getItem("vicuna-last-order");
+    const order = raw ? (JSON.parse(raw) as { id?: string; paymentMethod?: string; totals?: { total?: number } }) : null;
+    if (order && typeof order.id === "string") {
+      document.getElementById("t-id")!.textContent = order.id;
+      document.getElementById("t-id-wrap")!.hidden = false;
+      document.getElementById("t-fallback")!.hidden = true;
+      if (typeof order.totals?.total === "number") {
+        const t = document.getElementById("t-total")!;
+        t.textContent = `${lang === "ar" ? "الإجمالي:" : "Total:"} ${formatEgp(order.totals.total)} ${lang === "ar" ? "جنيه" : "EGP"}`;
+        t.hidden = false;
+      }
+      if (order.paymentMethod === "instapay") document.getElementById("t-instapay")!.hidden = false;
+      const wa = document.getElementById("t-wa") as HTMLAnchorElement;
+      const text = lang === "ar" ? `أهلاً فيكونا، رقم طلبي ${order.id}` : `Hello Vicuna, my order number is ${order.id}`;
+      wa.href = `${wa.href.split("?")[0]}?text=${encodeURIComponent(text)}`;
+    }
+  } catch {
+    /* storage unavailable: generic message stays */
+  }
+</script>

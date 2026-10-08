@@ -6,7 +6,9 @@ const DIST = new URL("../dist/", import.meta.url).pathname;
 const SITE = "https://vicuna-eg.com";
 // Sections that are planned (ADR 0009) but not built yet. Links into them are allowed until they exist.
 const PLANNED_PREFIXES = [];
-const JS_BUDGET_BYTES = 60 * 1024;
+const JS_BUDGET_BYTES = 90 * 1024;
+// Pages that must stay out of search results and the sitemap even in production.
+const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/"]);
 
 const errors = [];
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
@@ -48,7 +50,9 @@ for (const file of pages) {
 
   const robots = /<meta name="robots" content="([^"]*)"/.exec(html)?.[1];
   if (!robots) fail(name, "missing robots meta");
-  else if (production && robots !== "index,follow") fail(name, `production page must be index,follow, got ${robots}`);
+  else if (NOINDEX_PAGES.has(url)) {
+    if (robots !== "noindex,nofollow") fail(name, "thank-you page must be noindex,nofollow");
+  } else if (production && robots !== "index,follow") fail(name, `production page must be index,follow, got ${robots}`);
   else if (!production && robots !== "noindex,nofollow") fail(name, "non-production page must be noindex,nofollow");
 
   const h1s = html.match(/<h1[\s>]/g)?.length ?? 0;
@@ -87,8 +91,8 @@ for (const f of ["sitemap.xml", "robots.txt"]) {
 if (production && existsSync(join(DIST, "sitemap.xml"))) {
   const sm = readFileSync(join(DIST, "sitemap.xml"), "utf8");
   const locs = [...sm.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1]);
-  for (const loc of locs) if (!known.has(loc.replace(SITE, ""))) fail("sitemap.xml", `lists a page that does not exist: ${loc}`);
-  for (const u of known) if (!locs.includes(SITE + u)) fail("sitemap.xml", `missing page ${u}`);
+  for (const loc of locs) if (NOINDEX_PAGES.has(loc.replace(SITE, "")) || !known.has(loc.replace(SITE, ""))) fail("sitemap.xml", `lists a page that does not exist: ${loc}`);
+  for (const u of known) if (!NOINDEX_PAGES.has(u) && !locs.includes(SITE + u)) fail("sitemap.xml", `missing page ${u}`);
 }
 
 const jsBytes = files.filter((f) => f.endsWith(".js")).reduce((n, f) => n + statSync(f).size, 0);

@@ -14,6 +14,7 @@ const ar = lang === "ar";
     </a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
       <a href={langPath(lang, "/belts/")}>{ar ? "الأحزمة" : "Belts"}</a>
+      <button type="button" class="cart-btn" data-open-cart>{ar ? "السلة" : "Cart"} <span data-cart-count hidden>0</span></button>
       <a class="lang" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"}>{ar ? "English" : "العربية"}</a>
     </nav>
   </div>
