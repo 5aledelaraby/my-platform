@@ -4,7 +4,7 @@ import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
-import { beltsUrl, price, products, productsOfStyle, styleText, styles } from "../store.ts";
+import { beltsUrl, colorName, colors, price, products, productsOfStyle, styleText, styles } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -49,10 +49,26 @@ const jsonLd = serializeJsonLd(
     </ul>
   </div>
 
+  <div class="wrap shop-tools">
+    <nav class="chips" aria-label={ar ? "تسوقي حسب التصميم" : "Shop by design"}>
+      {styles.map((s) => <a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a>)}
+    </nav>
+    <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
+      <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
+      <div class="swatch-row">
+        {colors.map((c) => (
+          <button type="button" class="swatch" data-color={c.id} aria-pressed="false" title={colorName(lang, c.id)} aria-label={colorName(lang, c.id)} style={`--c:${c.hex}`}></button>
+        ))}
+      </div>
+      <button type="button" class="link" data-color="all">{ar ? "عرض الكل" : "Show all"}</button>
+      <span id="filter-status" class="muted" aria-live="polite"></span>
+    </div>
+  </div>
+
   {styles.map((s) => {
     const t = styleText(lang, s.id);
     return (
-      <section class="wrap style-group" aria-labelledby={`g-${s.id}`}>
+      <section class="wrap style-group" data-group aria-labelledby={`g-${s.id}`}>
         <div class="group-head">
           <h2 id={`g-${s.id}`}>{t.name}</h2>
           <span class="muted">{price(s.id)} {cur}</span>
@@ -66,7 +82,13 @@ const jsonLd = serializeJsonLd(
     );
   })}
 
-  <section class="wrap style-group">
+  <section class="wrap style-group guide">
+    <h2>{ar ? "كيف تختارين حزام الخصر؟" : "How to choose a waist belt"}</h2>
+    <p class="muted">
+      {ar
+        ? "الحزام العريض بشريط للربط يحدّد الخصر فوق الفستان أو البلوزة الطويلة، والتصميمات ذات الفيونكة تجعله محور الإطلالة. للأزياء السادة تناسبك النقشات مثل الكروكو والثعبان، وللمناسبات يناسب الدانتيل. وإن تردّدتِ بين لونين فاللون المحايد (الأسود أو البني أو الأبيض) يتماشى مع معظم خزانتك."
+        : "A wide belt with a tie defines the waist over a dress or a long blouse, and bow designs make it the focus of the outfit. Textures such as croc and snake suit plain outfits, and lace suits occasions. If you hesitate between two colours, a neutral (black, brown or white) goes with most of your wardrobe."}
+    </p>
     <p class="muted">
       {ar
         ? "تحتاجين مقاسًا مختلفًا أو جلدًا طبيعيًا؟ نقبل الطلبات الخاصة، وتجدين طريقة التواصل في أسفل الصفحة."
@@ -74,3 +96,30 @@ const jsonLd = serializeJsonLd(
     </p>
   </section>
 </Base>
+
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-filter]");
+  if (bar) {
+    bar.hidden = false;
+    const cards = [...document.querySelectorAll<HTMLElement>(".card[data-color]")];
+    const groups = [...document.querySelectorAll<HTMLElement>("[data-group]")];
+    const status = document.getElementById("filter-status");
+    const unit = bar.dataset["unit"] ?? "";
+    let active: string | null = null;
+    bar.addEventListener("click", (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-color]");
+      if (!button) return;
+      const picked = button.dataset["color"] ?? "all";
+      active = picked === "all" || picked === active ? null : picked;
+      bar.querySelectorAll<HTMLButtonElement>(".swatch").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["color"] === active)));
+      let shown = 0;
+      for (const card of cards) {
+        const show = active === null || card.dataset["color"] === active;
+        card.hidden = !show;
+        if (show) shown += 1;
+      }
+      for (const group of groups) group.hidden = [...group.querySelectorAll<HTMLElement>(".card")].every((c) => c.hidden);
+      if (status) status.textContent = active === null ? "" : `${shown} ${unit}`;
+    });
+  }
+</script>

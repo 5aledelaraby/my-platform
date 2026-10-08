@@ -45,6 +45,17 @@ const colorWordsEn: Record<string, string> = {
 };
 const prefixEn: Record<string, string> = { sash: "Sash", twist: "Twist", classic: "Classic" };
 
+const colorEn: Record<string, string> = {
+  black: "Black", white: "White", red: "Red", pink: "Pink", brown: "Brown", gold: "Gold & beige",
+  yellow: "Yellow & orange", green: "Green", blue: "Blue", grey: "Grey & silver",
+};
+export const colors = catalog.colors;
+export const colorName = (lang: Lang, id: string): string => {
+  const c = catalog.colors.find((x) => x.id === id);
+  if (!c) throw new Error(`Unknown colour ${id}`);
+  return lang === "ar" ? c.name : (colorEn[id] ?? c.name);
+};
+
 export const styles: readonly CatalogStyle[] = catalog.styles;
 export const products: readonly CatalogProduct[] = catalog.products;
 

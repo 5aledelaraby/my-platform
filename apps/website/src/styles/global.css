@@ -185,3 +185,17 @@ dialog.cart::backdrop { background: rgba(0,0,0,.45); }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .thanks { max-width: 640px; margin: 40px auto 0; }
 .thanks .order-id { font-size: 1.6rem; font-weight: 800; color: var(--berry); direction: ltr; unicode-bidi: isolate; }
+
+/* belts tools */
+[hidden] { display: none !important; }
+.shop-tools { margin-top: 28px; display: grid; gap: 16px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips a { padding: 6px 16px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-weight: 700; font-size: 14px; }
+.chips a:hover { border-color: var(--berry); color: var(--berry); }
+.filter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 0; border-block: 1px solid var(--line); }
+.filter-label { font-weight: 700; font-size: 14px; }
+.swatch-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--line); background: var(--c); cursor: pointer; padding: 0; }
+.swatch[aria-pressed="true"] { border-color: var(--ink); outline: 2px solid #fff; outline-offset: -5px; box-shadow: 0 0 0 1px var(--ink); }
+.guide h2 { font-size: 1.5rem; margin-bottom: 8px; }
+.guide p + p { margin-top: 10px; }

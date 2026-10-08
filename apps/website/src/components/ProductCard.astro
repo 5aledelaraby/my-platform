@@ -8,7 +8,7 @@ const { product, lang } = Astro.props;
 const name = productName(lang, product);
 ---
 
-<a class="card" href={beltsUrl(lang, product.id)}>
+<a class="card" href={beltsUrl(lang, product.id)} data-color={product.color}>
   <img src={thumbOf(product)} srcset={`${thumbOf(product)} 480w, ${imageOf(product)} 900w`} sizes="(min-width: 760px) 25vw, 50vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />
   <span class="card-name">{name}</span>
   <span class="card-price">{priceOfProduct(product)} {lang === "ar" ? "جنيه" : "EGP"}</span>
