@@ -20,6 +20,9 @@ const title = ar ? "أحزمة خصر نسائية من جلد PU | فيكونا
 const description = ar
   ? `${products.length} حزام خصر نسائي من فيكونا في ${styles.length} تصاميم: دانتيل وفيونكة وكروكو وثعبان وكشكشة، بأسعار من ${lowest} جنيه. توصيل لجميع المحافظات.`
   : `${products.length} women's waist belts from Vicuna in ${styles.length} designs: lace, bow, croc, snake and ruffle, from ${lowest} EGP. Delivery to every governorate.`;
+const tie = ar
+  ? [["ضعي الحزام على الخصر", "الجزء العريض إلى الأمام"], ["لفّي الشريطين", "وأعيديهما إلى الأمام"], ["اربطي بطريقتك", "فيونكة أو عقدة"]]
+  : [["Place it on your waist", "wide part in front"], ["Wrap the straps", "and bring them forward"], ["Tie it your way", "a bow or a knot"]];
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
   { name: ar ? "الأحزمة" : "Belts" },
@@ -81,6 +84,13 @@ const jsonLd = serializeJsonLd(
       </section>
     );
   })}
+
+  <section class="wrap style-group" id="tie">
+    <div class="group-head"><h2>{ar ? "طريقة الربط" : "How to tie"}</h2></div>
+    <ol class="steps">
+      {tie.map(([t, d], i) => <li><span class="num" aria-hidden="true">{i + 1}</span><b>{t}</b><span class="muted">{d}</span></li>)}
+    </ol>
+  </section>
 
   <section class="wrap style-group guide">
     <h2>{ar ? "كيف تختارين حزام الخصر؟" : "How to choose a waist belt"}</h2>

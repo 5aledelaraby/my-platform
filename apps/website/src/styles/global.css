@@ -199,3 +199,7 @@ dialog.cart::backdrop { background: rgba(0,0,0,.45); }
 .swatch[aria-pressed="true"] { border-color: var(--ink); outline: 2px solid #fff; outline-offset: -5px; box-shadow: 0 0 0 1px var(--ink); }
 .guide h2 { font-size: 1.5rem; margin-bottom: 8px; }
 .guide p + p { margin-top: 10px; }
+.steps { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 14px; }
+.steps li { display: grid; grid-template-columns: 32px 1fr; gap: 0 12px; align-items: baseline; }
+.steps .num { grid-row: span 2; width: 32px; height: 32px; border-radius: 50%; background: var(--berry); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+@media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); gap: 28px; } }
