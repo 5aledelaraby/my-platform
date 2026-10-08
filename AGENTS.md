@@ -37,6 +37,12 @@ pnpm check:boundaries            # architecture rules
 - Add units with `node tools/architecture/new-unit.mjs <package|app> <name> [--may-import a,b]`, never by hand-copying folders. Recipes: `architecture/HOW-TO-ADD.md`. Where each future domain lives: `architecture/ROADMAP.md`.
 - Do not create units "for the future". Create one only when it has a real consumer (see the three questions in ROADMAP.md).
 
+## Site structure (ADR 0009)
+
+- `/` is a brand introduction only. It never contains the product grid, filters or cart-building UI.
+- The store lives under `/belts/` (`/belts/`, `/belts/<style>/`, `/belts/<product-id>/`). Other areas get their own top-level section and are only linked from `/`.
+- Ads, Merchant Center and product keywords point to `/belts/...`, never to `/`.
+
 ## Commerce rules
 
 - Money is **integer piasters** (`Piasters`). Never floats, never pounds in domain code. Convert at the edges with `egp()` / `formatEgp()`.

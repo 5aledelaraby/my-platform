@@ -5,6 +5,7 @@
 - القواعد لأي مبرمج أو AI: [`AGENTS.md`](AGENTS.md)
 - قرارات المعمارية: [`architecture/adr/`](architecture/adr)
 - جرد ما سيتم نقله من الموقع القديم: [`MIGRATION.md`](MIGRATION.md)
+- هيكل الموقع (الرئيسية تعريف، المتجر `/belts/`): [`ADR 0009`](architecture/adr/0009-homepage-is-brand-introduction.md)
 - خريطة التوسع (كل مجال مستقبلي: أين يعيش ومتى يتبني): [`architecture/ROADMAP.md`](architecture/ROADMAP.md)
 - إزاي تضيف أي حاجة جديدة: [`architecture/HOW-TO-ADD.md`](architecture/HOW-TO-ADD.md)
 
