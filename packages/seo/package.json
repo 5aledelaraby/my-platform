@@ -1,0 +1,13 @@
+{
+  "name": "@platform/seo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SEO helpers: canonical URLs, robots policy per environment, sitemap XML, JSON-LD builders. Pure functions, no domain knowledge.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

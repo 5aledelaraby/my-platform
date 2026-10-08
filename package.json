@@ -1,0 +1,25 @@
+{
+  "name": "my-platform",
+  "private": true,
+  "type": "module",
+  "description": "Vicuna platform: modular monolith monorepo (store, content, SEO). See AGENTS.md and architecture/adr.",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "test": "node --test \"packages/*/test/*.test.ts\"",
+    "check:secrets": "node tools/architecture/check-secrets.mjs",
+    "check:boundaries": "node tools/architecture/check-boundaries.mjs",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "build": "pnpm -r --if-present build",
+    "check": "pnpm check:secrets && pnpm check:boundaries && pnpm test && pnpm typecheck && pnpm lint && pnpm build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.22.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.30.0"
+  }
+}
