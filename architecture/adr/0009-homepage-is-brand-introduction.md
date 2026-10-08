@@ -1,6 +1,6 @@
 # ADR 0009: The homepage is a brand introduction; the belts store lives under /belts/
 
-Status: accepted. The exact product URL scheme (below) is a recommendation to be confirmed when `apps/website` is scaffolded.
+Status: accepted. The product URL scheme `/belts/<product-id>/` was confirmed by the owner. Whether to keep the English twin under `/en/` is still open; the structure is already language-prefix ready.
 
 ## Context
 The legacy homepage was the store: hero, product grid with filters, offer strip, styles, reviews and FAQ on one page. The platform is meant to grow into other areas (services, content, travel, media). A homepage that is the belts page cannot also introduce the brand or act as the entry point to those areas.
