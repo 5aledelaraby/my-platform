@@ -10,8 +10,8 @@ ALLOWED_ORIGINS = "https://vicuna-eg.com,https://www.vicuna-eg.com,https://stagi
 [[d1_databases]]
 binding = "DB"
 database_name = "vicuna-db"
-# Replace with the id printed by:  pnpm wrangler d1 create vicuna-db
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+# D1 database id (an identifier, not a secret). Created in the Cloudflare dashboard.
+database_id = "626197fa-3c59-48b3-944f-e2a2dd3978a0"
 migrations_dir = "migrations"
 
 # After the first deploy, attach the Worker to the site (or do it from the Cloudflare dashboard):
