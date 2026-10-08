@@ -11,4 +11,9 @@ export default defineConfig([
       "@typescript-eslint/consistent-type-imports": "error",
     },
   },
+  {
+    // Command-line tools print to the console on purpose.
+    files: ["tools/**/*.mjs"],
+    rules: { "no-console": "off" },
+  },
 ]);
