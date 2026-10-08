@@ -8,7 +8,7 @@ const SITE = "https://vicuna-eg.com";
 const PLANNED_PREFIXES = [];
 const JS_BUDGET_BYTES = 90 * 1024;
 // Pages that must stay out of search results and the sitemap even in production.
-const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/"]);
+const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/", "/404.html"]);
 
 const errors = [];
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
@@ -46,7 +46,7 @@ for (const file of pages) {
 
   const canonical = /<link rel="canonical" href="([^"]*)"/.exec(html)?.[1];
   if (!canonical) fail(name, "missing canonical");
-  else if (canonical !== SITE + url) fail(name, `canonical ${canonical} should be ${SITE + url}`);
+  else if (url !== "/404.html" && canonical !== SITE + url) fail(name, `canonical ${canonical} should be ${SITE + url}`);
 
   const robots = /<meta name="robots" content="([^"]*)"/.exec(html)?.[1];
   if (!robots) fail(name, "missing robots meta");
