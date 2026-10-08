@@ -20,3 +20,7 @@ pnpm --filter @platform/website dev         # تجربة محلية
 - الأسعار والخصم من `@platform/commerce`، وcanonical وJSON-LD من `@platform/seo`.
 - غير الإنتاج يطلع `noindex`: ضع `DEPLOY_ENV=staging` (أو `preview`) عند البناء.
 - هيكل الروابط: ADR 0009 (`/`، `/belts/...`، و`/en/...` للإنجليزي).
+
+## المقالات
+
+المقالات في `content/articles/*.md` (مصدر الحقيقة). اسم الملف = `slug`. الـ frontmatter بيتفحص وقت البناء بـ `parseArticleFrontmatter` (والقيم النصية بين علامتي تنصيص). الصفحات: `/blog/` و`/blog/<slug>/` (عربي فقط حاليًا، بدون نسخة إنجليزية). الصور داخل المقال لازم تكون مربعة (CSS بيحجز مساحتها).

@@ -24,6 +24,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
       <h3>{ar ? "الأحزمة" : "Belts"}</h3>
       <ul>
         <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+        {ar && <li><a href="/blog/">المقالات</a></li>}
         {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
       </ul>
     </div>

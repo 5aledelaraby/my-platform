@@ -12,7 +12,7 @@ interface Props {
   description: string;
   lang?: Lang;
   /** Site-relative path of the same page in the other language, e.g. "/en/". */
-  altPath: string;
+  altPath?: string;
   /** Optional JSON-LD, already serialized with serializeJsonLd. */
   jsonLd?: string;
   /** Pages that must never be indexed even in production (thank-you page). */
@@ -27,10 +27,11 @@ const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image
 const env = (import.meta.env.DEPLOY_ENV ?? "production") as DeployEnvironment;
 const site = Astro.site!.toString();
 const canonical = canonicalUrl(site, Astro.url.pathname);
-const alt = canonicalUrl(site, altPath);
+const alt = altPath ? canonicalUrl(site, altPath) : undefined;
 const ogImage = new URL(image, site).toString();
 const arUrl = lang === "ar" ? canonical : alt;
 const enUrl = lang === "en" ? canonical : alt;
+const switchHref = altPath ?? (lang === "ar" ? "/en/" : "/");
 ---
 
 <!doctype html>
@@ -42,9 +43,9 @@ const enUrl = lang === "en" ? canonical : alt;
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex,nofollow" : robotsDirective(env)} />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="ar" href={arUrl} />
-    <link rel="alternate" hreflang="en" href={enUrl} />
-    <link rel="alternate" hreflang="x-default" href={arUrl} />
+    {arUrl && <link rel="alternate" hreflang="ar" href={arUrl} />}
+    {enUrl && <link rel="alternate" hreflang="en" href={enUrl} />}
+    <link rel="alternate" hreflang="x-default" href={arUrl ?? canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
@@ -60,7 +61,7 @@ const enUrl = lang === "en" ? canonical : alt;
   </head>
   <body>
     <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
-    <Header lang={lang} altHref={altPath} />
+    <Header lang={lang} altHref={switchHref} />
     <main id="main">
       <slot />
     </main>

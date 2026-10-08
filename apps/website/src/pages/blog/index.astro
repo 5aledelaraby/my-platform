@@ -1,0 +1,34 @@
+---
+import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { articles, articleUrl, formatDate } from "../../lib/articles.ts";
+import { site } from "../../site.ts";
+
+const title = "مقالات فيكونا | أفكار لتنسيق أحزمة الخصر";
+const description = "إرشادات عملية لاختيار حزام الخصر وربطه وتنسيقه مع الفستان والعباية والجاكيت، من فريق فيكونا.";
+const crumbs = [{ name: "الرئيسية", href: "/" }, { name: "المقالات" }];
+const jsonLd = serializeJsonLd(
+  breadcrumbJsonLd([{ name: "الرئيسية", url: `${site.url}/` }, { name: "المقالات", url: `${site.url}/blog/` }]),
+);
+---
+
+<Base title={title} description={description} lang="ar" jsonLd={jsonLd}>
+  <Breadcrumbs items={crumbs} />
+  <div class="wrap page-head">
+    <h1>مقالات فيكونا</h1>
+    <p class="muted lede">إرشادات عملية لاختيار حزام الخصر وربطه وتنسيقه مع الفستان والعباية والجاكيت.</p>
+  </div>
+  <section class="wrap">
+    <div class="posts">
+      {articles.map((a) => (
+        <a class="post" href={articleUrl(a.slug)}>
+          <img src={a.image} alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
+          <time datetime={a.datePublished} class="muted">{formatDate(a.datePublished)}</time>
+          <h2>{a.title}</h2>
+          <p class="muted">{a.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>

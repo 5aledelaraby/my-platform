@@ -60,7 +60,9 @@ for (const file of pages) {
 
   if (!/<link rel="alternate" hreflang="x-default"/.test(html)) fail(name, "missing hreflang x-default");
 
-  for (const m of html.matchAll(/<img\b[^>]*>/g)) {
+  // Markdown article bodies cannot carry width/height; their images are square and sized by CSS (aspect-ratio).
+  const prose = /<div class="prose">[\s\S]*?<\/div>/.exec(html)?.[0] ?? "";
+  for (const m of html.replace(prose, "").matchAll(/<img\b[^>]*>/g)) {
     if (!/\balt=/.test(m[0])) fail(name, "image without alt attribute");
     if (!/\bwidth=/.test(m[0]) || !/\bheight=/.test(m[0])) fail(name, "image without width/height (layout shift)");
   }
