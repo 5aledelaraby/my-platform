@@ -50,7 +50,7 @@ const orderText = ar
 const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(orderText)}`;
 ---
 
-<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", product.id)} jsonLd={jsonLd}>
+<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", product.id)} jsonLd={jsonLd} image={imageOf(product)}>
   <Breadcrumbs items={crumbs} />
   <div class="wrap product">
     <img class="main" src={imageOf(product)} alt={name} width="900" height="900" fetchpriority="high" />

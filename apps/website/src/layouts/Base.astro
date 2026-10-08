@@ -17,15 +17,18 @@ interface Props {
   jsonLd?: string;
   /** Pages that must never be indexed even in production (thank-you page). */
   noindex?: boolean;
+  /** Social preview image, site-relative. Defaults to the brand photo. */
+  image?: string;
 }
 
-const { title, description, lang = "ar", altPath, jsonLd, noindex = false } = Astro.props;
+const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/hero-1200.webp" } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). Set DEPLOY_ENV=staging|preview on non-production deployments.
 const env = (import.meta.env.DEPLOY_ENV ?? "production") as DeployEnvironment;
 const site = Astro.site!.toString();
 const canonical = canonicalUrl(site, Astro.url.pathname);
 const alt = canonicalUrl(site, altPath);
+const ogImage = new URL(image, site).toString();
 const arUrl = lang === "ar" ? canonical : alt;
 const enUrl = lang === "en" ? canonical : alt;
 ---
@@ -47,6 +50,9 @@ const enUrl = lang === "en" ? canonical : alt;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#ffffff" />
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
     <link rel="preload" href={lang === "ar" ? "/fonts/cairo-arabic-400-normal.woff2" : "/fonts/cairo-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={lang === "ar" ? "/fonts/el-messiri-arabic-700-normal.woff2" : "/fonts/el-messiri-latin-700-normal.woff2"} as="font" type="font/woff2" crossorigin />

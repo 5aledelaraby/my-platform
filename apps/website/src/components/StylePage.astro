@@ -3,7 +3,7 @@ import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
-import { beltsUrl, price, productsOfStyle, styleText } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, price, productsOfStyle, styleText } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -31,7 +31,7 @@ const jsonLd = serializeJsonLd(
 );
 ---
 
-<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd}>
+<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd} image={imageOf(coverOf(styleId))}>
   <Breadcrumbs items={crumbs} />
   <div class="wrap page-head">
     <h1>{t.headline}</h1>
