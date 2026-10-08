@@ -2,8 +2,9 @@
 import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { beltsUrl, imageOf, price, productName, productsOfStyle, styleText } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
 import type { CatalogProduct } from "@platform/commerce";
+import ProductCard from "./ProductCard.astro";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -14,6 +15,20 @@ const name = productName(lang, product);
 const st = styleText(lang, product.style);
 const cur = ar ? "جنيه" : "EGP";
 const siblings = productsOfStyle(product.style);
+const related = styles.filter((x) => x.id !== product.style).slice(0, 4).map((x) => coverOf(x.id));
+const info = ar
+  ? [
+      ["الخامة", "جلد PU. أما الجلد الطبيعي فيتوفر فقط عند الطلب الخاص."],
+      ["المقاس", `المقاس المعتاد بعرض 14 سم وطول 140 سم، ويناسب حتى ${site.maxWeightKg} كجم. نفصّل مقاسًا خاصًا عند الطلب.`],
+      ["الصنعة", "قصّ بالليزر وخياطة وتشطيب يدويان، ويراجع مؤسس فيكونا كل حزام قبل الشحن."],
+      ["التوصيل والاسترجاع", `توصيل خلال ${site.deliveryDays} أيام إلى جميع المحافظات، واسترجاع خلال ${site.returnDays} يومًا. الدفع عند الاستلام أو InstaPay.`],
+    ]
+  : [
+      ["Material", "PU leather. Natural leather is only available as a custom order."],
+      ["Size", `The usual size is 14 cm wide and 140 cm long and fits up to ${site.maxWeightKg} kg. We make a custom size on request.`],
+      ["Craft", "Laser-cut, then sewn and finished by hand. The founder checks every belt before it ships."],
+      ["Delivery and returns", `Delivery in ${site.deliveryDays} days to every governorate, ${site.returnDays}-day returns. Cash on delivery or InstaPay.`],
+    ];
 const title = ar ? `${name} | حزام خصر نسائي | فيكونا` : `${name} | Women's waist belt | Vicuna`;
 const description = ar
   ? `${name} من فيكونا بسعر ${price(product.style)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام واسترجاع خلال ${site.returnDays} يوم.`
@@ -74,4 +89,15 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       </ul>
     </div>
   </div>
+  <section class="wrap pdp-info">
+    <dl class="promises">
+      {info.map(([t, d]) => <div><dt>{t}</dt><dd class="muted">{d}</dd></div>)}
+    </dl>
+  </section>
+  <section class="wrap style-group">
+    <div class="group-head"><h2>{ar ? "قد يعجبك أيضًا" : "You may also like"}</h2></div>
+    <div class="grid">
+      {related.map((p) => <ProductCard product={p} lang={lang} />)}
+    </div>
+  </section>
 </Base>
