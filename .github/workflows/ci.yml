@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Needs no installation: plain Node 22. Always runs.
+  # Needs no installation: plain Node 22. Always runs. (App tests import workspace packages, so they run in `full`.)
   guards-and-tests:
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +37,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm test
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm build

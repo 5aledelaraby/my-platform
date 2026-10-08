@@ -16,6 +16,7 @@
 | `packages/seo` (canonical، robots، sitemap، JSON-LD) | جاهز ومختبر |
 | `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
 | `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
+| `apps/api` (إنشاء الطلبات، D1) | كود واختبارات جاهزة. **محتاج نشر على Cloudflare** (`apps/api/README.md`) |
 | `apps/website` | **لسه محتاج scaffold لـ Astro** (الخطوة التالية) |
 | حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
 
@@ -42,15 +43,16 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 ## قرار واتساب والطلبات
 
-واتساب قناة اختيارية، مش أساس نظام الطلبات، والمرحلة الأولى بدون Worker أو قاعدة بيانات أو لوحة إدارة أو دفع أونلاين. التفاصيل في [ADR 0007](architecture/adr/0007-whatsapp-is-an-optional-channel.md).
+واتساب قناة اختيارية بعد إنشاء الطلب، مش أساس نظام الطلبات ([ADR 0007](architecture/adr/0007-whatsapp-is-an-optional-channel.md)). الطلب بيتسجل عبر الـ API ([ADR 0008](architecture/adr/0008-order-api.md)). لوحة الإدارة والدفع الأونلاين لسه مش مبنيين.
 
 ## الخطوة التالية
 
 1. `pnpm install` وcommit للـ lockfile.
 2. Scaffold لـ `apps/website` (الخطوات في [`apps/website/README.md`](apps/website/README.md)).
-3. نقل المنتجات والمقالات من الموقع القديم (راجع `MIGRATION.md`).
-4. ربط Cloudflare Pages بـ `staging.vicuna-eg.com` بوضع `noindex`.
-5. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
+3. نشر `apps/api` على Cloudflare (D1 + route) واختباره بـ curl.
+4. نقل المقالات والصور والصفحات من الموقع القديم (راجع `MIGRATION.md`) وربط السلة بالـ API.
+5. ربط Cloudflare Pages بـ `staging.vicuna-eg.com` بوضع `noindex`.
+6. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
 
 ## قاعدة أمان
 

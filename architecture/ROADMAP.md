@@ -24,12 +24,12 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 | محتوى ومقالات | `packages/content` | نموذج التحقق جاهز |
 | مكونات التصميم | `packages/ui` | هيكل فاضي |
 | الواجهة الأمامية | `apps/website` | محتاج scaffold لـ Astro |
+| إنشاء الطلبات وتخزينها (D1) | `apps/api` | جاهز ومختبر، محتاج نشر على Cloudflare (ADR 0008) |
 
 ## المجالات المستقبلية
 
 | المجال | أين يعيش | يتبني لما... | يعتمد على |
 |---|---|---|---|
-| إنشاء الطلبات وتسجيلها | `apps/api` (Cloudflare Worker) | تقرر تسجل الطلبات (ADR 0007) | commerce |
 | لوحة الإدارة | `apps/admin` | تعدّل المنتجات والمحتوى من واجهة بدل ملفات | api + `packages/auth` |
 | المخزون | جزء من `commerce` أولًا، ويتفصل لو كبر | تتابع كميات فعلية | commerce |
 | الدفع الأونلاين | `packages/payments` | تختار مزود دفع | commerce (وapi يستدعيه) |

@@ -1,0 +1,18 @@
+name = "vicuna-api"
+main = "src/worker.ts"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Exact origins allowed to POST from a browser. For local development put
+# ALLOWED_ORIGINS="http://localhost:4321" in apps/api/.dev.vars (that file is git-ignored).
+ALLOWED_ORIGINS = "https://vicuna-eg.com,https://www.vicuna-eg.com,https://staging.vicuna-eg.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "vicuna-db"
+# Replace with the id printed by:  pnpm wrangler d1 create vicuna-db
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+# After the first deploy, attach the Worker to the site (or do it from the Cloudflare dashboard):
+# routes = [{ pattern = "vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" }]

@@ -8,6 +8,7 @@ A modular-monolith monorepo (pnpm workspaces) for the Vicuna store: storefront, 
 
 ```
 apps/website        storefront (Astro SSG + React islands for the cart)
+apps/api            order API: Cloudflare Worker + D1 (ADR 0008)
 packages/commerce   money, pricing, discounts, cart totals (pure TS, no UI)
 packages/seo        canonical, robots policy, sitemap, JSON-LD (pure TS)
 packages/content    article/page content model and validation (pure TS)
@@ -39,9 +40,9 @@ pnpm check:boundaries            # architecture rules
 ## Commerce rules
 
 - Money is **integer piasters** (`Piasters`). Never floats, never pounds in domain code. Convert at the edges with `egp()` / `formatEgp()`.
-- Discount and totals logic exists **only** in `@platform/commerce`. The cart calls it today; any future server-side order validation must call the same code. Never trust a price sent by the client.
-- WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. Phase 1 has no Worker, D1, admin or online payment; do not build them or abstractions for them until the owner asks.
-- When orders are eventually stored, they keep a snapshot of prices and discount at creation time.
+- Discount and totals logic exists **only** in `@platform/commerce`. The cart and the order API both call it. Never trust a price sent by the client: the API recomputes everything from the catalogue.
+- WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. The order API (`apps/api`, ADR 0008) exists. Admin dashboard, online payment, inventory and read endpoints for orders are NOT built; do not build them, or abstractions for them, until the owner asks. Never expose order reads without authentication (orders contain customers' personal data).
+- Orders keep a snapshot of names, unit prices and totals (piasters) as of creation time. The catalogue lives in `packages/commerce/data/catalog.json`; product ids are permanent.
 - Product `id` is permanent. A `slug` may change only together with a 301 redirect entry (ADR 0004).
 
 ## SEO rules

@@ -1,0 +1,405 @@
+{
+  "_comment": "Migrated from the legacy site (src/data/products.ts). Prices are integer piasters. Product id is permanent (ADR 0004).",
+  "styles": [
+    {
+      "id": "lace",
+      "name": "دانتيل",
+      "price": 30000,
+      "headline": "حزام دانتيل بيحوّل أبسط فستان لطقم سهرة",
+      "intro": "دانتيل مشغول على بطانة جلد PU مستورد، وبيتربط بشريط رفيع. مناسب للخروجات والمناسبات، وبيرسم الوسط من غير ما يضايقك."
+    },
+    {
+      "id": "wide-bow",
+      "name": "فيونكة عريضة",
+      "price": 20000,
+      "headline": "فيونكة عريضة تلفت النظر لوسطك",
+      "intro": "جلد PU بليكرا طري بيتلف حوالين الخصر ويتشكّل عليه، ويتربط فيونكة كبيرة من قدّام أو عقدة بطرف طويل نازل. الحزام هنا هو نجم اللبس."
+    },
+    {
+      "id": "thin-tie",
+      "name": "شريط رفيع",
+      "price": 12000,
+      "headline": "الحزام الكلاسيك اللي بيمشي مع كل حاجة",
+      "intro": "حزام عريض بشريط رفيع بيتلف حوالين الوسط ويتربط فيونكة صغيرة. جلد PU بليكرا طري بيتشكّل على وسطك، بألوان كتير، يلبس مع الفستان والبلوزة والجاكيت."
+    },
+    {
+      "id": "croc",
+      "name": "كروكو",
+      "price": 20000,
+      "headline": "ملمس كروكو يدّي اللبس شخصية",
+      "intro": "نقشة كروكو بارزة على جلد PU مستورد، بشريط رفيع للربط. لمسة جريئة وفخمة لأي لبس سادة."
+    },
+    {
+      "id": "snake",
+      "name": "ثعبان",
+      "price": 20000,
+      "headline": "نقشة ثعبان عصرية تلفت النظر",
+      "intro": "نقشة ثعبان على جلد PU مستورد، بشريط رفيع للربط. لمسة مختلفة وعصرية لأي لبس سادة."
+    },
+    {
+      "id": "ruffle",
+      "name": "كشكشة",
+      "price": 20000,
+      "headline": "كشكشة بتضيف حركة وأنوثة للبس",
+      "intro": "حزام بكشكشة من فوق وتحت وشريط بيتربط في النص. لمسة ناعمة ومختلفة لأي فستان سادة."
+    }
+  ],
+  "colors": [
+    {
+      "id": "black",
+      "name": "أسود",
+      "hex": "#1E1E22"
+    },
+    {
+      "id": "white",
+      "name": "أبيض",
+      "hex": "#F4F2EF"
+    },
+    {
+      "id": "red",
+      "name": "أحمر",
+      "hex": "#C8232B"
+    },
+    {
+      "id": "pink",
+      "name": "وردي",
+      "hex": "#E5B9BC"
+    },
+    {
+      "id": "brown",
+      "name": "بني",
+      "hex": "#8A5434"
+    },
+    {
+      "id": "gold",
+      "name": "دهبي وبيج",
+      "hex": "#D6C08F"
+    },
+    {
+      "id": "yellow",
+      "name": "أصفر وبرتقالي",
+      "hex": "#E7A12C"
+    },
+    {
+      "id": "green",
+      "name": "أخضر",
+      "hex": "#2E8B4E"
+    },
+    {
+      "id": "blue",
+      "name": "أزرق",
+      "hex": "#3062B0"
+    },
+    {
+      "id": "grey",
+      "name": "رمادي وفضي",
+      "hex": "#8A909A"
+    }
+  ],
+  "products": [
+    {
+      "id": "lace-black",
+      "name": "دانتيل أسود",
+      "style": "lace",
+      "color": "black",
+      "hex": "#1E1E22",
+      "texture": "lace"
+    },
+    {
+      "id": "lace-red",
+      "name": "دانتيل أحمر",
+      "style": "lace",
+      "color": "red",
+      "hex": "#C8232B",
+      "texture": "lace"
+    },
+    {
+      "id": "lace-white",
+      "name": "دانتيل أبيض",
+      "style": "lace",
+      "color": "white",
+      "hex": "#F4F2EF",
+      "texture": "lace"
+    },
+    {
+      "id": "lace-gold",
+      "name": "دانتيل دهبي",
+      "style": "lace",
+      "color": "gold",
+      "hex": "#CDB98A",
+      "texture": "lace"
+    },
+    {
+      "id": "lace-caramel",
+      "name": "دانتيل كراميل",
+      "style": "lace",
+      "color": "brown",
+      "hex": "#A8652F",
+      "texture": "lace"
+    },
+    {
+      "id": "bow-white",
+      "name": "فيونكة أبيض",
+      "style": "wide-bow",
+      "color": "white",
+      "hex": "#F4F2EF",
+      "texture": "smooth"
+    },
+    {
+      "id": "bow-silver",
+      "name": "فيونكة فضي",
+      "style": "wide-bow",
+      "color": "grey",
+      "hex": "#C9D2DC",
+      "texture": "smooth"
+    },
+    {
+      "id": "bow-gold",
+      "name": "فيونكة دهبي",
+      "style": "wide-bow",
+      "color": "gold",
+      "hex": "#D8C18E",
+      "texture": "smooth"
+    },
+    {
+      "id": "bow-mustard",
+      "name": "فيونكة مسطردة",
+      "style": "wide-bow",
+      "color": "yellow",
+      "hex": "#E2A93A",
+      "texture": "smooth"
+    },
+    {
+      "id": "bow-burgundy",
+      "name": "فيونكة عنابي",
+      "style": "wide-bow",
+      "color": "red",
+      "hex": "#7E2632",
+      "texture": "smooth"
+    },
+    {
+      "id": "bow-taupe",
+      "name": "فيونكة بني فاتح",
+      "style": "wide-bow",
+      "color": "brown",
+      "hex": "#9A6B52",
+      "texture": "smooth"
+    },
+    {
+      "id": "sash-red",
+      "name": "فيونكة أحمر",
+      "style": "wide-bow",
+      "color": "red",
+      "hex": "#C33A40",
+      "texture": "smooth"
+    },
+    {
+      "id": "sash-black",
+      "name": "فيونكة أسود",
+      "style": "wide-bow",
+      "color": "black",
+      "hex": "#1E1E22",
+      "texture": "smooth"
+    },
+    {
+      "id": "sash-blush",
+      "name": "فيونكة بينك فاتح",
+      "style": "wide-bow",
+      "color": "pink",
+      "hex": "#EBC9C2",
+      "texture": "smooth"
+    },
+    {
+      "id": "sash-green",
+      "name": "فيونكة أخضر",
+      "style": "wide-bow",
+      "color": "green",
+      "hex": "#3E9B3A",
+      "texture": "smooth"
+    },
+    {
+      "id": "sash-cognac",
+      "name": "فيونكة كونياك",
+      "style": "wide-bow",
+      "color": "brown",
+      "hex": "#A8613F",
+      "texture": "smooth"
+    },
+    {
+      "id": "sash-brown",
+      "name": "فيونكة بني غامق",
+      "style": "wide-bow",
+      "color": "brown",
+      "hex": "#4A2E2B",
+      "texture": "smooth"
+    },
+    {
+      "id": "twist-grey",
+      "name": "فيونكة رمادي مجدول",
+      "style": "wide-bow",
+      "color": "grey",
+      "hex": "#7D8592",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-white",
+      "name": "شريط رفيع أبيض",
+      "style": "thin-tie",
+      "color": "white",
+      "hex": "#F4F2EF",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-red",
+      "name": "شريط رفيع أحمر",
+      "style": "thin-tie",
+      "color": "red",
+      "hex": "#C9252C",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-rose",
+      "name": "شريط رفيع وردي غامق",
+      "style": "thin-tie",
+      "color": "red",
+      "hex": "#9E4A55",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-pink-suede",
+      "name": "شريط رفيع بينك",
+      "style": "thin-tie",
+      "color": "pink",
+      "hex": "#E3C3C8",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-mustard",
+      "name": "شريط رفيع مسطردة",
+      "style": "thin-tie",
+      "color": "yellow",
+      "hex": "#EBA92E",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-orange-suede",
+      "name": "شريط رفيع برتقالي",
+      "style": "thin-tie",
+      "color": "yellow",
+      "hex": "#D97A45",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-camel-suede",
+      "name": "شريط رفيع كامل",
+      "style": "thin-tie",
+      "color": "brown",
+      "hex": "#A9653F",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-green",
+      "name": "شريط رفيع أخضر زمردي",
+      "style": "thin-tie",
+      "color": "green",
+      "hex": "#1F8A5C",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-sky-blue",
+      "name": "شريط رفيع لبني",
+      "style": "thin-tie",
+      "color": "blue",
+      "hex": "#5BC0DE",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-royal-blue",
+      "name": "شريط رفيع أزرق ملكي",
+      "style": "thin-tie",
+      "color": "blue",
+      "hex": "#2F55A8",
+      "texture": "smooth"
+    },
+    {
+      "id": "classic-navy",
+      "name": "شريط رفيع كحلي",
+      "style": "thin-tie",
+      "color": "blue",
+      "hex": "#24305E",
+      "texture": "smooth"
+    },
+    {
+      "id": "croc-black",
+      "name": "كروكو أسود",
+      "style": "croc",
+      "color": "black",
+      "hex": "#1C1C1F",
+      "texture": "croc"
+    },
+    {
+      "id": "croc-wine",
+      "name": "كروكو عنابي",
+      "style": "croc",
+      "color": "red",
+      "hex": "#5A2730",
+      "texture": "croc"
+    },
+    {
+      "id": "croc-pink",
+      "name": "كروكو بينك",
+      "style": "croc",
+      "color": "pink",
+      "hex": "#D9A79F",
+      "texture": "croc"
+    },
+    {
+      "id": "croc-cognac",
+      "name": "كروكو كونياك",
+      "style": "croc",
+      "color": "brown",
+      "hex": "#A8653C",
+      "texture": "croc"
+    },
+    {
+      "id": "snake-grey",
+      "name": "ثعبان رمادي",
+      "style": "snake",
+      "color": "grey",
+      "hex": "#9EA3A8",
+      "texture": "snake"
+    },
+    {
+      "id": "snake-beige",
+      "name": "ثعبان بيج",
+      "style": "snake",
+      "color": "gold",
+      "hex": "#C9A57C",
+      "texture": "snake"
+    },
+    {
+      "id": "ruffle-red",
+      "name": "كشكشة أحمر",
+      "style": "ruffle",
+      "color": "red",
+      "hex": "#D3262E",
+      "texture": "ruffle"
+    },
+    {
+      "id": "ruffle-black",
+      "name": "كشكشة أسود",
+      "style": "ruffle",
+      "color": "black",
+      "hex": "#1C1C1F",
+      "texture": "ruffle"
+    },
+    {
+      "id": "ruffle-brown",
+      "name": "كشكشة بني",
+      "style": "ruffle",
+      "color": "brown",
+      "hex": "#9A5236",
+      "texture": "ruffle"
+    }
+  ]
+}

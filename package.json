@@ -8,7 +8,7 @@
     "node": ">=22.18"
   },
   "scripts": {
-    "test": "node --test \"packages/*/test/*.test.ts\"",
+    "test": "node --test \"{apps,packages}/*/test/*.test.ts\"",
     "check:secrets": "node tools/architecture/check-secrets.mjs",
     "check:boundaries": "node tools/architecture/check-boundaries.mjs",
     "typecheck": "pnpm -r --if-present typecheck",

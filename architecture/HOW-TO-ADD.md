@@ -3,7 +3,7 @@
 | عايز تضيف | تعمل إيه |
 |---|---|
 | **مقال** | ملف `content/articles/<slug>.md` فيه frontmatter (title, description, slug, datePublished). `parseArticleFrontmatter` بيرفض أي خطأ. الـ slug حروف لاتينية صغيرة وشرطات فقط |
-| **منتج** | ملف في `content/products/` بعد نقل الكتالوج (الشكل النهائي يتحدد مع scaffold الموقع). الـ `id` ثابت للأبد. السعر بالقروش |
+| **منتج** | سطر في `packages/commerce/data/catalog.json` (id ثابت للأبد، style، color، hex، texture) + صورة بنفس اسم الـ id. السعر من الستايل بالقروش. بعد التعديل: انشر الموقع **والـ API** |
 | **صفحة ثابتة** | `content/pages/` (بعد نقلها). لو غيرت الـ slug لازم redirect (ADR 0004) |
 | **منطق جديد (مجال)** | الأول اسأل الأسئلة الثلاثة في `ROADMAP.md`. لو أيوه: `node tools/architecture/new-unit.mjs package <name>` |
 | **تطبيق أو Worker** | `node tools/architecture/new-unit.mjs app <name> --may-import commerce,seo`. إعدادات Cloudflare (`wrangler`) تتحط جوه التطبيق نفسه |

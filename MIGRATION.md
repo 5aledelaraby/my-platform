@@ -6,8 +6,8 @@
 
 | الشيء | المصدر القديم | الوجهة الجديدة | ملاحظة |
 |---|---|---|---|
-| الكتالوج (6 ستايلات وعشرات المنتجات بألوانها) | `src/data/products.ts` | `content/products/` | الأسعار تتحول لقروش. السعر من الستايل |
-| صور المنتجات | `src/assets/products/*.jpg` | `content/products/` أو `apps/website/src/assets` | مربعة، اسم الملف = id المنتج |
+| الكتالوج (6 ستايلات و38 منتج) | `src/data/products.ts` | **تم**: `packages/commerce/data/catalog.json` | الأسعار بالقروش. السعر من الستايل. الـ API يعتمد عليه |
+| صور المنتجات (38) | `src/assets/products/*.jpg` | `apps/website/src/assets` | مربعة، اسم الملف = id المنتج |
 | 9 مقالات SEO | `src/content/blog/*.md` | `content/articles/` | تُراجع بـ `parseArticleFrontmatter` وتُكمَّل بـ `slug` و`datePublished` |
 | الصفحات القانونية (خصوصية، شروط، استرجاع) عربي/إنجليزي | `src/content/{privacy,terms,returns}*.ts` | `content/pages/` | |
 | نصوص "عن فيكونا" و FAQ و SEO copy | `src/content/about*.ts`, `src/data/{faq,seo-copy}.ts` | `content/` | |
@@ -16,7 +16,7 @@
 | الخطوط (Cairo, El Messiri, Great Vibes, Marcellus) | `src/assets/fonts/` | `apps/website/src/assets/fonts/` | self-hosted، ترخيص OFL |
 | صور الموقع، الفيديوهات، التوقيع | `src/assets/{site,video}/` | `apps/website/src/assets/` | |
 | منطق الخصم المتعدد | `src/client/app.ts` (`RATES`) | **تم**: `packages/commerce` | مختبر ومطابق للقديم على كل تركيبات الأسعار الحالية |
-| Worker الـ CAPI | `workers/capi/worker.js` | `apps/capi-worker/` (لاحقًا) | التوكن `META_TOKEN` يفضل Secret في Cloudflare. لا ينتقل في الكود |
+| Worker الـ CAPI (تتبع، مش طلبات) | `workers/capi/worker.js` | `apps/capi-worker/` (لاحقًا) | التوكن `META_TOKEN` يفضل Secret في Cloudflare. لا ينتقل في الكود |
 | معرفات التتبع العامة (GA4, Meta Pixel, Snap) | `src/data/site.ts` | config | معرفات عامة. التوكنات لا |
 
 ## يراجع قبل النقل (قرار المالك)
