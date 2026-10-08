@@ -4,21 +4,22 @@ import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
-import { beltsUrl, price, products, styleText, styles } from "../store.ts";
+import { beltsUrl, price, products, productsOfStyle, styleText, styles } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
+const cur = ar ? "جنيه" : "EGP";
 const second = MULTI_ITEM_RATES_BPS[1] / 100;
 const third = MULTI_ITEM_RATES_BPS[2] / 100;
 const free = formatEgp(SHIPPING.freeOver);
 const lowest = formatEgp(Math.min(...styles.map((s) => s.price)));
-const title = ar ? "أحزمة خصر نسائية | فيكونا" : "Women's waist belts | Vicuna";
+const title = ar ? "أحزمة خصر نسائية من جلد PU | فيكونا" : "Women's waist belts in PU leather | Vicuna";
 const description = ar
-  ? `كل أحزمة فيكونا: دانتيل وفيونكة وكروكو وثعبان وكشكشة، ${products.length} حزام بأسعار من ${lowest} جنيه. توصيل لكل مصر.`
-  : `All Vicuna belts: lace, bow, croc, snake and ruffle, ${products.length} belts from ${lowest} EGP. Delivery across Egypt.`;
+  ? `${products.length} حزام خصر نسائي من فيكونا في ${styles.length} تصاميم: دانتيل وفيونكة وكروكو وثعبان وكشكشة، بأسعار من ${lowest} جنيه. توصيل لجميع المحافظات.`
+  : `${products.length} women's waist belts from Vicuna in ${styles.length} designs: lace, bow, croc, snake and ruffle, from ${lowest} EGP. Delivery to every governorate.`;
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
   { name: ar ? "الأحزمة" : "Belts" },
@@ -35,23 +36,41 @@ const jsonLd = serializeJsonLd(
   <Breadcrumbs items={crumbs} />
   <div class="wrap page-head">
     <h1>{ar ? "أحزمة خصر نسائية" : "Women's waist belts"}</h1>
-    <p class="muted">{ar ? "جلد PU بألوان وخامات متعددة، متفصلة بإيد وبتوصل لكل مصر." : "PU leather in many colours and textures, made by hand and delivered across Egypt."}</p>
-    <div class="offer">
+    <p class="muted lede">
       {ar
-        ? <><b>خصم لما تاخدي أكتر من حزام:</b> الحزام التاني خصم {second}% والتالت خصم {third}%. والشحن مجاني لأي طلب فوق {free} جنيه.</>
-        : <><b>Buy more, save more:</b> the 2nd belt is {second}% off and the 3rd {third}% off. Shipping is free on orders over {free} EGP.</>}
-    </div>
+        ? `جلد PU بقصّ ليزر وخياطة يدوية، في ${styles.length} تصاميم وعدة ألوان. اختاري التصميم ثم اللون، ونوصّل إلى جميع محافظات مصر خلال ${site.deliveryDays} أيام.`
+        : `PU leather, laser-cut and hand-sewn, in ${styles.length} designs and many colours. Choose a design, then a colour; we deliver to every governorate in Egypt in ${site.deliveryDays} days.`}
+    </p>
+    <ul class="facts">
+      <li>{ar ? "المقاس المعتاد: عرض 14 سم وطول 140 سم" : "Usual size: 14 cm wide, 140 cm long"}</li>
+      <li>{ar ? `يناسب حتى ${site.maxWeightKg} كجم` : `Fits up to ${site.maxWeightKg} kg`}</li>
+      <li>{ar ? `خصم ${second}% على الحزام الثاني و${third}% على الثالث` : `${second}% off the 2nd belt, ${third}% off the 3rd`}</li>
+      <li>{ar ? `شحن مجاني فوق ${free} جنيه` : `Free shipping over ${free} EGP`}</li>
+    </ul>
   </div>
-  <section class="wrap">
-    <div class="style-cards">
-      {styles.map((s) => (
-        <a href={beltsUrl(lang, s.id)}><b>{styleText(lang, s.id).name}</b><span>{price(s.id)} {ar ? "جنيه" : "EGP"}</span></a>
-      ))}
-    </div>
-  </section>
-  <section class="wrap">
-    <div class="grid">
-      {products.map((p) => <ProductCard product={p} lang={lang} />)}
-    </div>
+
+  {styles.map((s) => {
+    const t = styleText(lang, s.id);
+    return (
+      <section class="wrap style-group" aria-labelledby={`g-${s.id}`}>
+        <div class="group-head">
+          <h2 id={`g-${s.id}`}>{t.name}</h2>
+          <span class="muted">{price(s.id)} {cur}</span>
+          <a class="textlink" href={beltsUrl(lang, s.id)}>{ar ? `تفاصيل مجموعة ${t.name}` : `About the ${t.name} collection`} →</a>
+        </div>
+        <p class="muted group-intro">{t.headline}</p>
+        <div class="grid">
+          {productsOfStyle(s.id).map((p) => <ProductCard product={p} lang={lang} />)}
+        </div>
+      </section>
+    );
+  })}
+
+  <section class="wrap style-group">
+    <p class="muted">
+      {ar
+        ? "تحتاجين مقاسًا مختلفًا أو جلدًا طبيعيًا؟ نقبل الطلبات الخاصة، وتجدين طريقة التواصل في أسفل الصفحة."
+        : "Need a different size or natural leather? We take custom orders; you will find how to reach us in the footer."}
+    </p>
   </section>
 </Base>

@@ -1,75 +1,138 @@
 ---
+import { formatEgp } from "@platform/commerce";
 import { homeCopy } from "../home-copy.ts";
 import { site, langPath } from "../site.ts";
+import { beltsUrl, coverOf, getStyle, imageOf, styleText, styles, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = homeCopy[lang];
+const ar = lang === "ar";
+const cur = ar ? "جنيه" : "EGP";
 const wa = `https://wa.me/${site.whatsappInternational}`;
+const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في طلب مقاس خاص." : "Hello Vicuna, I would like to ask about a custom size.")}`;
 ---
 
 <section class="hero">
   <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow">{c.eyebrow}</span>
-      <h1>{c.h1a} <span>{c.h1b}</span></h1>
+    <div class="hero-text">
+      <p class="eyebrow">{c.eyebrow}</p>
+      <h1>{c.h1}</h1>
       <p class="lead">{c.lead}</p>
       <div class="hero-actions">
-        <a class="btn" href={langPath(lang, "/belts/")}>{c.cta}</a>
+        <a class="btn" href={beltsUrl(lang)}>{c.cta}</a>
         <a class="btn ghost" href={wa} rel="noopener noreferrer">{c.ctaWhatsapp}</a>
       </div>
     </div>
-    <div class="hero-photo">
-      <img src="/img/hero.jpg" alt={c.heroAlt} width="1600" height="1080" fetchpriority="high" />
+    <picture class="hero-photo">
+      <img
+        src="/img/hero-1200.webp"
+        srcset="/img/hero-800.webp 800w, /img/hero-1200.webp 1200w"
+        sizes="(min-width: 960px) 52vw, 100vw"
+        alt={c.heroAlt}
+        width="1200"
+        height="810"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </picture>
+  </div>
+</section>
+
+<section class="trust" aria-label={ar ? "ملخص الخدمة" : "Service summary"}>
+  <ul class="wrap trust-row">
+    {c.trust.map((t) => <li>{t}</li>)}
+  </ul>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">{c.stylesEyebrow}</p>
+    <h2 class="h2">{c.stylesTitle}</h2>
+    <p class="muted lede">{c.stylesLead}</p>
+    <div class="tiles">
+      {styles.map((s) => {
+        const cover = coverOf(s.id);
+        const t = styleText(lang, s.id);
+        return (
+          <a class="style-tile" href={beltsUrl(lang, s.id)}>
+            <img src={thumbOf(cover)} srcset={`${thumbOf(cover)} 480w, ${imageOf(cover)} 900w`} sizes="(min-width: 760px) 30vw, 50vw" alt="" width="480" height="480" loading="lazy" decoding="async" />
+            <span class="tile-name">{t.name}</span>
+            <span class="tile-price">{formatEgp(getStyle(s.id).price)} {cur}</span>
+          </a>
+        );
+      })}
     </div>
+    <p class="more"><a class="textlink" href={beltsUrl(lang)}>{c.stylesAll} →</a></p>
   </div>
 </section>
 
 <section class="section">
-  <div class="wrap perks">
-    {c.perks.map((p) => <div class="perk"><b>{p.t}</b><span>{p.d}</span></div>)}
+  <div class="wrap">
+    <p class="eyebrow">{c.whyEyebrow}</p>
+    <h2 class="h2">{c.whyTitle}</h2>
+    <div class="cols3">
+      {c.why.map((w, i) => (
+        <div class="col">
+          <span class="num" aria-hidden="true">0{i + 1}</span>
+          <h3>{w.t}</h3>
+          <p class="muted">{w.d}</p>
+        </div>
+      ))}
+    </div>
   </div>
 </section>
 
 <section class="section">
   <div class="wrap split">
     <div>
-      <span class="eyebrow">{c.handEyebrow}</span>
-      <h2>{c.handTitle}</h2>
-      <p class="muted">{c.handBody}</p>
+      <p class="eyebrow">{c.craftEyebrow}</p>
+      <h2 class="h2">{c.craftTitle}</h2>
+      <p class="muted lede">{c.craftBody}</p>
       <div class="founder">
-        <img src="/img/founder.jpg" alt="" width="160" height="160" loading="lazy" />
+        <img src="/img/founder.jpg" alt="" width="160" height="160" loading="lazy" decoding="async" />
         <div><b>{c.founderName}</b><br /><span class="muted">{c.founderRole}</span></div>
       </div>
     </div>
-    <img src="/img/founder-collage.jpg" alt={c.collageAlt} width="2400" height="1245" loading="lazy" />
+    <img
+      class="split-img"
+      src="/img/founder-collage-800.webp"
+      srcset="/img/founder-collage-800.webp 800w, /img/founder-collage-1400.webp 1400w"
+      sizes="(min-width: 960px) 46vw, 100vw"
+      alt={c.collageAlt}
+      width="800"
+      height="415"
+      loading="lazy"
+      decoding="async"
+    />
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
-    <div class="tease">
-      <span class="eyebrow">{c.bespokeEyebrow}</span>
-      <h2 style="margin:8px 0 10px">{c.bespokeTitle}</h2>
-      <p class="muted">{c.bespokeBody}</p>
-      <div class="hero-actions"><a class="btn" href={wa} rel="noopener noreferrer">{c.ctaWhatsapp}</a></div>
+    <p class="eyebrow">{c.promisesEyebrow}</p>
+    <h2 class="h2">{c.promisesTitle}</h2>
+    <dl class="promises">
+      {c.promises.map((p) => <div><dt>{p.t}</dt><dd class="muted">{p.d}</dd></div>)}
+    </dl>
+  </div>
+</section>
+
+<section class="section">
+  <div class="band">
+    <div class="wrap band-in">
+      <p class="eyebrow">{c.customEyebrow}</p>
+      <h2 class="h2">{c.customTitle}</h2>
+      <p class="lede">{c.customBody}</p>
+      <a class="btn" href={customWa} rel="noopener noreferrer">{c.customCta}</a>
     </div>
   </div>
 </section>
 
 <section class="section">
-  <div class="wrap block">
-    <h2>{c.linksTitle}</h2>
-    <div class="links">
-      {c.links.map((l) => <a href={langPath(lang, l.href)}>{l.t}<small>{l.d}</small></a>)}
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap block faq">
-    <h2>{c.faqTitle}</h2>
-    {c.faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+  <div class="wrap faq">
+    <h2 class="h2">{c.faqTitle}</h2>
+    {c.faq.map((f) => <details><summary>{f.q}</summary><p class="muted">{f.a}</p></details>)}
   </div>
 </section>

@@ -1,3 +1,4 @@
+import { SHIPPING, MULTI_ITEM_RATES_BPS, formatEgp } from "@platform/commerce";
 import { site } from "./site.ts";
 import type { Lang } from "./site.ts";
 
@@ -5,104 +6,139 @@ export interface HomeCopy {
   title: string;
   description: string;
   eyebrow: string;
-  h1a: string;
-  h1b: string;
+  h1: string;
   lead: string;
   cta: string;
   ctaWhatsapp: string;
   heroAlt: string;
-  perks: readonly { t: string; d: string }[];
-  handEyebrow: string;
-  handTitle: string;
-  handBody: string;
+  trust: readonly string[];
+  stylesEyebrow: string;
+  stylesTitle: string;
+  stylesLead: string;
+  stylesAll: string;
+  whyEyebrow: string;
+  whyTitle: string;
+  why: readonly { t: string; d: string }[];
+  craftEyebrow: string;
+  craftTitle: string;
+  craftBody: string;
   collageAlt: string;
   founderName: string;
   founderRole: string;
-  bespokeEyebrow: string;
-  bespokeTitle: string;
-  bespokeBody: string;
-  linksTitle: string;
-  links: readonly { t: string; d: string; href: string }[];
+  promisesEyebrow: string;
+  promisesTitle: string;
+  promises: readonly { t: string; d: string }[];
+  customEyebrow: string;
+  customTitle: string;
+  customBody: string;
+  customCta: string;
   faqTitle: string;
   faq: readonly { q: string; a: string }[];
 }
 
 const d = site.deliveryDays;
 const r = site.returnDays;
+const kg = site.maxWeightKg;
+const std = formatEgp(SHIPPING.standard);
+const free = formatEgp(SHIPPING.freeOver);
+const second = MULTI_ITEM_RATES_BPS[1] / 100;
+const third = MULTI_ITEM_RATES_BPS[2] / 100;
 
 export const homeCopy: Record<Lang, HomeCopy> = {
   ar: {
-    title: "فيكونا | أحزمة خصر نسائية متفصلة بإيد",
-    description: `فيكونا براند مصري لأحزمة الخصر النسائية: قص بالليزر وخياطة بإيد، توصيل لكل مصر خلال ${d} أيام، واسترجاع خلال ${r} يوم.`,
-    eyebrow: "براند مصري لأحزمة الخصر",
-    h1a: "حزام واحد",
-    h1b: "يغيّر اللوك كله",
-    lead: "في فيكونا بنفصّل أحزمة خصر نسائية بتحدد الوسط وتكمّل أي لبس، من الجلد الصناعي PU، بإيد ورشة مصرية وبمراجعة صاحب البراند بنفسه.",
-    cta: "شوفي الأحزمة",
-    ctaWhatsapp: "كلميني على واتساب",
-    heroAlt: "حزام خصر من فيكونا على لبس نسائي",
-    perks: [
-      { t: `توصيل خلال ${d} أيام`, d: "لكل محافظات مصر" },
-      { t: "الدفع عند الاستلام", d: "أو InstaPay" },
-      { t: `استرجاع ${r} يوم`, d: "حسب سياسة الاسترجاع" },
-      { t: `بيلبس لحد ${site.maxWeightKg} كيلو`, d: "ومقاسات خاصة بالطلب" },
+    title: "فيكونا | أحزمة خصر نسائية بقصّ ليزر وخياطة يدوية",
+    description: `فيكونا علامة مصرية لأحزمة الخصر النسائية من جلد PU، بقصّ ليزر وخياطة يدوية. توصيل إلى جميع المحافظات خلال ${d} أيام واسترجاع خلال ${r} يومًا.`,
+    eyebrow: "فيكونا · أحزمة خصر نسائية",
+    h1: "أحزمة خصر نسائية، تُفصَّل بعناية وتُخاط باليد",
+    lead: "نقصّ كل حزام بالليزر ونخيطه يدويًا من جلد PU، ليمنح الفستان والبلوزة والجاكيت خصرًا محدّدًا وأنيقًا. نوصّل إلى جميع محافظات مصر.",
+    cta: "تسوّقي الأحزمة",
+    ctaWhatsapp: "تحدّثي إلينا على واتساب",
+    heroAlt: "ثلاثة أحزمة خصر من فيكونا على مجسّمات عرض: بني بعقدة، وأبيض بفيونكة، وأسود بكشكشة",
+    trust: [`توصيل خلال ${d} أيام`, `استرجاع خلال ${r} يومًا`, "الدفع عند الاستلام أو InstaPay", `مقاس يناسب حتى ${kg} كجم`],
+    stylesEyebrow: "المجموعات",
+    stylesTitle: "ستة تصاميم، لكل منها شخصيتها",
+    stylesLead: "من الدانتيل الناعم إلى نقشة الكروكو، اختاري التصميم أولًا ثم اللون.",
+    stylesAll: "عرض كل الأحزمة",
+    whyEyebrow: "لماذا فيكونا",
+    whyTitle: "تفاصيل صغيرة تصنع الفرق",
+    why: [
+      { t: "تحديد واضح للخصر", d: "أحزمة عريضة بشريط للربط تتشكّل على الجسم، فتناسب الفستان والبلوزة والجاكيت." },
+      { t: "خامة معلنة", d: "جلد PU، نذكره صراحة في كل منتج. والجلد الطبيعي متاح فقط ضمن الطلبات الخاصة." },
+      { t: "مقاس مدروس", d: `المقاس المعتاد بعرض 14 سم وطول 140 سم، ويناسب حتى ${kg} كجم. وإن احتجتِ مقاسًا آخر فنفصّله لكِ.` },
     ],
-    handEyebrow: "مصنوع بإيدينا",
-    handTitle: "كل حزام بيتقص بالليزر وبيتخيّط بإيد",
-    handBody: "القص بالليزر بيخلّي الحواف نضيفة ومظبوطة، وبعدها الخياطة والتشطيب بالإيد، وكل حزام بيتراجع قبل ما يتشحن.",
-    collageAlt: "خالد العربي بيفصّل ويظبط حزام فيونكة كحلي",
+    craftEyebrow: "الصنعة",
+    craftTitle: "من القصّ إلى التشطيب، بأيدينا",
+    craftBody: "نقصّ القطع بالليزر لتخرج الحواف نظيفة ومتساوية، ثم نخيط كل حزام ونُنهيه يدويًا. ويراجع مؤسس فيكونا كل حزام بنفسه قبل الشحن.",
+    collageAlt: "خالد العربي يفصّل ويضبط حزام فيونكة كحلي على مجسّم عرض",
     founderName: "خالد العربي",
-    founderRole: "مؤسس فيكونا، وبيراجع كل حزام بنفسه قبل الشحن",
-    bespokeEyebrow: "تفصيل خاص",
-    bespokeTitle: "عايزة مقاس أو خامة مخصوصة؟",
-    bespokeBody: "بنقبل طلبات التفصيل بمقاس خاص، وكمان حزام بجلد طبيعي حسب الطلب. كلمينا على واتساب وقوليلنا اللي في بالك.",
-    linksTitle: "ابدئي من هنا",
-    links: [
-      { t: "كل الأحزمة", d: "اتفرجي على المجموعة كلها", href: "/belts/" },
+    founderRole: "مؤسس فيكونا",
+    promisesEyebrow: "الالتزامات",
+    promisesTitle: "ما نلتزم به معك",
+    promises: [
+      { t: "التوصيل", d: `إلى جميع محافظات مصر خلال ${d} أيام. الشحن ${std} جنيهًا، ومجاني للطلبات التي تتجاوز ${free} جنيه.` },
+      { t: "الاسترجاع", d: `يمكنك استرجاع الحزام خلال ${r} يومًا، ويُردّ المبلغ خلال ${site.refundDays} أيام.` },
+      { t: "الدفع", d: "عند الاستلام أو عبر InstaPay. لا يُطلب منكِ أي دفع إلكتروني على الموقع." },
+      { t: "الخصم على أكثر من حزام", d: `خصم ${second}% على الحزام الثاني و${third}% على الثالث، يُحتسب تلقائيًا في السلة.` },
     ],
+    customEyebrow: "طلب خاص",
+    customTitle: "هل تحتاجين مقاسًا أو خامة مختلفة؟",
+    customBody: "نقبل طلبات المقاس الخاص، وكذلك الأحزمة من الجلد الطبيعي بحسب الطلب. راسلينا على واتساب وصِفي لنا ما تحتاجينه.",
+    customCta: "اطلبي مقاسًا خاصًا",
     faqTitle: "أسئلة شائعة",
     faq: [
-      { q: "التوصيل بياخد قد إيه؟", a: `التوصيل لكل محافظات مصر خلال ${d} أيام عمل تقريبًا من تأكيد الطلب.` },
-      { q: "إزاي أدفع؟", a: "الدفع عند الاستلام، أو InstaPay لو حبيتي." },
-      { q: "ينفع أرجّع الحزام؟", a: `أيوه، في استرجاع خلال ${r} يوم حسب سياسة الاسترجاع.` },
-      { q: "الحزام بيناسب أي مقاس؟", a: `بيلبس لحد ${site.maxWeightKg} كيلو، ولو محتاجة مقاس مختلف اطلبيه مخصوص وهنظبطه معاكي.` },
+      { q: "كم تستغرق مدة التوصيل؟", a: `يصلكِ الطلب إلى أي محافظة في مصر خلال ${d} أيام.` },
+      { q: "كيف أدفع؟", a: "الدفع عند الاستلام، أو بالتحويل عبر InstaPay." },
+      { q: "هل يمكنني استرجاع الحزام؟", a: `نعم، خلال ${r} يومًا من الاستلام، ويُردّ المبلغ خلال ${site.refundDays} أيام.` },
+      { q: "ما خامة الأحزمة؟", a: "جلد PU. أما الجلد الطبيعي فيتوفر فقط عند الطلب الخاص." },
+      { q: "ما المقاس المناسب لي؟", a: `المقاس المعتاد بعرض 14 سم وطول 140 سم، ويناسب حتى ${kg} كجم. للمقاسات الأخرى راسلينا على واتساب.` },
     ],
   },
   en: {
-    title: "Vicuna | Women's waist belts made by hand",
-    description: `Vicuna is an Egyptian brand of women's waist belts: laser-cut and hand-sewn, delivered across Egypt in ${d} days, with ${r}-day returns.`,
-    eyebrow: "An Egyptian waist-belt brand",
-    h1a: "One belt",
-    h1b: "changes the whole look",
-    lead: "Vicuna makes women's waist belts in PU leather that define the waist and finish any outfit, sewn in an Egyptian workshop and checked by the founder himself.",
+    title: "Vicuna | Women's waist belts, laser-cut and hand-sewn",
+    description: `Vicuna is an Egyptian brand of women's waist belts in PU leather, laser-cut and hand-sewn. Delivery to every governorate in ${d} days, returns within ${r} days.`,
+    eyebrow: "Vicuna · Women's waist belts",
+    h1: "Women's waist belts, cut with care and sewn by hand",
+    lead: "Every belt is laser-cut and hand-sewn in PU leather to give a dress, blouse or jacket a defined, elegant waist. We deliver to every governorate in Egypt.",
     cta: "Shop the belts",
     ctaWhatsapp: "Chat on WhatsApp",
-    heroAlt: "A Vicuna waist belt styled on a women's outfit",
-    perks: [
-      { t: `Delivery in ${d} days`, d: "To every governorate" },
-      { t: "Cash on delivery", d: "or InstaPay" },
-      { t: `${r}-day returns`, d: "Per our return policy" },
-      { t: `Fits up to ${site.maxWeightKg} kg`, d: "Custom sizes on request" },
+    heroAlt: "Three Vicuna waist belts on display mannequins: brown with a knot, white with a bow, black with ruffles",
+    trust: [`Delivery in ${d} days`, `${r}-day returns`, "Cash on delivery or InstaPay", `Fits up to ${kg} kg`],
+    stylesEyebrow: "Collections",
+    stylesTitle: "Six designs, each with its own character",
+    stylesLead: "From soft lace to croc texture: choose a design first, then a colour.",
+    stylesAll: "View all belts",
+    whyEyebrow: "Why Vicuna",
+    whyTitle: "Small details that make the difference",
+    why: [
+      { t: "A clearly defined waist", d: "Wide belts with a tie that mould to the body, for dresses, blouses and jackets." },
+      { t: "A declared material", d: "PU leather, stated on every product. Natural leather is only available as a custom order." },
+      { t: "A considered size", d: `The usual size is 14 cm wide and 140 cm long and fits up to ${kg} kg. If you need another size, we make it for you.` },
     ],
-    handEyebrow: "Made by hand",
-    handTitle: "Every belt is laser-cut, then sewn by hand",
-    handBody: "Laser cutting keeps the edges clean and exact. Sewing and finishing are done by hand, and every belt is checked before it ships.",
-    collageAlt: "Khaled Elaraby making and fitting a navy bow belt",
+    craftEyebrow: "The craft",
+    craftTitle: "From cutting to finishing, by our own hands",
+    craftBody: "We laser-cut each piece so the edges come out clean and even, then sew and finish every belt by hand. The founder checks each belt himself before it ships.",
+    collageAlt: "Khaled Elaraby making and fitting a navy bow belt on a display mannequin",
     founderName: "Khaled Elaraby",
-    founderRole: "Founder of Vicuna, checks every belt himself before shipping",
-    bespokeEyebrow: "Made to order",
-    bespokeTitle: "Need a special size or material?",
-    bespokeBody: "We take custom-size orders, and belts in natural leather on request. Message us on WhatsApp and tell us what you have in mind.",
-    linksTitle: "Start here",
-    links: [
-      { t: "All belts", d: "Browse the full collection", href: "/belts/" },
+    founderRole: "Founder of Vicuna",
+    promisesEyebrow: "Our commitments",
+    promisesTitle: "What we commit to",
+    promises: [
+      { t: "Delivery", d: `To every governorate in Egypt in ${d} days. Shipping is ${std} EGP, and free on orders over ${free} EGP.` },
+      { t: "Returns", d: `You can return a belt within ${r} days, and the amount is refunded within ${site.refundDays} days.` },
+      { t: "Payment", d: "Cash on delivery or InstaPay. You are never asked to pay online on this site." },
+      { t: "Discount on more than one belt", d: `${second}% off the second belt and ${third}% off the third, applied automatically in the cart.` },
     ],
+    customEyebrow: "Custom orders",
+    customTitle: "Need a different size or material?",
+    customBody: "We take custom-size orders, and belts in natural leather on request. Message us on WhatsApp and describe what you need.",
+    customCta: "Ask for a custom size",
     faqTitle: "Common questions",
     faq: [
-      { q: "How long does delivery take?", a: `Delivery to every governorate takes about ${d} working days from order confirmation.` },
-      { q: "How do I pay?", a: "Cash on delivery, or InstaPay if you prefer." },
-      { q: "Can I return a belt?", a: `Yes, returns are accepted within ${r} days under our return policy.` },
-      { q: "Will it fit me?", a: `It fits up to ${site.maxWeightKg} kg; for any other size, order a custom one and we will adjust it with you.` },
+      { q: "How long does delivery take?", a: `Your order reaches any governorate in Egypt in ${d} days.` },
+      { q: "How do I pay?", a: "Cash on delivery, or a transfer through InstaPay." },
+      { q: "Can I return a belt?", a: `Yes, within ${r} days of receiving it, and the amount is refunded within ${site.refundDays} days.` },
+      { q: "What are the belts made of?", a: "PU leather. Natural leather is only available as a custom order." },
+      { q: "Which size is right for me?", a: `The usual size is 14 cm wide and 140 cm long and fits up to ${kg} kg. For other sizes, message us on WhatsApp.` },
     ],
   },
 };

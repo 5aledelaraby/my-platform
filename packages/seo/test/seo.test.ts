@@ -6,6 +6,7 @@ import {
   productJsonLd,
   robotsDirective,
   serializeJsonLd,
+  websiteJsonLd,
 } from "../src/index.ts";
 
 describe("robotsDirective", () => {
@@ -68,5 +69,14 @@ describe("serializeJsonLd", () => {
     assert.equal(out.includes("</script>"), false);
     assert.equal(out.includes("<"), false);
     assert.deepEqual(JSON.parse(out), { name: "</script><script>alert(1)</script>" });
+  });
+});
+
+describe("websiteJsonLd", () => {
+  it("describes the site without a search action", () => {
+    const data = websiteJsonLd({ name: "Vicuna", url: "https://vicuna-eg.com", language: "ar" });
+    assert.equal(data["@type"], "WebSite");
+    assert.equal(data["inLanguage"], "ar");
+    assert.equal("potentialAction" in data, false);
   });
 });

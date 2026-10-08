@@ -2,10 +2,13 @@
 import Base from "../../layouts/Base.astro";
 import Home from "../../components/Home.astro";
 import { homeCopy } from "../../home-copy.ts";
+import { serializeJsonLd, websiteJsonLd } from "@platform/seo";
+import { site } from "../../site.ts";
 
 const c = homeCopy.en;
+const jsonLd = serializeJsonLd(websiteJsonLd({ name: site.nameEn, url: `${site.url}/en/`, language: "en" }));
 ---
 
-<Base title={c.title} description={c.description} lang="en" altPath="/">
+<Base title={c.title} description={c.description} lang="en" altPath="/" jsonLd={jsonLd}>
   <Home lang="en" />
 </Base>

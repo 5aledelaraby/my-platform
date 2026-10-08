@@ -48,12 +48,14 @@ const enUrl = lang === "en" ? canonical : alt;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
-    <link rel="preload" href="/fonts/cairo-arabic-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={lang === "ar" ? "/fonts/cairo-arabic-400-normal.woff2" : "/fonts/cairo-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={lang === "ar" ? "/fonts/el-messiri-arabic-700-normal.woff2" : "/fonts/el-messiri-latin-700-normal.woff2"} as="font" type="font/woff2" crossorigin />
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
   </head>
   <body>
+    <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
     <Header lang={lang} altHref={altPath} />
-    <main>
+    <main id="main">
       <slot />
     </main>
     <Footer lang={lang} />

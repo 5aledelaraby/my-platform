@@ -62,6 +62,7 @@ for (const file of pages) {
 
   for (const m of html.matchAll(/<img\b[^>]*>/g)) {
     if (!/\balt=/.test(m[0])) fail(name, "image without alt attribute");
+    if (!/\bwidth=/.test(m[0]) || !/\bheight=/.test(m[0])) fail(name, "image without width/height (layout shift)");
   }
 
   for (const m of html.matchAll(/<a\b[^>]*\shref="(\/[^"#?]*)"/g)) {

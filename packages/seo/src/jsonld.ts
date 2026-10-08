@@ -29,6 +29,24 @@ export function organizationJsonLd(input: OrganizationInput): JsonLd {
   };
 }
 
+export interface WebSiteInput {
+  name: string;
+  url: string;
+  /** BCP 47 language of the site, e.g. "ar". */
+  language: string;
+}
+
+/** WebSite data. No SearchAction: the site has no search page, and Google needs a real one. */
+export function websiteJsonLd(input: WebSiteInput): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: input.name,
+    url: input.url,
+    inLanguage: input.language,
+  };
+}
+
 export interface BreadcrumbItem {
   name: string;
   url: string;

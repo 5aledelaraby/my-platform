@@ -2,11 +2,11 @@
 import Base from "../layouts/Base.astro";
 import Home from "../components/Home.astro";
 import { homeCopy } from "../home-copy.ts";
-import { organizationJsonLd, serializeJsonLd } from "@platform/seo";
+import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../site.ts";
 
 const c = homeCopy.ar;
-const jsonLd = serializeJsonLd(
+const jsonLd = serializeJsonLd([
   organizationJsonLd({
     name: site.nameAr,
     url: site.url,
@@ -14,7 +14,8 @@ const jsonLd = serializeJsonLd(
     email: site.email,
     sameAs: site.social.map((s) => s.href),
   }),
-);
+  websiteJsonLd({ name: site.nameAr, url: site.url, language: "ar" }),
+]);
 ---
 
 <Base title={c.title} description={c.description} lang="ar" altPath="/en/" jsonLd={jsonLd}>

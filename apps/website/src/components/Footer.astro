@@ -1,5 +1,6 @@
 ---
-import { site, langPath } from "../site.ts";
+import { site } from "../site.ts";
+import { beltsUrl, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -11,19 +12,25 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
 <footer class="site-footer">
   <div class="wrap footer-grid">
     <div>
-      <h3>{ar ? "فيكونا" : "Vicuna"}</h3>
-      <p>{ar ? "أحزمة خصر نسائية متفصلة بإيد، وبتوصل لكل مصر." : "Women's waist belts made by hand, delivered across Egypt."}</p>
+      <h3>{ar ? site.nameAr : site.nameEn}</h3>
+      <p>{ar ? "أحزمة خصر نسائية بقصّ ليزر وخياطة يدوية، نوصّلها إلى جميع محافظات مصر." : "Women's waist belts, laser-cut and hand-sewn, delivered across Egypt."}</p>
+      <p class="legal">
+        {ar ? site.legalNameAr : site.legalNameEn}<br />
+        {ar ? "سجل تجاري" : "Commercial register"} {site.commercialRegister}<br />
+        {ar ? site.addressAr : site.addressEn}
+      </p>
     </div>
     <div>
-      <h3>{ar ? "تسوقي" : "Shop"}</h3>
+      <h3>{ar ? "الأحزمة" : "Belts"}</h3>
       <ul>
-        <li><a href={langPath(lang, "/belts/")}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+        <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+        {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
       </ul>
     </div>
     <div>
-      <h3>{ar ? "تواصل" : "Contact"}</h3>
+      <h3>{ar ? "تواصل معنا" : "Contact"}</h3>
       <ul>
-        <li><a href={wa}>WhatsApp {site.whatsappDisplay}</a></li>
+        <li><a href={wa} rel="noopener noreferrer">WhatsApp <bdi>{site.whatsappDisplay}</bdi></a></li>
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         {site.social.map((s) => <li><a href={s.href} rel="noopener noreferrer">{s.label}</a></li>)}
       </ul>

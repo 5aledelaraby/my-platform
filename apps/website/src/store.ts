@@ -82,5 +82,12 @@ export function productName(lang: Lang, p: CatalogProduct): string {
 
 export const price = (id: string): string => formatEgp(getStyle(id).price);
 export const priceOfProduct = (p: CatalogProduct): string => price(p.style);
-export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.jpg`;
+export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.webp`;
+export const thumbOf = (p: CatalogProduct): string => `/img/products/${p.id}-480.webp`;
+/** First product of a style, used as its cover image. */
+export const coverOf = (styleId: string): CatalogProduct => {
+  const first = products.find((p) => p.style === styleId);
+  if (!first) throw new Error(`Style ${styleId} has no products`);
+  return first;
+};
 export const beltsUrl = (lang: Lang, slug?: string): string => langPath(lang, slug ? `/belts/${slug}/` : "/belts/");

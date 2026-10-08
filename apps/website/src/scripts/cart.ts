@@ -2,7 +2,7 @@
 // Prices shown here are for display only. The server recalculates everything from the catalogue.
 import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile } from "@platform/commerce";
 import type { CartLine, ShippingMethod } from "@platform/commerce";
-import { getProduct, imageOf, productName } from "../store.ts";
+import { getProduct, productName, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Line { id: string; quantity: number }
@@ -111,7 +111,7 @@ function render(): void {
     const name = productName(lang, product);
     const row = el("div", "cart-line");
     const img = document.createElement("img");
-    img.src = imageOf(product);
+    img.src = thumbOf(product);
     img.alt = "";
     img.width = 64;
     img.height = 64;
