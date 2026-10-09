@@ -41,8 +41,8 @@ pnpm check:boundaries            # architecture rules
 
 ## Site structure (ADR 0009)
 
-- Three levels, as the owner asked: `/` is a short brand introduction with cards for the brand's sections; `/belts/` is the belts landing page (moving hero, styles, perks, craft, FAQ); `/belts/shop/` is the catalogue with every belt and the filters. `/` and `/belts/` never contain the product grid or cart-building UI.
-- The store lives under `/belts/` (`/belts/`, `/belts/shop/`, `/belts/<style>/`, `/belts/<product-id>/`). `shop` is a reserved slug there. Other areas get their own top-level section and are only linked from `/`.
+- Two levels, as the owner asked (2026-10-10): `/` is a short brand introduction with cards for the brand's sections; `/collections/vicuna-belts/` is one full belts page (moving hero, style shortcuts, perks, every belt with the colour filter, how to tie, craft, FAQ). `/` never contains the product grid or cart-building UI.
+- The store lives under `/collections/vicuna-belts/` (the page itself, `<style>/`, `<product-id>/`); the path is `BELTS_PATH` in `store.ts`. Articles live under `/journal/style-guides/` (`JOURNAL_PATH` in `site.ts`). No redirects from the old site (clean start). Other areas get their own top-level section and are only linked from `/`.
 - Ads, Merchant Center and product keywords point to `/belts/...`, never to `/`.
 
 ## Commerce rules

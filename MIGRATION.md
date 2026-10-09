@@ -24,10 +24,10 @@
 | القديم | الجديد |
 |---|---|
 | `/` (متجر كامل) | `/` تعريف فقط: Hero بنسخة البراند، Perks، MadeByHand، تيزر الخدمات (Bespoke)، تيزر OnBody، FAQ عام، روابط للمتجر |
-| `Shop`, `OfferStrip`, `ShopByStyle`, `TieSteps` من الرئيسية | `/belts/` |
-| `/<style>/` (صفحات الإعلانات) | `/belts/<style>/` |
-| `/p/<id>/` | `/belts/<id>/` (يتأكد من عدم تعارض الـ id مع slug أي ستايل) |
-| `/blog/<slug>/` | `/blog/<slug>/` |
+| `Shop`, `OfferStrip`, `ShopByStyle`, `TieSteps` من الرئيسية | `/collections/vicuna-belts/` |
+| `/<style>/` (صفحات الإعلانات) | `/collections/vicuna-belts/<style>/` |
+| `/p/<id>/` | `/collections/vicuna-belts/<id>/` (يتأكد من عدم تعارض الـ id مع slug أي ستايل) |
+| `/blog/<slug>/` | `/journal/style-guides/<slug>/` |
 | `/en/...` | `/en/...` بنفس الهيكل لو اتقرر الإبقاء على الإنجليزي |
 | سياسات (استرجاع، خصوصية، شروط) | نفس المسارات |
 

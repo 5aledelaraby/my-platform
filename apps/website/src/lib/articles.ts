@@ -1,6 +1,7 @@
 // Articles live in /content/articles/*.md (source of truth). Frontmatter is validated at build time.
 import { parseArticleFrontmatter } from "@platform/content";
 import type { ArticleFrontmatter } from "@platform/content";
+import { JOURNAL_PATH } from "../site.ts";
 
 /** An Astro component rendered from Markdown. */
 type MarkdownContent = (props: Record<string, never>) => unknown;
@@ -44,7 +45,7 @@ function load(): Article[] {
 
 export const articles: readonly Article[] = load();
 export const getArticle = (slug: string): Article | undefined => articles.find((a) => a.slug === slug);
-export const articleUrl = (slug: string): string => `/blog/${slug}/`;
+export const articleUrl = (slug: string): string => `${JOURNAL_PATH}${slug}/`;
 
 export function formatDate(iso: string): string {
   return new Intl.DateTimeFormat("ar-EG-u-nu-latn", { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));

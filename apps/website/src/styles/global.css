@@ -335,7 +335,7 @@ dialog.menu::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 
 .style-group { margin-top: clamp(40px, 6vw, 64px); }
 .group-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; }
-.group-head h2 { font-size: clamp(1.6rem, 4.6vw, 2.4rem); font-weight: 700; }
+.group-head h2, .group-head h3 { font-size: clamp(1.6rem, 4.6vw, 2.4rem); font-weight: 700; }
 .group-head h2 .icon { display: inline-block; color: var(--berry); vertical-align: .15em; }
 .group-intro { margin-top: 6px; font-size: 15px; }
 

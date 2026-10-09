@@ -1,9 +1,9 @@
 ---
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
-import { beltsUrl, shopUrl, styleText, styles } from "../store.ts";
+import { beltsUrl, styleText, styles } from "../store.ts";
 import Icon from "./ui/Icon.astro";
 import Logo from "./ui/Logo.astro";
-import { langPath } from "../site.ts";
+import { JOURNAL_PATH, langPath } from "../site.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang; altHref: string }
@@ -20,8 +20,7 @@ const home = langPath(lang, "/");
     <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo /></a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
       <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
-      <a class="nav-pill" href={shopUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a>
-      {ar && <a class="nav-pill" href="/blog/">المقالات</a>}
+      {ar && <a class="nav-pill" href={JOURNAL_PATH}>المقالات</a>}
       <a class="nav-pill" href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a>
     </nav>
     <div class="header-end">
@@ -44,8 +43,7 @@ const home = langPath(lang, "/");
     <ul class="menu-list">
       <li><a href={home}>{ar ? "الرئيسية" : "Home"}</a></li>
       <li><a href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a></li>
-      <li><a href={shopUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
-      {ar && <li><a href="/blog/">المقالات</a></li>}
+      {ar && <li><a href={JOURNAL_PATH}>المقالات</a></li>}
     </ul>
     <p class="menu-label">{ar ? "الموديلات" : "Styles"}</p>
     <ul class="menu-list sub">

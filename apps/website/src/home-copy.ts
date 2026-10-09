@@ -15,7 +15,6 @@ export interface HomeCopy {
   stylesEyebrow: string;
   stylesTitle: string;
   stylesLead: string;
-  stylesAll: string;
   whyEyebrow: string;
   whyTitle: string;
   why: readonly { t: string; d: string }[];
@@ -56,7 +55,6 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     stylesEyebrow: "المجموعات",
     stylesTitle: "ستة تصاميم، لكل منها شخصيتها",
     stylesLead: "من الدانتيل الناعم إلى نقشة الكروكو، اختاري التصميم أولًا ثم اللون.",
-    stylesAll: "عرض كل الأحزمة",
     whyEyebrow: "لماذا فيكونا",
     whyTitle: "تفاصيل صغيرة تصنع الفرق",
     why: [
@@ -104,7 +102,6 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     stylesEyebrow: "Collections",
     stylesTitle: "Six designs, each with its own character",
     stylesLead: "From soft lace to croc texture: choose a design first, then a colour.",
-    stylesAll: "View all belts",
     whyEyebrow: "Why Vicuna",
     whyTitle: "Small details that make the difference",
     why: [

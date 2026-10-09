@@ -1,11 +1,11 @@
 ---
-import { formatEgp } from "@platform/commerce";
 import Icon from "./ui/Icon.astro";
+import ProductCard from "./ProductCard.astro";
 import Perks from "./Perks.astro";
 import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
 import { site } from "../site.ts";
-import { beltsUrl, shopUrl, coverOf, getProduct, getStyle, imageOf, productsOfStyle, styleText, styles, thumbOf } from "../store.ts";
+import { beltsUrl, colorName, colors, getProduct, price, productsOfStyle, styleText, styles, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -16,6 +16,9 @@ const cur = ar ? "جنيه" : "EGP";
 const wa = `https://wa.me/${site.whatsappInternational}`;
 const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في طلب مقاس خاص." : "Hello Vicuna, I would like to ask about a custom size.")}`;
 // The headline in two lines; the second one in the brand red.
+const tie = ar
+  ? [["ضعي الحزام على الخصر", "الجزء العريض إلى الأمام"], ["لفّي الشريطين", "وأعيديهما إلى الأمام"], ["اربطي بطريقتك", "فيونكة أو عقدة"]]
+  : [["Place it on your waist", "wide part in front"], ["Wrap the straps", "and bring them forward"], ["Tie it your way", "a bow or a knot"]];
 const [h1a, h1b] = c.h1.split(ar ? "، " : ", ");
 // Belts floating around the hero photo: position, tilt and animation offset.
 const floaters = [
@@ -44,7 +47,7 @@ const floaters = [
       <h1>{h1a}{h1b && <><br /><span class="accent">{h1b}</span></>}</h1>
       <p class="lead">{c.lead}</p>
       <div class="hero-actions">
-        <a class="btn btn-berry btn-shine" href={shopUrl(lang)}>{c.cta} <Icon name="arrow" size={18} class="dir-icon" /></a>
+        <a class="btn btn-berry btn-shine" href="#all">{c.cta} <Icon name="arrow" size={18} class="dir-icon" /></a>
         <a class="btn btn-white" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.ctaWhatsapp}</a>
       </div>
     </div>
@@ -69,38 +72,52 @@ const floaters = [
   </div>
 </section>
 
-<Stories lang={lang} />
+<Stories lang={lang} current="all" />
 
 <div class="wrap stack-sm">
   <Perks lang={lang} />
 </div>
 
-<section class="section">
+<section class="section" id="all">
   <div class="wrap">
     <div class="section-head">
       <h2 class="h2">{c.stylesTitle} <Icon name="sparkle" size={20} class="twinkle" /></h2>
       <p class="muted">{c.stylesLead}</p>
     </div>
-    <div class="tiles">
-      {styles.map((s, i) => {
-        const cover = coverOf(s.id);
-        const t = styleText(lang, s.id);
-        const count = productsOfStyle(s.id).length;
-        return (
-          <a class="style-tile reveal" href={beltsUrl(lang, s.id)} style={`--i:${i % 3}`}>
-            <span class="tile-media">
-              <img src={thumbOf(cover)} srcset={`${thumbOf(cover)} 480w, ${imageOf(cover)} 900w`} sizes="(min-width: 960px) 30vw, 46vw" alt="" width="480" height="480" loading="lazy" decoding="async" />
-              <span class="tag">{count} {ar ? "لون" : count === 1 ? "colour" : "colours"}</span>
-            </span>
-            <span class="tile-foot">
-              <span class="tile-name">{t.name}</span>
-              <span class="price-chip">{formatEgp(getStyle(s.id).price)} {cur}</span>
-            </span>
-          </a>
-        );
-      })}
+    <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
+      <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
+      <div class="swatch-row">
+        {colors.map((cl) => (
+          <button type="button" class="dot" data-color={cl.id} aria-pressed="false" title={colorName(lang, cl.id)} aria-label={colorName(lang, cl.id)} style={`--c:${cl.hex}`}></button>
+        ))}
+      </div>
+      <button type="button" class="pill" data-color="all">{ar ? "عرض الكل" : "Show all"}</button>
+      <span id="filter-status" class="muted" aria-live="polite"></span>
     </div>
-    <p class="more"><a class="btn btn-white" href={shopUrl(lang)}>{c.stylesAll} <Icon name="arrow" size={18} class="dir-icon" /></a></p>
+  </div>
+  {styles.map((s) => {
+    const t = styleText(lang, s.id);
+    const list = productsOfStyle(s.id);
+    return (
+      <div class="wrap style-group" data-group>
+        <div class="group-head">
+          <h3 id={`g-${s.id}`}>{t.name}</h3>
+          <span class="count-chip">{list.length} {ar ? "لون" : "colours"} · {price(s.id)} {cur}</span>
+        </div>
+        <p class="muted group-intro">{t.headline} · <a class="textlink" href={beltsUrl(lang, s.id)}>{ar ? `كل تفاصيل ${t.name}` : `About ${t.name}`}</a></p>
+        <div class="grid">
+          {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
+        </div>
+      </div>
+    );
+  })}
+  <div class="wrap style-group" id="tie">
+    <div class="tie-card reveal">
+      <h2>{ar ? "طريقة الربط" : "How to tie"}</h2>
+      <ol class="tie-steps">
+        {tie.map(([t, d], i) => <li><span class="tie-num" aria-hidden="true">{i + 1}</span><span><b>{t}</b> <span class="muted">{d}</span></span></li>)}
+      </ol>
+    </div>
   </div>
 </section>
 
@@ -195,3 +212,30 @@ const floaters = [
     {c.faq.map((f, i) => <details class="reveal" style={`--i:${i % 3}`}><summary>{f.q}</summary><p class="muted">{f.a}</p></details>)}
   </div>
 </section>
+
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-filter]");
+  if (bar) {
+    bar.hidden = false;
+    const cards = [...document.querySelectorAll<HTMLElement>(".card[data-color]")];
+    const groups = [...document.querySelectorAll<HTMLElement>("[data-group]")];
+    const status = document.getElementById("filter-status");
+    const unit = bar.dataset["unit"] ?? "";
+    let active: string | null = null;
+    bar.addEventListener("click", (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-color]");
+      if (!button) return;
+      const picked = button.dataset["color"] ?? "all";
+      active = picked === "all" || picked === active ? null : picked;
+      bar.querySelectorAll<HTMLButtonElement>(".dot").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["color"] === active)));
+      let shown = 0;
+      for (const card of cards) {
+        const show = active === null || card.dataset["color"] === active;
+        card.hidden = !show;
+        if (show) shown += 1;
+      }
+      for (const group of groups) group.hidden = [...group.querySelectorAll<HTMLElement>(".card")].every((c) => c.hidden);
+      if (status) status.textContent = active === null ? "" : `${shown} ${unit}`;
+    });
+  }
+</script>

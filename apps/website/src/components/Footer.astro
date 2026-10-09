@@ -1,8 +1,8 @@
 ---
 import Logo from "./ui/Logo.astro";
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
-import { langPath, site } from "../site.ts";
-import { beltsUrl, shopUrl, styleText, styles } from "../store.ts";
+import { JOURNAL_PATH, langPath, site } from "../site.ts";
+import { beltsUrl, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -27,10 +27,9 @@ const socialIcon: Record<string, string> = {
     <div>
       <h3 class="footer-h">{ar ? "الأحزمة" : "Belts"}</h3>
       <ul>
-        <li><a href={beltsUrl(lang)}>{ar ? "عالم الأحزمة" : "The belts"}</a></li>
-        <li><a href={shopUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+        <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
         {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
-        {ar && <li><a href="/blog/">المقالات</a></li>}
+        {ar && <li><a href={JOURNAL_PATH}>المقالات</a></li>}
       </ul>
     </div>
     <div>

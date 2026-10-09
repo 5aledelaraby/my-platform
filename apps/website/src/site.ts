@@ -46,3 +46,6 @@ export function langPath(lang: Lang, path: string): string {
   const clean = path.startsWith("/") ? path : `/${path}`;
   return lang === "ar" ? clean : `/en${clean}`;
 }
+
+/** The articles index (Arabic only for now). */
+export const JOURNAL_PATH = "/journal/style-guides/";

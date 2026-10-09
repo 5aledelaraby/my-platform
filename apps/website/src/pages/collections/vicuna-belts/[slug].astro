@@ -1,7 +1,7 @@
 ---
-import ProductPage from "../../components/ProductPage.astro";
-import StylePage from "../../components/StylePage.astro";
-import { getProduct, products, styles } from "../../store.ts";
+import ProductPage from "../../../components/ProductPage.astro";
+import StylePage from "../../../components/StylePage.astro";
+import { getProduct, products, styles } from "../../../store.ts";
 
 export function getStaticPaths() {
   return [...styles.map((s) => ({ params: { slug: s.id } })), ...products.map((p) => ({ params: { slug: p.id } }))];

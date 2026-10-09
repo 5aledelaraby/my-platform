@@ -1,11 +1,11 @@
 ---
 import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
-import Base from "../../layouts/Base.astro";
-import Breadcrumbs from "../../components/Breadcrumbs.astro";
-import ProductCard from "../../components/ProductCard.astro";
-import { articles, articleUrl, formatDate, getArticle } from "../../lib/articles.ts";
-import { getProduct } from "../../store.ts";
-import { site } from "../../site.ts";
+import Base from "../../../layouts/Base.astro";
+import Breadcrumbs from "../../../components/Breadcrumbs.astro";
+import ProductCard from "../../../components/ProductCard.astro";
+import { articles, articleUrl, formatDate, getArticle } from "../../../lib/articles.ts";
+import { getProduct } from "../../../store.ts";
+import { JOURNAL_PATH, site } from "../../../site.ts";
 
 export function getStaticPaths() {
   return articles.map((a) => ({ params: { slug: a.slug } }));
@@ -16,7 +16,7 @@ const { Content } = article;
 const related = article.products.map((id) => getProduct(id)).filter((p) => p !== undefined).slice(0, 4);
 const more = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
 const url = `${site.url}${articleUrl(article.slug)}`;
-const crumbs = [{ name: "الرئيسية", href: "/" }, { name: "المقالات", href: "/blog/" }, { name: article.title }];
+const crumbs = [{ name: "الرئيسية", href: "/" }, { name: "المقالات", href: JOURNAL_PATH }, { name: article.title }];
 const jsonLd = serializeJsonLd([
   articleJsonLd({
     headline: article.title,
@@ -32,7 +32,7 @@ const jsonLd = serializeJsonLd([
   }),
   breadcrumbJsonLd([
     { name: "الرئيسية", url: `${site.url}/` },
-    { name: "المقالات", url: `${site.url}/blog/` },
+    { name: "المقالات", url: `${site.url}${JOURNAL_PATH}` },
     { name: article.title, url },
   ]),
 ]);
