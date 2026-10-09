@@ -12,6 +12,8 @@ export interface AdminDeps {
   repository: OrderRepository;
   /** null when Access is not configured yet: admin answers 503 and shows nothing. */
   verify: AdminVerifier | null;
+  /** Names (never values) of the Access settings that are missing, shown on the "not configured" page. */
+  missingSettings?: readonly string[];
   now: () => Date;
   randomBytes: (length: number) => Uint8Array;
   reportError?: (label: string) => void;
@@ -34,7 +36,14 @@ const PAGE_HEADERS = {
 const page = (body: string, type: string, status = 200) =>
   new Response(body, { status, headers: { ...PAGE_HEADERS, "Content-Type": `${type}; charset=utf-8` } });
 
-const NOT_CONFIGURED_HTML = `<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>الإدارة غير مفعلة</title><p>صفحة الإدارة غير مفعلة بعد: أضف إعدادات Cloudflare Access (ACCESS_TEAM_DOMAIN و ACCESS_AUD و ADMIN_EMAILS).</p></html>`;
+const ALL_SETTINGS = ["ACCESS_TEAM_DOMAIN", "ACCESS_AUD", "ADMIN_EMAILS"];
+
+function notConfiguredHtml(missing: readonly string[]): string {
+  // Only fixed setting names are printed, never values.
+  const names = missing.filter((m) => ALL_SETTINGS.includes(m));
+  const list = (names.length ? names : ALL_SETTINGS).join(" و ");
+  return `<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>الإدارة غير مفعلة</title><p>صفحة الإدارة غير مفعلة بعد. الناقص في إعدادات vicuna-api (Settings ثم Variables and Secrets): ${list}.</p></html>`;
+}
 
 function hex(bytes: Uint8Array): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
@@ -49,7 +58,9 @@ const productIds = new Set(products.map((p) => p.id));
 export function createAdminHandler(deps: AdminDeps): (request: Request, path: string) => Promise<Response> {
   return async (request, path) => {
     if (!deps.verify) {
-      return path === "/admin" ? page(NOT_CONFIGURED_HTML, "text/html", 503) : json(503, { error: "admin_not_configured" });
+      return path === "/admin"
+        ? page(notConfiguredHtml(deps.missingSettings ?? []), "text/html", 503)
+        : json(503, { error: "admin_not_configured" });
     }
     let email: string | null = null;
     try {

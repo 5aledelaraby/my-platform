@@ -40,10 +40,16 @@ export default {
     // eslint-disable-next-line no-console
     const reportError = (name: string) => console.error("order_error", name);
     const emails = (env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
-    const accessReady = Boolean(env.ACCESS_TEAM_DOMAIN?.trim() && env.ACCESS_AUD?.trim() && emails.length > 0);
+    const missingSettings = [
+      ...(env.ACCESS_TEAM_DOMAIN?.trim() ? [] : ["ACCESS_TEAM_DOMAIN"]),
+      ...(env.ACCESS_AUD?.trim() ? [] : ["ACCESS_AUD"]),
+      ...(emails.length > 0 ? [] : ["ADMIN_EMAILS"]),
+    ];
+    const accessReady = missingSettings.length === 0;
     const admin = createAdminHandler({
       repository,
       verify: accessReady ? accessVerifier({ teamDomain: env.ACCESS_TEAM_DOMAIN ?? "", audience: env.ACCESS_AUD ?? "", emails }) : null,
+      missingSettings,
       now,
       randomBytes,
       reportError,

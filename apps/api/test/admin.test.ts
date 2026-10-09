@@ -147,6 +147,19 @@ describe("admin access", () => {
     assert.equal((await handler(get("/api/orders"))).status, 503);
   });
 
+  it("names the missing settings (names only) on the not-configured page", async () => {
+    const admin = createAdminHandler({
+      repository: d1Repository(sqliteD1()),
+      verify: null,
+      missingSettings: ["ACCESS_AUD", "<script>"],
+      now: () => NOW,
+      randomBytes: (len) => new Uint8Array(len),
+    });
+    const html = await (await admin(get("/"), "/admin")).text();
+    assert.match(html, /ACCESS_AUD/);
+    assert.doesNotMatch(html, /ADMIN_EMAILS|ACCESS_TEAM_DOMAIN|<script>/);
+  });
+
   it("refuses everything without a verified owner", async () => {
     const { handler } = adminApp(() => Promise.resolve(null));
     for (const req of [get("/"), get("/app.js"), get("/api/orders"), get("/api/stock"), send("PUT", "/api/stock/bow-gold", { quantity: 1, expected: null })]) {
