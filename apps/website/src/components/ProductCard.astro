@@ -1,6 +1,6 @@
 ---
 import type { CatalogProduct } from "@platform/commerce";
-import { beltsUrl, imageOf, priceOfProduct, productName, productsOfStyle, styleText, thumbOf } from "../store.ts";
+import { beltsUrl, imageOf, lookOf, priceOfProduct, productName, productsOfStyle, styleText, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { product: CatalogProduct; lang: Lang; index?: number }
@@ -10,12 +10,14 @@ const name = productName(lang, product);
 const href = beltsUrl(lang, product.id);
 const siblings = productsOfStyle(product.style);
 const shown = siblings.slice(0, 3);
+const look = lookOf(product);
 ---
 
 <article class="card reveal" data-color={product.color} style={`--i:${index % 2}`}>
   <div class="card-media">
     <a href={href} aria-label={name}>
       <img src={thumbOf(product)} srcset={`${thumbOf(product)} 480w, ${imageOf(product)} 900w`} sizes="(min-width: 960px) 23vw, 46vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />
+      {look && <img class="card-look" src={look.thumb} alt="" width="480" height="600" loading="lazy" decoding="async" />}
     </a>
     <button type="button" class="quick-add" data-add={product.id} aria-label={ar ? `أضيفي ${name} للسلة` : `Add ${name} to cart`}>{ar ? "أضيفي للسلة" : "Add to cart"}</button>
     <span class="card-out" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية" : "Sold out"}</span>

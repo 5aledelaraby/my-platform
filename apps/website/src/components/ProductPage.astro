@@ -2,7 +2,7 @@
 import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { beltsUrl, coverOf, imageOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, lookOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
@@ -35,6 +35,7 @@ const description = ar
   ? `${name} من فيكونا بسعر ${price(product.style)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل واسترجاع خلال ${site.returnDays} يوم.`
   : `${name} by Vicuna at ${price(product.style)} EGP. Delivery across Egypt in ${site.deliveryDays} working days, ${site.returnDays}-day returns.`;
 const url = `${site.url}${beltsUrl(lang, product.id)}`;
+const look = lookOf(product);
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
   { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
@@ -69,9 +70,16 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
 <Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", product.id)} jsonLd={jsonLd} image={imageOf(product)}>
   <Breadcrumbs items={crumbs} />
   <div class="wrap product">
+    <div class="pdp-media">
     <figure class="pdp-photo" style={`--tint:${product.hex}`}>
       <img src={imageOf(product)} alt={name} width="900" height="900" fetchpriority="high" />
     </figure>
+    {look && (
+      <figure class="pdp-look">
+        <img src={look.full} srcset={`${look.thumb} 480w, ${look.full} 900w`} sizes="(min-width: 960px) 40vw, 100vw" alt={ar ? `${name} على الخصر` : `${name} worn at the waist`} width="900" height="1125" loading="lazy" decoding="async" />
+      </figure>
+    )}
+    </div>
     <div class="pdp-info">
       <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
       <h1>{name}</h1>

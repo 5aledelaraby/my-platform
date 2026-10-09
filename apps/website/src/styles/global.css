@@ -638,3 +638,11 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* on-body photo: shown over the product photo when a card is hovered, and under the photo on the product page */
+.card-look { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .5s var(--ease-soft); }
+@media (hover: hover) { .card:hover .card-look { opacity: 1; } }
+.pdp-look { margin: 10px 0 0; overflow: hidden; background: #f5f4f2; }
+.pdp-look img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.pdp-media { min-width: 0; }
+.pdp-photo { border-radius: 2px; box-shadow: 0 0 0 1px var(--line); background: #fff; }

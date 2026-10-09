@@ -98,6 +98,10 @@ export const price = (id: string): string => formatEgp(getStyle(id).price);
 export const priceOfProduct = (p: CatalogProduct): string => price(p.style);
 export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.webp`;
 export const thumbOf = (p: CatalogProduct): string => `/img/products/${p.id}-480.webp`;
+/** Products that also have an on-body photo (public/img/looks/<id>-480|900.webp, 4:5). */
+const LOOKS = new Set(["classic-royal-blue", "bow-burgundy", "bow-taupe", "classic-rose", "bow-gold", "classic-green", "sash-green", "croc-pink", "classic-pink-suede"]);
+export const lookOf = (p: CatalogProduct): { thumb: string; full: string } | null =>
+  LOOKS.has(p.id) ? { thumb: `/img/looks/${p.id}-480.webp`, full: `/img/looks/${p.id}-900.webp` } : null;
 /** First product of a style, used as its cover image. */
 export const coverOf = (styleId: string): CatalogProduct => {
   const first = products.find((p) => p.style === styleId);
