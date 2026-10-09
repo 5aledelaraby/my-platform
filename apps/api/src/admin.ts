@@ -3,7 +3,8 @@
 // so another site cannot make the owner's browser change anything (CSRF).
 import { canTransition, catalog, isOrderStatus, nextStatuses } from "@platform/commerce";
 import type { OrderStatus } from "@platform/commerce";
-import type { AdminVerifier } from "./access.ts";
+import { unverifiedAccessHints } from "./access.ts";
+import type { AccessHints, AdminVerifier } from "./access.ts";
 import { ADMIN_CSS, ADMIN_HTML, ADMIN_JS } from "./admin-ui.ts";
 import { errorLabel, isRecord, json, readBodyLimited } from "./http.ts";
 import type { OrderRepository } from "./repository.ts";
@@ -12,7 +13,7 @@ export interface AdminDeps {
   repository: OrderRepository;
   /** null when Access is not configured yet: admin answers 503 and shows nothing. */
   verify: AdminVerifier | null;
-  /** Names (never values) of the Access settings that are missing, shown on the "not configured" page. */
+  /** Names of the Access settings that are missing, shown on the "not configured" page. */
   missingSettings?: readonly string[];
   now: () => Date;
   randomBytes: (length: number) => Uint8Array;
@@ -36,13 +37,32 @@ const PAGE_HEADERS = {
 const page = (body: string, type: string, status = 200) =>
   new Response(body, { status, headers: { ...PAGE_HEADERS, "Content-Type": `${type}; charset=utf-8` } });
 
-const ALL_SETTINGS = ["ACCESS_TEAM_DOMAIN", "ACCESS_AUD", "ADMIN_EMAILS"];
+const ALL_SETTINGS = ["ACCESS_TEAM_DOMAIN", "ACCESS_AUD", "ADMIN_EMAILS"] as const;
+type Setting = (typeof ALL_SETTINGS)[number];
 
-function notConfiguredHtml(missing: readonly string[]): string {
-  // Only fixed setting names are printed, never values.
-  const names = missing.filter((m) => ALL_SETTINGS.includes(m));
-  const list = (names.length ? names : ALL_SETTINGS).join(" و ");
-  return `<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>الإدارة غير مفعلة</title><p>صفحة الإدارة غير مفعلة بعد. الناقص في إعدادات vicuna-api (Settings ثم Variables and Secrets): ${list}.</p></html>`;
+/** Where to find each value when the sign-in token does not show it. */
+const WHERE: Record<Setting, string> = {
+  ACCESS_TEAM_DOMAIN: "اسم الفريق، من Zero Trust ثم Settings.",
+  ACCESS_AUD: "من Zero Trust ثم Access controls ثم Applications ثم admin ثم Configure ثم Additional settings ثم Application Audience (AUD) Tag.",
+  ADMIN_EMAILS: "الإيميل اللي بتدخل بيه.",
+};
+
+const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+function notConfiguredHtml(missing: readonly string[], hints: AccessHints): string {
+  // Setting names come from the fixed list. Values come only from the visitor's own Access sign-in (see
+  // unverifiedAccessHints), are shown only for missing settings, and are escaped.
+  const names = ALL_SETTINGS.filter((s) => missing.includes(s));
+  const values: Record<Setting, string | undefined> = { ACCESS_TEAM_DOMAIN: hints.team, ACCESS_AUD: hints.aud, ADMIN_EMAILS: hints.email };
+  const rows = (names.length ? names : ALL_SETTINGS)
+    .map((name) => {
+      const value = values[name];
+      return value
+        ? `<p><b dir="ltr">${name}</b>: انسخ القيمة دي (من تسجيل دخولك دلوقتي):</p><textarea readonly rows="2" cols="34" dir="ltr">${escapeHtml(value)}</textarea>`
+        : `<p><b dir="ltr">${name}</b>: ${WHERE[name]}</p>`;
+    })
+    .join("");
+  return `<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>الإدارة غير مفعلة</title><p>صفحة الإدارة غير مفعلة بعد. ضيف الناقص في vicuna-api (Settings ثم Variables and Secrets)، كل واحد كـ Secret، وبعدين Add variable and deploy:</p>${rows}</html>`;
 }
 
 function hex(bytes: Uint8Array): string {
@@ -59,7 +79,7 @@ export function createAdminHandler(deps: AdminDeps): (request: Request, path: st
   return async (request, path) => {
     if (!deps.verify) {
       return path === "/admin"
-        ? page(notConfiguredHtml(deps.missingSettings ?? []), "text/html", 503)
+        ? page(notConfiguredHtml(deps.missingSettings ?? [], unverifiedAccessHints(request)), "text/html", 503)
         : json(503, { error: "admin_not_configured" });
     }
     let email: string | null = null;

@@ -68,6 +68,37 @@ function decodeJson<T>(part: string): T | null {
   }
 }
 
+/** Values read from the incoming Access token WITHOUT verifying it. Display-only. */
+export interface AccessHints {
+  team?: string;
+  aud?: string;
+  email?: string;
+}
+
+/**
+ * Reads the team, audience and email from the Access token without checking its signature. The only use is the
+ * "admin not configured" page: Access has already signed the owner in, so the token holds exactly the values the
+ * owner must paste into the dashboard. Never use the result to allow anything. Each value must match a strict
+ * format or it is dropped, and the page escapes it as well.
+ */
+export function unverifiedAccessHints(request: Request): AccessHints {
+  const parts = (request.headers.get("Cf-Access-Jwt-Assertion") ?? "").split(".");
+  if (parts.length !== 3) return {};
+  const payload = decodeJson<JwtPayload>(parts[1] ?? "");
+  if (!payload || typeof payload !== "object") return {};
+  const hints: AccessHints = {};
+  const iss = typeof payload.iss === "string" ? /^https:\/\/([a-z0-9-]{1,63})\.cloudflareaccess\.com$/.exec(payload.iss) : null;
+  if (iss?.[1]) hints.team = iss[1];
+  // A token for one self-hosted app carries one audience; with several we cannot tell which one to show.
+  const aud = Array.isArray(payload.aud) ? (payload.aud.length === 1 ? payload.aud[0] : undefined) : payload.aud;
+  if (typeof aud === "string" && /^[A-Za-z0-9_-]{16,128}$/.test(aud)) hints.aud = aud;
+  const email = payload.email;
+  if (typeof email === "string" && email.length <= 254 && /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/.test(email)) {
+    hints.email = email.toLowerCase();
+  }
+  return hints;
+}
+
 export function teamIssuer(teamDomain: string): string {
   const host = teamDomain.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
   return `https://${host.includes(".") ? host : `${host}.cloudflareaccess.com`}`;

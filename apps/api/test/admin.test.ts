@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { SHIPPING, buildOrder, catalog, lookupProduct, validateOrderRequest } from "@platform/commerce";
-import { ADMIN_HEADER, accessVerifier, createAdminHandler, createHandler, d1Repository, teamIssuer } from "../src/index.ts";
+import { ADMIN_HEADER, accessVerifier, createAdminHandler, createHandler, d1Repository, teamIssuer, unverifiedAccessHints } from "../src/index.ts";
 import type { AdminVerifier } from "../src/index.ts";
 import { sqliteD1 } from "./sqlite-d1.ts";
 
@@ -158,6 +158,44 @@ describe("admin access", () => {
     const html = await (await admin(get("/"), "/admin")).text();
     assert.match(html, /ACCESS_AUD/);
     assert.doesNotMatch(html, /ADMIN_EMAILS|ACCESS_TEAM_DOMAIN|<script>/);
+    assert.match(html, /Additional settings/);
+    assert.doesNotMatch(html, /<textarea/);
+  });
+
+  // The owner is already signed in through Access, so the (unverified) token shows the values to paste.
+  const unsigned = (claims: Record<string, unknown>) => `${enc({ alg: "RS256", kid: "x" })}.${enc(claims)}.sig`;
+  const REAL_AUD = "4714c1358e65fe4b408ad6d432a5f878f08194bdb4752441fd56faefa9b2b6f2";
+  const notConfigured = (missing: string[]) =>
+    createAdminHandler({ repository: d1Repository(sqliteD1()), verify: null, missingSettings: missing, now: () => NOW, randomBytes: (len) => new Uint8Array(len) });
+  const pageWith = async (missing: string[], jwt: string) =>
+    (await notConfigured(missing)(new Request("https://admin.vicuna-eg.com/", { headers: { "Cf-Access-Jwt-Assertion": jwt } }), "/admin")).text();
+
+  it("shows the values from the owner's own sign-in, for missing settings only", async () => {
+    const jwt = unsigned({ iss: "https://wild-river-9c99.cloudflareaccess.com", aud: [REAL_AUD], email: "Owner@Example.com" });
+    const all = await pageWith(["ACCESS_TEAM_DOMAIN", "ACCESS_AUD", "ADMIN_EMAILS"], jwt);
+    assert.match(all, />wild-river-9c99<\/textarea>/);
+    assert.match(all, new RegExp(`>${REAL_AUD}</textarea>`));
+    assert.match(all, />owner@example\.com<\/textarea>/);
+    const audOnly = await pageWith(["ACCESS_AUD"], jwt);
+    assert.match(audOnly, new RegExp(REAL_AUD));
+    assert.doesNotMatch(audOnly, /wild-river|owner@/);
+  });
+
+  it("drops token values that do not look right instead of echoing them", async () => {
+    const jwt = unsigned({ iss: "https://evil.example/", aud: ["<script>alert(1)</script>"], email: "a<b>@x.com" });
+    const html = await pageWith(["ACCESS_TEAM_DOMAIN", "ACCESS_AUD", "ADMIN_EMAILS"], jwt);
+    assert.doesNotMatch(html, /<textarea|<script>|evil|a<b>/);
+    assert.deepEqual(unverifiedAccessHints(new Request("https://a.example/", { headers: { "Cf-Access-Jwt-Assertion": unsigned({ aud: [REAL_AUD, REAL_AUD] }) } })), {});
+    assert.deepEqual(unverifiedAccessHints(new Request("https://a.example/", { headers: { "Cf-Access-Jwt-Assertion": "not-a-jwt" } })), {});
+    assert.deepEqual(unverifiedAccessHints(new Request("https://a.example/")), {});
+  });
+
+  it("never lets an unverified token into the admin once it is configured", async () => {
+    const verify = accessVerifier({ teamDomain: "wild-river-9c99", audience: REAL_AUD, emails: ["owner@example.com"], fetchImpl: (() => Promise.resolve(new Response(JSON.stringify({ keys: [] })))) as typeof fetch, now: () => NOW.getTime() });
+    const jwt = unsigned({ iss: "https://wild-river-9c99.cloudflareaccess.com", aud: [REAL_AUD], email: "owner@example.com", exp: Math.floor(NOW.getTime() / 1000) + 60 });
+    const admin = createAdminHandler({ repository: d1Repository(sqliteD1()), verify, now: () => NOW, randomBytes: (len) => new Uint8Array(len) });
+    const res = await admin(new Request("https://admin.vicuna-eg.com/", { headers: { "Cf-Access-Jwt-Assertion": jwt } }), "/admin");
+    assert.equal(res.status, 403);
   });
 
   it("refuses everything without a verified owner", async () => {

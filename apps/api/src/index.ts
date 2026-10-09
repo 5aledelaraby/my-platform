@@ -1,5 +1,5 @@
-export { accessVerifier, teamIssuer } from "./access.ts";
-export type { AccessConfig, AdminVerifier } from "./access.ts";
+export { accessVerifier, teamIssuer, unverifiedAccessHints } from "./access.ts";
+export type { AccessConfig, AccessHints, AdminVerifier } from "./access.ts";
 export { ADMIN_HEADER, createAdminHandler } from "./admin.ts";
 export type { AdminDeps } from "./admin.ts";
 export { MAX_BODY_BYTES, createHandler } from "./handler.ts";

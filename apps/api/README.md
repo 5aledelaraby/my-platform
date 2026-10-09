@@ -49,10 +49,10 @@ Cloudflare Worker بيستقبل الطلب من الموقع، ويتحقق م�
 الصفحة على `https://admin.vicuna-eg.com/` (دومين لوحده علشان أي سكربت في صفحات المتجر ما يقدرش يستخدم جلسة دخولك). الدومين بيتربط تلقائيًا من `wrangler.toml`. علشان تشتغل محتاج:
 
 1. في Cloudflare: **Zero Trust** ← **Access** ← **Applications** ← **Add an application** ← **Self-hosted**: الدومين `admin.vicuna-eg.com` (من غير مسار)، وسياسة **Allow** بإيميلك.
-2. من صفحة التطبيق خد **Application Audience (AUD) Tag**، واسم الفريق (team domain) من **Settings ← Custom Pages** أو من أول الإعداد.
-3. في `vicuna-api` ← **Settings ← Variables and Secrets** ضيف 3 **Secrets**: `ACCESS_TEAM_DOMAIN` و`ACCESS_AUD` و`ADMIN_EMAILS` (إيميلك، ولو أكتر من واحد افصل بفاصلة).
+2. افتح `https://admin.vicuna-eg.com/` وسجّل دخول. طول ما الإعدادات ناقصة، الصفحة بتقول أنهي إعداد ناقص، وبتعرض قيمته من تسجيل دخولك علشان تنسخها: اسم الفريق والـ AUD Tag وإيميلك. (الـ AUD Tag موجود كمان في **Zero Trust ← Access controls ← Applications ← admin ← Configure ← Additional settings**.)
+3. في `vicuna-api` ← **Settings ← Variables and Secrets** ضيف 3 **Secrets**: `ACCESS_TEAM_DOMAIN` و`ACCESS_AUD` و`ADMIN_EMAILS` (إيميلك، ولو أكتر من واحد افصل بفاصلة)، وبعدين **Add variable and deploy**.
 
-من غير القيم دي الصفحة بترد `503` ومش بتعرض أي حاجة. وأي طلب للصفحة من غير دخول صحيح (حتى من رابط workers.dev) بيترفض.
+من غير القيم دي الصفحة بترد `503` ومش بتعرض أي طلبات ولا مخزون. القيم اللي بتظهر في صفحة "غير مفعلة" جاية من تسجيل دخولك أنت بس، ومش بتفتح أي حاجة. وأي طلب للصفحة من غير دخول صحيح بيترفض.
 
 ## إشعار الطلبات على Telegram
 
