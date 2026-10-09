@@ -28,6 +28,8 @@ jobs:
   # Full pipeline (needs the committed pnpm-lock.yaml).
   full:
     runs-on: ubuntu-latest
+    env:
+      TURBO_TELEMETRY_DISABLED: 1
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -36,6 +38,13 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Turborepo's local cache, kept between runs: typecheck and build are skipped when their inputs did not change.
+      - uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
       - run: pnpm test
       - run: pnpm typecheck
       - run: pnpm lint

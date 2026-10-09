@@ -6,7 +6,15 @@
   ],
   "envMode": "loose",
   "tasks": {
+    "transit": {
+      "dependsOn": [
+        "^transit"
+      ]
+    },
     "typecheck": {
+      "dependsOn": [
+        "transit"
+      ],
       "outputs": []
     },
     "build": {

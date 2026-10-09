@@ -27,7 +27,7 @@ pnpm test                        # node:test, no extra deps
 pnpm check:boundaries            # architecture rules
 ```
 
-`pnpm typecheck` and `pnpm build` run through Turborepo (`turbo.json`): packages in parallel, results cached in `.turbo/`. The build cache key includes `DEPLOY_ENV` and the root `content/` folder; add any new input outside a package to `globalDependencies`.
+`pnpm typecheck` and `pnpm build` run through Turborepo (`turbo.json`): packages in parallel, results cached in `.turbo/` (CI keeps that cache between runs). The build cache key includes `DEPLOY_ENV` and the root `content/` folder; add any new input outside a package to `globalDependencies`. `typecheck` depends on the `transit` node so a change in a workspace package invalidates the typecheck of every package that imports it; keep that link for any new task without outputs that reads other packages' source. Tests and lint stay plain root commands on purpose: they take seconds and always run in full.
 
 ## Architecture rules (enforced by `tools/architecture/check-boundaries.mjs` in CI)
 
