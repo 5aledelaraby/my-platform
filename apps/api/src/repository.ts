@@ -1,7 +1,13 @@
 import { ORDER_STATUSES } from "@platform/commerce";
-import type { Order, OrderItem, OrderStatus, PaymentMethod, ShippingMethod } from "@platform/commerce";
+import type { Order, OrderItem, OrderStatus, PaymentMethod, PromoCode, ShippingMethod } from "@platform/commerce";
 
-export type InsertResult = "ok" | "conflict" | "out_of_stock";
+/** "promo_used_up": the order's promo code reached its use limit (another order took the last use). */
+export type InsertResult = "ok" | "conflict" | "out_of_stock" | "promo_used_up";
+/** A new promo code as the admin creates it. */
+export type NewPromo = Omit<PromoCode, "used" | "active">;
+export interface StoredPromo extends PromoCode {
+  createdAt: string;
+}
 export type StatusResult = "ok" | "stale" | "not_found";
 /** "stale": the stored quantity is no longer the one the owner saw (an order took units meanwhile). */
 export type StockResult = { ok: true } | { ok: false; current: number | null };
@@ -53,6 +59,13 @@ export interface OrderRepository {
    * Does not check whether the move is allowed: the caller does (commerce `canTransition`).
    */
   setStatus(id: string, from: OrderStatus, to: OrderStatus, version: number, now: string, changeId: string): Promise<StatusResult>;
+  /** Promo codes (ADR 0011). Codes are stored upper case. */
+  getPromo(code: string): Promise<PromoCode | null>;
+  listPromos(): Promise<StoredPromo[]>;
+  /** "exists": a code with this name was created before (codes are never reused, so old orders stay clear). */
+  createPromo(promo: NewPromo, now: string): Promise<"ok" | "exists">;
+  /** false when there is no such code. */
+  setPromoActive(code: string, active: boolean): Promise<boolean>;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -60,6 +73,7 @@ export interface OrderRepository {
 
 interface MemoryState {
   orders: Map<string, StoredOrder>;
+  promos: Map<string, StoredPromo>;
   inventory: Map<string, number>;
   /** order id -> product ids whose units were taken from stock. */
   taken: Map<string, Set<string>>;
@@ -68,6 +82,7 @@ interface MemoryState {
 export function memoryRepository(initialStock: Record<string, number> = {}): OrderRepository & MemoryState {
   const state: MemoryState = {
     orders: new Map(),
+    promos: new Map(),
     inventory: new Map(Object.entries(initialStock)),
     taken: new Map(),
   };
@@ -92,6 +107,9 @@ export function memoryRepository(initialStock: Record<string, number> = {}): Ord
         const onHand = state.inventory.get(item.productId);
         if (onHand !== undefined && onHand < item.quantity) return Promise.resolve("out_of_stock");
       }
+      const promo = order.promoCode ? state.promos.get(order.promoCode) : undefined;
+      if (promo && promo.maxUses !== null && promo.used >= promo.maxUses) return Promise.resolve("promo_used_up");
+      if (promo) promo.used += 1;
       const taken = new Set<string>();
       for (const item of order.items) {
         const onHand = state.inventory.get(item.productId);
@@ -147,6 +165,24 @@ export function memoryRepository(initialStock: Record<string, number> = {}): Ord
       state.orders.set(id, { ...o, status: to, version: o.version + 1, updatedAt: now });
       return Promise.resolve("ok");
     },
+    getPromo(code) {
+      const p = state.promos.get(code);
+      if (!p) return Promise.resolve(null);
+      const { createdAt: _createdAt, ...promo } = p;
+      return Promise.resolve({ ...promo });
+    },
+    listPromos: () => Promise.resolve([...state.promos.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((p) => ({ ...p }))),
+    createPromo(promo, now) {
+      if (state.promos.has(promo.code)) return Promise.resolve("exists");
+      state.promos.set(promo.code, { ...promo, used: 0, active: true, createdAt: now });
+      return Promise.resolve("ok");
+    },
+    setPromoActive(code, active) {
+      const p = state.promos.get(code);
+      if (!p) return Promise.resolve(false);
+      p.active = active;
+      return Promise.resolve(true);
+    },
   };
 }
 
@@ -172,8 +208,11 @@ export interface D1Like {
 
 const INSERT_ORDER = `INSERT INTO orders (
   id, created_at, status, customer_name, customer_phone, governorate, address, notes,
-  shipping_method, payment_method, item_count, subtotal, discount, net, shipping, total, version, updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`;
+  shipping_method, payment_method, item_count, subtotal, discount, net, shipping, total, version, updated_at, promo_code
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`;
+
+// One use of the order's promo code, in the same batch. Past the limit, CHECK promo_not_overused fails the order.
+const USE_PROMO = `UPDATE promo_codes SET used = used + 1 WHERE code = ?`;
 
 // stock_taken records whether the product was tracked at this moment, so a cancellation returns exactly that.
 const INSERT_ITEM = `INSERT INTO order_items (order_id, product_id, name, unit_price, quantity, line_total, stock_taken)
@@ -199,6 +238,8 @@ AND EXISTS (SELECT 1 FROM orders WHERE id = ? AND change_id = ? AND status = 'ca
 const ORDER_ID_COLLISION = /UNIQUE constraint failed: orders\.id\b/;
 /** The named CHECK on inventory.quantity. */
 const OUT_OF_STOCK = /CHECK constraint failed: stock_not_negative\b/;
+/** The named CHECK on promo_codes.used. */
+const PROMO_USED_UP = /CHECK constraint failed: promo_not_overused\b/;
 
 function errorText(error: unknown): string {
   if (!(error instanceof Error)) return "";
@@ -226,7 +267,30 @@ interface OrderRow {
   total: number;
   version: number;
   updated_at: string | null;
+  promo_code: string | null;
 }
+
+interface PromoRow {
+  code: string;
+  amount: number;
+  min_subtotal: number;
+  max_uses: number | null;
+  used: number;
+  expires_at: string | null;
+  active: number;
+  created_at: string;
+}
+
+const promoFromRow = (r: PromoRow): StoredPromo => ({
+  code: r.code,
+  amount: r.amount,
+  minSubtotal: r.min_subtotal,
+  maxUses: r.max_uses,
+  used: r.used,
+  expiresAt: r.expires_at,
+  active: r.active === 1,
+  createdAt: r.created_at,
+});
 
 interface ItemRow {
   product_id: string;
@@ -251,12 +315,13 @@ export function d1Repository(db: D1Like): OrderRepository {
             order.customer.notes ?? null,
             order.shippingMethod, order.paymentMethod,
             t.itemCount, t.subtotal, t.discount, t.net, t.shipping, t.total,
-            order.createdAt,
+            order.createdAt, order.promoCode ?? null,
           ),
         ...order.items.map((i) =>
           db.prepare(INSERT_ITEM).bind(order.id, i.productId, i.name, i.unitPrice, i.quantity, i.lineTotal, i.productId),
         ),
         ...order.items.map((i) => db.prepare(TAKE_STOCK).bind(i.quantity, order.createdAt, i.productId)),
+        ...(order.promoCode ? [db.prepare(USE_PROMO).bind(order.promoCode)] : []),
       ];
       try {
         await db.batch(statements);
@@ -267,6 +332,7 @@ export function d1Repository(db: D1Like): OrderRepository {
         const text = errorText(error);
         if (ORDER_ID_COLLISION.test(text)) return "conflict";
         if (OUT_OF_STOCK.test(text)) return "out_of_stock";
+        if (PROMO_USED_UP.test(text)) return "promo_used_up";
         throw error;
       }
     },
@@ -311,6 +377,8 @@ WHERE oi.stock_taken = 1 AND o.status IN ('new', 'confirmed') GROUP BY oi.produc
           db.prepare("SELECT version, updated_at, change_id FROM orders LIMIT 0"),
           db.prepare("SELECT stock_taken FROM order_items LIMIT 0"),
           db.prepare("SELECT product_id, quantity, updated_at FROM inventory LIMIT 0"),
+          db.prepare("SELECT promo_code FROM orders LIMIT 0"),
+          db.prepare("SELECT code, amount, min_subtotal, max_uses, used, expires_at, active, created_at FROM promo_codes LIMIT 0"),
         ]);
         return true;
       } catch {
@@ -366,6 +434,7 @@ shipping_method, payment_method, version FROM orders ${status ? "WHERE status = 
         items,
         shippingMethod: row.shipping_method as ShippingMethod,
         paymentMethod: row.payment_method as PaymentMethod,
+        ...(row.promo_code ? { promoCode: row.promo_code } : {}),
         totals: {
           itemCount: row.item_count,
           subtotal: row.subtotal,
@@ -386,6 +455,33 @@ shipping_method, payment_method, version FROM orders ${status ? "WHERE status = 
       if ((results[0]?.meta?.changes ?? 0) === 1) return "ok";
       const exists = await db.prepare("SELECT 1 AS found FROM orders WHERE id = ?").bind(id).first();
       return exists ? "stale" : "not_found";
+    },
+
+    async getPromo(code) {
+      const row = await db.prepare("SELECT * FROM promo_codes WHERE code = ?").bind(code).first<PromoRow>();
+      if (!row) return null;
+      const { createdAt: _createdAt, ...promo } = promoFromRow(row);
+      return promo;
+    },
+
+    async listPromos() {
+      const { results = [] } = await db.prepare("SELECT * FROM promo_codes ORDER BY created_at DESC LIMIT 200").all<PromoRow>();
+      return results.map(promoFromRow);
+    },
+
+    async createPromo(promo, now) {
+      const result = await db
+        .prepare(
+          "INSERT INTO promo_codes (code, amount, min_subtotal, max_uses, used, expires_at, active, created_at) VALUES (?, ?, ?, ?, 0, ?, 1, ?) ON CONFLICT (code) DO NOTHING",
+        )
+        .bind(promo.code, promo.amount, promo.minSubtotal, promo.maxUses, promo.expiresAt, now)
+        .run();
+      return (result.meta?.changes ?? 0) === 1 ? "ok" : "exists";
+    },
+
+    async setPromoActive(code, active) {
+      const result = await db.prepare("UPDATE promo_codes SET active = ? WHERE code = ?").bind(active ? 1 : 0, code).run();
+      return (result.meta?.changes ?? 0) === 1;
     },
   };
 }

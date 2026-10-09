@@ -4,6 +4,8 @@ export const site = {
   nameAr: "فيكونا",
   nameEn: "Vicuna",
   email: "info@vicuna-eg.com",
+  /** WhatsApp and phone hours (Cairo time), shown on the contact page. */
+  supportHours: { ar: "من 10 صباحًا حتى 10 مساءً بتوقيت القاهرة", en: "10 am to 10 pm, Cairo time" },
   /** Orders, returns and exchanges. */
   supportEmail: "support@vicuna-eg.com",
   whatsappDisplay: "01221988192",

@@ -14,7 +14,7 @@ const other: Lang = ar ? "en" : "ar";
 const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") }, { name: doc.title }];
 ---
 
-<Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang} altPath={policyPath(other, id)}>
+<Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang} altPath={policyPath(other, id)} theme="neutral">
   <Breadcrumbs items={crumbs} />
   <article class="wrap article policy">
     <header>

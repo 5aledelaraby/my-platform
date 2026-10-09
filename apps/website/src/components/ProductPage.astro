@@ -4,7 +4,6 @@ import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import { beltsUrl, coverOf, imageOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
 import type { CatalogProduct } from "@platform/commerce";
-import OfferStrip from "./OfferStrip.astro";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
 import { langPath, site } from "../site.ts";
@@ -94,8 +93,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
         <li><Icon name="return" size={26} /> {ar ? `استرجاع خلال ${site.returnDays} يومًا دون مصاريف شحن` : `${site.returnDays}-day returns, no shipping cost to you`}</li>
         <li><Icon name="cash" size={26} /> {ar ? "الدفع عند الاستلام أو InstaPay" : "Cash on delivery or InstaPay"}</li>
       </ul>
-      <OfferStrip lang={lang} />
-    </div>
+        </div>
   </div>
   <section class="wrap">
     <div class="spec-card reveal">

@@ -25,14 +25,6 @@ export interface CartTotals {
   total: Piasters;
 }
 
-/**
- * Multi-belt offer, in basis points (10000 = 100%).
- * In every group of three units, sorted from dearest to cheapest:
- * the 1st is full price, the 2nd is 25% off, the 3rd is 35% off, then it repeats.
- * Integer basis points avoid floating-point drift.
- */
-export const MULTI_ITEM_RATES_BPS = [0, 2500, 3500] as const;
-
 function expandUnits(lines: readonly CartLine[]): Piasters[] {
   const units: Piasters[] = [];
   for (const line of lines) {
@@ -45,26 +37,22 @@ function expandUnits(lines: readonly CartLine[]): Piasters[] {
   return units;
 }
 
-export function multiItemDiscount(lines: readonly CartLine[]): Piasters {
-  const units = expandUnits(lines).sort((a, b) => b - a);
-  let discount = 0;
-  units.forEach((price, index) => {
-    const rate = MULTI_ITEM_RATES_BPS[index % MULTI_ITEM_RATES_BPS.length] ?? 0;
-    discount += Math.round((price * rate) / 10000);
-  });
-  return discount;
-}
-
 export function shippingCost(net: Piasters, method: ShippingMethod, config: ShippingConfig): Piasters {
   if (method === "express") return config.express;
   return net >= config.freeOver ? 0 : config.standard;
 }
 
+/**
+ * Totals for a cart. `promoAmount` is a fixed discount from a promo code (see promo.ts); it never exceeds the
+ * subtotal and never touches shipping. Free standard shipping is judged on the amount after the discount.
+ */
 export function calculateTotals(
   lines: readonly CartLine[],
   method: ShippingMethod,
   config: ShippingConfig,
+  promoAmount: Piasters = 0,
 ): CartTotals {
+  assertPiasters(promoAmount, "promoAmount");
   // Validate every line first, so invalid quantities can never cancel out into an "empty" cart.
   const units = expandUnits(lines);
   const itemCount = units.length;
@@ -72,7 +60,7 @@ export function calculateTotals(
     return { itemCount: 0, subtotal: 0, discount: 0, net: 0, shipping: 0, total: 0 };
   }
   const subtotal = lines.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
-  const discount = multiItemDiscount(lines);
+  const discount = Math.min(promoAmount, subtotal);
   const net = subtotal - discount;
   const shipping = shippingCost(net, method, config);
   return { itemCount, subtotal, discount, net, shipping, total: net + shipping };

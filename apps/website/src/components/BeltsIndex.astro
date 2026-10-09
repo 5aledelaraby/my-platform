@@ -3,7 +3,6 @@ import { SHIPPING, formatEgp } from "@platform/commerce";
 import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import OfferStrip from "./OfferStrip.astro";
 import ProductCard from "./ProductCard.astro";
 import Stories from "./Stories.astro";
 import Icon from "./ui/Icon.astro";
@@ -59,8 +58,7 @@ const jsonLd = serializeJsonLd(
   <Stories lang={lang} current="all" />
 
   <div class="wrap stack-sm">
-    <OfferStrip lang={lang} />
-    <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
+      <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
       <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
       <div class="swatch-row">
         {colors.map((c) => (

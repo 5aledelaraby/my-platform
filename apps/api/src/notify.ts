@@ -36,7 +36,7 @@ export function formatOrderMessage(order: Order): string {
     ...order.items.map((i) => `- ${i.name} (${i.productId}) × ${i.quantity} = ${formatEgp(i.lineTotal)} ج`),
     "",
     `الأحزمة: ${formatEgp(t.subtotal)} ج`,
-    ...(t.discount > 0 ? [`الخصم: -${formatEgp(t.discount)} ج`] : []),
+    ...(t.discount > 0 ? [`الخصم${order.promoCode ? ` (كود ${order.promoCode})` : ""}: -${formatEgp(t.discount)} ج`] : []),
     `الشحن (${SHIPPING_AR[order.shippingMethod]}): ${t.shipping === 0 ? "مجاني" : `${formatEgp(t.shipping)} ج`}`,
     `الإجمالي: ${formatEgp(t.total)} ج`,
     `الدفع: ${PAYMENT_AR[order.paymentMethod]}`,

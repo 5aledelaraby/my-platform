@@ -1,5 +1,5 @@
 ---
-import { MULTI_ITEM_RATES_BPS, SHIPPING, formatEgp } from "@platform/commerce";
+import { SHIPPING, formatEgp } from "@platform/commerce";
 import { canonicalUrl, robotsDirective } from "@platform/seo";
 import { deployEnvironment } from "../deploy-env.ts";
 import Header from "../components/Header.astro";
@@ -21,9 +21,11 @@ interface Props {
   noindex?: boolean;
   /** Social preview image, site-relative. Defaults to the brand photo. */
   image?: string;
+  /** "belts": the red belts look. "neutral": calm colours for pages that are not about the belts (home, contact, policies). */
+  theme?: "belts" | "neutral";
 }
 
-const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/hero-1200.webp" } = Astro.props;
+const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/hero-1200.webp", theme = "belts" } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
@@ -36,15 +38,13 @@ const enUrl = lang === "en" ? canonical : alt;
 const switchHref = altPath ?? (lang === "ar" ? "/en/" : "/");
 // Facts for the red announcement bar (all from the shared settings).
 const ar = lang === "ar";
-const second = (MULTI_ITEM_RATES_BPS[1] ?? 0) / 100;
-const third = (MULTI_ITEM_RATES_BPS[2] ?? 0) / 100;
 const announce = ar
-  ? [`توصيل لكل مصر خلال ${store.deliveryDays} أيام عمل`, `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} جنيه`, `الحزام الثاني بخصم ${second}% والثالث بخصم ${third}%`, `استرجاع خلال ${store.returnDays} يومًا`, "الدفع عند الاستلام أو InstaPay"]
-  : [`Delivery across Egypt in ${store.deliveryDays} working days`, `Free shipping from EGP ${formatEgp(SHIPPING.freeOver)}`, `2nd belt ${second}% off, 3rd ${third}% off`, `${store.returnDays}-day returns`, "Cash on delivery or InstaPay"];
+  ? [`توصيل لكل مصر خلال ${store.deliveryDays} أيام عمل`, `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} جنيه`, `استرجاع خلال ${store.returnDays} يومًا`, "الدفع عند الاستلام أو InstaPay"]
+  : [`Delivery across Egypt in ${store.deliveryDays} working days`, `Free shipping from EGP ${formatEgp(SHIPPING.freeOver)}`, `${store.returnDays}-day returns`, "Cash on delivery or InstaPay"];
 ---
 
 <!doctype html>
-<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"} data-theme={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -62,7 +62,7 @@ const announce = ar
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content={theme === "neutral" ? "#f4f1ec" : "#ffffff"} />
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
     <link rel="preload" href={lang === "ar" ? "/fonts/cairo-arabic-400-normal.woff2" : "/fonts/cairo-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={lang === "ar" ? "/fonts/el-messiri-arabic-700-normal.woff2" : "/fonts/el-messiri-latin-700-normal.woff2"} as="font" type="font/woff2" crossorigin />

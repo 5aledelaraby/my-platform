@@ -1,7 +1,7 @@
 // Business-rule table for pricing, shipping and cart limits.
-// Expected values are worked out by hand from the published offer (legacy site terms: "in every 3 belts of
-// one order, the 2nd is 25% off and the 3rd 35% off; the discount always lands on the cheaper belts"),
-// shipping 80 EGP standard / 120 EGP express, standard free from 1500 EGP after discounts.
+// Expected values are worked out by hand from the owner's rules: belts are full price (the multi-belt offer was
+// withdrawn on 2026-10-09), a promo code takes a fixed amount off the belts, shipping is 80 EGP standard /
+// 120 EGP express, and standard is free from 1500 EGP after the discount.
 // They are NOT produced by running the implementation.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -24,15 +24,10 @@ const totalsOf = (lines: CartLine[], method: "standard" | "express" = "standard"
 describe("pricing table (EGP)", () => {
   const cases: Array<[string, CartLine[], { subtotal: number; discount: number; shipping: number; total: number }]> = [
     ["one unit", [line(200)], { subtotal: 200, discount: 0, shipping: 80, total: 280 }],
-    ["two equal units: 2nd is 25% off", [line(200, 2)], { subtotal: 400, discount: 50, shipping: 80, total: 430 }],
-    ["three equal units: 25% + 35%", [line(200, 3)], { subtotal: 600, discount: 120, shipping: 80, total: 560 }],
-    ["three different prices: discounts on the two cheaper", [line(120), line(300), line(200)], { subtotal: 620, discount: 50 + 42, shipping: 80, total: 608 }],
-    ["four units: 4th starts a new group at full price", [line(200, 4)], { subtotal: 800, discount: 120, shipping: 80, total: 760 }],
-    ["five units", [line(200, 5)], { subtotal: 1000, discount: 170, shipping: 80, total: 910 }],
-    ["six units: two full groups", [line(200, 6)], { subtotal: 1200, discount: 240, shipping: 80, total: 1040 }],
-    // sorted 300, 300, 120 | 120, 120, 120 -> 0 + 75 + 42 | 0 + 30 + 42
-    ["two groups with mixed prices", [line(300, 2), line(120, 4)], { subtotal: 1080, discount: 189, shipping: 80, total: 971 }],
-    ["same price split across three products", [line(200), line(200), line(200)], { subtotal: 600, discount: 120, shipping: 80, total: 560 }],
+    ["two equal units: no quantity discount", [line(200, 2)], { subtotal: 400, discount: 0, shipping: 80, total: 480 }],
+    ["three different prices", [line(120), line(300), line(200)], { subtotal: 620, discount: 0, shipping: 80, total: 700 }],
+    ["six units", [line(200, 6)], { subtotal: 1200, discount: 0, shipping: 80, total: 1280 }],
+    ["mixed prices reaching the free-shipping amount", [line(300, 4), line(120, 3)], { subtotal: 1560, discount: 0, shipping: 0, total: 1560 }],
   ];
   for (const [label, lines, want] of cases) {
     it(label, () => {
@@ -45,11 +40,16 @@ describe("pricing table (EGP)", () => {
     });
   }
 
-  it("rounds each discounted unit to the nearest piaster (half up)", () => {
-    // 123.45 EGP: 25% = 30.8625 -> 30.86, 35% = 43.2075 -> 43.21
-    assert.equal(totalsOf([{ unitPrice: 12345, quantity: 3 }]).discount, 3086 + 4321);
-    // 0.02 EGP: 25% = 0.5 piaster -> 1
-    assert.equal(totalsOf([{ unitPrice: 2, quantity: 2 }]).discount, 1);
+  it("a promo code takes its fixed amount off the belts, never more than the belts cost", () => {
+    const t = calculateTotals([line(300, 2)], "standard", SHIPPING, egp(50));
+    assert.equal(t.discount, egp(50));
+    assert.equal(t.net, egp(550));
+    assert.equal(t.total, egp(630));
+    const capped = calculateTotals([line(120)], "standard", SHIPPING, egp(500));
+    assert.equal(capped.discount, egp(120));
+    assert.equal(capped.total, egp(80), "shipping is still charged");
+    assert.throws(() => calculateTotals([line(120)], "standard", SHIPPING, -1), RangeError);
+    assert.throws(() => calculateTotals([line(120)], "standard", SHIPPING, 10.5), RangeError);
   });
 
   it("allows a zero price and rejects negative, fractional or non-numeric prices", () => {
@@ -77,9 +77,9 @@ describe("shipping table", () => {
     assert.equal(totalsOf([{ unitPrice: egp(1500) + 1, quantity: 1 }]).shipping, 0);
   });
 
-  it("uses the amount after discounts, not the subtotal", () => {
-    // 2 x 800 = 1600, discount 200, net 1400 -> standard is charged
-    const t = totalsOf([line(800, 2)]);
+  it("uses the amount after the promo discount, not the subtotal", () => {
+    // 2 x 800 = 1600, code 200 off, net 1400 -> standard is charged
+    const t = calculateTotals([line(800, 2)], "standard", SHIPPING, egp(200));
     assert.equal(t.subtotal, egp(1600));
     assert.equal(t.net, egp(1400));
     assert.equal(t.shipping, egp(80));
@@ -106,9 +106,10 @@ describe("server-side order totals", () => {
     assert.ok(r.ok);
     if (!r.ok) return;
     const order = buildOrder(r.value, lookupProduct, SHIPPING, { id: "V-1009-AAAAA", now: new Date("2026-10-09T00:00:00Z") });
-    // lace = 300 EGP: 900 - (75 + 105) = 720, + 80 shipping
+    // lace = 300 EGP: 3 x 300 = 900, no discount, + 80 shipping
     assert.equal(order.items[0]?.unitPrice, egp(300));
-    assert.equal(order.totals.total, egp(800));
+    assert.equal(order.totals.discount, 0);
+    assert.equal(order.totals.total, egp(980));
   });
 
   it("rejects unknown product ids and does not price them", () => {

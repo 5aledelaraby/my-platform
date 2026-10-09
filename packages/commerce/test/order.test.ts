@@ -163,29 +163,35 @@ describe("buildOrder", () => {
     assert.ok(r.ok);
     if (!r.ok) return;
     const order = buildOrder(r.value, lookupProduct, SHIPPING, { id: "V-1009-AAAAA", now: new Date("2026-10-09T10:00:00Z") });
-    // 300 (full) + 200 (25% = 50) + 200 (35% = 70)
+    // 2 x 200 + 300 = 700, no quantity discount
     assert.equal(order.totals.subtotal, egp(700));
-    assert.equal(order.totals.discount, egp(120));
-    assert.equal(order.totals.net, egp(580));
+    assert.equal(order.totals.discount, 0);
+    assert.equal(order.totals.net, egp(700));
     assert.equal(order.totals.shipping, egp(80));
-    assert.equal(order.totals.total, egp(660));
+    assert.equal(order.totals.total, egp(780));
+    assert.equal(order.promoCode, undefined);
     assert.equal(order.items[0]?.lineTotal, egp(400));
     assert.equal(order.createdAt, "2026-10-09T10:00:00.000Z");
     assert.equal(order.status, "new");
   });
 
   it("charges standard shipping below the threshold and express whenever chosen", () => {
-    // 6 x 300 = 1800, discount 360, net 1440 (< 1500) => standard shipping is charged
-    const six = { ...validBody(), items: [{ id: "lace-black", quantity: 6 }] };
-    const r1 = validateOrderRequest(six, lookupProduct);
+    // 4 x 300 = 1200 (< 1500) => standard shipping is charged
+    const four = { ...validBody(), items: [{ id: "lace-black", quantity: 4 }] };
+    const r1 = validateOrderRequest(four, lookupProduct);
     assert.ok(r1.ok);
     if (r1.ok) {
       const o = buildOrder(r1.value, lookupProduct, SHIPPING, { id: "x", now: new Date() });
-      assert.equal(o.totals.net, egp(1440));
+      assert.equal(o.totals.net, egp(1200));
       assert.equal(o.totals.shipping, SHIPPING.standard);
+      // with a 50 EGP code: still below the threshold, and the code is kept on the order
+      const coded = buildOrder(r1.value, lookupProduct, SHIPPING, { id: "x", now: new Date(), promo: { code: "WELCOME50", amount: egp(50) } });
+      assert.equal(coded.totals.discount, egp(50));
+      assert.equal(coded.totals.total, egp(1150 + 80));
+      assert.equal(coded.promoCode, "WELCOME50");
     }
-    // 8 x 300 = 2400, discount (0+75+105)*2 + 0+75 = 435, net 1965 (>= 1500) => standard is free, express is not
-    const eight = { ...validBody(), items: [{ id: "lace-black", quantity: 8 }] };
+    // 5 x 300 = 1500 (>= 1500) => standard is free, express is not
+    const eight = { ...validBody(), items: [{ id: "lace-black", quantity: 5 }] };
     const free = validateOrderRequest(eight, lookupProduct);
     const express = validateOrderRequest({ ...eight, shippingMethod: "express" }, lookupProduct);
     assert.ok(free.ok && express.ok);

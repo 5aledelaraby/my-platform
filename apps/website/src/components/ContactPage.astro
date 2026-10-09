@@ -1,0 +1,30 @@
+---
+import Base from "../layouts/Base.astro";
+import ContactCards from "./ContactCards.astro";
+import { policyPath } from "../policies/index.ts";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const title = ar ? "تواصلي مع فريقنا | فيكونا" : "Contact our team | Vicuna";
+const description = ar
+  ? `تواصلي مع فيكونا على واتساب أو بالهاتف ${site.supportHours.ar}، أو بالبريد الإلكتروني.`
+  : `Contact Vicuna on WhatsApp or by phone, ${site.supportHours.en}, or by email.`;
+---
+
+<Base title={title} description={description} lang={lang} altPath={langPath(ar ? "en" : "ar", "/contact/")} theme="neutral">
+  <section class="wrap contact-page">
+    <header class="contact-head">
+      <h1>{ar ? "تواصلي مع فريقنا" : "Contact our team"}</h1>
+      <p>{ar ? "عندكِ سؤال عن منتجاتنا أو عن طلبكِ؟ نحن هنا لمساعدتكِ. تحدّثي مع فريقنا وسنرد عليكِ في أقرب وقت." : "Have a question about our products or your order? We are here to help. Chat with our team and we will get back to you soon."}</p>
+    </header>
+    <ContactCards lang={lang} />
+    <div class="outline-box">
+      <h2>{ar ? "الشحن والاسترجاع" : "Shipping and returns"}</h2>
+      <p>{ar ? "كل ما تحتاجين معرفته عن التوصيل والإرجاع والاستبدال واسترداد المبلغ." : "Everything about delivery, returns, exchanges and refunds."}</p>
+      <a class="btn btn-outline" href={policyPath(lang, "returns")}>{ar ? "اقرئي السياسة" : "Read the policy"}</a>
+    </div>
+  </section>
+</Base>

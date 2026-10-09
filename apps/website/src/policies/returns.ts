@@ -47,7 +47,7 @@ export const returnsAr: PolicyDoc = {
 <ul>
 <li>من حقكِ إرجاع أي منتج أو استبداله خلال ${r} يومًا من يوم استلامه، دون ذكر السبب.</li>
 <li>نردّ لكِ ما دفعتِه مقابل المنتج، ونتحمل نحن مصاريف شحن الإرجاع.</li>
-<li>إذا أرجعتِ جزءًا من طلب عليه <a href="${policyPath("ar", "terms")}#offers">عرض الأحزمة</a>، يُعاد حساب الخصم على ما بقي معكِ، ونردّ لكِ الفرق. ولا نخصم مصاريف شحن إذا قلّت قيمة ما بقي معكِ عن حد الشحن المجاني.</li>
+<li>إذا أرجعتِ جزءًا من طلب استخدمتِ فيه <a href="${policyPath("ar", "terms")}#offers">كود خصم</a>، يُوزَّع الخصم على الأحزمة بنسبة أسعارها، ونردّ لكِ ما دفعتِه فعليًا مقابل ما أرجعتِه. ولا نخصم مصاريف شحن إذا قلّت قيمة ما بقي معكِ عن حد الشحن المجاني.</li>
 <li>يرجع المنتج بحالته عند الاستلام: غير مستعمل وبدون تلف.</li>
 <li>إذا أرجعتِ الطلب كله، نردّ لكِ أيضًا مصاريف الشحن التي دفعتِها.</li>
 <li>للاستبدال اختاري أي موديل آخر، ونستلم القديم ونرسل الجديد دون أي مصاريف شحن عليكِ. وإذا كان أغلى تدفعين الفرق، وإذا كان أرخص نردّ لكِ الفرق.</li>
@@ -118,7 +118,7 @@ export const returnsEn: PolicyDoc = {
 <ul>
 <li>You may return or exchange any item within ${r} days of receiving it, without giving a reason.</li>
 <li>We refund what you paid for the item, and we pay the return shipping.</li>
-<li>If you return part of an order that had the <a href="${policyPath("en", "terms")}#offers">multi-belt offer</a>, the discount is recalculated on what you keep and we refund the difference. We do not charge shipping if what you keep falls below the free-shipping amount.</li>
+<li>If you return part of an order that used a <a href="${policyPath("en", "terms")}#offers">promo code</a>, the discount is spread over the belts in proportion to their prices, and we refund what you actually paid for what you return. We do not charge shipping if what you keep falls below the free-shipping amount.</li>
 <li>The item must come back as you received it: unused and undamaged.</li>
 <li>If you return the whole order, we also refund the shipping fee you paid.</li>
 <li>To exchange, pick any other style: we collect the old one and send the new one with no shipping cost to you. If it costs more you pay the difference; if it costs less we refund the difference.</li>

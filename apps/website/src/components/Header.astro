@@ -3,14 +3,13 @@ import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
 import { beltsUrl, shopUrl, styleText, styles } from "../store.ts";
 import Icon from "./ui/Icon.astro";
 import Logo from "./ui/Logo.astro";
-import { langPath, site } from "../site.ts";
+import { langPath } from "../site.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang; altHref: string }
 const { lang, altHref } = Astro.props;
 const ar = lang === "ar";
 const home = langPath(lang, "/");
-const wa = `https://wa.me/${site.whatsappInternational}`;
 ---
 
 <header class="site-header">
@@ -23,7 +22,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
       <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
       <a class="nav-pill" href={shopUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a>
       {ar && <a class="nav-pill" href="/blog/">المقالات</a>}
-      <a class="nav-pill" href={policyPath(lang, "returns")}>{ar ? "الشحن والاسترجاع" : "Shipping & returns"}</a>
+      <a class="nav-pill" href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a>
     </nav>
     <div class="header-end">
       <a class="lang-switch" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"} aria-label={ar ? "English" : "العربية"}>{ar ? "EN" : "ع"}</a>
@@ -55,7 +54,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
     <p class="menu-label">{ar ? "المساعدة" : "Help"}</p>
     <ul class="menu-list sub">
       {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
-      <li><a href={wa} rel="noopener noreferrer">{ar ? "تواصلي معنا على واتساب" : "Chat with us on WhatsApp"}</a></li>
+      <li><a href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a></li>
     </ul>
     <a class="menu-lang" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"}>{ar ? "English" : "العربية"}</a>
   </nav>

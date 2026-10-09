@@ -288,6 +288,31 @@ describe("admin orders", () => {
   });
 });
 
+describe("admin promo codes", () => {
+  it("creates, lists and switches codes off; refuses bad input and duplicates", async () => {
+    const { handler } = adminApp();
+    const create = (body: unknown) => handler(send("POST", "/api/promos", body));
+    assert.equal((await create({ code: "eid50", amount: 5000, minSubtotal: 30000, maxUses: 100, expiresAt: "2026-10-20T00:00:00Z" })).status, 201);
+    assert.equal((await create({ code: "EID50", amount: 1000 })).status, 409, "codes are never reused");
+    const bad = await create({ code: "x", amount: -5 });
+    assert.equal(bad.status, 422);
+    assert.deepEqual(Object.keys(((await bad.json()) as { errors: Record<string, string> }).errors).sort(), ["amount", "code"]);
+    const list = (await (await handler(get("/api/promos"))).json()) as { promos: Array<{ code: string; amount: number; used: number; active: boolean }> };
+    assert.deepEqual(list.promos.map((p) => [p.code, p.amount, p.used, p.active]), [["EID50", 5000, 0, true]]);
+    assert.equal((await handler(send("PUT", "/api/promos/eid50", { active: false }))).status, 200);
+    assert.equal((await handler(send("PUT", "/api/promos/NOPE1", { active: false }))).status, 404);
+    assert.equal((await handler(send("PUT", "/api/promos/EID50", { active: "no" }))).status, 400);
+    const after = (await (await handler(get("/api/promos"))).json()) as { promos: Array<{ active: boolean }> };
+    assert.equal(after.promos[0]?.active, false);
+  });
+
+  it("needs the admin header like every other change", async () => {
+    const { handler } = adminApp();
+    const res = await handler(new Request(`${BASE}/api/promos`, { method: "POST", headers: { "Content-Type": "application/json", Origin: BASE }, body: JSON.stringify({ code: "ABC", amount: 100 }) }));
+    assert.equal(res.status, 403);
+  });
+});
+
 describe("admin stock", () => {
   it("lists every catalogue product with its stock (null = untracked)", async () => {
     const { handler, repo } = adminApp();

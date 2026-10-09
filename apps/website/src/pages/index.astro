@@ -4,8 +4,8 @@ import Home from "../components/Home.astro";
 import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../site.ts";
 
-const title = "فيكونا | أحزمة خصر نسائية مصنوعة في مصر";
-const description = "فيكونا علامة مصرية لأحزمة الخصر النسائية: تصاميم من جلد PU والدانتيل، وأحزمة جلد طبيعي تُفصّل على المقاس. توصيل لجميع المحافظات.";
+const title = "فيكونا | تصميمات بسيطة تُصنع بعناية";
+const description = "فيكونا علامة مصرية للتجارة العامة والتصميمات: نصمّم ونصنع بأيدينا. تعرّفي علينا وعلى أقسامنا، ومنها الأحزمة والتفصيل على المقاس.";
 const jsonLd = serializeJsonLd([
   organizationJsonLd({
     name: site.nameAr,
@@ -18,6 +18,6 @@ const jsonLd = serializeJsonLd([
 ]);
 ---
 
-<Base title={title} description={description} lang="ar" altPath="/en/" jsonLd={jsonLd}>
+<Base title={title} description={description} lang="ar" altPath="/en/" jsonLd={jsonLd} theme="neutral" image="/img/ai/still-life.webp">
   <Home lang="ar" />
 </Base>

@@ -1,5 +1,5 @@
-import { LIMITS, buildOrder, generateOrderId, publicStock, stockShortages, validateOrderRequest } from "@platform/commerce";
-import type { Order, PriceLookup, ShippingConfig } from "@platform/commerce";
+import { LIMITS, buildOrder, generateOrderId, normalizePromoCode, promoProblem, publicStock, stockShortages, validateOrderRequest } from "@platform/commerce";
+import type { Order, PriceLookup, PromoCode, PromoProblem, ShippingConfig } from "@platform/commerce";
 import { BASE_HEADERS, MAX_BODY_BYTES, errorLabel, isRecord, json, readBodyLimited } from "./http.ts";
 import type { Notifier } from "./notify.ts";
 import type { OrderRepository } from "./repository.ts";
@@ -34,6 +34,9 @@ const ID_ATTEMPTS = 5;
 /** Public stock is capped at what one order could use, so real quantities on hand are not disclosed. */
 const PUBLIC_STOCK_CAP = LIMITS.maxQuantityPerItem;
 
+/** The customer is never told that a code exists but was switched off: it is simply not valid. */
+const publicProblem = (p: PromoProblem): PromoProblem => (p === "promo_inactive" ? "invalid_promo" : p);
+
 /** What the customer gets back: no phone, no address. */
 function publicOrder(order: Order) {
   return {
@@ -44,6 +47,7 @@ function publicOrder(order: Order) {
     items: order.items,
     shippingMethod: order.shippingMethod,
     paymentMethod: order.paymentMethod,
+    ...(order.promoCode ? { promoCode: order.promoCode } : {}),
     totals: order.totals,
   };
 }
@@ -52,6 +56,7 @@ function publicOrder(order: Order) {
  * Routes (the optional "/api" prefix is stripped, so the Worker can sit on vicuna-eg.com/api/*):
  *   GET     /health
  *   GET     /stock    tracked products' availability (capped), for the store pages and the cart
+ *   GET     /promo?code=X  whether a promo code can be used, and its amount (the cart's preview)
  *   OPTIONS /orders   CORS preflight
  *   POST    /orders   create an order
  *   (admin)           owner-only, served only on `adminHost` behind Cloudflare Access, see admin.ts
@@ -98,6 +103,23 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
       }
     }
 
+    if (path === "/promo") {
+      if (request.method !== "GET") return json(405, { error: "method_not_allowed" }, { Allow: "GET" });
+      const headers = { ...cors, "Cache-Control": "no-store" };
+      const code = normalizePromoCode(url.searchParams.get("code"));
+      if (!code) return json(422, { error: "invalid_promo" }, headers);
+      try {
+        const found = await deps.repository.getPromo(code);
+        // The minimum order is checked by the cart with the returned value, and again by POST /orders.
+        const problem = promoProblem(found, Number.MAX_SAFE_INTEGER, deps.now());
+        if (problem || !found) return json(422, { error: publicProblem(problem ?? "invalid_promo") }, headers);
+        return json(200, { code: found.code, amount: found.amount, minSubtotal: found.minSubtotal }, headers);
+      } catch (error) {
+        deps.reportError?.(`promo_failed:${errorLabel(error)}`);
+        return json(500, { error: "server_error" }, headers);
+      }
+    }
+
     if (path !== "/orders") return json(404, { error: "not_found" });
 
     if (request.method === "OPTIONS") {
@@ -131,11 +153,23 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
     if (!result.ok) return json(422, { error: "validation_failed", errors: result.errors }, cors);
 
     try {
+      // Promo code: the API decides, whatever the cart showed.
+      let promo: { code: string; amount: number } | undefined;
+      if (result.value.promoCode) {
+        const found: PromoCode | null = await deps.repository.getPromo(result.value.promoCode);
+        const subtotal = buildOrder(result.value, deps.lookup, deps.shipping, { id: "check", now: deps.now() }).totals.subtotal;
+        const problem = promoProblem(found, subtotal, deps.now());
+        if (problem || !found) {
+          return json(422, { error: "validation_failed", errors: { promoCode: publicProblem(problem ?? "invalid_promo") } }, cors);
+        }
+        promo = { code: found.code, amount: found.amount };
+      }
       for (let attempt = 0; attempt < ID_ATTEMPTS; attempt++) {
         const now = deps.now();
         const order = buildOrder(result.value, deps.lookup, deps.shipping, {
           id: generateOrderId(now, deps.randomBytes(8)),
           now,
+          ...(promo ? { promo } : {}),
         });
         const stored = await deps.repository.insert(order);
         if (stored === "ok") {
@@ -144,6 +178,9 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
             if (deps.waitUntil) deps.waitUntil(sent);
           }
           return json(201, { order: publicOrder(order) }, cors);
+        }
+        if (stored === "promo_used_up") {
+          return json(422, { error: "validation_failed", errors: { promoCode: "promo_used_up" } }, cors);
         }
         if (stored === "out_of_stock") {
           // Nothing was stored. Tell the cart what is left so it can adjust.

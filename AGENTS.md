@@ -51,6 +51,7 @@ pnpm check:boundaries            # architecture rules
 - Discount and totals logic exists **only** in `@platform/commerce`. The cart and the order API both call it. Never trust a price sent by the client: the API recomputes everything from the catalogue.
 - WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. The order API (`apps/api`, ADR 0008) exists, with inventory and an owner-only admin on its own hostname `admin.vicuna-eg.com` (ADR 0010; never serve admin on the store's hostname). Online payment is NOT built; do not build it, or abstractions for it, until the owner asks. Never expose order reads without authentication (orders contain customers' personal data): every admin route goes through the Access JWT check in `apps/api/src/access.ts`.
 - Stock rules live in `@platform/commerce` (`inventory.ts`); the database enforces "never below zero". A new migration must be applied to D1 before the code that needs it is pushed.
+- Belts are sold at full price: the multi-belt offer was withdrawn (2026-10-09). The only discount is a promo code (ADR 0011): a fixed amount off the belts, one per order, created by the owner in the admin; rules in `@platform/commerce` (`promo.ts`), checked again by the API when the order is stored.
 - Orders keep a snapshot of names, unit prices and totals (piasters) as of creation time. The catalogue lives in `packages/commerce/data/catalog.json`; product ids are permanent.
 - Product `id` is permanent. A `slug` may change only together with a 301 redirect entry (ADR 0004).
 
@@ -73,7 +74,7 @@ pnpm check:boundaries            # architecture rules
 - Regular belts are **"جلد PU"**. Never write "جلد طبيعي" for them. Natural leather appears only for the bespoke/custom service.
 - No Fendi / FF-logo belts. No third-party photos without rights. No invented reviews, ratings, sales counts or testimonials.
 - Site language is Arabic (RTL) with Latin digits (0-9).
-- Palette: white `#FFFFFF`, berry `#C8102E`, near-black `#161616`.
+- Palette: white `#FFFFFF`, berry `#C8102E`, near-black `#161616`. **Red is for the belts only**: pages that are not about the belts (home, contact, policies, 404) use `theme="neutral"` on `Base` (sand, white and near-black, no red).
 
 ## Security rules
 

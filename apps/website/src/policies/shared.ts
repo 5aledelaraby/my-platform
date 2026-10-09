@@ -4,7 +4,7 @@
 // Every number (fees, days, percentages) comes from site.ts or @platform/commerce, so a change there updates the
 // pages too. Any new way the site handles personal data (analytics, ad pixels, a new service that receives order
 // data) must update privacy.ts in the same change.
-import { MULTI_ITEM_RATES_BPS, SHIPPING, formatEgp } from "@platform/commerce";
+import { SHIPPING, formatEgp } from "@platform/commerce";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -27,9 +27,6 @@ export const fees = {
   express: formatEgp(SHIPPING.express),
   freeOver: formatEgp(SHIPPING.freeOver),
 };
-
-/** Multi-belt offer as whole percentages, e.g. [25, 35] for the 2nd and 3rd belt. */
-export const offerPercents = MULTI_ITEM_RATES_BPS.slice(1).map((bps) => bps / 100);
 
 export const waUrl = (text?: string) =>
   `https://wa.me/${site.whatsappInternational}${text ? `?text=${encodeURIComponent(text)}` : ""}`;

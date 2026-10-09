@@ -7,4 +7,4 @@ export type { HandlerDeps } from "./handler.ts";
 export { formatOrderMessage, formatStatusMessage, telegramNotifier, telegramSender } from "./notify.ts";
 export type { MessageSender, Notifier, StatusNotifier } from "./notify.ts";
 export { d1Repository, memoryRepository } from "./repository.ts";
-export type { D1Like, D1Result, D1Statement, InsertResult, OrderRepository, OrderSummary, StatusResult, StoredOrder } from "./repository.ts";
+export type { D1Like, D1Result, D1Statement, InsertResult, NewPromo, OrderRepository, OrderSummary, StatusResult, StoredOrder, StoredPromo } from "./repository.ts";

@@ -1,7 +1,7 @@
 // Owner-only admin: orders (view, change status) and stock. Everything here requires a verified owner
 // (Cloudflare Access JWT, see access.ts). Mutations also require a custom header and a same-origin request,
 // so another site cannot make the owner's browser change anything (CSRF).
-import { canTransition, catalog, isOrderStatus, nextStatuses } from "@platform/commerce";
+import { canTransition, catalog, isOrderStatus, nextStatuses, normalizePromoCode, validateNewPromo } from "@platform/commerce";
 import type { OrderStatus } from "@platform/commerce";
 import { unverifiedAccessHints } from "./access.ts";
 import type { AccessHints, AdminVerifier } from "./access.ts";
@@ -189,6 +189,29 @@ export function createAdminHandler(deps: AdminDeps): (request: Request, path: st
         const result = await deps.repository.setStock(id, quantity as number | null, expected as number | null, deps.now().toISOString());
         if (!result.ok) return json(409, { error: "stale", current: result.current });
         return json(200, { id, quantity });
+      }
+
+      // GET /promos: every code with its use count. POST /promos {code, amount, minSubtotal?, maxUses?, expiresAt?}
+      // (amounts in piasters). PUT /promos/:code {active}: switch a code off or on. Codes are never deleted.
+      if (route === "/promos" && method === "GET") {
+        return json(200, { promos: await deps.repository.listPromos() });
+      }
+      if (route === "/promos" && method === "POST") {
+        const checked = validateNewPromo(
+          { code: body["code"], amount: body["amount"], minSubtotal: body["minSubtotal"], maxUses: body["maxUses"], expiresAt: body["expiresAt"] },
+          deps.now(),
+        );
+        if (!checked.ok) return json(422, { error: "validation_failed", errors: checked.errors });
+        const created = await deps.repository.createPromo(checked.value, deps.now().toISOString());
+        if (created === "exists") return json(409, { error: "promo_exists" });
+        return json(201, { promo: checked.value });
+      }
+      const promoMatch = /^\/promos\/([A-Za-z0-9]{3,20})$/.exec(route);
+      if (promoMatch && method === "PUT") {
+        const code = normalizePromoCode(promoMatch[1]);
+        const active = body["active"];
+        if (!code || typeof active !== "boolean") return json(400, { error: "invalid_request" });
+        return (await deps.repository.setPromoActive(code, active)) ? json(200, { code, active }) : json(404, { error: "not_found" });
       }
 
       return json(404, { error: "not_found" });

@@ -51,6 +51,11 @@ describe("formatOrderMessage", () => {
     assert.ok(text.includes("ملاحظات: الدور *الثالث* <b>"));
   });
 
+  it("names the promo code next to the discount", () => {
+    const text = formatOrderMessage({ ...order, promoCode: "WELCOME50" });
+    assert.ok(text.includes("الخصم (كود WELCOME50): -120 ج"));
+  });
+
   it("stays under Telegram's message limit", () => {
     const long = { ...order, customer: { ...order.customer, address: "ع".repeat(5000) } };
     assert.ok(formatOrderMessage(long).length <= 4000);

@@ -1,6 +1,6 @@
 // Global cart: state in localStorage, drawer UI, checkout via POST /api/orders.
 // Prices shown here are for display only. The server recalculates everything from the catalogue.
-import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile, remainingQuantity } from "@platform/commerce";
+import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile, normalizePromoCode, remainingQuantity } from "@platform/commerce";
 import type { CartLine, ShippingMethod } from "@platform/commerce";
 import { getProduct, productName, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
@@ -11,12 +11,18 @@ const KEY = "vicuna-cart-v1";
 const ORDER_KEY = "vicuna-last-order";
 const API_URL = (import.meta.env.PUBLIC_API_URL as string | undefined) ?? "/api/orders";
 const STOCK_URL = API_URL.replace(/\/orders\/?$/, "/stock");
+const PROMO_URL = API_URL.replace(/\/orders\/?$/, "/promo");
 const lang: Lang = document.documentElement.lang === "en" ? "en" : "ar";
 
 const T = {
   ar: {
     cur: "جنيه", free: "مجاني", remove: "حذف", sending: "جاري الإرسال...", submit: "تأكيد الطلب",
-    subtotal: "إجمالي الأحزمة", discount: "خصم الكميات", shipping: "الشحن", total: "الإجمالي",
+    subtotal: "إجمالي الأحزمة", discount: "كود الخصم", shipping: "الشحن", total: "الإجمالي",
+    promoApply: "تطبيق", promoRemove: "إزالة الكود", promoChecking: "جاري التحقق...",
+    promoApplied: (code: string, amount: string, total: string) => `تم تطبيق الكود ${code}: خصم ${amount}. الإجمالي الآن ${total}.`,
+    invalid_promo: "الكود ده غير صحيح.", promo_expired: "الكود ده انتهت مدته.", promo_used_up: "الكود ده خلص عدد مرات استخدامه.",
+    promo_min_subtotal: (min: string) => `الكود ده لطلبات الأحزمة من ${min} أو أكثر.`, promoFail: "تعذّر التحقق من الكود. جرّبي تاني.",
+    promoFix: "راجعي كود الخصم.",
     required: "مطلوب", too_short: "قصير جدًا", too_long: "طويل جدًا", invalid_phone: "رقم موبايل مصري غير صحيح",
     invalid_governorate: "اختاري المحافظة", fail: "تعذر إرسال الطلب. جرّبي تاني بعد شوية، أو اطلبي على واتساب.",
     busy: "الخدمة مشغولة، جرّبي تاني بعد ثواني.", fix: "راجعي الخانات المميزة.", qtyMax: "أقصى كمية",
@@ -28,7 +34,12 @@ const T = {
   },
   en: {
     cur: "EGP", free: "Free", remove: "Remove", sending: "Sending...", submit: "Place order",
-    subtotal: "Belts subtotal", discount: "Multi-belt discount", shipping: "Shipping", total: "Total",
+    subtotal: "Belts subtotal", discount: "Promo code", shipping: "Shipping", total: "Total",
+    promoApply: "Apply", promoRemove: "Remove code", promoChecking: "Checking...",
+    promoApplied: (code: string, amount: string, total: string) => `Code ${code} applied: ${amount} off. Your total is now ${total}.`,
+    invalid_promo: "This code is not valid.", promo_expired: "This code has expired.", promo_used_up: "This code has been used the maximum number of times.",
+    promo_min_subtotal: (min: string) => `This code is for belt orders of ${min} or more.`, promoFail: "We could not check the code. Please try again.",
+    promoFix: "Please check the promo code.",
     required: "Required", too_short: "Too short", too_long: "Too long", invalid_phone: "Not a valid Egyptian mobile number",
     invalid_governorate: "Choose a governorate", fail: "We could not send the order. Please try again shortly, or order on WhatsApp.",
     busy: "The service is busy, please try again in a few seconds.", fix: "Please check the highlighted fields.", qtyMax: "Maximum quantity",
@@ -85,6 +96,12 @@ const limitEl = $("#cart-limit");
 const actionsEl = $("#cart-actions");
 /** The drawer first shows the cart; the delivery form appears only after "Checkout". */
 let step: "cart" | "checkout" = "cart";
+
+/** A code the API accepted (preview only; the API checks it again when the order is sent). */
+let promo: { code: string; amount: number; minSubtotal: number } | null = null;
+const promoInput = $<HTMLInputElement>("#promo-input");
+const promoBtn = $<HTMLButtonElement>("[data-apply-promo]");
+const promoMsg = $("#promo-msg");
 
 const money = (v: number): string => `${formatEgp(v)} ${T.cur}`;
 const cartLines = (): CartLine[] =>
@@ -240,7 +257,7 @@ function render(): void {
     limitEl.toggleAttribute("hidden", notice === "");
   }
 
-  const t = calculateTotals(cartLines(), shippingMethod(), SHIPPING);
+  const t = currentTotals();
   totalsEl.replaceChildren();
   const add = (label: string, value: string, strong = false): void => {
     const r = el("div", strong ? "tot strong" : "tot");
@@ -248,9 +265,79 @@ function render(): void {
     totalsEl.append(r);
   };
   add(T.subtotal, money(t.subtotal));
-  if (t.discount > 0) add(T.discount, `- ${money(t.discount)}`);
+  if (t.discount > 0) add(`${T.discount} (${promo?.code ?? ""})`, `- ${money(t.discount)}`);
   add(T.shipping, t.shipping === 0 ? T.free : money(t.shipping));
   add(T.total, money(t.total), true);
+  renderPromo(t);
+}
+
+/** Totals with the applied code, if the belts subtotal still reaches the code's minimum. */
+function currentTotals(): ReturnType<typeof calculateTotals> {
+  const base = calculateTotals(cartLines(), shippingMethod(), SHIPPING);
+  if (!promo || base.subtotal < promo.minSubtotal) return base;
+  return calculateTotals(cartLines(), shippingMethod(), SHIPPING, promo.amount);
+}
+
+function renderPromo(t: ReturnType<typeof calculateTotals>): void {
+  if (!promoMsg || !promoBtn || !promoInput) return;
+  if (!promo) {
+    promoBtn.textContent = T.promoApply;
+    promoInput.disabled = false;
+    return;
+  }
+  promoInput.value = promo.code;
+  promoInput.disabled = true;
+  promoBtn.textContent = T.promoRemove;
+  promoMsg.className = "muted";
+  promoMsg.textContent =
+    t.discount > 0 ? T.promoApplied(promo.code, money(t.discount), money(t.total)) : T.promo_min_subtotal(money(promo.minSubtotal));
+}
+
+function setPromoError(code: string): void {
+  promo = null;
+  if (promoMsg) {
+    promoMsg.className = "err";
+    const msg = (T as unknown as Record<string, string | ((v: string) => string)>)[code];
+    promoMsg.textContent = typeof msg === "string" ? msg : T.invalid_promo;
+  }
+  render();
+}
+
+async function applyPromo(): Promise<void> {
+  if (!promoInput || !promoBtn || !promoMsg) return;
+  if (promo) {
+    // "Remove code"
+    promo = null;
+    promoInput.value = "";
+    promoMsg.textContent = "";
+    render();
+    return;
+  }
+  const code = normalizePromoCode(promoInput.value);
+  if (!code) {
+    setPromoError("invalid_promo");
+    return;
+  }
+  promoBtn.disabled = true;
+  promoMsg.className = "muted";
+  promoMsg.textContent = T.promoChecking;
+  try {
+    const res = await fetch(`${PROMO_URL}?code=${encodeURIComponent(code)}`, { headers: { Accept: "application/json" } });
+    const data = (await res.json().catch(() => ({}))) as { code?: unknown; amount?: unknown; minSubtotal?: unknown; error?: unknown };
+    if (res.ok && typeof data.code === "string" && typeof data.amount === "number" && typeof data.minSubtotal === "number") {
+      promo = { code: data.code, amount: data.amount, minSubtotal: data.minSubtotal };
+      render();
+    } else if (res.status === 422 && typeof data.error === "string") {
+      setPromoError(data.error);
+    } else {
+      promoMsg.className = "err";
+      promoMsg.textContent = T.promoFail;
+    }
+  } catch {
+    promoMsg.className = "err";
+    promoMsg.textContent = T.promoFail;
+  }
+  promoBtn.disabled = false;
 }
 
 function openCart(): void {
@@ -272,7 +359,8 @@ function fieldError(name: string, code: string | undefined): void {
   const input = form?.querySelector<HTMLElement>(`[name="${name}"]`);
   const msg = form?.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
   input?.toggleAttribute("aria-invalid", code !== undefined);
-  if (msg) msg.textContent = code ? ((T as Record<string, string>)[code] ?? T.required) : "";
+  const text = code ? (T as unknown as Record<string, unknown>)[code] : "";
+  if (msg) msg.textContent = typeof text === "string" ? text : T.required;
 }
 
 const FIELDS = ["customer.name", "customer.phone", "customer.governorate", "customer.address", "customer.notes"] as const;
@@ -311,6 +399,8 @@ async function submit(event: SubmitEvent): Promise<void> {
     },
     shippingMethod: radio("shippingMethod") || "standard",
     paymentMethod: radio("paymentMethod") || "cod",
+    // Only a code that applies right now (the minimum may no longer be reached after the cart changed).
+    ...(promo && currentTotals().discount > 0 ? { promoCode: promo.code } : {}),
     website: val("website"),
   };
   submitBtn.disabled = true;
@@ -345,7 +435,9 @@ async function submit(event: SubmitEvent): Promise<void> {
     } else if (res.status === 422 && data.errors) {
       FIELDS.forEach((f) => fieldError(f, data.errors?.[f]));
       const itemProblem = Object.keys(data.errors).some((k) => k === "items" || k.startsWith("items["));
-      statusEl.textContent = itemProblem ? T.items : T.fix;
+      const promoProblem = data.errors["promoCode"];
+      if (promoProblem) setPromoError(promoProblem);
+      statusEl.textContent = itemProblem ? T.items : promoProblem ? T.promoFix : T.fix;
     } else {
       statusEl.textContent = res.status === 503 ? T.busy : T.fail;
     }
@@ -425,6 +517,14 @@ dialog?.addEventListener("click", (e) => {
   if (e.target === dialog) dialog.close();
 });
 form?.addEventListener("submit", (e) => void submit(e));
+promoBtn?.addEventListener("click", () => void applyPromo());
+promoInput?.addEventListener("keydown", (e) => {
+  // Enter in the code field applies the code instead of sending the order.
+  if (e.key === "Enter") {
+    e.preventDefault();
+    void applyPromo();
+  }
+});
 form?.addEventListener("change", (e) => {
   if ((e.target as HTMLInputElement).name === "shippingMethod") render();
 });
