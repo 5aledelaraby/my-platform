@@ -247,6 +247,18 @@ dialog.menu::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 /* ---------- craft ---------- */
 .split { display: grid; gap: 26px; align-items: center; }
 .real-stack { display: grid; gap: 12px; }
+/* home: sections of the brand */
+.areas { display: grid; gap: 16px; }
+.area-card { display: grid; overflow: hidden; border-radius: 28px; background: #fff; text-decoration: none; box-shadow: var(--shadow-card); transition: transform .5s var(--ease-soft), box-shadow .5s; }
+.area-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift); }
+.area-media { display: block; aspect-ratio: 16 / 10; overflow: hidden; background: var(--cream); }
+.area-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s var(--ease-soft); }
+.area-card:hover .area-media img { transform: scale(1.05); }
+.area-body { display: grid; gap: 6px; padding: 18px 20px 22px; }
+.area-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.35rem, 3vw, 1.75rem); line-height: 1.3; }
+.area-card:hover .area-title { color: var(--berry); }
+.area-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; color: var(--berry); font-weight: 700; }
+@media (min-width: 760px) { .areas { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; } }
 .photo-card { position: relative; margin: 0; overflow: hidden; border-radius: 26px; background: var(--cream); box-shadow: var(--shadow-card); }
 .photo-card img { width: 100%; height: auto; transition: transform 1.2s var(--ease-soft); }
 .photo-card:hover img { transform: scale(1.03); }

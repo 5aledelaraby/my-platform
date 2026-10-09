@@ -1,6 +1,6 @@
 ---
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
-import { beltsUrl, styleText, styles } from "../store.ts";
+import { beltsUrl, shopUrl, styleText, styles } from "../store.ts";
 import Icon from "./ui/Icon.astro";
 import Logo from "./ui/Logo.astro";
 import { langPath, site } from "../site.ts";
@@ -21,6 +21,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
     <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo /></a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
       <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
+      <a class="nav-pill" href={shopUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a>
       {ar && <a class="nav-pill" href="/blog/">المقالات</a>}
       <a class="nav-pill" href={policyPath(lang, "returns")}>{ar ? "الشحن والاسترجاع" : "Shipping & returns"}</a>
     </nav>
@@ -43,7 +44,8 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
   <nav aria-label={ar ? "القائمة" : "Menu"}>
     <ul class="menu-list">
       <li><a href={home}>{ar ? "الرئيسية" : "Home"}</a></li>
-      <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+      <li><a href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a></li>
+      <li><a href={shopUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
       {ar && <li><a href="/blog/">المقالات</a></li>}
     </ul>
     <p class="menu-label">{ar ? "الموديلات" : "Styles"}</p>

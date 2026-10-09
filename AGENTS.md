@@ -39,8 +39,8 @@ pnpm check:boundaries            # architecture rules
 
 ## Site structure (ADR 0009)
 
-- `/` is a brand introduction only. It never contains the product grid, filters or cart-building UI.
-- The store lives under `/belts/` (`/belts/`, `/belts/<style>/`, `/belts/<product-id>/`). Other areas get their own top-level section and are only linked from `/`.
+- Three levels, as the owner asked: `/` is a short brand introduction with cards for the brand's sections; `/belts/` is the belts landing page (moving hero, styles, perks, craft, FAQ); `/belts/shop/` is the catalogue with every belt and the filters. `/` and `/belts/` never contain the product grid or cart-building UI.
+- The store lives under `/belts/` (`/belts/`, `/belts/shop/`, `/belts/<style>/`, `/belts/<product-id>/`). `shop` is a reserved slug there. Other areas get their own top-level section and are only linked from `/`.
 - Ads, Merchant Center and product keywords point to `/belts/...`, never to `/`.
 
 ## Commerce rules

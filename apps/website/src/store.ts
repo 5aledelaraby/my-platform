@@ -62,9 +62,13 @@ export const products: readonly CatalogProduct[] = catalog.products;
 const styleById = new Map(styles.map((s) => [s.id, s]));
 const productById = new Map(products.map((p) => [p.id, p]));
 
-// ADR 0009: styles and products share one namespace under /belts/.
+// ADR 0009: styles, products and fixed pages (the catalogue at /belts/shop/) share one namespace under /belts/.
+const RESERVED_BELTS_SLUGS = new Set(["shop"]);
+for (const s of styles) {
+  if (RESERVED_BELTS_SLUGS.has(s.id)) throw new Error(`Style slug "${s.id}" is reserved under /belts/`);
+}
 for (const p of products) {
-  if (styleById.has(p.id)) throw new Error(`Product id "${p.id}" collides with a style slug under /belts/`);
+  if (styleById.has(p.id) || RESERVED_BELTS_SLUGS.has(p.id)) throw new Error(`Product id "${p.id}" collides with a style slug or a reserved page under /belts/`);
 }
 
 export function getStyle(id: string): CatalogStyle {
@@ -102,3 +106,5 @@ export const coverOf = (styleId: string): CatalogProduct => {
   return first;
 };
 export const beltsUrl = (lang: Lang, slug?: string): string => langPath(lang, slug ? `/belts/${slug}/` : "/belts/");
+/** The full catalogue (every belt, with filters). `/belts/` itself is the belts landing page. */
+export const shopUrl = (lang: Lang): string => langPath(lang, "/belts/shop/");

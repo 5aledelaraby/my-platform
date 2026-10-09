@@ -7,7 +7,7 @@ import OfferStrip from "./OfferStrip.astro";
 import ProductCard from "./ProductCard.astro";
 import Stories from "./Stories.astro";
 import Icon from "./ui/Icon.astro";
-import { beltsUrl, colorName, colors, price, products, productsOfStyle, styleText, styles } from "../store.ts";
+import { beltsUrl, shopUrl, colorName, colors, price, products, productsOfStyle, styleText, styles } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -17,7 +17,7 @@ const ar = lang === "ar";
 const cur = ar ? "جنيه" : "EGP";
 const free = formatEgp(SHIPPING.freeOver);
 const lowest = formatEgp(Math.min(...styles.map((s) => s.price)));
-const title = ar ? "أحزمة خصر نسائية من جلد PU | فيكونا" : "Women's waist belts in PU leather | Vicuna";
+const title = ar ? "كل الأحزمة: أحزمة خصر نسائية من جلد PU | فيكونا" : "All belts: women's waist belts in PU leather | Vicuna";
 const description = ar
   ? `${products.length} حزام خصر نسائي من فيكونا في ${styles.length} تصاميم: دانتيل وفيونكة وكروكو وثعبان وكشكشة، بأسعار من ${lowest} جنيه. توصيل لجميع المحافظات.`
   : `${products.length} women's waist belts from Vicuna in ${styles.length} designs: lace, bow, croc, snake and ruffle, from ${lowest} EGP. Delivery to every governorate.`;
@@ -26,21 +26,23 @@ const tie = ar
   : [["Place it on your waist", "wide part in front"], ["Wrap the straps", "and bring them forward"], ["Tie it your way", "a bow or a knot"]];
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
-  { name: ar ? "الأحزمة" : "Belts" },
+  { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
+  { name: ar ? "كل الأحزمة" : "All belts" },
 ];
 const jsonLd = serializeJsonLd(
   breadcrumbJsonLd([
     { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
     { name: crumbs[1]!.name, url: `${site.url}${beltsUrl(lang)}` },
+    { name: crumbs[2]!.name, url: `${site.url}${shopUrl(lang)}` },
   ]),
 );
 ---
 
-<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar")} jsonLd={jsonLd}>
+<Base title={title} description={description} lang={lang} altPath={shopUrl(ar ? "en" : "ar")} jsonLd={jsonLd}>
   <section class="page-hero">
     <div class="page-hero-box">
       <Breadcrumbs items={crumbs} />
-      <h1>{ar ? <>أحزمة <span class="accent">خصر نسائية</span></> : <>Women's <span class="accent">waist belts</span></>}</h1>
+      <h1>{ar ? <>كل <span class="accent">الأحزمة</span></> : <>All <span class="accent">belts</span></>}</h1>
       <p class="lead">
         {ar
           ? `جلد PU بقصّ ليزر وخياطة يدوية، في ${styles.length} تصاميم وعدة ألوان. اختاري التصميم ثم اللون، ونوصّل إلى جميع محافظات مصر خلال ${site.deliveryDays} أيام عمل.`

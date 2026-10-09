@@ -1,5 +1,5 @@
 import { buildSitemapXml } from "@platform/seo";
-import { beltsUrl, products, styles } from "../store.ts";
+import { beltsUrl, products, shopUrl, styles } from "../store.ts";
 import { articleUrl, articles } from "../lib/articles.ts";
 import { langPath, site } from "../site.ts";
 import { POLICY_IDS, policyPath } from "../policies/index.ts";
@@ -9,6 +9,7 @@ export function GET(): Response {
     ...(["ar", "en"] as const).flatMap((lang) => [
       langPath(lang, "/"),
       beltsUrl(lang),
+      shopUrl(lang),
       ...styles.map((s) => beltsUrl(lang, s.id)),
       ...products.map((p) => beltsUrl(lang, p.id)),
       ...POLICY_IDS.map((id) => policyPath(lang, id)),

@@ -1,5 +1,19 @@
 ---
-import BeltsIndex from "../../../components/BeltsIndex.astro";
+import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../../../layouts/Base.astro";
+import BeltsHome from "../../../components/BeltsHome.astro";
+import { homeCopy } from "../../../home-copy.ts";
+import { site } from "../../../site.ts";
+
+const c = homeCopy.en;
+const jsonLd = serializeJsonLd(
+  breadcrumbJsonLd([
+    { name: "Home", url: `${site.url}/en/` },
+    { name: "Belts", url: `${site.url}/en/belts/` },
+  ]),
+);
 ---
 
-<BeltsIndex lang="en" />
+<Base title={c.title} description={c.description} lang="en" altPath="/belts/" jsonLd={jsonLd}>
+  <BeltsHome lang="en" />
+</Base>

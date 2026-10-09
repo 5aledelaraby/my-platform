@@ -1,52 +1,85 @@
 ---
-import { formatEgp } from "@platform/commerce";
+// The home page: a short introduction to Vicuna and its sections. It never shows the product grid or cart UI
+// (ADR 0009); the belts have their own landing page (/belts/) and catalogue (/belts/shop/).
 import Icon from "./ui/Icon.astro";
-import OfferStrip from "./OfferStrip.astro";
-import Perks from "./Perks.astro";
-import Stories from "./Stories.astro";
-import { homeCopy } from "../home-copy.ts";
 import { site } from "../site.ts";
-import { beltsUrl, coverOf, getProduct, getStyle, imageOf, productsOfStyle, styleText, styles, thumbOf } from "../store.ts";
+import { beltsUrl, getProduct, shopUrl, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
-const c = homeCopy[lang];
 const ar = lang === "ar";
-const cur = ar ? "جنيه" : "EGP";
 const wa = `https://wa.me/${site.whatsappInternational}`;
-const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في طلب مقاس خاص." : "Hello Vicuna, I would like to ask about a custom size.")}`;
-// The headline in two lines; the second one in the brand red.
-const [h1a, h1b] = c.h1.split(ar ? "، " : ", ");
-// Belts floating around the hero photo: position, tilt and animation offset.
+const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في حزام جلد طبيعي مفصّل على مقاسي." : "Hello Vicuna, I would like a made-to-measure natural leather belt.")}`;
 const floaters = [
-  { id: "lace-gold", pos: "f1", r: "-9deg", d: "0s" },
   { id: "bow-white", pos: "f2", r: "8deg", d: "-1.6s" },
-  { id: "croc-cognac", pos: "f3", r: "6deg", d: "-3.1s" },
-  { id: "lace-red", pos: "f4", r: "-6deg", d: "-4.4s" },
+  { id: "lace-red", pos: "f3", r: "-6deg", d: "-4.4s" },
 ].flatMap((f) => {
   const p = getProduct(f.id);
   return p ? [{ ...f, src: thumbOf(p) }] : [];
 });
+
+interface Area {
+  title: string;
+  text: string;
+  cta: string;
+  href: string;
+  img: string;
+  size: [number, number];
+  alt: string;
+  external?: boolean;
+}
+const areas: Area[] = [
+  {
+    title: ar ? "الأحزمة" : "Belts",
+    text: ar ? "ستة تصاميم من جلد PU والدانتيل، بألوان كثيرة، توصيل لكل مصر." : "Six designs in PU leather and lace, in many colours, delivered across Egypt.",
+    cta: ar ? "ادخلي إلى الأحزمة" : "Explore the belts",
+    href: beltsUrl(lang),
+    img: "/img/mood-bow.webp",
+    size: [900, 900],
+    alt: ar ? "حزام فيونكة من فيكونا على فستان" : "A Vicuna bow belt on a dress",
+  },
+  {
+    title: ar ? "التفصيل على المقاس" : "Made to measure",
+    text: ar
+      ? "أحزمة من الجلد الطبيعي تُفصّل على مقاسكِ وبالتصميم الذي تختارينه، في القاهرة والجيزة."
+      : "Natural leather belts made to your size and the design you choose, in Cairo and Giza.",
+    cta: ar ? "اطلبي على واتساب" : "Ask on WhatsApp",
+    href: customWa,
+    img: "/img/leather-600.webp",
+    size: [600, 450],
+    alt: ar ? "جلود طبيعية بألوان مختلفة في الورشة" : "Natural leather hides in different colours in the workshop",
+    external: true,
+  },
+  ...(ar
+    ? [
+        {
+          title: "المقالات",
+          text: "أفكار لتنسيق الحزام مع ملابسكِ، واختيار المقاس والخامة المناسبة.",
+          cta: "اقرئي المقالات",
+          href: "/blog/",
+          img: "/img/mood-lace.webp",
+          size: [900, 900] as [number, number],
+          alt: "حزام دانتيل من فيكونا",
+        },
+      ]
+    : []),
+];
 ---
 
-<section class="hero">
+<section class="hero intro">
   <div class="hero-box">
-    <div class="hero-pill-row">
-      <span class="ship-pill">
-        <Icon name="sparkle" size={13} class="spark s1" />
-        <Icon name="sparkle" size={10} class="spark s2" />
-        <Icon name="plane" size={22} class="pill-plane" />
-        {ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}
-      </span>
-    </div>
     <div class="hero-text">
-      <p class="hero-tagline">{c.eyebrow}</p>
-      <h1>{h1a}{h1b && <><br /><span class="accent">{h1b}</span></>}</h1>
-      <p class="lead">{c.lead}</p>
+      <p class="hero-tagline">{ar ? "صُنع في مصر" : "Made in Egypt"}</p>
+      <h1>{ar ? <>فيكونا<br /><span class="accent">أحزمة نصنعها بأيدينا</span></> : <>Vicuna<br /><span class="accent">belts we make by hand</span></>}</h1>
+      <p class="lead">
+        {ar
+          ? "علامة مصرية لأحزمة الخصر النسائية. نقصّ كل حزام بالليزر ونخيطه يدويًا، ونوصّله إلى جميع محافظات مصر."
+          : "An Egyptian brand of women's waist belts. We laser-cut and hand-sew every belt, and deliver to every governorate in Egypt."}
+      </p>
       <div class="hero-actions">
-        <a class="btn btn-berry btn-shine" href={beltsUrl(lang)}>{c.cta} <Icon name="arrow" size={18} class="dir-icon" /></a>
-        <a class="btn btn-white" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.ctaWhatsapp}</a>
+        <a class="btn btn-berry btn-shine" href={beltsUrl(lang)}>{ar ? "ادخلي إلى الأحزمة" : "Explore the belts"} <Icon name="arrow" size={18} class="dir-icon" /></a>
+        <a class="btn btn-white" href={shopUrl(lang)}>{ar ? "تسوّقي مباشرة" : "Shop now"}</a>
       </div>
     </div>
     <div class="hero-art">
@@ -56,7 +89,7 @@ const floaters = [
           src="/img/hero-1200.webp"
           srcset="/img/hero-800.webp 800w, /img/hero-1200.webp 1200w"
           sizes="(min-width: 960px) 40vw, 80vw"
-          alt={c.heroAlt}
+          alt={ar ? "أحزمة خصر من فيكونا على مجسّمات عرض" : "Vicuna waist belts on display mannequins"}
           width="1200"
           height="810"
           fetchpriority="high"
@@ -70,130 +103,23 @@ const floaters = [
   </div>
 </section>
 
-<Stories lang={lang} />
-
-<div class="wrap stack-sm">
-  <Perks lang={lang} />
-  <OfferStrip lang={lang} />
-</div>
-
 <section class="section">
   <div class="wrap">
     <div class="section-head">
-      <h2 class="h2">{c.stylesTitle} <Icon name="sparkle" size={20} class="twinkle" /></h2>
-      <p class="muted">{c.stylesLead}</p>
+      <p class="eyebrow">{ar ? "أقسام فيكونا" : "Vicuna"}</p>
+      <h2 class="h2">{ar ? "من أين تبدئين؟" : "Where would you like to start?"}</h2>
     </div>
-    <div class="tiles">
-      {styles.map((s, i) => {
-        const cover = coverOf(s.id);
-        const t = styleText(lang, s.id);
-        const count = productsOfStyle(s.id).length;
-        return (
-          <a class="style-tile reveal" href={beltsUrl(lang, s.id)} style={`--i:${i % 3}`}>
-            <span class="tile-media">
-              <img src={thumbOf(cover)} srcset={`${thumbOf(cover)} 480w, ${imageOf(cover)} 900w`} sizes="(min-width: 960px) 30vw, 46vw" alt="" width="480" height="480" loading="lazy" decoding="async" />
-              <span class="tag">{count} {ar ? "لون" : count === 1 ? "colour" : "colours"}</span>
-            </span>
-            <span class="tile-foot">
-              <span class="tile-name">{t.name}</span>
-              <span class="price-chip">{formatEgp(getStyle(s.id).price)} {cur}</span>
-            </span>
-          </a>
-        );
-      })}
-    </div>
-    <p class="more"><a class="btn btn-white" href={beltsUrl(lang)}>{c.stylesAll} <Icon name="arrow" size={18} class="dir-icon" /></a></p>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="section-head">
-      <p class="eyebrow">{c.whyEyebrow}</p>
-      <h2 class="h2">{c.whyTitle}</h2>
-    </div>
-    <div class="cards3">
-      {c.why.map((w, i) => (
-        <div class="soft-card reveal" style={`--i:${i}`}>
-          <span class="num-badge" aria-hidden="true">{i + 1}</span>
-          <h3>{w.t}</h3>
-          <p class="muted">{w.d}</p>
-        </div>
+    <div class="areas">
+      {areas.map((a, i) => (
+        <a class="area-card reveal" href={a.href} style={`--i:${i}`} rel={a.external ? "noopener noreferrer" : undefined}>
+          <span class="area-media"><img src={a.img} alt={a.alt} width={a.size[0]} height={a.size[1]} loading="lazy" decoding="async" /></span>
+          <span class="area-body">
+            <span class="area-title">{a.title}</span>
+            <span class="muted">{a.text}</span>
+            <span class="area-cta">{a.cta} <Icon name="arrow" size={16} class="dir-icon" /></span>
+          </span>
+        </a>
       ))}
     </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap split">
-    <div class="reveal">
-      <p class="eyebrow">{c.craftEyebrow}</p>
-      <h2 class="h2">{c.craftTitle}</h2>
-      <p class="muted lede">{c.craftBody}</p>
-      <div class="founder-note">
-        <img src="/img/founder.jpg" alt="" width="56" height="56" loading="lazy" decoding="async" />
-        <div><b>{c.founderName}</b><br /><span class="muted">{c.founderRole}</span></div>
-      </div>
-    </div>
-    <div class="real-stack">
-      <figure class="photo-card reveal">
-        <img
-          src="/img/founder-collage-800.webp"
-          srcset="/img/founder-collage-800.webp 800w, /img/founder-collage-1400.webp 1400w"
-          sizes="(min-width: 960px) 46vw, 100vw"
-          alt={c.collageAlt}
-          width="800"
-          height="415"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="photo-card reveal" style="--i:1">
-        <img src="/img/laser-800.webp" alt={ar ? "ماكينة القصّ بالليزر أثناء تجهيز قطع الأحزمة" : "The laser cutting machine preparing belt pieces"} width="800" height="450" loading="lazy" decoding="async" />
-        <figcaption class="photo-badge">{ar ? "قصّ بالليزر لحواف نظيفة ومتساوية" : "Laser cutting for clean, even edges"}</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="section-head">
-      <p class="eyebrow">{c.promisesEyebrow}</p>
-      <h2 class="h2">{c.promisesTitle}</h2>
-    </div>
-    <dl class="promise-cards">
-      {c.promises.map((p, i) => <div class="soft-card reveal" style={`--i:${i % 2}`}><dt>{p.t}</dt><dd class="muted">{p.d}</dd></div>)}
-    </dl>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="bespoke reveal">
-      <div class="bespoke-text">
-        <p class="eyebrow">{c.customEyebrow}</p>
-        <h2 class="h2">{c.customTitle}</h2>
-        <p class="lede">{c.customBody}</p>
-        <a class="btn btn-gold" href={customWa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.customCta}</a>
-      </div>
-      <img
-        src="/img/leather-600.webp"
-        srcset="/img/leather-600.webp 600w, /img/leather-1000.webp 1000w"
-        sizes="(min-width: 960px) 40vw, 100vw"
-        alt={ar ? "جلود طبيعية بألوان مختلفة معلّقة في الورشة" : "Natural leather hides in different colours hanging in the workshop"}
-        width="600"
-        height="450"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap faq">
-    <h2 class="h2">{c.faqTitle}</h2>
-    {c.faq.map((f, i) => <details class="reveal" style={`--i:${i % 3}`}><summary>{f.q}</summary><p class="muted">{f.a}</p></details>)}
   </div>
 </section>

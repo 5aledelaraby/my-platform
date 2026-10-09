@@ -1,11 +1,11 @@
 ---
 import Base from "../layouts/Base.astro";
 import Home from "../components/Home.astro";
-import { homeCopy } from "../home-copy.ts";
 import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../site.ts";
 
-const c = homeCopy.ar;
+const title = "فيكونا | أحزمة خصر نسائية مصنوعة في مصر";
+const description = "فيكونا علامة مصرية لأحزمة الخصر النسائية: تصاميم من جلد PU والدانتيل، وأحزمة جلد طبيعي تُفصّل على المقاس. توصيل لجميع المحافظات.";
 const jsonLd = serializeJsonLd([
   organizationJsonLd({
     name: site.nameAr,
@@ -18,6 +18,6 @@ const jsonLd = serializeJsonLd([
 ]);
 ---
 
-<Base title={c.title} description={c.description} lang="ar" altPath="/en/" jsonLd={jsonLd}>
+<Base title={title} description={description} lang="ar" altPath="/en/" jsonLd={jsonLd}>
   <Home lang="ar" />
 </Base>

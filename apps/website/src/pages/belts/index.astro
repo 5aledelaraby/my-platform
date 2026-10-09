@@ -1,5 +1,21 @@
 ---
-import BeltsIndex from "../../components/BeltsIndex.astro";
+// The belts landing page: the full brand story for the belts (moving hero, styles, perks, craft, FAQ).
+// The catalogue with every belt is /belts/shop/.
+import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../../layouts/Base.astro";
+import BeltsHome from "../../components/BeltsHome.astro";
+import { homeCopy } from "../../home-copy.ts";
+import { site } from "../../site.ts";
+
+const c = homeCopy.ar;
+const jsonLd = serializeJsonLd(
+  breadcrumbJsonLd([
+    { name: "الرئيسية", url: `${site.url}/` },
+    { name: "الأحزمة", url: `${site.url}/belts/` },
+  ]),
+);
 ---
 
-<BeltsIndex lang="ar" />
+<Base title={c.title} description={c.description} lang="ar" altPath="/en/belts/" jsonLd={jsonLd}>
+  <BeltsHome lang="ar" />
+</Base>

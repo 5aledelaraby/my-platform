@@ -24,3 +24,10 @@ The legacy homepage was the store: hero, product grid with filters, offer strip,
 ## Where legacy homepage sections go
 - Stay on `/`: hero (brand version), perks (delivery, returns, payment), made-by-hand, bespoke service teaser (later `/services/`), lookbook teaser, general FAQ, short link blocks to the store, guides and policies. Reviews only if they are real and approved by the owner.
 - Move to `/belts/`: shop with filters, offer strip, shop-by-style, how-to-tie steps, product-related FAQ.
+
+## Update (2026-10-09): three levels
+The owner asked for three levels instead of two:
+1. `/` a short introduction (logo, one line about Vicuna, a photo, and one card per section of the brand: belts, made-to-measure, articles). New sections get a card here when they launch.
+2. `/belts/` the belts landing page: the rich page with the moving hero, style shortcuts, perks, offer, styles, craft, promises, bespoke teaser and FAQ (what used to be `/`).
+3. `/belts/shop/` the catalogue: every belt with the colour filter and the grid (what used to be `/belts/`).
+Style and product URLs are unchanged. `shop` is reserved under `/belts/` (checked at build time with the style/product collision check). Breadcrumbs: Home > Belts > All belts / Style > Product.
