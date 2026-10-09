@@ -1,6 +1,6 @@
 // Global cart: state in localStorage, drawer UI, checkout via POST /api/orders.
 // Prices shown here are for display only. The server recalculates everything from the catalogue.
-import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile, normalizePromoCode, remainingQuantity } from "@platform/commerce";
+import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile, normalizePromoCode, promoAmountFor, remainingQuantity } from "@platform/commerce";
 import type { CartLine, ShippingMethod } from "@platform/commerce";
 import { getProduct, productName, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
@@ -22,6 +22,7 @@ const T = {
     promoApplied: (code: string, amount: string, total: string) => `تم تطبيق الكود ${code}: خصم ${amount}. الإجمالي الآن ${total}.`,
     invalid_promo: "الكود ده غير صحيح.", promo_expired: "الكود ده انتهت مدته.", promo_used_up: "الكود ده خلص عدد مرات استخدامه.",
     promo_min_subtotal: (min: string) => `الكود ده لطلبات الأحزمة من ${min} أو أكثر.`, promoFail: "تعذّر التحقق من الكود. جرّبي تاني.",
+    promo_min_unknown: "قيمة الأحزمة في السلة أقل من الحد الأدنى للكود ده.",
     promoFix: "راجعي كود الخصم.",
     required: "مطلوب", too_short: "قصير جدًا", too_long: "طويل جدًا", invalid_phone: "رقم موبايل مصري غير صحيح",
     invalid_governorate: "اختاري المحافظة", fail: "تعذر إرسال الطلب. جرّبي تاني بعد شوية، أو اطلبي على واتساب.",
@@ -39,6 +40,7 @@ const T = {
     promoApplied: (code: string, amount: string, total: string) => `Code ${code} applied: ${amount} off. Your total is now ${total}.`,
     invalid_promo: "This code is not valid.", promo_expired: "This code has expired.", promo_used_up: "This code has been used the maximum number of times.",
     promo_min_subtotal: (min: string) => `This code is for belt orders of ${min} or more.`, promoFail: "We could not check the code. Please try again.",
+    promo_min_unknown: "The belts in your cart are below this code's minimum.",
     promoFix: "Please check the promo code.",
     required: "Required", too_short: "Too short", too_long: "Too long", invalid_phone: "Not a valid Egyptian mobile number",
     invalid_governorate: "Choose a governorate", fail: "We could not send the order. Please try again shortly, or order on WhatsApp.",
@@ -274,8 +276,8 @@ function render(): void {
 /** Totals with the applied code, if the belts subtotal still reaches the code's minimum. */
 function currentTotals(): ReturnType<typeof calculateTotals> {
   const base = calculateTotals(cartLines(), shippingMethod(), SHIPPING);
-  if (!promo || base.subtotal < promo.minSubtotal) return base;
-  return calculateTotals(cartLines(), shippingMethod(), SHIPPING, promo.amount);
+  const amount = promo ? promoAmountFor(promo, base.subtotal) : 0;
+  return amount > 0 ? calculateTotals(cartLines(), shippingMethod(), SHIPPING, amount) : base;
 }
 
 function renderPromo(t: ReturnType<typeof calculateTotals>): void {
@@ -294,11 +296,15 @@ function renderPromo(t: ReturnType<typeof calculateTotals>): void {
 }
 
 function setPromoError(code: string): void {
+  const min = promo?.minSubtotal;
   promo = null;
   if (promoMsg) {
     promoMsg.className = "err";
-    const msg = (T as unknown as Record<string, string | ((v: string) => string)>)[code];
-    promoMsg.textContent = typeof msg === "string" ? msg : T.invalid_promo;
+    if (code === "promo_min_subtotal") promoMsg.textContent = min !== undefined ? T.promo_min_subtotal(money(min)) : T.promo_min_unknown;
+    else {
+      const msg = (T as unknown as Record<string, unknown>)[code];
+      promoMsg.textContent = typeof msg === "string" ? msg : T.invalid_promo;
+    }
   }
   render();
 }
@@ -385,6 +391,14 @@ async function submit(event: SubmitEvent): Promise<void> {
   if (Object.keys(errs).length > 0) {
     statusEl.textContent = T.fix;
     return;
+  }
+  // A code typed but not applied yet: check it now instead of silently ordering at full price.
+  if (!promo && promoInput && promoInput.value.trim() !== "") {
+    await applyPromo();
+    if (!promo) {
+      statusEl.textContent = T.promoFix;
+      return;
+    }
   }
   const radio = (n: string): string => form.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.value ?? "";
   const notes = val("customer.notes");

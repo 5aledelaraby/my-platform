@@ -1,15 +1,25 @@
 {
   "$schema": "https://turborepo.com/schema.json",
-  "globalDependencies": ["tsconfig.base.json", "content/**"],
+  "globalDependencies": [
+    "tsconfig.base.json",
+    "content/**"
+  ],
   "envMode": "loose",
   "tasks": {
     "typecheck": {
       "outputs": []
     },
     "build": {
-      "dependsOn": ["^build"],
-      "env": ["DEPLOY_ENV"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "env": [
+        "DEPLOY_ENV",
+        "PUBLIC_API_URL"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     }
   }
 }

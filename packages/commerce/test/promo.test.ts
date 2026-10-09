@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { egp, lookupProduct, normalizePromoCode, promoProblem, validateNewPromo, validateOrderRequest } from "../src/index.ts";
+import { egp, lookupProduct, normalizePromoCode, promoAmountFor, promoProblem, validateNewPromo, validateOrderRequest } from "../src/index.ts";
 import type { PromoCode } from "../src/index.ts";
 
 const NOW = new Date("2026-10-09T12:00:00Z");
@@ -12,6 +12,9 @@ describe("promo codes", () => {
   it("normalizes what the customer types and rejects anything else", () => {
     assert.equal(normalizePromoCode(" welcome 50 "), "WELCOME50");
     assert.equal(normalizePromoCode("Eid2026"), "EID2026");
+    // Pasted from WhatsApp (bidi marks, zero-width space) or typed on an Arabic keyboard (Arabic-Indic digits).
+    assert.equal(normalizePromoCode("\u200fWELCOME50\u200b"), "WELCOME50");
+    assert.equal(normalizePromoCode("eid\u0665\u0660"), "EID50");
     for (const bad of ["", "AB", "A".repeat(21), "WEL-COME", "خصم50", "ＷＥＬＣＯＭＥ", 50, null, undefined]) {
       assert.equal(normalizePromoCode(bad), null, String(bad));
     }
@@ -27,6 +30,13 @@ describe("promo codes", () => {
     assert.equal(promoProblem(code({ maxUses: 3, used: 2 }), egp(200), NOW), null);
     assert.equal(promoProblem(code({ minSubtotal: egp(400) }), egp(399), NOW), "promo_min_subtotal");
     assert.equal(promoProblem(code({ minSubtotal: egp(400) }), egp(400), NOW), null);
+    assert.equal(promoProblem(code({ expiresAt: "not a date" }), egp(200), NOW), "promo_expired", "fail closed");
+  });
+
+  it("gives its amount only from the minimum, never more than the belts", () => {
+    assert.equal(promoAmountFor({ amount: egp(50), minSubtotal: egp(300) }, egp(299)), 0);
+    assert.equal(promoAmountFor({ amount: egp(50), minSubtotal: egp(300) }, egp(300)), egp(50));
+    assert.equal(promoAmountFor({ amount: egp(500), minSubtotal: 0 }, egp(120)), egp(120));
   });
 
   it("checks a new code from the admin", () => {
@@ -36,7 +46,8 @@ describe("promo codes", () => {
     const bad = validateNewPromo({ code: "x", amount: 0, minSubtotal: -1, maxUses: 0, expiresAt: "2026-10-01T00:00:00Z" }, NOW);
     assert.equal(bad.ok, false);
     if (!bad.ok) assert.deepEqual(Object.keys(bad.errors).sort(), ["amount", "code", "expiresAt", "maxUses", "minSubtotal"]);
-    assert.equal(validateNewPromo({ code: "BIG", amount: egp(5001) }, NOW).ok, false, "typo guard");
+    assert.equal(validateNewPromo({ code: "BIG", amount: egp(1001) }, NOW).ok, false, "typo guard");
+    assert.equal(validateNewPromo({ code: "TOP", amount: egp(1000) }, NOW).ok, true);
     assert.equal(validateNewPromo({ code: "FRAC", amount: 10.5 }, NOW).ok, false);
   });
 

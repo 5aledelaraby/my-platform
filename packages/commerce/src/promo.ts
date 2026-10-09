@@ -23,10 +23,24 @@ export interface PromoCode {
 /** Why a code cannot be used. Stable codes; the UI translates them. */
 export type PromoProblem = "invalid_promo" | "promo_inactive" | "promo_expired" | "promo_used_up" | "promo_min_subtotal";
 
-/** Trims, removes inner spaces and upper-cases ASCII letters. Returns null if the result is not a valid code. */
+// Spaces, control characters, zero-width and bidi marks that a copy from WhatsApp may carry. Written as string
+// escapes so no invisible character sits in this file.
+const INVISIBLE = new RegExp("[\\s\\u0000-\\u001F\\u007F\\u061C\\u200B-\\u200F\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]", "g");
+
+/**
+ * Removes spaces and invisible marks, turns Arabic-Indic and Persian digits into Latin ones, and upper-cases ASCII
+ * letters. Returns null if the result is not a valid code.
+ */
 export function normalizePromoCode(input: unknown): string | null {
   if (typeof input !== "string") return null;
-  const code = input.replace(/\s+/g, "").replace(/[a-z]/g, (c) => c.toUpperCase());
+  let code = "";
+  for (const ch of input.replace(INVISIBLE, "")) {
+    const n = ch.charCodeAt(0);
+    if (n >= 0x660 && n <= 0x669) code += String(n - 0x660);
+    else if (n >= 0x6f0 && n <= 0x6f9) code += String(n - 0x6f0);
+    else if (ch >= "a" && ch <= "z") code += ch.toUpperCase();
+    else code += ch;
+  }
   return PROMO_CODE_PATTERN.test(code) ? code : null;
 }
 
@@ -34,10 +48,16 @@ export function normalizePromoCode(input: unknown): string | null {
 export function promoProblem(promo: PromoCode | null, subtotal: Piasters, now: Date): PromoProblem | null {
   if (!promo) return "invalid_promo";
   if (!promo.active) return "promo_inactive";
-  if (promo.expiresAt !== null && Date.parse(promo.expiresAt) <= now.getTime()) return "promo_expired";
+  // An unreadable date counts as expired (fail closed).
+  if (promo.expiresAt !== null && !(Date.parse(promo.expiresAt) > now.getTime())) return "promo_expired";
   if (promo.maxUses !== null && promo.used >= promo.maxUses) return "promo_used_up";
   if (subtotal < promo.minSubtotal) return "promo_min_subtotal";
   return null;
+}
+
+/** The discount a code gives on a belts subtotal: its amount when the minimum is reached, otherwise 0. */
+export function promoAmountFor(promo: Pick<PromoCode, "amount" | "minSubtotal">, subtotal: Piasters): Piasters {
+  return subtotal >= promo.minSubtotal ? Math.min(promo.amount, subtotal) : 0;
 }
 
 export interface NewPromoInput {
@@ -48,8 +68,8 @@ export interface NewPromoInput {
   expiresAt?: unknown;
 }
 
-/** Highest fixed discount the admin may set: 5,000 EGP (a guard against a typo such as 50000). */
-export const MAX_PROMO_AMOUNT: Piasters = 500_000;
+/** Highest fixed discount the admin may set: 1,000 EGP (a guard against a typo such as 5000 for 50). */
+export const MAX_PROMO_AMOUNT: Piasters = 100_000;
 
 /**
  * Validates a new code from the admin. Amounts arrive in piasters. Returns the stored shape or field errors.

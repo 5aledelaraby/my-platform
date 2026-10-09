@@ -8,6 +8,16 @@ export type NewPromo = Omit<PromoCode, "used" | "active">;
 export interface StoredPromo extends PromoCode {
   createdAt: string;
 }
+
+const toPromo = (p: StoredPromo): PromoCode => ({
+  code: p.code,
+  amount: p.amount,
+  minSubtotal: p.minSubtotal,
+  maxUses: p.maxUses,
+  used: p.used,
+  expiresAt: p.expiresAt,
+  active: p.active,
+});
 export type StatusResult = "ok" | "stale" | "not_found";
 /** "stale": the stored quantity is no longer the one the owner saw (an order took units meanwhile). */
 export type StockResult = { ok: true } | { ok: false; current: number | null };
@@ -167,9 +177,7 @@ export function memoryRepository(initialStock: Record<string, number> = {}): Ord
     },
     getPromo(code) {
       const p = state.promos.get(code);
-      if (!p) return Promise.resolve(null);
-      const { createdAt: _createdAt, ...promo } = p;
-      return Promise.resolve({ ...promo });
+      return Promise.resolve(p ? toPromo(p) : null);
     },
     listPromos: () => Promise.resolve([...state.promos.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((p) => ({ ...p }))),
     createPromo(promo, now) {
@@ -459,13 +467,11 @@ shipping_method, payment_method, version FROM orders ${status ? "WHERE status = 
 
     async getPromo(code) {
       const row = await db.prepare("SELECT * FROM promo_codes WHERE code = ?").bind(code).first<PromoRow>();
-      if (!row) return null;
-      const { createdAt: _createdAt, ...promo } = promoFromRow(row);
-      return promo;
+      return row ? toPromo(promoFromRow(row)) : null;
     },
 
     async listPromos() {
-      const { results = [] } = await db.prepare("SELECT * FROM promo_codes ORDER BY created_at DESC LIMIT 200").all<PromoRow>();
+      const { results = [] } = await db.prepare("SELECT * FROM promo_codes ORDER BY created_at DESC LIMIT 1000").all<PromoRow>();
       return results.map(promoFromRow);
     },
 

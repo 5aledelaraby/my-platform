@@ -51,7 +51,7 @@ export const ADMIN_HTML = `<!doctype html>
       <label>الخصم بالجنيه<input name="amount" type="number" inputmode="numeric" min="1" step="1" dir="ltr" required></label>
       <label>أقل قيمة للأحزمة بالجنيه (اختياري)<input name="minSubtotal" type="number" inputmode="numeric" min="0" step="1" dir="ltr"></label>
       <label>عدد مرات الاستخدام (اختياري)<input name="maxUses" type="number" inputmode="numeric" min="1" step="1" dir="ltr"></label>
-      <label>آخر يوم للكود (اختياري)<input name="expiresAt" type="date" dir="ltr"></label>
+      <label>آخر يوم للكود (اختياري)<input name="expiresAt" id="promo-expires" type="date" dir="ltr"></label>
       <button type="submit" class="btn">إضافة الكود</button>
       <p id="promo-form-msg" class="msg" role="status"></p>
     </form>
@@ -343,6 +343,8 @@ export const ADMIN_JS = `
   var promosLoaded = false;
   var FIELD = { code: "الكود", amount: "الخصم", minSubtotal: "أقل قيمة", maxUses: "عدد المرات", expiresAt: "آخر يوم" };
 
+  try { document.getElementById("promo-expires").min = new Date().toISOString().slice(0, 10); } catch (e) { /* older browsers */ }
+
   function loadPromos() {
     promosLoaded = true;
     promosMsg.textContent = "";
@@ -364,7 +366,9 @@ export const ADMIN_JS = `
   function cairoMidnightAfter(day) {
     var next = new Date(day + "T00:00:00Z");
     next.setUTCDate(next.getUTCDate() + 1);
-    return new Date(next.getTime() - cairoOffsetHours(next) * 3600000).toISOString();
+    // Midnight in Cairo = UTC midnight minus Cairo's offset at that instant (checked twice around a DST change).
+    var guess = new Date(next.getTime() - cairoOffsetHours(next) * 3600000);
+    return new Date(next.getTime() - cairoOffsetHours(guess) * 3600000).toISOString();
   }
   function lastDay(iso) {
     try {
@@ -391,7 +395,10 @@ export const ADMIN_JS = `
     });
     var actions = el("div", "actions");
     actions.append(toggle);
-    card.append(head, info, el("div", "muted", p.active ? "شغال" : "متوقف"), actions);
+    var expired = p.expiresAt && Date.parse(p.expiresAt) <= Date.now();
+    var usedUp = p.maxUses && p.used >= p.maxUses;
+    var state = !p.active ? "متوقف" : expired ? "انتهت مدته" : usedUp ? "خلص عدد مرات استخدامه" : "شغال";
+    card.append(head, info, el("div", "muted", state), actions);
     return card;
   }
 
@@ -412,6 +419,7 @@ export const ADMIN_JS = `
       maxUses: uses,
       expiresAt: expires
     };
+    if (amount !== null && amount >= 150 && !window.confirm("الكود ده هيخصم " + amount + " جنيه من كل طلب. متأكد؟")) return;
     var button = promoForm.querySelector("button[type=submit]");
     button.disabled = true;
     call("POST", "/promos", payload).then(function () {
