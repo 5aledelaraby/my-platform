@@ -1,6 +1,9 @@
 name = "vicuna-api"
 main = "src/worker.ts"
 compatibility_date = "2026-10-01"
+# Top-level key: must stay above the first [table], or TOML attaches it to that table and wrangler ignores it.
+# The API shares the site's hostname under /api/*. Production route is added at cutover.
+routes = [{ pattern = "staging.vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" }]
 
 [vars]
 # Exact origins allowed to POST from a browser. For local development put
@@ -13,6 +16,3 @@ database_name = "vicuna-db"
 # D1 database id (an identifier, not a secret). Created in the Cloudflare dashboard.
 database_id = "626197fa-3c59-48b3-944f-e2a2dd3978a0"
 migrations_dir = "migrations"
-
-# The API shares the site's hostname under /api/*. Production route is added at cutover.
-routes = [{ pattern = "staging.vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" }]

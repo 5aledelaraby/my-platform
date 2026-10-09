@@ -1,10 +1,10 @@
 # Static site served by Cloudflare (Workers static assets). Built by `astro build` into ./dist.
 name = "vicuna-site"
 compatibility_date = "2026-10-01"
+# Top-level key: must stay above the first [table], or TOML attaches it to that table and wrangler ignores it.
+# Staging domain. Production (vicuna-eg.com) is added at cutover.
+routes = [{ pattern = "staging.vicuna-eg.com", custom_domain = true }]
 
 [assets]
 directory = "./dist"
 not_found_handling = "404-page"
-
-# Staging domain. Production (vicuna-eg.com) is added at cutover.
-routes = [{ pattern = "staging.vicuna-eg.com", custom_domain = true }]
