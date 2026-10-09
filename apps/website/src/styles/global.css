@@ -199,6 +199,18 @@ dialog.cart::backdrop { background: rgba(0,0,0,.45); }
 #cart-totals { margin: 14px 0; display: grid; gap: 4px; }
 .tot { display: flex; justify-content: space-between; }
 .tot.strong { font-weight: 800; font-size: 1.15rem; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; }
+.cart-actions { display: grid; gap: 10px; margin-top: 4px; }
+.btn.small { min-height: 42px; padding: 0 18px; font-size: 15px; }
+.toast { position: fixed; z-index: 30; inset-inline: 12px; bottom: 12px; max-width: 460px; margin-inline: auto; display: grid; grid-template-columns: 52px 1fr; gap: 10px 12px; align-items: center; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 12px 32px rgba(0, 0, 0, .16); }
+.toast img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; background: var(--soft); }
+.toast-text { display: grid; gap: 2px; font-size: 15px; line-height: 1.5; }
+.toast-actions { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; }
+.toast-actions .btn { flex: 1; }
+.toast.show { animation: toast-in .28s ease-out; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+[data-cart-count].bump { animation: bump .45s ease-out; }
+@keyframes bump { 40% { transform: scale(1.35); } }
+@media (prefers-reduced-motion: reduce) { .toast.show, [data-cart-count].bump { animation: none; } }
 #checkout { display: grid; gap: 12px; }
 #checkout label { display: grid; gap: 4px; font-weight: 700; font-size: 15px; }
 #checkout label.radio { display: block; font-weight: 400; }

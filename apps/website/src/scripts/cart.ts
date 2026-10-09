@@ -24,6 +24,7 @@ const T = {
     items: "في مشكلة في منتجات السلة. راجعي الكميات أو احذفي المنتج وأضيفيه تاني.",
     soldOut: "بعض المنتجات نفدت أو المتاح منها أقل، فعدّلنا السلة. راجعيها وأكّدي الطلب تاني.", soldOutBtn: "نفدت الكمية",
     trimmed: "عدّلنا بعض الكميات في السلة على حسب المتاح.",
+    added: "اتضاف للسلة", notAdded: "مش متاح نضيف أكتر من المنتج ده",
   },
   en: {
     cur: "EGP", free: "Free", remove: "Remove", sending: "Sending...", submit: "Place order",
@@ -35,6 +36,7 @@ const T = {
     items: "There is a problem with the items in your cart. Check the quantities, or remove the product and add it again.",
     soldOut: "Some items sold out or have fewer left, so we updated your cart. Please check it and place the order again.", soldOutBtn: "Sold out",
     trimmed: "We adjusted some quantities in your cart to what is available.",
+    added: "Added to your cart", notAdded: "We cannot add more of this item",
   },
 }[lang];
 
@@ -80,6 +82,9 @@ const form = $<HTMLFormElement>("#checkout");
 const statusEl = $("#checkout-status");
 const submitBtn = $<HTMLButtonElement>("#checkout-submit");
 const limitEl = $("#cart-limit");
+const actionsEl = $("#cart-actions");
+/** The drawer first shows the cart; the delivery form appears only after "Checkout". */
+let step: "cart" | "checkout" = "cart";
 
 const money = (v: number): string => `${formatEgp(v)} ${T.cur}`;
 const cartLines = (): CartLine[] =>
@@ -109,14 +114,50 @@ function setQty(id: string, quantity: number): void {
 export function addToCart(id: string): void {
   if (!lookupProduct(id)) return;
   trimmedNotice = false;
-  if (remainingQuantity(lines, id, stock) > 0) {
+  const added = remainingQuantity(lines, id, stock) > 0;
+  if (added) {
     const existing = lines.find((l) => l.id === id);
     if (existing) existing.quantity += 1;
     else lines.push({ id, quantity: 1 });
     save();
   }
   render();
-  openCart();
+  // Stay on the page so she can keep shopping; a small notice offers the cart.
+  showToast(id, added);
+  if (added) bumpCount();
+}
+
+const toast = document.getElementById("cart-toast");
+let toastTimer: ReturnType<typeof setTimeout> | undefined;
+
+function showToast(id: string, added: boolean): void {
+  const product = getProduct(id);
+  if (!toast || !product) return;
+  const img = toast.querySelector<HTMLImageElement>("img");
+  if (img) img.src = thumbOf(product);
+  const title = toast.querySelector("[data-toast-title]");
+  if (title) title.textContent = added ? `✓ ${T.added}` : T.notAdded;
+  const name = toast.querySelector("[data-toast-name]");
+  if (name) name.textContent = productName(lang, product);
+  toast.hidden = false;
+  toast.classList.remove("show");
+  void toast.offsetWidth; // restart the entrance animation
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 4500);
+}
+
+function hideToast(): void {
+  clearTimeout(toastTimer);
+  if (toast) toast.hidden = true;
+}
+
+function bumpCount(): void {
+  document.querySelectorAll<HTMLElement>("[data-cart-count]").forEach((b) => {
+    b.classList.remove("bump");
+    void b.offsetWidth;
+    b.classList.add("bump");
+  });
 }
 
 function render(): void {
@@ -128,7 +169,8 @@ function render(): void {
   if (!linesEl || !totalsEl || !emptyEl || !form) return;
   linesEl.replaceChildren();
   emptyEl.toggleAttribute("hidden", count > 0);
-  form.toggleAttribute("hidden", count === 0);
+  form.toggleAttribute("hidden", count === 0 || step !== "checkout");
+  actionsEl?.toggleAttribute("hidden", count === 0 || step === "checkout");
   totalsEl.toggleAttribute("hidden", count === 0);
 
   for (const l of lines) {
@@ -181,7 +223,18 @@ function render(): void {
 }
 
 function openCart(): void {
-  if (dialog && !dialog.open) dialog.showModal();
+  hideToast();
+  if (dialog && !dialog.open) {
+    step = "cart";
+    render();
+    dialog.showModal();
+  }
+}
+
+function goToCheckout(): void {
+  step = "checkout";
+  render();
+  form?.querySelector<HTMLInputElement>('[name="customer.name"]')?.focus();
 }
 
 function fieldError(name: string, code: string | undefined): void {
@@ -329,10 +382,12 @@ function loadStock(): void {
 }
 
 document.addEventListener("click", (e) => {
-  const target = (e.target as HTMLElement).closest<HTMLElement>("[data-add], [data-open-cart], [data-close-cart]");
+  const target = (e.target as HTMLElement).closest<HTMLElement>("[data-add], [data-open-cart], [data-close-cart], [data-checkout], [data-close-toast]");
   if (!target) return;
   if (target.dataset["add"]) addToCart(target.dataset["add"]);
   else if (target.hasAttribute("data-open-cart")) openCart();
+  else if (target.hasAttribute("data-checkout")) goToCheckout();
+  else if (target.hasAttribute("data-close-toast")) hideToast();
   else dialog?.close();
 });
 dialog?.addEventListener("click", (e) => {

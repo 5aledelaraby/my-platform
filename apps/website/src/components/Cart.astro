@@ -19,6 +19,10 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
   <div id="cart-lines"></div>
   <p id="cart-limit" class="muted" role="status" hidden></p>
   <div id="cart-totals" hidden></div>
+  <div id="cart-actions" class="cart-actions" hidden>
+    <button type="button" class="btn" data-checkout>{ar ? "إتمام الطلب" : "Checkout"}</button>
+    <button type="button" class="btn ghost" data-close-cart>{ar ? "كملي التسوق" : "Keep shopping"}</button>
+  </div>
   <form id="checkout" hidden novalidate>
     <label>{ar ? "الاسم" : "Name"}
       <input name="customer.name" autocomplete="name" maxlength="80" required />
@@ -63,6 +67,15 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
     </p>
   </form>
 </dialog>
+
+<div id="cart-toast" class="toast" role="status" aria-live="polite" hidden>
+  <img src="" alt="" width="52" height="52" />
+  <div class="toast-text"><b data-toast-title></b><span class="muted" data-toast-name></span></div>
+  <div class="toast-actions">
+    <button type="button" class="btn small" data-open-cart>{ar ? "عرض السلة" : "View cart"}</button>
+    <button type="button" class="link" data-close-toast>{ar ? "كملي التسوق" : "Keep shopping"}</button>
+  </div>
+</div>
 
 <script>
   import "../scripts/cart.ts";
