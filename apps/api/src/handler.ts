@@ -1,7 +1,10 @@
-import { buildOrder, generateOrderId, validateOrderRequest } from "@platform/commerce";
+import { LIMITS, buildOrder, generateOrderId, publicStock, stockShortages, validateOrderRequest } from "@platform/commerce";
 import type { Order, PriceLookup, ShippingConfig } from "@platform/commerce";
+import { BASE_HEADERS, MAX_BODY_BYTES, errorLabel, isRecord, json, readBodyLimited } from "./http.ts";
 import type { Notifier } from "./notify.ts";
 import type { OrderRepository } from "./repository.ts";
+
+export { MAX_BODY_BYTES };
 
 export interface HandlerDeps {
   /** Authoritative prices. The client never sends prices. */
@@ -18,22 +21,18 @@ export interface HandlerDeps {
   notify?: Notifier;
   /** Keeps background work alive after the response (Workers `ctx.waitUntil`). */
   waitUntil?: (work: Promise<unknown>) => void;
+  /** Handles the admin (see admin.ts). Without it, admin paths are a plain 404. */
+  admin?: (request: Request, path: string) => Promise<Response>;
+  /**
+   * The only hostname that serves the admin, e.g. "admin.vicuna-eg.com". The admin never shares an origin with
+   * the store, so a script on a store page cannot use the owner's Access session.
+   */
+  adminHost?: string;
 }
 
-export const MAX_BODY_BYTES = 16 * 1024;
 const ID_ATTEMPTS = 5;
-
-const BASE_HEADERS = {
-  "Cache-Control": "no-store",
-  "X-Content-Type-Options": "nosniff",
-} as const;
-
-function json(status: number, body: unknown, extra: Record<string, string> = {}): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...BASE_HEADERS, "Content-Type": "application/json; charset=utf-8", ...extra },
-  });
-}
+/** Public stock is capped at what one order could use, so real quantities on hand are not disclosed. */
+const PUBLIC_STOCK_CAP = LIMITS.maxQuantityPerItem;
 
 /** What the customer gets back: no phone, no address. */
 function publicOrder(order: Order) {
@@ -49,63 +48,32 @@ function publicOrder(order: Order) {
   };
 }
 
-const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
-
-/**
- * A short, PII-free label for logs: the error name plus the kind of SQLite failure when there is one
- * (e.g. "Error:CHECK"). Never the message itself, which could one day contain request data.
- */
-function errorLabel(error: unknown): string {
-  if (!(error instanceof Error)) return "UnknownError";
-  const text = `${error.message} ${error.cause instanceof Error ? error.cause.message : ""}`;
-  const kind = /\b(UNIQUE|CHECK|NOT NULL|FOREIGN KEY) constraint failed\b/.exec(text)?.[1] ?? /\bSQLITE_[A-Z_]+\b/.exec(text)?.[0];
-  return kind ? `${error.name}:${kind.replace(" ", "_")}` : error.name;
-}
-
-/**
- * Reads the body as UTF-8 text, but stops (and cancels the stream) as soon as it exceeds `limit` bytes,
- * so a chunked or mislabelled upload is never buffered whole in memory. Returns null when too large.
- */
-async function readBodyLimited(request: Request, limit: number): Promise<string | null> {
-  if (!request.body) return "";
-  const reader = request.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    size += value.byteLength;
-    if (size > limit) {
-      await reader.cancel().catch(() => undefined);
-      return null;
-    }
-    chunks.push(value);
-  }
-  const bytes = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return new TextDecoder().decode(bytes);
-}
-
 /**
  * Routes (the optional "/api" prefix is stripped, so the Worker can sit on vicuna-eg.com/api/*):
  *   GET     /health
+ *   GET     /stock    tracked products' availability (capped), for the store pages and the cart
  *   OPTIONS /orders   CORS preflight
  *   POST    /orders   create an order
+ *   (admin)           owner-only, served only on `adminHost` behind Cloudflare Access, see admin.ts
  */
 export function createHandler(deps: HandlerDeps): (request: Request) => Promise<Response> {
   return async function handle(request) {
     const url = new URL(request.url);
+
+    // Admin host: every path belongs to the admin ("/" page, "/app.js", "/api/..." JSON).
+    if (deps.adminHost && url.hostname === deps.adminHost) {
+      if (!deps.admin) return json(404, { error: "not_found" });
+      const adminPath = url.pathname.replace(/\/+$/, "");
+      return deps.admin(request, `/admin${adminPath}`);
+    }
+
     const path = url.pathname.replace(/^\/api(?=\/|$)/, "").replace(/\/+$/, "") || "/";
     const origin = request.headers.get("Origin");
     const originAllowed = origin !== null && deps.allowedOrigins.includes(origin);
     const cors: Record<string, string> = originAllowed
       ? {
           "Access-Control-Allow-Origin": origin,
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Max-Age": "86400",
           Vary: "Origin",
@@ -113,7 +81,21 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
       : { Vary: "Origin" };
 
     if (path === "/health") {
-      return request.method === "GET" ? json(200, { ok: true }) : json(405, { error: "method_not_allowed" });
+      if (request.method !== "GET") return json(405, { error: "method_not_allowed" });
+      // Also proves the database migrations are applied (see migrations/). 503 = deploy is ahead of the schema.
+      const ready = await deps.repository.schemaReady().catch(() => false);
+      return ready ? json(200, { ok: true }) : json(503, { ok: false, error: "schema_outdated" });
+    }
+
+    if (path === "/stock") {
+      if (request.method !== "GET") return json(405, { error: "method_not_allowed" }, { Allow: "GET" });
+      try {
+        const stock = await deps.repository.stock();
+        return json(200, { stock: publicStock(stock, PUBLIC_STOCK_CAP) }, { ...cors, "Cache-Control": "public, max-age=30" });
+      } catch (error) {
+        deps.reportError?.(`stock_failed:${errorLabel(error)}`);
+        return json(500, { error: "server_error" }, cors);
+      }
     }
 
     if (path !== "/orders") return json(404, { error: "not_found" });
@@ -162,6 +144,11 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
             if (deps.waitUntil) deps.waitUntil(sent);
           }
           return json(201, { order: publicOrder(order) }, cors);
+        }
+        if (stored === "out_of_stock") {
+          // Nothing was stored. Tell the cart what is left so it can adjust.
+          const shortages = stockShortages(result.value.items, await deps.repository.stock());
+          return json(409, { error: "out_of_stock", items: shortages.map((s) => ({ id: s.id, available: s.available })) }, cors);
         }
       }
       return json(503, { error: "try_again" }, { ...cors, "Retry-After": "2" });

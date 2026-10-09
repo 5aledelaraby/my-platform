@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { SHIPPING, egp, lookupProduct } from "@platform/commerce";
 import type { Order } from "@platform/commerce";
 import { MAX_BODY_BYTES, createHandler, d1Repository, memoryRepository } from "../src/index.ts";
-import type { D1Like, HandlerDeps, OrderRepository } from "../src/index.ts";
+import type { D1Like, D1Statement, HandlerDeps, OrderRepository } from "../src/index.ts";
 
 const ORIGIN = "https://vicuna-eg.com";
 const NOW = new Date("2026-10-09T10:00:00Z");
@@ -225,6 +225,7 @@ describe("POST /orders", () => {
   it("retries on an order-id collision", async () => {
     const attempts: string[] = [];
     const flaky: OrderRepository = {
+      ...memoryRepository(),
       insert(order) {
         attempts.push(order.id);
         return Promise.resolve(attempts.length < 3 ? "conflict" : "ok");
@@ -238,7 +239,7 @@ describe("POST /orders", () => {
   });
 
   it("answers 503 when every id attempt collides", async () => {
-    const { handler } = setup({ repository: { insert: () => Promise.resolve("conflict") } });
+    const { handler } = setup({ repository: { ...memoryRepository(), insert: () => Promise.resolve("conflict") } });
     const res = await handler(post(body()));
     assert.equal(res.status, 503);
     assert.equal(res.headers.get("Retry-After"), "2");
@@ -246,7 +247,7 @@ describe("POST /orders", () => {
 
   it("hides storage failures: generic 500, only an error name is reported, no customer data", async () => {
     const reported: string[] = [];
-    const broken: OrderRepository = { insert: () => Promise.reject(new TypeError("boom 01012345678")) };
+    const broken: OrderRepository = { ...memoryRepository(), insert: () => Promise.reject(new TypeError("boom 01012345678")) };
     const { handler } = setup({ repository: broken, reportError: (n) => reported.push(n) });
     const res = await handler(post(body()));
     assert.equal(res.status, 500);
@@ -260,11 +261,14 @@ describe("d1Repository", () => {
     const calls: Array<{ sql: string; values: unknown[] }> = [];
     const db: D1Like = {
       prepare(sql) {
-        const stmt = {
+        const stmt: D1Statement = {
           bind(...values: unknown[]) {
             calls.push({ sql, values });
             return stmt;
           },
+          all: () => Promise.resolve({ results: [] }),
+          first: () => Promise.resolve(null),
+          run: () => Promise.resolve({ meta: { changes: 0 } }),
         };
         return stmt;
       },
@@ -286,14 +290,16 @@ describe("d1Repository", () => {
     totals: { itemCount: 3, subtotal: 70000, discount: 12000, net: 58000, shipping: 8000, total: 66000 },
   };
 
-  it("writes the order and one row per item in a single batch, with notes as NULL when absent", async () => {
+  it("writes the order, one row per item and one stock update per item in a single batch", async () => {
     const { db, calls } = fakeD1();
     assert.equal(await d1Repository(db).insert(order), "ok");
-    assert.equal(calls.length, 3);
+    assert.equal(calls.length, 5);
     assert.match(calls[0]?.sql ?? "", /INSERT INTO orders/);
     assert.equal(calls[0]?.values[7], null);
-    assert.equal(calls[0]?.values.length, 16);
-    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "bow-gold", "فيونكة دهبي", 20000, 2, 40000]);
+    assert.equal(calls[0]?.values.length, 17);
+    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "bow-gold", "فيونكة دهبي", 20000, 2, 40000, "bow-gold"]);
+    assert.match(calls[3]?.sql ?? "", /UPDATE inventory SET quantity = quantity - \?/);
+    assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "bow-gold"]);
   });
 
   it("maps a UNIQUE violation to conflict and rethrows anything else", async () => {
@@ -326,7 +332,7 @@ describe("d1Repository", () => {
     const { db } = fakeD1(new Error("D1_ERROR: CHECK constraint failed: total >= 0: SQLITE_CONSTRAINT"));
     let attempts = 0;
     const repo = d1Repository(db);
-    const counting: OrderRepository = { insert: (o) => (attempts++, repo.insert(o)) };
+    const counting: OrderRepository = { ...repo, insert: (o) => (attempts++, repo.insert(o)) };
     const reported: string[] = [];
     const { handler } = setup({ repository: counting, reportError: (n) => reported.push(n) });
     const res = await handler(post(body()));

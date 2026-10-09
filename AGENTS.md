@@ -47,7 +47,8 @@ pnpm check:boundaries            # architecture rules
 
 - Money is **integer piasters** (`Piasters`). Never floats, never pounds in domain code. Convert at the edges with `egp()` / `formatEgp()`.
 - Discount and totals logic exists **only** in `@platform/commerce`. The cart and the order API both call it. Never trust a price sent by the client: the API recomputes everything from the catalogue.
-- WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. The order API (`apps/api`, ADR 0008) exists. Admin dashboard, online payment, inventory and read endpoints for orders are NOT built; do not build them, or abstractions for them, until the owner asks. Never expose order reads without authentication (orders contain customers' personal data).
+- WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. The order API (`apps/api`, ADR 0008) exists, with inventory and an owner-only admin on its own hostname `admin.vicuna-eg.com` (ADR 0010; never serve admin on the store's hostname). Online payment is NOT built; do not build it, or abstractions for it, until the owner asks. Never expose order reads without authentication (orders contain customers' personal data): every admin route goes through the Access JWT check in `apps/api/src/access.ts`.
+- Stock rules live in `@platform/commerce` (`inventory.ts`); the database enforces "never below zero". A new migration must be applied to D1 before the code that needs it is pushed.
 - Orders keep a snapshot of names, unit prices and totals (piasters) as of creation time. The catalogue lives in `packages/commerce/data/catalog.json`; product ids are permanent.
 - Product `id` is permanent. A `slug` may change only together with a 301 redirect entry (ADR 0004).
 

@@ -13,7 +13,7 @@ The owner decided to create orders through an API instead of making WhatsApp the
 - Abuse controls: exact-origin allow-list, JSON-only, 16 KB body limit, honeypot field, input sanitising (control and bidi characters), quantity limits. IP rate limiting is a Cloudflare rule, not code.
 - Privacy: customer data is stored only in D1; responses omit phone and address; logs contain an error name only.
 - Order ids look like `V-MMDD-XXXXX` (same family as the legacy `V-MMDD-XXXX`, so GA4 purchases can still be matched to orders). Collisions are retried.
-- No read endpoints. Orders are read from the Cloudflare dashboard until `apps/admin` exists behind authentication.
+- No read endpoints. Orders are read from the Cloudflare dashboard until `apps/admin` exists behind authentication. (Amended by ADR 0010: owner-only reads and status changes now exist on `admin.vicuna-eg.com`, behind Cloudflare Access.)
 
 ## Consequences
 - The website cart must send `{ id, quantity }` lines plus customer fields, and handle the returned order (thank-you page, optional WhatsApp link). Money shown to customers is formatted from piasters.

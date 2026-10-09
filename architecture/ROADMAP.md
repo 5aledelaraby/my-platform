@@ -30,8 +30,8 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 | المجال | أين يعيش | يتبني لما... | يعتمد على |
 |---|---|---|---|
-| لوحة الإدارة | `apps/admin` | تعدّل المنتجات والمحتوى من واجهة بدل ملفات | api + `packages/auth` |
-| المخزون | جزء من `commerce` أولًا، ويتفصل لو كبر | تتابع كميات فعلية | commerce |
+| لوحة الإدارة | **بدأت** داخل `apps/api` على `admin.vicuna-eg.com` (الطلبات والمخزون، ADR 0010). تتنقل لـ `apps/admin` لما تعدّل المنتجات والمحتوى من واجهة | تعدّل المنتجات والمحتوى من واجهة بدل ملفات | api + `packages/auth` |
+| المخزون | **اتبنى** في `commerce` (`inventory.ts`) وD1 (ADR 0010) | — | commerce |
 | الدفع الأونلاين | `packages/payments` | تختار مزود دفع | commerce (وapi يستدعيه) |
 | الإيميل والإشعارات | `packages/notifications` | تبعت تأكيدات أو نشرات | لا شيء داخلي |
 | التتبع والإعلانات (Pixel وCAPI) | `packages/tracking` + `apps/capi-worker` | تنقل الـ CAPI من الموقع القديم | لا شيء داخلي |

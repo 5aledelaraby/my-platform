@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import worker from "../src/worker.ts";
-import type { D1Like } from "../src/index.ts";
+import type { D1Like, D1Statement } from "../src/index.ts";
 
 const db: D1Like = {
   prepare() {
-    const stmt = { bind: () => stmt };
+    const stmt: D1Statement = {
+      bind: () => stmt,
+      all: () => Promise.resolve({ results: [] }),
+      first: () => Promise.resolve(null),
+      run: () => Promise.resolve({ meta: { changes: 0 } }),
+    };
     return stmt;
   },
   batch: () => Promise.resolve([]),

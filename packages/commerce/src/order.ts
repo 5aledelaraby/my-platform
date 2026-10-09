@@ -1,4 +1,5 @@
 import type { PriceLookup } from "./catalog.ts";
+import type { OrderStatus, StockLevels } from "./inventory.ts";
 import type { Piasters } from "./money.ts";
 import type { CartTotals, ShippingConfig, ShippingMethod } from "./pricing.ts";
 import { calculateTotals } from "./pricing.ts";
@@ -16,15 +17,22 @@ export const LIMITS = {
 } as const;
 
 /**
- * How many more units of `id` a cart may take without breaking LIMITS (the same limits the API enforces).
- * 0 means the cart is full for this product: per-product, total-quantity or distinct-product limit reached.
+ * How many more units of `id` a cart may take without breaking LIMITS (the same limits the API enforces)
+ * or, when `stock` is given, the units on hand for tracked products.
+ * 0 means no more of this product: a limit is reached or it is sold out.
  */
-export function remainingQuantity(lines: ReadonlyArray<{ id: string; quantity: number }>, id: string): number {
+export function remainingQuantity(
+  lines: ReadonlyArray<{ id: string; quantity: number }>,
+  id: string,
+  stock?: StockLevels,
+): number {
   const current = lines.filter((l) => l.id === id).reduce((n, l) => n + l.quantity, 0);
   const total = lines.reduce((n, l) => n + l.quantity, 0);
   const distinct = new Set(lines.filter((l) => l.quantity > 0).map((l) => l.id)).size;
   if (current === 0 && distinct >= LIMITS.maxDistinctItems) return 0;
-  return Math.max(0, Math.min(LIMITS.maxQuantityPerItem - current, LIMITS.maxTotalQuantity - total));
+  const onHand = stock?.get(id);
+  const byStock = onHand === undefined ? Number.POSITIVE_INFINITY : onHand - current;
+  return Math.max(0, Math.min(LIMITS.maxQuantityPerItem - current, LIMITS.maxTotalQuantity - total, byStock));
 }
 
 /** A request that passed validation. Contains NO prices: prices come from the catalogue. */
@@ -48,7 +56,8 @@ export interface Order {
   id: string;
   /** ISO 8601 UTC. */
   createdAt: string;
-  status: "new";
+  /** Always "new" when created; the owner moves it on from the admin page. */
+  status: OrderStatus;
   customer: ValidOrderRequest["customer"];
   items: OrderItem[];
   shippingMethod: ShippingMethod;

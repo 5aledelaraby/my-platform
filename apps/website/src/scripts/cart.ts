@@ -10,6 +10,7 @@ interface Line { id: string; quantity: number }
 const KEY = "vicuna-cart-v1";
 const ORDER_KEY = "vicuna-last-order";
 const API_URL = (import.meta.env.PUBLIC_API_URL as string | undefined) ?? "/api/orders";
+const STOCK_URL = API_URL.replace(/\/orders\/?$/, "/stock");
 const lang: Lang = document.documentElement.lang === "en" ? "en" : "ar";
 
 const T = {
@@ -21,6 +22,8 @@ const T = {
     busy: "الخدمة مشغولة، جرّبي تاني بعد ثواني.", fix: "راجعي الخانات المميزة.", qtyMax: "أقصى كمية",
     full: `وصلتِ للحد الأقصى للطلب الواحد (${LIMITS.maxTotalQuantity} حزام أو ${LIMITS.maxDistinctItems} منتج مختلف). للكميات الأكبر كلمينا على واتساب.`,
     items: "في مشكلة في منتجات السلة. راجعي الكميات أو احذفي المنتج وأضيفيه تاني.",
+    soldOut: "بعض المنتجات نفدت أو المتاح منها أقل، فعدّلنا السلة. راجعيها وأكّدي الطلب تاني.", soldOutBtn: "نفدت الكمية",
+    trimmed: "عدّلنا بعض الكميات في السلة على حسب المتاح.",
   },
   en: {
     cur: "EGP", free: "Free", remove: "Remove", sending: "Sending...", submit: "Place order",
@@ -30,6 +33,8 @@ const T = {
     busy: "The service is busy, please try again in a few seconds.", fix: "Please check the highlighted fields.", qtyMax: "Maximum quantity",
     full: `You have reached the limit for one order (${LIMITS.maxTotalQuantity} belts or ${LIMITS.maxDistinctItems} different products). For larger orders, contact us on WhatsApp.`,
     items: "There is a problem with the items in your cart. Check the quantities, or remove the product and add it again.",
+    soldOut: "Some items sold out or have fewer left, so we updated your cart. Please check it and place the order again.", soldOutBtn: "Sold out",
+    trimmed: "We adjusted some quantities in your cart to what is available.",
   },
 }[lang];
 
@@ -55,6 +60,8 @@ function load(): Line[] {
   }
 }
 let lines: Line[] = load();
+/** Tracked products only (from GET /api/stock). Unknown until loaded; the API enforces stock either way. */
+let stock: Map<string, number> | undefined;
 
 function save(): void {
   try {
@@ -91,8 +98,9 @@ function el(tag: string, cls?: string, text?: string): HTMLElement {
 }
 
 function setQty(id: string, quantity: number): void {
+  trimmedNotice = false;
   const current = lines.find((l) => l.id === id)?.quantity ?? 0;
-  const next = Math.min(quantity, current + remainingQuantity(lines, id));
+  const next = Math.min(quantity, current + remainingQuantity(lines, id, stock));
   lines = next <= 0 ? lines.filter((l) => l.id !== id) : lines.map((l) => (l.id === id ? { ...l, quantity: next } : l));
   save();
   render();
@@ -100,7 +108,8 @@ function setQty(id: string, quantity: number): void {
 
 export function addToCart(id: string): void {
   if (!lookupProduct(id)) return;
-  if (remainingQuantity(lines, id) > 0) {
+  trimmedNotice = false;
+  if (remainingQuantity(lines, id, stock) > 0) {
     const existing = lines.find((l) => l.id === id);
     if (existing) existing.quantity += 1;
     else lines.push({ id, quantity: 1 });
@@ -142,7 +151,7 @@ function render(): void {
     plus.setAttribute("aria-label", `+ ${name}`);
     minus.addEventListener("click", () => setQty(l.id, l.quantity - 1));
     plus.addEventListener("click", () => setQty(l.id, l.quantity + 1));
-    plus.disabled = remainingQuantity(lines, l.id) === 0;
+    plus.disabled = remainingQuantity(lines, l.id, stock) === 0;
     qty.append(minus, el("span", undefined, String(l.quantity)), plus);
     const rm = el("button", "link", T.remove) as HTMLButtonElement;
     rm.type = "button";
@@ -153,8 +162,9 @@ function render(): void {
 
   if (limitEl) {
     const full = lines.length > 0 && remainingQuantity(lines, "") === 0;
-    limitEl.textContent = full ? T.full : "";
-    limitEl.toggleAttribute("hidden", !full);
+    const notice = full ? T.full : trimmedNotice ? T.trimmed : "";
+    limitEl.textContent = notice;
+    limitEl.toggleAttribute("hidden", notice === "");
   }
 
   const t = calculateTotals(cartLines(), shippingMethod(), SHIPPING);
@@ -223,7 +233,11 @@ async function submit(event: SubmitEvent): Promise<void> {
   submitBtn.textContent = T.sending;
   try {
     const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const data = (await res.json().catch(() => ({}))) as { order?: unknown; errors?: Record<string, string> };
+    const data = (await res.json().catch(() => ({}))) as {
+      order?: unknown;
+      errors?: Record<string, string>;
+      items?: Array<{ id?: unknown; available?: unknown }>;
+    };
     if (res.status === 201 && data.order) {
       try {
         sessionStorage.setItem(ORDER_KEY, JSON.stringify(data.order));
@@ -235,7 +249,14 @@ async function submit(event: SubmitEvent): Promise<void> {
       location.assign(lang === "en" ? "/en/thanks/" : "/thanks/");
       return;
     }
-    if (res.status === 422 && data.errors) {
+    if (res.status === 409 && Array.isArray(data.items)) {
+      const next = new Map(stock ?? []);
+      for (const item of data.items) {
+        if (typeof item?.id === "string" && typeof item?.available === "number") next.set(item.id, item.available);
+      }
+      applyStock(next);
+      statusEl.textContent = T.soldOut;
+    } else if (res.status === 422 && data.errors) {
       FIELDS.forEach((f) => fieldError(f, data.errors?.[f]));
       const itemProblem = Object.keys(data.errors).some((k) => k === "items" || k.startsWith("items["));
       statusEl.textContent = itemProblem ? T.items : T.fix;
@@ -247,6 +268,62 @@ async function submit(event: SubmitEvent): Promise<void> {
   }
   submitBtn.disabled = false;
   submitBtn.textContent = T.submit;
+}
+
+/** Shown once after the cart was reduced to what is in stock. */
+let trimmedNotice = false;
+
+/** Reduces cart lines to the tracked stock. Returns true when something changed. */
+function trimToStock(): boolean {
+  if (!stock) return false;
+  let changed = false;
+  lines = lines.flatMap((l) => {
+    const onHand = stock?.get(l.id);
+    if (onHand === undefined || l.quantity <= onHand) return [l];
+    changed = true;
+    return onHand > 0 ? [{ id: l.id, quantity: onHand }] : [];
+  });
+  if (changed) save();
+  return changed;
+}
+
+/** Marks sold-out products on the page: disabled add buttons, "sold out" labels. */
+function markSoldOut(): void {
+  if (!stock) return;
+  document.querySelectorAll<HTMLElement>("[data-soldout-for]").forEach((n) => {
+    n.hidden = stock?.get(n.dataset["soldoutFor"] ?? "") !== 0;
+  });
+  document.querySelectorAll<HTMLButtonElement>("button[data-add]").forEach((b) => {
+    const out = stock?.get(b.dataset["add"] ?? "") === 0;
+    if (out && !b.disabled) {
+      b.dataset["label"] = b.textContent ?? "";
+      b.textContent = T.soldOutBtn;
+    } else if (!out && b.disabled && b.dataset["label"]) {
+      b.textContent = b.dataset["label"];
+    }
+    b.disabled = out;
+  });
+}
+
+function applyStock(next: Map<string, number>): void {
+  stock = next;
+  if (trimToStock()) trimmedNotice = true;
+  markSoldOut();
+  render();
+}
+
+function loadStock(): void {
+  fetch(STOCK_URL, { headers: { Accept: "application/json" } })
+    .then((res) => (res.ok ? (res.json() as Promise<{ stock?: Record<string, unknown> }>) : null))
+    .then((data) => {
+      if (!data?.stock || typeof data.stock !== "object") return;
+      const next = new Map<string, number>();
+      for (const [id, q] of Object.entries(data.stock)) if (typeof q === "number" && Number.isInteger(q) && q >= 0) next.set(id, q);
+      applyStock(next);
+    })
+    .catch(() => {
+      /* stock unknown: the page stays as built, and the API still refuses what is not in stock */
+    });
 }
 
 document.addEventListener("click", (e) => {
@@ -270,3 +347,4 @@ window.addEventListener("storage", (e) => {
   }
 });
 render();
+loadStock();

@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { SHIPPING, lookupProduct } from "@platform/commerce";
 import type { Order } from "@platform/commerce";
 import { createHandler, formatOrderMessage, memoryRepository, telegramNotifier } from "../src/index.ts";
-import type { HandlerDeps, Notifier } from "../src/index.ts";
+import type { D1Statement, HandlerDeps, Notifier } from "../src/index.ts";
 import worker from "../src/worker.ts";
 
 const order: Order = {
@@ -141,7 +141,12 @@ describe("handler + notification", () => {
 describe("worker wiring", () => {
   const db = {
     prepare() {
-      const stmt = { bind: () => stmt };
+      const stmt: D1Statement = {
+        bind: () => stmt,
+        all: () => Promise.resolve({ results: [] }),
+        first: () => Promise.resolve(null),
+        run: () => Promise.resolve({ meta: { changes: 0 } }),
+      };
       return stmt;
     },
     batch: () => Promise.resolve([]),

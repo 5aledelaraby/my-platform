@@ -3,12 +3,21 @@ main = "src/worker.ts"
 compatibility_date = "2026-10-01"
 # Top-level key: must stay above the first [table], or TOML attaches it to that table and wrangler ignores it.
 # The API shares the site's hostname under /api/*. Production route is added at cutover.
-routes = [{ pattern = "staging.vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" }]
+# admin.vicuna-eg.com serves only the owner admin (ADR 0010), on its own origin, behind Cloudflare Access.
+routes = [
+  { pattern = "staging.vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" },
+  { pattern = "admin.vicuna-eg.com", custom_domain = true },
+]
+# Reachable only through the routes above, where Cloudflare's rules (rate limiting, Access) apply.
+workers_dev = false
+preview_urls = false
 
 [vars]
 # Exact origins allowed to POST from a browser. For local development put
 # ALLOWED_ORIGINS="http://localhost:4321" in apps/api/.dev.vars (that file is git-ignored).
 ALLOWED_ORIGINS = "https://vicuna-eg.com,https://www.vicuna-eg.com,https://staging.vicuna-eg.com"
+# The only hostname that serves the admin. Not a secret.
+ADMIN_HOST = "admin.vicuna-eg.com"
 
 [[d1_databases]]
 binding = "DB"

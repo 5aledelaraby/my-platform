@@ -21,7 +21,7 @@ describe("wrangler.toml", () => {
     it(`${file.replace(/^(\.\.\/)+/, "")} keeps top-level keys above the first [table]`, () => {
       const toml = readFileSync(new URL(file, import.meta.url), "utf8");
       assert.deepEqual(topLevelViolations(toml), []);
-      assert.match(toml, /^routes\s*=.*staging\.vicuna-eg\.com/m);
+      assert.match(toml, /^routes\s*=\s*\[[^\]]*staging\.vicuna-eg\.com/m);
     });
   }
 

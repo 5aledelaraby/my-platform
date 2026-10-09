@@ -12,4 +12,5 @@ const name = productName(lang, product);
   <img src={thumbOf(product)} srcset={`${thumbOf(product)} 480w, ${imageOf(product)} 900w`} sizes="(min-width: 760px) 25vw, 50vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />
   <span class="card-name">{name}</span>
   <span class="card-price">{priceOfProduct(product)} {lang === "ar" ? "جنيه" : "EGP"}</span>
+  <span class="card-out" data-soldout-for={product.id} hidden>{lang === "ar" ? "نفدت الكمية" : "Sold out"}</span>
 </a>
