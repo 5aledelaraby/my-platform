@@ -56,13 +56,13 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Tahoma, san
 .top { position: sticky; top: 0; background: #fff; border-bottom: 1px solid var(--line); padding: 12px 16px; z-index: 2; }
 h1 { font-size: 1.2rem; margin: 0 0 10px; }
 .tabs { display: flex; gap: 8px; }
-.tabs button { flex: 1; padding: 10px; border: 1px solid var(--line); background: #fff; border-radius: 8px; font: inherit; font-weight: 700; }
+.tabs button { flex: 1; padding: 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; font: inherit; font-weight: 700; }
 .tabs button[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
 main { padding: 12px 16px 48px; max-width: 760px; margin: 0 auto; }
 .bar { display: flex; gap: 10px; align-items: end; margin-bottom: 10px; }
 .bar label { flex: 1; display: grid; gap: 4px; font-size: .9rem; color: var(--muted); }
 select, input { font: inherit; padding: 10px; border: 1px solid #d9cfd2; border-radius: 8px; background: #fff; width: 100%; }
-button { font: inherit; cursor: pointer; }
+button { font: inherit; cursor: pointer; color: var(--ink); }
 .btn, .ghost { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--ink); font-weight: 700; }
 .btn { background: var(--ink); color: #fff; }
 .ghost { background: #fff; color: var(--ink); }
