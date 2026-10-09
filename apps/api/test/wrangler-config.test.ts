@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 
-const TOP_LEVEL_KEYS = ["name", "main", "compatibility_date", "routes", "workers_dev", "preview_urls"];
+const TOP_LEVEL_KEYS = ["name", "main", "compatibility_date", "routes", "workers_dev", "preview_urls", "keep_vars"];
 
 function topLevelViolations(toml: string): string[] {
   const lines = toml.split("\n");
