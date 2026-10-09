@@ -121,7 +121,7 @@ p { margin: 0; }
   .tiles { grid-template-columns: repeat(3, 1fr); gap: 28px 20px; }
   .cols3 { grid-template-columns: repeat(3, 1fr); gap: 36px; }
   .promises { grid-template-columns: repeat(2, 1fr); gap: 0 48px; }
-  .footer-grid { grid-template-columns: 2fr 1fr 1fr; }
+  .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
 }
 @media (min-width: 960px) {
   .hero-grid { grid-template-columns: 1fr 1.15fr; gap: 56px; }
@@ -233,4 +233,16 @@ dialog.cart::backdrop { background: rgba(0,0,0,.45); }
 .prose a { color: var(--berry); }
 .prose img { width: 100%; max-width: 520px; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 6px; margin: 1em 0; }
 .more-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+/* policy pages */
+.policy .prose h2 { font-size: 1.35rem; margin-top: 1.8em; }
+.policy-summary { background: var(--soft); border-inline-start: 4px solid var(--berry); padding: 14px 18px; border-radius: 4px; }
+.prose table { width: 100%; border-collapse: collapse; margin: 0 0 1em; font-size: 0.98rem; }
+.prose th, .prose td { text-align: start; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.prose th { font-weight: 700; }
+.prose td:last-child { white-space: nowrap; }
+.prose li { margin-bottom: 0.4em; }
+.prose ul ul { margin: 0.4em 0 0; }
+.policy-nav { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); }
+.checkout-consent { font-size: 13px; margin: 8px 0 0; }
+.checkout-consent a { color: inherit; }
 @media (min-width: 760px) { .posts { grid-template-columns: repeat(3, 1fr); } }

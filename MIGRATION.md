@@ -9,7 +9,7 @@
 | الكتالوج (6 ستايلات و38 منتج) | `src/data/products.ts` | **تم**: `packages/commerce/data/catalog.json` | الأسعار بالقروش. السعر من الستايل. الـ API يعتمد عليه |
 | صور المنتجات (38) | `src/assets/products/*.jpg` | `apps/website/src/assets` | مربعة، اسم الملف = id المنتج |
 | 9 مقالات SEO | `src/content/blog/*.md` | `content/articles/` | تُراجع بـ `parseArticleFrontmatter` وتُكمَّل بـ `slug` و`datePublished` |
-| الصفحات القانونية (خصوصية، شروط، استرجاع) عربي/إنجليزي | `src/content/{privacy,terms,returns}*.ts` | `content/pages/` | |
+| الصفحات القانونية (خصوصية، شروط، استرجاع) عربي/إنجليزي | `src/content/{privacy,terms,returns}*.ts` | `apps/website/src/policies/` | تم: نفس المسارات، ومراجعة على قانون 181/2018 و151/2020 |
 | نصوص "عن فيكونا" و FAQ و SEO copy | `src/content/about*.ts`, `src/data/{faq,seo-copy}.ts` | `content/` | |
 | إعدادات المتجر (شحن 80/120، مجاني فوق 1500، استرجاع 14 يوم، بيانات الشركة) | `src/data/site.ts` | `apps/website/src/site.config.ts` | الشحن يتحول لقروش |
 | الهوية: لوجو، ختم، أيقونات | `brand/` | `apps/website/public/brand/` أو `packages/ui` | |
@@ -54,7 +54,7 @@
 
 ## متبقي قبل تحويل الدومين (من مراجعة 2026-10-09)
 
-- صفحات `/privacy/` و`/returns/` و`/terms/` (وبالإنجليزي): موجودة في القديم ومش موجودة في الجديد، فهتطلع 404. محتواها في `src/content/{privacy,terms,returns}*.ts` في الريبو القديم، ومحتاج مراجعة المالك قبل النقل، وبعدها تتضاف لـ `_redirects` لو اتغيّر مسارها.
+- صفحات `/privacy/` و`/returns/` و`/terms/` (وبالإنجليزي): **تمت** بنفس المسارات، فمش محتاجة تحويل. ناقص من المالك: رقم التسجيل الضريبي (`site.taxNumber`)، وقراره في مصاريف شحن الإرجاع عند تغيير الرأي، ومدة الشحن السريع.
 - ملف كتالوج Meta/Google: القديم بينشر `/catalog/products.csv` وصوره `/catalog/img/`. لو كتالوج فيسبوك أو Merchant Center بيسحب من الرابط ده، هيقف بعد التحويل. لازم نتأكد ونبني بديل قبل التحويل.
 - قاعدة Rate limiting في Cloudflare على `POST /api/orders`، وإيقاف رابط `workers.dev` للـ API بعد ما الربط على الدومين يشتغل (لأن قواعد الحماية بتتطبق على الدومين بس).
 - فصل بيانات التجربة: الموقع التجريبي والإنتاج بيكتبوا دلوقتي في نفس قاعدة D1 (`vicuna-db`). الأفضل قاعدة منفصلة للتجربة، أو على الأقل مسح طلبات التجربة قبل التحويل.

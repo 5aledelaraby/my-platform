@@ -1,0 +1,30 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import { POLICY_IDS, formatPolicyDate, getPolicy, policyPath } from "../policies/index.ts";
+import type { PolicyId } from "../policies/index.ts";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { id: PolicyId; lang: Lang }
+const { id, lang } = Astro.props;
+const ar = lang === "ar";
+const doc = getPolicy(id, lang);
+const other: Lang = ar ? "en" : "ar";
+const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") }, { name: doc.title }];
+---
+
+<Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang} altPath={policyPath(other, id)}>
+  <Breadcrumbs items={crumbs} />
+  <article class="wrap article policy">
+    <header>
+      <h1>{doc.title}</h1>
+      <p class="muted">{ar ? "آخر تحديث:" : "Last updated:"} <time datetime={site.policiesUpdated}>{formatPolicyDate(lang, site.policiesUpdated)}</time></p>
+    </header>
+    <div class="prose" set:html={doc.html} />
+    <p class="muted">{ar ? "عند أي اختلاف بين النسختين العربية والإنجليزية من هذه الصفحة، تُعتمد النسخة العربية." : "If the Arabic and English versions of this page differ, the Arabic version applies."}</p>
+    <nav class="policy-nav" aria-label={ar ? "سياسات المتجر" : "Store policies"}>
+      {POLICY_IDS.filter((p) => p !== id).map((p) => <a class="textlink" href={policyPath(lang, p)}>{getPolicy(p, lang).title}</a>)}
+    </nav>
+  </article>
+</Base>

@@ -1,6 +1,6 @@
 # Old site (vicuna-eg.com before the new platform) -> new URLs. Permanent (301).
 # Generated from the old site's pages and checked by scripts/check-dist.mjs (every target must exist).
-# Not redirected yet, because the new pages do not exist: /privacy/ /returns/ /terms/ (and /en/...).
+# /privacy/ /returns/ /terms/ (and /en/...) keep the same URLs on the new site, so they need no redirect.
 
 /lace/ /belts/lace/ 301
 /lace /belts/lace/ 301

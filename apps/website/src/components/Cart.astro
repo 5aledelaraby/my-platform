@@ -1,5 +1,6 @@
 ---
 import { GOVERNORATES, GOVERNORATES_EN, SHIPPING, formatEgp } from "@platform/commerce";
+import { policyPath } from "../policies/index.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -43,7 +44,7 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
     </label>
     <fieldset>
       <legend>{ar ? "الشحن" : "Shipping"}</legend>
-      <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}, {ar ? `مجاني فوق ${formatEgp(SHIPPING.freeOver)}` : `free over ${formatEgp(SHIPPING.freeOver)}`})</label>
+      <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}, {ar ? `مجاني من ${formatEgp(SHIPPING.freeOver)}` : `free from ${formatEgp(SHIPPING.freeOver)}`})</label>
       <label class="radio"><input type="radio" name="shippingMethod" value="express" /> {ar ? "سريع" : "Express"} ({formatEgp(SHIPPING.express)} {cur})</label>
     </fieldset>
     <fieldset>
@@ -54,6 +55,12 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
     <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
     <p id="checkout-status" class="err" role="status"></p>
     <button id="checkout-submit" type="submit" class="btn">{ar ? "تأكيد الطلب" : "Place order"}</button>
+    <p class="checkout-consent muted">
+      {ar ? "بالضغط على «تأكيد الطلب» توافقين على " : "By pressing \u201cPlace order\u201d you agree to the "}
+      <a href={policyPath(lang, "terms")}>{ar ? "الشروط والأحكام" : "terms"}</a>
+      {ar ? " و" : " and the "}
+      <a href={policyPath(lang, "privacy")}>{ar ? "سياسة الخصوصية" : "privacy policy"}</a>{ar ? "، ومنها حفظ بيانات طلبكِ لدى خدمات تقع خوادمها خارج مصر." : ", including storing your order details with services whose servers are outside Egypt."}
+    </p>
   </form>
 </dialog>
 

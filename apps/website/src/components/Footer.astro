@@ -1,4 +1,5 @@
 ---
+import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
 import { site } from "../site.ts";
 import { beltsUrl, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
@@ -26,6 +27,12 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
         <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
         {ar && <li><a href="/blog/">المقالات</a></li>}
         {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <h3>{ar ? "المساعدة" : "Help"}</h3>
+      <ul>
+        {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
       </ul>
     </div>
     <div>

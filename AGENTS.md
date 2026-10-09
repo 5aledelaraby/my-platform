@@ -60,6 +60,12 @@ pnpm check:boundaries            # architecture rules
 - JSON-LD only through `@platform/seo` and serialized with `serializeJsonLd()` (XSS-safe).
 - **No `aggregateRating`, `review` or fake social proof, ever.** Only real, verifiable reviews, and only after the owner approves.
 
+## Policy pages
+
+- `/returns/`, `/terms/` and `/privacy/` (and `/en/...`) are built from `apps/website/src/policies/`. Every fee, day count and percentage comes from `site.ts` or `@platform/commerce`; never type one into the text.
+- The privacy page must describe what the site really does with personal data. Adding analytics, an ad pixel, or any new service that receives order or customer data requires updating `privacy.ts` (and `site.policiesUpdated`) in the same change, before it goes live.
+- Policies may give customers more than Egypt's Consumer Protection Law 181/2018 and Personal Data Protection Law 151/2020 require, never less.
+
 ## Brand and content rules (non-negotiable)
 
 - Regular belts are **"جلد PU"**. Never write "جلد طبيعي" for them. Natural leather appears only for the bespoke/custom service.

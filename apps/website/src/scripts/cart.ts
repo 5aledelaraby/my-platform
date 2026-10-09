@@ -240,7 +240,9 @@ async function submit(event: SubmitEvent): Promise<void> {
     };
     if (res.status === 201 && data.order) {
       try {
-        sessionStorage.setItem(ORDER_KEY, JSON.stringify(data.order));
+        // Only what the thank-you page shows; the customer's name, phone and address are not kept in the browser.
+        const o = data.order as { id?: unknown; paymentMethod?: unknown; totals?: { total?: unknown } };
+        sessionStorage.setItem(ORDER_KEY, JSON.stringify({ id: o.id, paymentMethod: o.paymentMethod, totals: { total: o.totals?.total } }));
       } catch {
         /* the thank-you page still shows a generic message */
       }
