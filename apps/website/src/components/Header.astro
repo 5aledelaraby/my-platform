@@ -1,22 +1,75 @@
 ---
-import { langPath } from "../site.ts";
+import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
+import { beltsUrl, styleText, styles } from "../store.ts";
+import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang; altHref: string }
 const { lang, altHref } = Astro.props;
 const ar = lang === "ar";
+const home = langPath(lang, "/");
+const wa = `https://wa.me/${site.whatsappInternational}`;
 ---
 
 <header class="site-header">
-  <div class="wrap">
-    <a class="logo" href={langPath(lang, "/")} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}>
+  <div class="wrap header-bar">
+    <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M3 6.5h18M3 12h18M3 17.5h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+    </button>
+    <a class="logo" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}>
       <img src="/brand/vicuna-lockup.svg" alt="Vicuna" width="125" height="40" />
     </a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
-      <a href={langPath(lang, "/belts/")}>{ar ? "الأحزمة" : "Belts"}</a>
+      <a href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
       {ar && <a href="/blog/">المقالات</a>}
-      <button type="button" class="cart-btn" data-open-cart>{ar ? "السلة" : "Cart"} <span data-cart-count hidden>0</span></button>
+      <a href={policyPath(lang, "returns")}>{ar ? "الشحن والاسترجاع" : "Shipping & returns"}</a>
       <a class="lang" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"}>{ar ? "English" : "العربية"}</a>
     </nav>
+    <button type="button" class="icon-btn cart-btn" data-open-cart aria-label={ar ? "السلة" : "Cart"}>
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M5.5 8.5h13l-1 12h-11z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+      <span data-cart-count hidden>0</span>
+    </button>
   </div>
 </header>
+
+<dialog id="menu" class="menu" aria-label={ar ? "القائمة" : "Menu"}>
+  <div class="menu-inner" tabindex="-1" autofocus>
+  <div class="menu-head">
+    <a class="logo" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><img src="/brand/vicuna-lockup.svg" alt="Vicuna" width="125" height="40" /></a>
+    <button type="button" class="icon-btn" data-close-menu aria-label={ar ? "إغلاق" : "Close"}>✕</button>
+  </div>
+  <nav aria-label={ar ? "القائمة" : "Menu"}>
+    <ul class="menu-list">
+      <li><a href={home}>{ar ? "الرئيسية" : "Home"}</a></li>
+      <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+      {ar && <li><a href="/blog/">المقالات</a></li>}
+    </ul>
+    <p class="menu-label">{ar ? "الموديلات" : "Styles"}</p>
+    <ul class="menu-list sub">
+      {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
+    </ul>
+    <p class="menu-label">{ar ? "المساعدة" : "Help"}</p>
+    <ul class="menu-list sub">
+      {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
+      <li><a href={wa} rel="noopener noreferrer">{ar ? "تواصلي معنا على واتساب" : "Chat with us on WhatsApp"}</a></li>
+    </ul>
+    <a class="menu-lang" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"}>{ar ? "English" : "العربية"}</a>
+  </nav>
+  </div>
+</dialog>
+
+<script>
+  const menu = document.getElementById("menu") as HTMLDialogElement | null;
+  const openBtn = document.querySelector<HTMLButtonElement>("[data-open-menu]");
+  openBtn?.addEventListener("click", () => {
+    if (!menu || menu.open) return;
+    menu.showModal();
+    openBtn.setAttribute("aria-expanded", "true");
+  });
+  menu?.addEventListener("close", () => openBtn?.setAttribute("aria-expanded", "false"));
+  // Close on the ✕ button or a tap on the dimmed area outside the panel (the panel itself is .menu-inner).
+  menu?.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (target === menu || target.closest("[data-close-menu]")) menu.close();
+  });
+</script>
