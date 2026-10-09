@@ -15,7 +15,7 @@ export const site = {
   legalFormEn: "limited liability company",
   commercialRegister: "196463",
   /** Tax registration number (Consumer Protection Law 181/2018, Art. 37). Shown on the terms page once set. */
-  taxNumber: "",
+  taxNumber: "704-112-639",
   addressAr: "21 شارع عباس العقاد، مدينة نصر، القاهرة 11371",
   addressEn: "21 Abbas El Akkad street, Nasr City, Cairo 11371, Egypt",
   refundDays: 7,

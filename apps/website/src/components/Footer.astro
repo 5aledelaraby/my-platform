@@ -17,7 +17,8 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
       <p>{ar ? "أحزمة خصر نسائية بقصّ ليزر وخياطة يدوية، نوصّلها إلى جميع محافظات مصر." : "Women's waist belts, laser-cut and hand-sewn, delivered across Egypt."}</p>
       <p class="legal">
         {ar ? site.legalNameAr : site.legalNameEn}<br />
-        {ar ? "سجل تجاري" : "Commercial register"} {site.commercialRegister}<br />
+        {ar ? "سجل تجاري" : "Commercial register"} <bdi>{site.commercialRegister}</bdi><br />
+        {ar ? "رقم التسجيل الضريبي" : "Tax registration no."} <bdi>{site.taxNumber}</bdi><br />
         {ar ? site.addressAr : site.addressEn}
       </p>
     </div>

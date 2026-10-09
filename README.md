@@ -52,7 +52,7 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers.
 2. اختبار الطلب كامل على `staging.vicuna-eg.com` (السلة ثم الـ API ثم D1 ثم صفحة الشكر).
-3. قبل تحويل الدومين: رقم التسجيل الضريبي في صفحة الشروط، وفصل قاعدة بيانات التجربة عن الإنتاج. القائمة الكاملة في `MIGRATION.md`.
+3. قبل تحويل الدومين: فصل قاعدة بيانات التجربة عن الإنتاج. القائمة الكاملة في `MIGRATION.md`.
 4. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. تحويلات 301 من روابط الموقع القديم جاهزة في `apps/website/public/_redirects`.
 5. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
 

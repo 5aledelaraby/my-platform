@@ -50,6 +50,7 @@ describe("policy pages", () => {
       const terms = getPolicy("terms", lang).html;
       assert.match(terms, /25%[\s\S]*35%/);
       assert.ok(terms.includes(site.commercialRegister));
+      assert.ok(site.taxNumber && terms.includes(site.taxNumber));
       assert.ok(terms.includes(site.consumerAgency.hotline));
     }
   });
