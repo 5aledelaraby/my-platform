@@ -50,7 +50,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 </ul>
 
 <h2>5. حفظ البيانات خارج مصر</h2>
-<p>تقع خوادم Cloudflare وTelegram وWhatsApp وGoogle خارج مصر، لذلك تُحفظ بيانات طلبكِ وتُعالج خارج مصر، للأغراض المذكورة في هذه الصفحة فقط. نعتمد في ذلك على تنفيذ طلبكِ، وعلى موافقتكِ الصريحة عند الضغط على «تأكيد الطلب».</p>
+<p>تقع خوادم Cloudflare وTelegram وWhatsApp وGoogle خارج مصر، لذلك تُحفظ بيانات طلبكِ وتُعالج خارج مصر، للأغراض المذكورة في هذه الصفحة فقط. نعتمد في ذلك على تنفيذ طلبكِ، وعلى موافقتكِ على هذه السياسة عند إرسال الطلب.</p>
 
 <h2>6. مدة الاحتفاظ</h2>
 <ul>
@@ -129,7 +129,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 </ul>
 
 <h2>5. Storage outside Egypt</h2>
-<p>Cloudflare, Telegram, WhatsApp and Google servers are outside Egypt, so your order details are stored and processed outside Egypt, only for the purposes on this page. We rely on fulfilling your order and on your explicit consent when you press "Place order".</p>
+<p>Cloudflare, Telegram, WhatsApp and Google servers are outside Egypt, so your order details are stored and processed outside Egypt, only for the purposes on this page. We rely on fulfilling your order and on your agreement to this policy when you send the order.</p>
 
 <h2>6. How long we keep it</h2>
 <ul>
