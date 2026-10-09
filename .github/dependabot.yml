@@ -5,6 +5,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Node types must match the runtime (Node 22 locally, in CI and on Cloudflare builds).
+      # Raise this together with .nvmrc, engines and the CI node-version, never alone.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
