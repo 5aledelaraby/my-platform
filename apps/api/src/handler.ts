@@ -1,5 +1,6 @@
 import { buildOrder, generateOrderId, validateOrderRequest } from "@platform/commerce";
 import type { Order, PriceLookup, ShippingConfig } from "@platform/commerce";
+import type { Notifier } from "./notify.ts";
 import type { OrderRepository } from "./repository.ts";
 
 export interface HandlerDeps {
@@ -13,6 +14,10 @@ export interface HandlerDeps {
   randomBytes: (length: number) => Uint8Array;
   /** Receives only a short error label (name and failure kind), never request data (it contains personal details). */
   reportError?: (name: string) => void;
+  /** Tells the owner about a stored order (e.g. Telegram). Optional; its failure never fails the order. */
+  notify?: Notifier;
+  /** Keeps background work alive after the response (Workers `ctx.waitUntil`). */
+  waitUntil?: (work: Promise<unknown>) => void;
 }
 
 export const MAX_BODY_BYTES = 16 * 1024;
@@ -151,7 +156,13 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
           now,
         });
         const stored = await deps.repository.insert(order);
-        if (stored === "ok") return json(201, { order: publicOrder(order) }, cors);
+        if (stored === "ok") {
+          if (deps.notify) {
+            const sent = deps.notify(order).catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
+            if (deps.waitUntil) deps.waitUntil(sent);
+          }
+          return json(201, { order: publicOrder(order) }, cors);
+        }
       }
       return json(503, { error: "try_again" }, { ...cors, "Retry-After": "2" });
     } catch (error) {
