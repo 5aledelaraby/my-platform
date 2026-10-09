@@ -4,7 +4,9 @@ import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import { beltsUrl, coverOf, imageOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
 import type { CatalogProduct } from "@platform/commerce";
+import OfferStrip from "./OfferStrip.astro";
 import ProductCard from "./ProductCard.astro";
+import Icon from "./ui/Icon.astro";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -68,37 +70,45 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
 <Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", product.id)} jsonLd={jsonLd} image={imageOf(product)}>
   <Breadcrumbs items={crumbs} />
   <div class="wrap product">
-    <img class="main" src={imageOf(product)} alt={name} width="900" height="900" fetchpriority="high" />
-    <div>
+    <figure class="pdp-photo" style={`--tint:${product.hex}`}>
+      <img src={imageOf(product)} alt={name} width="900" height="900" fetchpriority="high" />
+    </figure>
+    <div class="pdp-info">
+      <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
       <h1>{name}</h1>
-      <div class="price">{price(product.style)} {cur}</div>
+      <div class="price">{price(product.style)} <small>{cur}</small></div>
       <p class="soldout" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية حاليًا. كلمينا على واتساب نبلغك أول ما يتوفر." : "Sold out for now. Message us on WhatsApp and we will tell you when it is back."}</p>
       <p class="muted">{st.intro}</p>
-      <div class="swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
-        {siblings.map((s) => (
-          <a href={beltsUrl(lang, s.id)} style={`background:${s.hex}`} title={productName(lang, s)} aria-label={productName(lang, s)} aria-current={s.id === product.id ? "true" : undefined}></a>
+      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b>{productName(lang, product)}</b></p>
+      <div class="pdp-swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
+        {siblings.map((sib) => (
+          <a class="swatch big" href={beltsUrl(lang, sib.id)} style={`--c:${sib.hex}`} title={productName(lang, sib)} aria-label={productName(lang, sib)} aria-current={sib.id === product.id ? "true" : undefined}></a>
         ))}
       </div>
-      <div class="hero-actions">
-        <button type="button" class="btn" data-add={product.id}>{ar ? "أضيفي للسلة" : "Add to cart"}</button>
-        <a class="btn ghost" href={wa} rel="noopener noreferrer">{ar ? "أو اطلبي على واتساب" : "Or order on WhatsApp"}</a>
+      <div class="pdp-actions">
+        <button type="button" class="btn btn-berry btn-block" data-add={product.id}><Icon name="bag" size={20} /> {ar ? "أضيفي للسلة" : "Add to cart"}</button>
+        <a class="btn btn-white btn-block" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "أو اطلبي على واتساب" : "Or order on WhatsApp"}</a>
       </div>
-      <ul class="specs">
-        <li>{ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}</li>
-        <li>{ar ? `استرجاع خلال ${site.returnDays} يوم` : `${site.returnDays}-day returns`}</li>
-        <li>{ar ? `بيلبس لحد ${site.maxWeightKg} كيلو` : `Fits up to ${site.maxWeightKg} kg`}</li>
+      <ul class="pdp-perks">
+        <li><Icon name="plane" size={26} /> {ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}</li>
+        <li><Icon name="return" size={26} /> {ar ? `استرجاع خلال ${site.returnDays} يومًا دون مصاريف شحن` : `${site.returnDays}-day returns, no shipping cost to you`}</li>
+        <li><Icon name="cash" size={26} /> {ar ? "الدفع عند الاستلام أو InstaPay" : "Cash on delivery or InstaPay"}</li>
       </ul>
+      <OfferStrip lang={lang} />
     </div>
   </div>
-  <section class="wrap pdp-info">
-    <dl class="promises">
-      {info.map(([t, d]) => <div><dt>{t}</dt><dd class="muted">{d}</dd></div>)}
-    </dl>
+  <section class="wrap">
+    <div class="spec-card reveal">
+      <h2>{ar ? "التفاصيل" : "Details"}</h2>
+      <dl class="spec-table">
+        {info.map(([t, d]) => <div><dt>{t}</dt><dd>{d}</dd></div>)}
+      </dl>
+    </div>
   </section>
   <section class="wrap style-group">
-    <div class="group-head"><h2>{ar ? "قد يعجبك أيضًا" : "You may also like"}</h2></div>
+    <div class="group-head"><h2>{ar ? "قد يعجبك أيضًا" : "You may also like"} <Icon name="sparkle" size={16} class="twinkle" /></h2></div>
     <div class="grid">
-      {related.map((p) => <ProductCard product={p} lang={lang} />)}
+      {related.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </section>
 </Base>

@@ -1,0 +1,25 @@
+---
+// Four service facts as small cards with illustrations. Every number comes from site.ts.
+import Icon from "./ui/Icon.astro";
+import { site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const perks = [
+  { icon: "plane", t: ar ? `توصيل خلال ${site.deliveryDays} أيام عمل` : `Delivery in ${site.deliveryDays} working days`, d: ar ? "لجميع محافظات مصر" : "To every governorate" },
+  { icon: "cash", t: ar ? "الدفع عند الاستلام" : "Cash on delivery", d: ar ? "أو InstaPay" : "or InstaPay" },
+  { icon: "return", t: ar ? `استرجاع خلال ${site.returnDays} يومًا` : `${site.returnDays}-day returns`, d: ar ? "دون مصاريف شحن عليكِ" : "No shipping cost to you" },
+  { icon: "tape", t: ar ? `يناسب حتى ${site.maxWeightKg} كجم` : `Fits up to ${site.maxWeightKg} kg`, d: ar ? "ومقاسات خاصة عند الطلب" : "Custom sizes on request" },
+] as const;
+---
+
+<ul class="perks">
+  {perks.map((p, i) => (
+    <li class="perk reveal" style={`--i:${i}`}>
+      <Icon name={p.icon} size={46} />
+      <div><b>{p.t}</b><span>{p.d}</span></div>
+    </li>
+  ))}
+</ul>

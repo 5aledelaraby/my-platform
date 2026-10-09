@@ -1,0 +1,24 @@
+---
+// The multi-belt offer, as a red card. Percentages come from the pricing rules.
+import { MULTI_ITEM_RATES_BPS } from "@platform/commerce";
+import Icon from "./ui/Icon.astro";
+import { policyPath } from "../policies/index.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const second = MULTI_ITEM_RATES_BPS[1] / 100;
+const third = MULTI_ITEM_RATES_BPS[2] / 100;
+---
+
+<div class="offer-strip reveal">
+  <Icon name="tag" size={46} class="offer-icon" />
+  <div>
+    <p class="offer-title">{ar ? `الحزام الثاني بخصم ${second}%، والثالث بخصم ${third}%` : `2nd belt ${second}% off, 3rd belt ${third}% off`}</p>
+    <p class="offer-sub">
+      {ar ? "يُحسب الخصم تلقائيًا في السلة · " : "Applied automatically in your cart · "}
+      <a href={`${policyPath(lang, "terms")}#offers`}>{ar ? "الشروط" : "Terms"}</a>
+    </p>
+  </div>
+</div>

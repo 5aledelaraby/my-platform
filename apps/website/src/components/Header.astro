@@ -1,6 +1,8 @@
 ---
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
 import { beltsUrl, styleText, styles } from "../store.ts";
+import Icon from "./ui/Icon.astro";
+import Logo from "./ui/Logo.astro";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -16,26 +18,26 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
     <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
       <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M3 6.5h18M3 12h18M3 17.5h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
     </button>
-    <a class="logo" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}>
-      <img src="/brand/vicuna-lockup.svg" alt="Vicuna" width="125" height="40" />
-    </a>
+    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo /></a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
-      <a href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
-      {ar && <a href="/blog/">المقالات</a>}
-      <a href={policyPath(lang, "returns")}>{ar ? "الشحن والاسترجاع" : "Shipping & returns"}</a>
-      <a class="lang" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"}>{ar ? "English" : "العربية"}</a>
+      <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
+      {ar && <a class="nav-pill" href="/blog/">المقالات</a>}
+      <a class="nav-pill" href={policyPath(lang, "returns")}>{ar ? "الشحن والاسترجاع" : "Shipping & returns"}</a>
     </nav>
-    <button type="button" class="icon-btn cart-btn" data-open-cart aria-label={ar ? "السلة" : "Cart"}>
-      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M5.5 8.5h13l-1 12h-11z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
-      <span data-cart-count hidden>0</span>
-    </button>
+    <div class="header-end">
+      <a class="lang-switch" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"} aria-label={ar ? "English" : "العربية"}>{ar ? "EN" : "ع"}</a>
+      <button type="button" class="bag-btn" data-open-cart aria-label={ar ? "السلة" : "Cart"}>
+        <span class="bag-shine"><Icon name="bag" size={22} /></span>
+        <span class="count-badge" data-cart-count hidden>0</span>
+      </button>
+    </div>
   </div>
 </header>
 
 <dialog id="menu" class="menu" aria-label={ar ? "القائمة" : "Menu"}>
   <div class="menu-inner" tabindex="-1" autofocus>
   <div class="menu-head">
-    <a class="logo" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><img src="/brand/vicuna-lockup.svg" alt="Vicuna" width="125" height="40" /></a>
+    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={36} /></a>
     <button type="button" class="icon-btn" data-close-menu aria-label={ar ? "إغلاق" : "Close"}>✕</button>
   </div>
   <nav aria-label={ar ? "القائمة" : "Menu"}>

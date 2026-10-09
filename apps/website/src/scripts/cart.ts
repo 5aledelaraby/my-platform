@@ -111,7 +111,7 @@ function setQty(id: string, quantity: number): void {
   render();
 }
 
-export function addToCart(id: string): void {
+export function addToCart(id: string, from?: HTMLElement): void {
   if (!lookupProduct(id)) return;
   trimmedNotice = false;
   const added = remainingQuantity(lines, id, stock) > 0;
@@ -124,7 +124,38 @@ export function addToCart(id: string): void {
   render();
   // Stay on the page so she can keep shopping; a small notice offers the cart.
   showToast(id, added);
-  if (added) bumpCount();
+  if (added) {
+    flyToBag(from);
+    bumpCount();
+  }
+}
+
+/** A small copy of the product photo glides into the bag button (skipped when motion is reduced). */
+function flyToBag(from?: HTMLElement): void {
+  const source = from?.closest(".card, .product")?.querySelector<HTMLImageElement>("img");
+  const bag = document.querySelector<HTMLElement>(".bag-btn");
+  if (!source || !bag || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const a = source.getBoundingClientRect();
+  const b = bag.getBoundingClientRect();
+  if (a.width === 0 || b.width === 0) return;
+  const ghost = source.cloneNode() as HTMLImageElement;
+  ghost.removeAttribute("srcset");
+  ghost.className = "fly";
+  const size = Math.min(a.width, a.height, 160);
+  Object.assign(ghost.style, { left: `${a.left + (a.width - size) / 2}px`, top: `${a.top + (a.height - size) / 2}px`, width: `${size}px`, height: `${size}px` });
+  document.body.append(ghost);
+  const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+  const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+  ghost
+    .animate(
+      [
+        { transform: "translate(0, 0) scale(1)", opacity: 1 },
+        { transform: `translate(${dx}px, ${dy}px) scale(.18)`, opacity: 0.4 },
+      ],
+      { duration: 650, easing: "cubic-bezier(.5, 0, .2, 1)" },
+    )
+    .finished.catch(() => undefined)
+    .finally(() => ghost.remove());
 }
 
 const toast = document.getElementById("cart-toast");
@@ -384,7 +415,7 @@ function loadStock(): void {
 document.addEventListener("click", (e) => {
   const target = (e.target as HTMLElement).closest<HTMLElement>("[data-add], [data-open-cart], [data-close-cart], [data-checkout], [data-close-toast]");
   if (!target) return;
-  if (target.dataset["add"]) addToCart(target.dataset["add"]);
+  if (target.dataset["add"]) addToCart(target.dataset["add"], target);
   else if (target.hasAttribute("data-open-cart")) openCart();
   else if (target.hasAttribute("data-checkout")) goToCheckout();
   else if (target.hasAttribute("data-close-toast")) hideToast();

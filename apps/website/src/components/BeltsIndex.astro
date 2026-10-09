@@ -1,9 +1,12 @@
 ---
-import { MULTI_ITEM_RATES_BPS, SHIPPING, formatEgp } from "@platform/commerce";
+import { SHIPPING, formatEgp } from "@platform/commerce";
 import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
+import OfferStrip from "./OfferStrip.astro";
 import ProductCard from "./ProductCard.astro";
+import Stories from "./Stories.astro";
+import Icon from "./ui/Icon.astro";
 import { beltsUrl, colorName, colors, price, products, productsOfStyle, styleText, styles } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
@@ -12,8 +15,6 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
 const cur = ar ? "جنيه" : "EGP";
-const second = MULTI_ITEM_RATES_BPS[1] / 100;
-const third = MULTI_ITEM_RATES_BPS[2] / 100;
 const free = formatEgp(SHIPPING.freeOver);
 const lowest = formatEgp(Math.min(...styles.map((s) => s.price)));
 const title = ar ? "أحزمة خصر نسائية من جلد PU | فيكونا" : "Women's waist belts in PU leather | Vicuna";
@@ -36,63 +37,66 @@ const jsonLd = serializeJsonLd(
 ---
 
 <Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar")} jsonLd={jsonLd}>
-  <Breadcrumbs items={crumbs} />
-  <div class="wrap page-head">
-    <h1>{ar ? "أحزمة خصر نسائية" : "Women's waist belts"}</h1>
-    <p class="muted lede">
-      {ar
-        ? `جلد PU بقصّ ليزر وخياطة يدوية، في ${styles.length} تصاميم وعدة ألوان. اختاري التصميم ثم اللون، ونوصّل إلى جميع محافظات مصر خلال ${site.deliveryDays} أيام.`
-        : `PU leather, laser-cut and hand-sewn, in ${styles.length} designs and many colours. Choose a design, then a colour; we deliver to every governorate in Egypt in ${site.deliveryDays} days.`}
-    </p>
-    <ul class="facts">
-      <li>{ar ? "المقاس المعتاد: عرض 14 سم وطول 140 سم" : "Usual size: 14 cm wide, 140 cm long"}</li>
-      <li>{ar ? `يناسب حتى ${site.maxWeightKg} كجم` : `Fits up to ${site.maxWeightKg} kg`}</li>
-      <li>{ar ? `خصم ${second}% على الحزام الثاني و${third}% على الثالث` : `${second}% off the 2nd belt, ${third}% off the 3rd`}</li>
-      <li>{ar ? `شحن مجاني من ${free} جنيه` : `Free shipping from ${free} EGP`}</li>
-    </ul>
-  </div>
+  <section class="page-hero">
+    <div class="page-hero-box">
+      <Breadcrumbs items={crumbs} />
+      <h1>{ar ? <>أحزمة <span class="accent">خصر نسائية</span></> : <>Women's <span class="accent">waist belts</span></>}</h1>
+      <p class="lead">
+        {ar
+          ? `جلد PU بقصّ ليزر وخياطة يدوية، في ${styles.length} تصاميم وعدة ألوان. اختاري التصميم ثم اللون، ونوصّل إلى جميع محافظات مصر خلال ${site.deliveryDays} أيام عمل.`
+          : `PU leather, laser-cut and hand-sewn, in ${styles.length} designs and many colours. Choose a design, then a colour; we deliver to every governorate in Egypt in ${site.deliveryDays} working days.`}
+      </p>
+      <ul class="fact-chips">
+        <li>{ar ? "المقاس المعتاد: عرض 14 سم وطول 140 سم" : "Usual size: 14 cm wide, 140 cm long"}</li>
+        <li>{ar ? `يناسب حتى ${site.maxWeightKg} كجم` : `Fits up to ${site.maxWeightKg} kg`}</li>
+        <li>{ar ? `شحن مجاني من ${free} جنيه` : `Free shipping from ${free} EGP`}</li>
+      </ul>
+    </div>
+  </section>
 
-  <div class="wrap shop-tools">
-    <nav class="chips" aria-label={ar ? "تسوقي حسب التصميم" : "Shop by design"}>
-      {styles.map((s) => <a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a>)}
-    </nav>
+  <Stories lang={lang} current="all" />
+
+  <div class="wrap stack-sm">
+    <OfferStrip lang={lang} />
     <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
       <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
       <div class="swatch-row">
         {colors.map((c) => (
-          <button type="button" class="swatch" data-color={c.id} aria-pressed="false" title={colorName(lang, c.id)} aria-label={colorName(lang, c.id)} style={`--c:${c.hex}`}></button>
+          <button type="button" class="dot" data-color={c.id} aria-pressed="false" title={colorName(lang, c.id)} aria-label={colorName(lang, c.id)} style={`--c:${c.hex}`}></button>
         ))}
       </div>
-      <button type="button" class="link" data-color="all">{ar ? "عرض الكل" : "Show all"}</button>
+      <button type="button" class="pill" data-color="all">{ar ? "عرض الكل" : "Show all"}</button>
       <span id="filter-status" class="muted" aria-live="polite"></span>
     </div>
   </div>
 
   {styles.map((s) => {
     const t = styleText(lang, s.id);
+    const list = productsOfStyle(s.id);
     return (
       <section class="wrap style-group" data-group aria-labelledby={`g-${s.id}`}>
         <div class="group-head">
-          <h2 id={`g-${s.id}`}>{t.name}</h2>
-          <span class="muted">{price(s.id)} {cur}</span>
-          <a class="textlink" href={beltsUrl(lang, s.id)}>{ar ? `تفاصيل مجموعة ${t.name}` : `About the ${t.name} collection`} →</a>
+          <h2 id={`g-${s.id}`}>{t.name} <Icon name="sparkle" size={16} class="twinkle" /></h2>
+          <span class="count-chip">{list.length} {ar ? "لون" : "colours"} · {price(s.id)} {cur}</span>
         </div>
-        <p class="muted group-intro">{t.headline}</p>
+        <p class="muted group-intro">{t.headline} · <a class="textlink" href={beltsUrl(lang, s.id)}>{ar ? `كل تفاصيل ${t.name}` : `About ${t.name}`}</a></p>
         <div class="grid">
-          {productsOfStyle(s.id).map((p) => <ProductCard product={p} lang={lang} />)}
+          {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
         </div>
       </section>
     );
   })}
 
   <section class="wrap style-group" id="tie">
-    <div class="group-head"><h2>{ar ? "طريقة الربط" : "How to tie"}</h2></div>
-    <ol class="steps">
-      {tie.map(([t, d], i) => <li><span class="num" aria-hidden="true">{i + 1}</span><b>{t}</b><span class="muted">{d}</span></li>)}
-    </ol>
+    <div class="tie-card reveal">
+      <h2>{ar ? "طريقة الربط" : "How to tie"}</h2>
+      <ol class="tie-steps">
+        {tie.map(([t, d], i) => <li><span class="tie-num" aria-hidden="true">{i + 1}</span><span><b>{t}</b> <span class="muted">{d}</span></span></li>)}
+      </ol>
+    </div>
   </section>
 
-  <section class="wrap style-group guide">
+  <section class="wrap style-group guide reveal">
     <h2>{ar ? "كيف تختارين حزام الخصر؟" : "How to choose a waist belt"}</h2>
     <p class="muted">
       {ar
@@ -121,7 +125,7 @@ const jsonLd = serializeJsonLd(
       if (!button) return;
       const picked = button.dataset["color"] ?? "all";
       active = picked === "all" || picked === active ? null : picked;
-      bar.querySelectorAll<HTMLButtonElement>(".swatch").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["color"] === active)));
+      bar.querySelectorAll<HTMLButtonElement>(".dot").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["color"] === active)));
       let shown = 0;
       for (const card of cards) {
         const show = active === null || card.dataset["color"] === active;

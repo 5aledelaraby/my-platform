@@ -1,4 +1,5 @@
 ---
+import Logo from "./ui/Logo.astro";
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
 import { site } from "../site.ts";
 import { beltsUrl, styleText, styles } from "../store.ts";
@@ -8,41 +9,43 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
 const wa = `https://wa.me/${site.whatsappInternational}`;
+const socialIcon: Record<string, string> = {
+  TikTok: '<path fill="currentColor" d="M16.6 3c.4 2.4 1.9 4 4.4 4.3v3.1c-1.6 0-3.1-.5-4.4-1.3v6.4a5.6 5.6 0 1 1-5.6-5.6l.9.1v3.2a2.5 2.5 0 1 0 1.6 2.3V3h3.1Z"/>',
+  Instagram: '<rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/>',
+  Snapchat: '<path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M12 3.5c2.9 0 4.8 2.1 4.8 5v2.2l1.5-.5c.6-.2 1 .5.5.9-.7.5-1.5.8-1.9 1 .4 1.7 1.9 3 3.4 3.4.5.2.4.8-.1.9-.9.2-1.5.4-1.8 1-.2.5-.9.4-1.8.3-1-.1-1.9.9-4.6.9s-3.6-1-4.6-.9c-.9.1-1.6.2-1.8-.3-.3-.6-.9-.8-1.8-1-.5-.1-.6-.7-.1-.9 1.5-.4 3-1.7 3.4-3.4-.4-.2-1.2-.5-1.9-1-.5-.4-.1-1.1.5-.9l1.5.5V8.5c0-2.9 1.9-5 4.8-5Z"/>',
+};
 ---
 
 <footer class="site-footer">
   <div class="wrap footer-grid">
-    <div>
-      <h3>{ar ? site.nameAr : site.nameEn}</h3>
+    <div class="footer-brand">
+      <a class="brand" href={ar ? "/" : "/en/"} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo /></a>
       <p>{ar ? "أحزمة خصر نسائية بقصّ ليزر وخياطة يدوية، نوصّلها إلى جميع محافظات مصر." : "Women's waist belts, laser-cut and hand-sewn, delivered across Egypt."}</p>
-      <p class="legal">
-        {ar ? site.legalNameAr : site.legalNameEn}<br />
-        {ar ? "سجل تجاري" : "Commercial register"} <bdi>{site.commercialRegister}</bdi><br />
-        {ar ? "رقم التسجيل الضريبي" : "Tax registration no."} <bdi>{site.taxNumber}</bdi><br />
-        {ar ? site.addressAr : site.addressEn}
-      </p>
+      <div class="social">
+        {site.social.map((s) => (
+          <a href={s.href} rel="noopener noreferrer" aria-label={s.label}><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" set:html={socialIcon[s.label] ?? ""} /></a>
+        ))}
+      </div>
     </div>
     <div>
-      <h3>{ar ? "الأحزمة" : "Belts"}</h3>
+      <h3 class="footer-h">{ar ? "تسوّقي" : "Shop"}</h3>
       <ul>
         <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
-        {ar && <li><a href="/blog/">المقالات</a></li>}
         {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
+        {ar && <li><a href="/blog/">المقالات</a></li>}
       </ul>
     </div>
     <div>
-      <h3>{ar ? "المساعدة" : "Help"}</h3>
+      <h3 class="footer-h">{ar ? "المساعدة" : "Help"}</h3>
       <ul>
         {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
-      </ul>
-    </div>
-    <div>
-      <h3>{ar ? "تواصل معنا" : "Contact"}</h3>
-      <ul>
-        <li><a href={wa} rel="noopener noreferrer">WhatsApp <bdi>{site.whatsappDisplay}</bdi></a></li>
+        <li><a href={wa} rel="noopener noreferrer">{ar ? "واتساب" : "WhatsApp"} <bdi>{site.whatsappDisplay}</bdi></a></li>
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-        {site.social.map((s) => <li><a href={s.href} rel="noopener noreferrer">{s.label}</a></li>)}
       </ul>
     </div>
+  </div>
+  <div class="wrap footer-legal">
+    {ar ? site.legalNameAr : site.legalNameEn} · {ar ? "سجل تجاري" : "Commercial register"} <bdi>{site.commercialRegister}</bdi> · {ar ? "رقم التسجيل الضريبي" : "Tax registration no."} <bdi dir="ltr">{site.taxNumber}</bdi><br />
+    {ar ? site.addressAr : site.addressEn}
   </div>
 </footer>

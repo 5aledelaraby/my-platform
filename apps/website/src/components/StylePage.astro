@@ -2,8 +2,11 @@
 import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
+import OfferStrip from "./OfferStrip.astro";
 import ProductCard from "./ProductCard.astro";
-import { beltsUrl, coverOf, imageOf, price, productsOfStyle, styleText } from "../store.ts";
+import Stories from "./Stories.astro";
+import Icon from "./ui/Icon.astro";
+import { beltsUrl, coverOf, imageOf, price, productsOfStyle, styleText, thumbOf } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -32,15 +35,36 @@ const jsonLd = serializeJsonLd(
 ---
 
 <Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd} image={imageOf(coverOf(styleId))}>
-  <Breadcrumbs items={crumbs} />
-  <div class="wrap page-head">
-    <h1>{t.headline}</h1>
-    <p class="muted">{t.intro}</p>
-    <p><b>{price(styleId)} {cur}</b></p>
-  </div>
-  <section class="wrap">
+  <section class="page-hero">
+    <div class="page-hero-box style-hero">
+      <div>
+        <Breadcrumbs items={crumbs} />
+        <h1>{ar ? <>أحزمة <span class="accent">{t.name}</span></> : <><span class="accent">{t.name}</span> belts</>}</h1>
+        <p class="hero-sub">{t.headline}</p>
+        <p class="lead">{t.intro}</p>
+        <div class="hero-actions">
+          <span class="price-pill">{price(styleId)} <small>{cur}</small></span>
+          <a class="btn btn-berry btn-shine" href="#colours">{ar ? "شوفي الألوان" : "See the colours"} <Icon name="arrow" size={18} class="dir-icon" /></a>
+        </div>
+      </div>
+      <div class="style-collage" aria-hidden="true">
+        {list.slice(0, 3).map((p, i) => <img class={`floaty c${i + 1}`} src={thumbOf(p)} alt="" width="480" height="480" decoding="async" style={`--r:${["-8deg", "7deg", "-2deg"][i]};--d:${-i * 1.8}s`} />)}
+        <Icon name="sparkle" size={18} class="twinkle collage-spark" />
+      </div>
+    </div>
+  </section>
+
+  <Stories lang={lang} current={styleId} />
+
+  <div class="wrap stack-sm"><OfferStrip lang={lang} /></div>
+
+  <section class="wrap style-group" id="colours">
+    <div class="group-head">
+      <h2>{ar ? `كل ألوان ${t.name}` : `Every ${t.name} colour`} <Icon name="sparkle" size={16} class="twinkle" /></h2>
+      <span class="count-chip">{list.length} {ar ? "لون" : "colours"}</span>
+    </div>
     <div class="grid">
-      {list.map((p) => <ProductCard product={p} lang={lang} />)}
+      {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </section>
 </Base>
