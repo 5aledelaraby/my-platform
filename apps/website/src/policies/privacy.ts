@@ -22,7 +22,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li><b>بيانات الطلب:</b> الاسم، ورقم الموبايل، والمحافظة، والعنوان، والملاحظات، والمنتجات والكميات، وطريقة الشحن والدفع. تكتبينها في السلة، وتصلنا عند الضغط على «تأكيد الطلب».</li>
 <li><b>التواصل:</b> رسائلكِ معنا على واتساب أو البريد، وأي صور ترسلينها، مثل إيصال تحويل InstaPay أو صورة منتج به عيب.</li>
 <li><b>الدفع:</b> عند الدفع بـ InstaPay يصلنا ما يظهر في إيصال التحويل، مثل اسم المحوِّل والمبلغ. وعند ردّ مبلغ، نحتاج رقم InstaPay أو المحفظة الذي تختارينه. لا نطلب ولا نحفظ أرقام بطاقات بنكية.</li>
-<li><b>الطلبات الخاصة:</b> مقاساتكِ عند طلب مقاس خاص أو حزام مفصّل. وعند طلب هدية عيد الميلاد قد نطلب إثباتًا لتاريخ الميلاد، مثل صورة البطاقة بعد إخفاء كل بياناتها ما عدا الاسم وتاريخ الميلاد.</li>
+<li><b>الطلبات الخاصة:</b> مقاساتكِ عند طلب مقاس خاص أو حزام مفصّل.</li>
 <li><b>بيانات تقنية:</b> عنوان IP ونوع المتصفح والجهاز، تسجلها خدمة الاستضافة تلقائيًا لتشغيل الموقع وحمايته، مثل تحديد عدد الطلبات المسموح به من الجهاز نفسه.</li>
 <li><b>على جهازكِ:</b> محتوى السلة يُحفظ في متصفحكِ (localStorage) حتى لا يضيع عند غلق الصفحة، ولا يصلنا إلا عند إرسال الطلب. ورقم آخر طلب وإجماليه وطريقة دفعه تُحفظ مؤقتًا في المتصفح لعرضها في صفحة الشكر، وتُحذف عند غلق تبويب المتصفح.</li>
 </ul>
@@ -54,9 +54,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 
 <h2>6. مدة الاحتفاظ</h2>
 <ul>
-<li><b>سجل الطلب في قاعدة البيانات:</b> للمدة التي يفرضها القانون المصري لحفظ السجلات التجارية والضريبية، ثم نحذفه أو نزيل منه ما يدل على شخصكِ.</li>
-<li><b>الإشعارات والمحادثات الخاصة بالطلب:</b> حتى تنتهي فترة الإرجاع والضمان، ثم نحذفها.</li>
-<li><b>صورة إثبات تاريخ الميلاد:</b> نحذفها فور التحقق.</li>
+<li><b>بيانات الطلب والمحادثات الخاصة به:</b> طوال المدة اللازمة لتنفيذ الطلب والإرجاع والضمان، وللمدة التي يفرضها القانون المصري لحفظ السجلات التجارية والضريبية، ثم نحذفها.</li>
 <li><b>السلة على جهازكِ:</b> حتى تفرغي السلة أو تحذفي بيانات الموقع من المتصفح.</li>
 <li><b>البيانات التقنية:</b> لفترة قصيرة لدى خدمة الاستضافة، حسب سياستها.</li>
 </ul>
@@ -70,7 +68,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li>أن تسحبي موافقتكِ، أو تقصري استخدامها على نطاق محدد، أو تعترضي على استخدامها.</li>
 <li>أن نُبلغكِ إذا حدث اختراق يمس بياناتكِ.</li>
 </ul>
-<p>راسلينا على واتساب أو البريد، ونرد خلال ${site.dataRequestDays} أيام عمل، دون أي مقابل. قد نطلب التأكد من هويتكِ، مثل أن تراسلينا من رقم الموبايل المكتوب في الطلب. ومن حقكِ تقديم شكوى إلى مركز حماية البيانات الشخصية.</p>
+<p>راسلينا على واتساب أو البريد، ونرد خلال المدة التي يحددها القانون. قد نطلب التأكد من هويتكِ، مثل أن تراسلينا من رقم الموبايل المكتوب في الطلب. ومن حقكِ تقديم شكوى إلى مركز حماية البيانات الشخصية.</p>
 
 <h2>8. الأمان</h2>
 <p>الاتصال بالموقع مشفّر (HTTPS)، ولا يُفتح سجل الطلبات من جهتنا إلا من حسابات محمية بتسجيل دخول. وإذا حدث اختراق يمس بياناتكِ، نبلغ مركز حماية البيانات الشخصية ونبلغكِ خلال المدد التي يحددها القانون. ومع ذلك، لا توجد طريقة نقل أو حفظ على الإنترنت آمنة بنسبة 100%.</p>
@@ -103,7 +101,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li><b>Order details:</b> name, mobile number, governorate, address, notes, items and quantities, shipping and payment method. You enter them in the cart, and they reach us when you press "Place order".</li>
 <li><b>Messages:</b> your messages with us on WhatsApp or by email, and any photos you send, such as an InstaPay receipt or a photo of a faulty item.</li>
 <li><b>Payment:</b> with InstaPay we see what the transfer receipt shows, such as the sender's name and the amount. To send a refund we need the InstaPay or wallet number you choose. We never ask for or keep card numbers.</li>
-<li><b>Special orders:</b> your measurements for a custom size or a made-to-measure belt. For the birthday gift we may ask for proof of your birth date, such as a photo of your ID card with everything hidden except your name and date of birth.</li>
+<li><b>Special orders:</b> your measurements for a custom size or a made-to-measure belt.</li>
 <li><b>Technical data:</b> IP address, browser and device type, logged automatically by our hosting provider to run and protect the website, for example to limit how many orders one device can send.</li>
 <li><b>On your device:</b> your cart is kept in your browser (localStorage) so it is not lost when you close the page; it reaches us only when you send the order. Your last order's number, total and payment method are kept briefly in the browser for the thank-you page and are deleted when you close the browser tab.</li>
 </ul>
@@ -135,9 +133,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 
 <h2>6. How long we keep it</h2>
 <ul>
-<li><b>The order record in our database:</b> for as long as Egyptian law requires commercial and tax records to be kept; then we delete it or remove anything that identifies you.</li>
-<li><b>Notifications and chats about the order:</b> until the return and warranty period ends; then we delete them.</li>
-<li><b>Birth-date proof photo:</b> deleted as soon as we have checked it.</li>
+<li><b>Order details and related messages:</b> for as long as needed to fulfil the order and handle returns and warranty, and for as long as Egyptian law requires commercial and tax records to be kept; then we delete them.</li>
 <li><b>Your cart on your device:</b> until you empty the cart or clear the website's data in your browser.</li>
 <li><b>Technical data:</b> for a short time with our hosting provider, under its policy.</li>
 </ul>
@@ -151,7 +147,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li>withdraw your consent, limit its use to a specific scope, or object to its use;</li>
 <li>be told if a breach affects your data.</li>
 </ul>
-<p>Message us on WhatsApp or by email and we answer within ${site.dataRequestDays} working days, free of charge. We may need to confirm it is you, for example by asking you to write from the mobile number on the order. You also have the right to complain to Egypt's Personal Data Protection Center.</p>
+<p>Message us on WhatsApp or by email and we answer within the period set by law. We may need to confirm it is you, for example by asking you to write from the mobile number on the order. You also have the right to complain to Egypt's Personal Data Protection Center.</p>
 
 <h2>8. Security</h2>
 <p>The connection to the website is encrypted (HTTPS), and on our side the order records can only be opened from accounts protected by a sign-in. If a breach affects your data, we notify the Personal Data Protection Center and you within the periods set by law. Still, no way of sending or storing data on the internet is 100% secure.</p>

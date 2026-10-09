@@ -24,7 +24,7 @@ export const termsAr: PolicyDoc = {
 <h2>2. الطلبات</h2>
 <ul>
 <li>ترسلين طلبكِ من السلة في الموقع، فيظهر لكِ رقم الطلب.</li>
-<li>نتواصل معكِ على واتساب أو بالهاتف لتأكيد البيانات والإجمالي وطريقة الدفع، ونرسل لكِ ملخص الطلب. يُعد الطلب مؤكدًا بعد هذا التواصل.</li>
+<li>نتواصل معكِ على واتساب أو بالهاتف لتأكيد البيانات والإجمالي وطريقة الدفع، ويُعد الطلب مؤكدًا بعد هذا التواصل.</li>
 <li>إذا نفدت كمية منتج بعد طلبكِ لأي سبب، نخبركِ فورًا، فتختارين بديلًا أو نلغي الطلب دون مصاريف ونردّ أي مبلغ دفعتِه.</li>
 <li>يمكنكِ تعديل الطلب أو إلغاؤه دون مصاريف في أي وقت قبل شحنه، وبعد الشحن يمكنكِ الإرجاع أو الاستبدال حسب <a href="${policyPath("ar", "returns")}">سياسة الشحن والاسترجاع</a>.</li>
 <li>قد نعتذر عن تنفيذ طلب إذا كانت بياناته ناقصة أو غير صحيحة ولم نتمكن من التواصل معكِ، أو إذا كانت الكميات تدل على إعادة البيع. وفي هذه الحالة نردّ أي مبلغ دفعتِه.</li>
@@ -47,23 +47,17 @@ export const termsAr: PolicyDoc = {
 <li>نستبدل أو نردّ ثمن أي منتج به عيب صناعة إذا أبلغتِنا به خلال ${site.defectDays} يومًا من استلامه، والإرجاع والاستبدال لأي سبب آخر حسب <a href="${policyPath("ar", "returns")}">سياسة الشحن والاسترجاع</a>.</li>
 </ul>
 
-<h2 id="offers">5. العروض وهدية عيد الميلاد</h2>
-<p><b>عرض الأحزمة (الثاني بخصم ${second}% والثالث بخصم ${third}%):</b></p>
+<h2 id="offers">5. العروض</h2>
+<p>قد نعلن عروضًا لفترة محددة على الموقع أو على حساباتنا، وشروط كل عرض مكتوبة معه: مدته والمنتجات المشمولة به والخصم. وتسري على كل العروض القواعد التالية، إلا إذا نص العرض على غير ذلك:</p>
 <ul>
-<li>يُحسب الخصم تلقائيًا في السلة: نرتّب أحزمة الطلب من الأعلى سعرًا إلى الأقل، وفي كل مجموعة من 3 أحزمة يكون الأول بسعره، والثاني بخصم ${second}%، والثالث بخصم ${third}%.</li>
-<li>الخصم على سعر الأحزمة فقط وليس على الشحن، والشحن العادي المجاني (للطلبات من ${fees.freeOver} جنيه) يُحسب على المبلغ بعد الخصم.</li>
-<li>إذا أرجعتِ جزءًا من طلب عليه خصم، يُعاد حساب الخصم على الأحزمة التي بقيت معكِ، ونردّ لكِ الفرق بين ما دفعتِه والمبلغ بعد إعادة الحساب.</li>
-<li>لا يُجمع العرض مع عرض أو كود خصم آخر، إلا إذا أعلنّا غير ذلك.</li>
+<li>يُحسب خصم العرض تلقائيًا في السلة، ويظهر في الإجمالي قبل إرسال الطلب.</li>
+<li>الخصم على سعر المنتجات فقط وليس على الشحن، والشحن العادي المجاني (للطلبات من ${fees.freeOver} جنيه) يُحسب على المبلغ بعد الخصم.</li>
+<li>إذا أرجعتِ جزءًا من طلب عليه خصم، يُعاد حساب الخصم على ما بقي معكِ، ونردّ لكِ الفرق بين ما دفعتِه والمبلغ بعد إعادة الحساب.</li>
+<li>لا يُجمع عرضان على الطلب نفسه.</li>
+<li>العرض متاح حتى نهاية مدته أو نفاد الكمية المخصصة له، والطلبات التي أُكِّدت قبل انتهاء العرض أو تعديله تبقى على شروطه وقت تأكيدها.</li>
+<li>إذا تبيّن استخدام غير عادل لعرض، مثل الطلبات الوهمية، يحق لنا إلغاء الخصم.</li>
 </ul>
-<p><b>هدية عيد الميلاد:</b></p>
-<ul>
-<li>راسلينا على واتساب في يوم عيد ميلادكِ، ونرسل لكِ حزامًا هدية نختاره من الموديلات المتاحة وقتها.</li>
-<li>هدية واحدة في السنة لكل شخص، ولكل رقم موبايل وعنوان توصيل.</li>
-<li>قد نطلب إثباتًا بسيطًا لتاريخ الميلاد، مثل صورة البطاقة بعد إخفاء كل بياناتها ما عدا الاسم وتاريخ الميلاد. نستخدمه للتحقق فقط، ونحذفه بعده.</li>
-<li>مصاريف شحن الهدية عليكِ، إلا إذا أُرسلت مع طلب آخر منكِ في الشحنة نفسها.</li>
-<li>الهدية لا تُستبدل بمال، ولا تُرجع ولا تُستبدل إلا إذا وصلت وبها عيب.</li>
-</ul>
-<p><b>لكل العروض:</b> العروض والهدايا متاحة حتى نفاد الكمية المخصصة لها. ويحق لنا تعديل أي عرض أو إيقافه، والطلبات التي تأكدت قبل التعديل تبقى على شروطها وقت تأكيدها. وإذا تبيّن استخدام غير عادل للعرض، مثل طلبات وهمية أو أكثر من هدية للشخص نفسه بأسماء أو أرقام مختلفة، يحق لنا إلغاء الخصم أو الهدية.</p>
+<p><b>العرض الحالي: الحزام الثاني بخصم ${second}% والثالث بخصم ${third}%.</b> نرتّب أحزمة الطلب من الأعلى سعرًا إلى الأقل، وفي كل مجموعة من 3 أحزمة يكون الأول بسعره، والثاني بخصم ${second}%، والثالث بخصم ${third}%.</p>
 
 <h2>6. صحة البيانات</h2>
 <p>نحتاج منكِ بيانات صحيحة وكاملة لنستطيع توصيل طلبكِ. وإذا تأخر التوصيل بسبب بيانات غير صحيحة، نتواصل معكِ لحل المشكلة.</p>
@@ -115,7 +109,7 @@ export const termsEn: PolicyDoc = {
 <h2>2. Orders</h2>
 <ul>
 <li>You send your order from the cart on the website and see its order number.</li>
-<li>We contact you on WhatsApp or by phone to confirm your details, the total and the payment method, and send you an order summary. The order is confirmed after that contact.</li>
+<li>We contact you on WhatsApp or by phone to confirm your details, the total and the payment method; the order is confirmed after that contact.</li>
 <li>If an item runs out after you order for any reason, we tell you at once: you choose a replacement, or we cancel the order free of charge and refund anything you paid.</li>
 <li>You can change or cancel the order free of charge at any time before it ships; after it ships you can return or exchange it under the <a href="${policyPath("en", "returns")}">shipping and returns policy</a>.</li>
 <li>We may decline an order if its details are missing or wrong and we cannot reach you, or if the quantities suggest resale. We then refund anything you paid.</li>
@@ -138,23 +132,17 @@ export const termsEn: PolicyDoc = {
 <li>We replace or refund any item with a manufacturing fault that you report within ${site.defectDays} days of delivery; returns and exchanges for any other reason follow the <a href="${policyPath("en", "returns")}">shipping and returns policy</a>.</li>
 </ul>
 
-<h2 id="offers">5. Offers and the birthday gift</h2>
-<p><b>Multi-belt offer (2nd belt ${second}% off, 3rd belt ${third}% off):</b></p>
+<h2 id="offers">5. Offers</h2>
+<p>We may announce time-limited offers on the website or our accounts; each offer states its own terms: how long it runs, which products it covers and the discount. These rules apply to every offer unless the offer says otherwise:</p>
 <ul>
-<li>The cart applies the discount automatically: the belts in the order are ranked from highest to lowest price, and in every group of 3 the first is full price, the second is ${second}% off and the third is ${third}% off.</li>
-<li>The discount applies to the belts only, not to shipping; free standard shipping (orders of EGP ${fees.freeOver} or more) is based on the amount after discount.</li>
-<li>If you return part of a discounted order, the discount is recalculated on the belts you keep and we refund the difference between what you paid and the recalculated amount.</li>
-<li>The offer cannot be combined with another offer or discount code unless we announce otherwise.</li>
+<li>The cart applies the offer's discount automatically and shows it in the total before you send the order.</li>
+<li>The discount applies to the products only, not to shipping; free standard shipping (orders of EGP ${fees.freeOver} or more) is based on the amount after discount.</li>
+<li>If you return part of a discounted order, the discount is recalculated on what you keep and we refund the difference between what you paid and the recalculated amount.</li>
+<li>Two offers cannot be combined on the same order.</li>
+<li>An offer lasts until its end date or until its allocated stock runs out; orders confirmed before an offer ends or changes keep its terms as they were when confirmed.</li>
+<li>If an offer is used unfairly, such as through fake orders, we may cancel the discount.</li>
 </ul>
-<p><b>Birthday gift:</b></p>
-<ul>
-<li>Message us on WhatsApp on your birthday and we send you a gift belt chosen from the styles available at the time.</li>
-<li>One gift a year per person, per mobile number and per delivery address.</li>
-<li>We may ask for simple proof of your birth date, such as a photo of your ID card with everything hidden except your name and date of birth. We use it only to check the date and delete it afterwards.</li>
-<li>You pay the gift's shipping, unless it is sent with another order of yours in the same parcel.</li>
-<li>The gift cannot be exchanged for money, and cannot be returned or exchanged unless it arrives faulty.</li>
-</ul>
-<p><b>All offers:</b> offers and gifts last while their allocated stock lasts. We may change or end any offer; orders confirmed before the change keep the terms in force when they were confirmed. If an offer is used unfairly, such as fake orders or several gifts for one person under different names or numbers, we may cancel the discount or the gift.</p>
+<p><b>Current offer: 2nd belt ${second}% off, 3rd belt ${third}% off.</b> The belts in the order are ranked from highest to lowest price, and in every group of 3 the first is full price, the second is ${second}% off and the third is ${third}% off.</p>
 
 <h2>6. Accurate details</h2>
 <p>We need correct and complete details to deliver your order. If delivery is delayed because of wrong details, we contact you to sort it out.</p>

@@ -51,7 +51,6 @@ describe("policy pages", () => {
       assert.match(terms, /25%[\s\S]*35%/);
       assert.ok(terms.includes(site.commercialRegister));
       assert.ok(terms.includes(site.consumerAgency.hotline));
-      assert.ok(getPolicy("privacy", lang).html.includes(`${site.dataRequestDays} ${lang === "ar" ? "أيام عمل" : "working days"}`));
     }
   });
 

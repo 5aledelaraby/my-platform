@@ -25,8 +25,6 @@ export const site = {
   defectDays: 30,
   /** With no agreed date, an order not delivered within this many days may be cancelled at no cost (Art. 40). */
   lateDeliveryDays: 30,
-  /** Working days to answer a request about personal data (Law 151/2020). */
-  dataRequestDays: 6,
   /** Egyptian Consumer Protection Agency. */
   consumerAgency: { hotline: "19588", url: "https://cpa.gov.eg" },
   /** Date the policy pages last changed (YYYY-MM-DD). Update with every change to src/policies. */
