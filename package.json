@@ -11,9 +11,9 @@
     "test": "node --test \"{apps,packages}/*/test/*.test.ts\"",
     "check:secrets": "node tools/architecture/check-secrets.mjs",
     "check:boundaries": "node tools/architecture/check-boundaries.mjs",
-    "typecheck": "pnpm -r --if-present typecheck",
+    "typecheck": "turbo run typecheck",
     "lint": "eslint .",
-    "build": "pnpm -r --if-present build",
+    "build": "turbo run build",
     "check": "pnpm check:secrets && pnpm check:boundaries && pnpm test && pnpm typecheck && pnpm lint && DEPLOY_ENV=production pnpm build"
   },
   "devDependencies": {
