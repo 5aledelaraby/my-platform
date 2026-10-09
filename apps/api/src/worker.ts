@@ -3,7 +3,7 @@ import { SHIPPING, lookupProduct } from "@platform/commerce";
 import { accessVerifier } from "./access.ts";
 import { createAdminHandler } from "./admin.ts";
 import { createHandler } from "./handler.ts";
-import { telegramNotifier } from "./notify.ts";
+import { formatOrderMessage, formatStatusMessage, telegramSender } from "./notify.ts";
 import { d1Repository } from "./repository.ts";
 import type { D1Like } from "./repository.ts";
 
@@ -39,6 +39,9 @@ export default {
     const randomBytes = (length: number) => crypto.getRandomValues(new Uint8Array(length));
     // eslint-disable-next-line no-console
     const reportError = (name: string) => console.error("order_error", name);
+    // Telegram is on only when both values are set in the dashboard.
+    const send = token && chatId ? telegramSender(token, chatId) : null;
+    const waitUntil = ctx ? { waitUntil: (work: Promise<unknown>) => ctx.waitUntil(work) } : {};
     const emails = (env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
     const missingSettings = [
       ...(env.ACCESS_TEAM_DOMAIN?.trim() ? [] : ["ACCESS_TEAM_DOMAIN"]),
@@ -53,6 +56,8 @@ export default {
       now,
       randomBytes,
       reportError,
+      ...(send ? { notifyStatus: (order, from, to) => send(formatStatusMessage(order, from, to, now())) } : {}),
+      ...waitUntil,
     });
     const handler = createHandler({
       lookup: lookupProduct,
@@ -66,9 +71,8 @@ export default {
       randomBytes,
       // Error label only. Never log request bodies: they contain customers' personal details.
       reportError,
-      // Notifications are on only when both values are set in the dashboard.
-      ...(token && chatId ? { notify: telegramNotifier(token, chatId) } : {}),
-      ...(ctx ? { waitUntil: (work: Promise<unknown>) => ctx.waitUntil(work) } : {}),
+      ...(send ? { notify: (order) => send(formatOrderMessage(order)) } : {}),
+      ...waitUntil,
     });
     return handler(request);
   },

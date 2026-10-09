@@ -7,6 +7,7 @@ import { unverifiedAccessHints } from "./access.ts";
 import type { AccessHints, AdminVerifier } from "./access.ts";
 import { ADMIN_CSS, ADMIN_HTML, ADMIN_JS } from "./admin-ui.ts";
 import { errorLabel, isRecord, json, readBodyLimited } from "./http.ts";
+import type { StatusNotifier } from "./notify.ts";
 import type { OrderRepository } from "./repository.ts";
 
 export interface AdminDeps {
@@ -18,6 +19,10 @@ export interface AdminDeps {
   now: () => Date;
   randomBytes: (length: number) => Uint8Array;
   reportError?: (label: string) => void;
+  /** Tells the owner about each status change (Telegram). Sent in the background; a failure never fails the change. */
+  notifyStatus?: StatusNotifier;
+  /** Keeps background work alive after the response (Workers `ctx.waitUntil`). */
+  waitUntil?: (work: Promise<unknown>) => void;
 }
 
 export const ADMIN_HEADER = "X-Vicuna-Admin";
@@ -154,6 +159,10 @@ export function createAdminHandler(deps: AdminDeps): (request: Request, path: st
           if (result === "not_found") return json(404, { error: "not_found" });
           if (result === "stale") return json(409, { error: "stale" });
           const updated = await deps.repository.getOrder(id);
+          if (deps.notifyStatus && updated) {
+            const sent = deps.notifyStatus(updated, order.status, to).catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
+            deps.waitUntil?.(sent);
+          }
           return json(200, { order: updated, next: updated ? nextStatuses(updated.status) : [] });
         }
         return json(405, { error: "method_not_allowed" });

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { SHIPPING, lookupProduct } from "@platform/commerce";
 import type { Order } from "@platform/commerce";
-import { createHandler, formatOrderMessage, memoryRepository, telegramNotifier } from "../src/index.ts";
+import { createHandler, formatOrderMessage, formatStatusMessage, memoryRepository, telegramNotifier } from "../src/index.ts";
 import type { D1Statement, HandlerDeps, Notifier } from "../src/index.ts";
 import worker from "../src/worker.ts";
 
@@ -54,6 +54,28 @@ describe("formatOrderMessage", () => {
   it("stays under Telegram's message limit", () => {
     const long = { ...order, customer: { ...order.customer, address: "ع".repeat(5000) } };
     assert.ok(formatOrderMessage(long).length <= 4000);
+  });
+});
+
+describe("formatStatusMessage", () => {
+  const at = new Date("2026-10-09T12:05:00Z");
+
+  it("says which order moved, from what to what, and how to reach the customer", () => {
+    const text = formatStatusMessage(order, "new", "confirmed", at);
+    for (const part of ["الطلب V-1009-98LGT: جديد ← اتأكد", "الاسم: منى أحمد", "الموبايل: 01012345678", "https://wa.me/201012345678", "الإجمالي: 700 ج"]) {
+      assert.ok(text.includes(part), part);
+    }
+    assert.match(text, /15:05|3:05/, "Cairo time (UTC+3)");
+    assert.ok(!text.includes("المخزون"));
+  });
+
+  it("mentions the stock coming back on cancel", () => {
+    assert.match(formatStatusMessage(order, "confirmed", "cancelled", at), /اتأكد ← ملغي[\s\S]*رجعت للمخزون/);
+  });
+
+  it("stays under Telegram's message limit", () => {
+    const long = { ...order, customer: { ...order.customer, name: "ع".repeat(5000) } };
+    assert.ok(formatStatusMessage(long, "new", "shipped", at).length <= 4000);
   });
 });
 

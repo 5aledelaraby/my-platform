@@ -256,6 +256,36 @@ describe("admin orders", () => {
     assert.deepEqual([...(await repo.stock())], [["lace-black", 3]], "still returned only once");
     assert.equal((await handler(send("POST", "/api/orders/V-1009-AAAA2/status", { to: "lost", version: 2 }))).status, 400);
   });
+
+  it("tells the owner about each real status change, in the background", async () => {
+    const repo = d1Repository(sqliteD1());
+    const sent: string[] = [];
+    const work: Array<Promise<unknown>> = [];
+    const errors: string[] = [];
+    let fail = false;
+    const admin = createAdminHandler({
+      repository: repo,
+      verify: () => Promise.resolve(OWNER),
+      now: () => NOW,
+      randomBytes: (len) => crypto.getRandomValues(new Uint8Array(len)),
+      reportError: (label) => errors.push(label),
+      notifyStatus: (o, from, to) => (fail ? Promise.reject(new Error("telegram_http_500")) : (sent.push(`${o.id} ${from}>${to} ${o.customer.phone}`), Promise.resolve())),
+      waitUntil: (w) => work.push(w),
+    });
+    await placeOrder(repo, "V-1009-BBBB3", [{ id: "bow-gold", quantity: 1 }]);
+    const move = (to: string, version: number) => admin(send("POST", "/api/orders/V-1009-BBBB3/status", { to, version }), "/admin/api/orders/V-1009-BBBB3/status");
+
+    assert.equal((await move("confirmed", 0)).status, 200);
+    assert.equal((await move("shipped", 0)).status, 409, "stale: no message");
+    assert.equal((await move("delivered", 1)).status, 409, "skip: no message");
+    await Promise.all(work);
+    assert.deepEqual(sent, ["V-1009-BBBB3 new>confirmed 01012345678"]);
+
+    fail = true;
+    assert.equal((await move("cancelled", 1)).status, 200, "a failed message never fails the change");
+    await Promise.all(work);
+    assert.deepEqual(errors, ["notify_failed:Error"]);
+  });
 });
 
 describe("admin stock", () => {
