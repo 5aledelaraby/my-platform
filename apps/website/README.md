@@ -6,7 +6,7 @@
 
 تخطيط كامل (هيدر، فوتر، خطوط، ألوان)، ورئيسية تعريفية عربي `/` وإنجليزي `/en/` حسب ADR 0009. بعد كل بناء بيشتغل `scripts/check-dist.mjs` (title، description، canonical، robots، h1، hreflang، الروابط الداخلية، لا شبكة منتجات في الرئيسية، ميزانية JS). المتجر: `/belts/` (كل الأحزمة)، `/belts/<style>/` (6 أنماط)، `/belts/<product-id>/` (38 منتج) بالعربي والإنجليزي، مع sitemap.xml وrobots.txt. السلة (drawer عام في كل الصفحات، محفوظة في المتصفح) بتبعت الطلب لـ `POST /api/orders` وبعدها `/thanks/` أو `/en/thanks/`. السلة بتلتزم بنفس حدود الـ API (20 من المنتج، 50 حزام، 30 منتج مختلف) من `@platform/commerce`. لو الإرسال فشل بتظهر رسالة مع بديل واتساب، والسلة والبيانات بيفضلوا زي ما هم. تقدر تغيّر عنوان الـ API بمتغير `PUBLIC_API_URL`.
 
-ملفات النشر في `public/`: `_redirects` (تحويلات 301 من روابط الموقع القديم) و`_headers` (هيدرز أمان، وكاش طويل لملفات `/_astro/`). الاتنين بيقرأهم Cloudflare Workers static assets.
+ملفات النشر في `public/`: `_headers` (هيدرز أمان، وكاش طويل لملفات `/_astro/`). بيقراه Cloudflare Workers static assets.
 
 ## تشغيل
 
