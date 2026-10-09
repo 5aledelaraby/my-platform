@@ -74,7 +74,7 @@ pnpm check:boundaries            # architecture rules
 - Regular belts are **"جلد PU"**. Never write "جلد طبيعي" for them. Natural leather appears only for the bespoke/custom service.
 - No Fendi / FF-logo belts. No third-party photos without rights. No invented reviews, ratings, sales counts or testimonials.
 - Site language is Arabic (RTL) with Latin digits (0-9).
-- Palette: white `#FFFFFF`, berry `#C8102E`, near-black `#161616`. **Red is for the belts only**: pages that are not about the belts (home, contact, policies, 404) use `theme="neutral"` on `Base` (sand, white and near-black, no red).
+- Palette and look (owner, 2026-10-10): white ground, near-black `#161616` type and buttons, thin lines, square corners, no shadows or decorative sparkles. Berry `#C8102E` is only a small accent on the belts pages (prices, chips, the logo); pages that are not about the belts use `theme="neutral"` on `Base` (no red at all). Editorial photos live in `public/img/editorial/`, product films in `public/video/` (muted, looping, with a poster).
 
 ## Security rules
 

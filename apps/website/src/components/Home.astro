@@ -1,6 +1,6 @@
 ---
-// The home page (vicuna-eg.com): a calm introduction to Vicuna, not a belts page. Images are AI-generated mood
-// pictures (no products). It never shows the product grid or cart UI (ADR 0009); the belts are one of the sections.
+// The home page (vicuna-eg.com): a calm introduction to Vicuna, not a belts page. Images are editorial
+// photos. It never shows the product grid or cart UI (ADR 0009); the belts are one of the sections.
 import ContactCards from "./ContactCards.astro";
 import Icon from "./ui/Icon.astro";
 import { JOURNAL_PATH, langPath, site } from "../site.ts";
@@ -43,7 +43,7 @@ const sections: Section[] = [
 
 <section class="intro-hero">
   <figure class="intro-cover">
-    <img src="/img/ai/still-life.webp" alt="" width="1600" height="1200" fetchpriority="high" decoding="async" />
+    <img src="/img/editorial/lace-close-1600.webp" srcset="/img/editorial/lace-close-800.webp 800w, /img/editorial/lace-close-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1200" fetchpriority="high" decoding="async" />
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
@@ -53,7 +53,7 @@ const sections: Section[] = [
 </section>
 
 <section class="wrap intro-split reveal">
-  <figure class="intro-photo"><img src="/img/ai/craft.webp" alt="" width="960" height="1200" loading="lazy" decoding="async" /></figure>
+  <figure class="intro-photo"><img src="/img/editorial/model-seated-640.webp" srcset="/img/editorial/model-seated-640.webp 640w, /img/editorial/model-seated-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="" width="640" height="800" loading="lazy" decoding="async" /></figure>
   <div class="intro-copy">
     <h2>{ar ? "من نحن" : "About us"}</h2>
     <p>
@@ -68,7 +68,7 @@ const sections: Section[] = [
 </section>
 
 <section class="wrap intro-split flip reveal">
-  <figure class="intro-photo"><img src="/img/ai/atelier.webp" alt="" width="960" height="1200" loading="lazy" decoding="async" /></figure>
+  <figure class="intro-photo"><img src="/img/editorial/model-blazer-640.webp" srcset="/img/editorial/model-blazer-640.webp 640w, /img/editorial/model-blazer-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="" width="640" height="800" loading="lazy" decoding="async" /></figure>
   <div class="intro-copy">
     <h2>{ar ? "أقسامنا" : "Our sections"}</h2>
     <ul class="section-links">

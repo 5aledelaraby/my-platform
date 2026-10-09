@@ -5,7 +5,7 @@ import Perks from "./Perks.astro";
 import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
 import { site } from "../site.ts";
-import { beltsUrl, colorName, colors, getProduct, price, productsOfStyle, styleText, styles, thumbOf } from "../store.ts";
+import { beltsUrl, colorName, colors, price, productsOfStyle, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -15,59 +15,28 @@ const ar = lang === "ar";
 const cur = ar ? "جنيه" : "EGP";
 const wa = `https://wa.me/${site.whatsappInternational}`;
 const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في طلب مقاس خاص." : "Hello Vicuna, I would like to ask about a custom size.")}`;
-// The headline in two lines; the second one in the brand red.
 const tie = ar
   ? [["ضعي الحزام على الخصر", "الجزء العريض إلى الأمام"], ["لفّي الشريطين", "وأعيديهما إلى الأمام"], ["اربطي بطريقتك", "فيونكة أو عقدة"]]
   : [["Place it on your waist", "wide part in front"], ["Wrap the straps", "and bring them forward"], ["Tie it your way", "a bow or a knot"]];
-const [h1a, h1b] = c.h1.split(ar ? "، " : ", ");
-// Belts floating around the hero photo: position, tilt and animation offset.
-const floaters = [
-  { id: "lace-gold", pos: "f1", r: "-9deg", d: "0s" },
-  { id: "bow-white", pos: "f2", r: "8deg", d: "-1.6s" },
-  { id: "croc-cognac", pos: "f3", r: "6deg", d: "-3.1s" },
-  { id: "lace-red", pos: "f4", r: "-6deg", d: "-4.4s" },
-].flatMap((f) => {
-  const p = getProduct(f.id);
-  return p ? [{ ...f, src: thumbOf(p) }] : [];
-});
 ---
 
-<section class="hero">
-  <div class="hero-box">
-    <div class="hero-pill-row">
-      <span class="ship-pill">
-        <Icon name="sparkle" size={13} class="spark s1" />
-        <Icon name="sparkle" size={10} class="spark s2" />
-        <Icon name="plane" size={22} class="pill-plane" />
-        {ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}
-      </span>
-    </div>
-    <div class="hero-text">
-      <p class="hero-tagline">{c.eyebrow}</p>
-      <h1>{h1a}{h1b && <><br /><span class="accent">{h1b}</span></>}</h1>
+<section class="bh-hero">
+  <div class="bh-grid">
+    <figure class="bh-media">
+      <video src="/video/lace.mp4" poster="/video/lace.webp" autoplay muted loop playsinline preload="metadata" aria-hidden="true" width="540" height="948"></video>
+    </figure>
+    <div class="bh-text">
+      <p class="bh-kicker" lang="en">VICUNA · BELTS</p>
+      <h1>{c.h1}</h1>
       <p class="lead">{c.lead}</p>
       <div class="hero-actions">
-        <a class="btn btn-berry btn-shine" href="#all">{c.cta} <Icon name="arrow" size={18} class="dir-icon" /></a>
+        <a class="btn" href="#all">{c.cta}</a>
         <a class="btn btn-white" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.ctaWhatsapp}</a>
       </div>
-    </div>
-    <div class="hero-art">
-      <span class="hero-glow" aria-hidden="true"></span>
-      <figure class="arch">
-        <img
-          src="/img/hero-1200.webp"
-          srcset="/img/hero-800.webp 800w, /img/hero-1200.webp 1200w"
-          sizes="(min-width: 960px) 40vw, 80vw"
-          alt={c.heroAlt}
-          width="1200"
-          height="810"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-      {floaters.map((f) => (
-        <img class={`floaty ${f.pos}`} src={f.src} alt="" aria-hidden="true" width="480" height="480" decoding="async" style={`--r:${f.r};--d:${f.d}`} />
-      ))}
+      <ul class="bh-facts">
+        <li>{ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}</li>
+        <li>{ar ? `استرجاع خلال ${site.returnDays} يومًا` : `Returns within ${site.returnDays} days`}</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -81,7 +50,7 @@ const floaters = [
 <section class="section" id="all">
   <div class="wrap">
     <div class="section-head">
-      <h2 class="h2">{c.stylesTitle} <Icon name="sparkle" size={20} class="twinkle" /></h2>
+      <h2 class="h2">{c.stylesTitle}</h2>
       <p class="muted">{c.stylesLead}</p>
     </div>
     <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
@@ -124,6 +93,20 @@ const floaters = [
 <section class="section">
   <div class="wrap">
     <div class="section-head">
+      <h2 class="h2">{ar ? "طرق ارتدائه" : "How to wear it"}</h2>
+      <p class="muted">{ar ? "مع الفستان الواسع أو فوق البليزر، الحزام يحدّد الخصر ويغيّر الإطلالة." : "Over a flowing dress or a blazer, the belt defines the waist and changes the look."}</p>
+    </div>
+    <div class="lookbook">
+      <figure class="reveal"><img src="/img/editorial/model-walk-640.webp" srcset="/img/editorial/model-walk-640.webp 640w, /img/editorial/model-walk-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 50vw" alt={ar ? "حزام عريض بربطة رفيعة فوق فستان عاجي" : "A wide belt with a thin tie over an ivory dress"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "مع الفستان" : "With a dress"}</figcaption></figure>
+      <figure class="reveal" style="--i:1"><img src="/img/editorial/model-blazer-640.webp" srcset="/img/editorial/model-blazer-640.webp 640w, /img/editorial/model-blazer-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 50vw" alt={ar ? "حزام أسود فوق قميص أبيض تحت البليزر" : "A black belt over a white shirt under a blazer"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "مع البليزر" : "With a blazer"}</figcaption></figure>
+      <figure class="reveal lb-wide" style="--i:2"><img src="/img/editorial/model-seated-640.webp" srcset="/img/editorial/model-seated-640.webp 640w, /img/editorial/model-seated-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 100vw" alt={ar ? "حزام عاجي على الخصر مع فستان طويل" : "An ivory belt at the waist of a long dress"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "إطلالة هادئة" : "A quiet look"}</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
       <p class="eyebrow">{c.whyEyebrow}</p>
       <h2 class="h2">{c.whyTitle}</h2>
     </div>
@@ -135,6 +118,19 @@ const floaters = [
           <p class="muted">{w.d}</p>
         </div>
       ))}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap detail">
+    <figure class="detail-media reveal">
+      <video src="/video/bow-black.mp4" poster="/video/bow-black.webp" autoplay muted loop playsinline preload="none" aria-hidden="true" width="540" height="948"></video>
+    </figure>
+    <div class="reveal">
+      <p class="eyebrow">{ar ? "التفاصيل" : "The details"}</p>
+      <h2 class="h2">{ar ? "خياطة متقنة وحواف نظيفة" : "Careful stitching, clean edges"}</h2>
+      <p class="muted lede">{ar ? "جلد PU طري يلتف على الخصر، بقصّ ليزر وخياطة على الحواف، وربطة تتحمل الشد. نراجع كل حزام قبل أن يصل إليكِ." : "Soft PU leather that wraps the waist, laser-cut and stitched along the edges, with a tie that holds. We check every belt before it reaches you."}</p>
     </div>
   </div>
 </section>
