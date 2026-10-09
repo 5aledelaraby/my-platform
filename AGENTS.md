@@ -27,6 +27,8 @@ pnpm test                        # node:test, no extra deps
 pnpm check:boundaries            # architecture rules
 ```
 
+`pnpm typecheck` and `pnpm build` run through Turborepo (`turbo.json`): packages in parallel, results cached in `.turbo/`. The build cache key includes `DEPLOY_ENV` and the root `content/` folder; add any new input outside a package to `globalDependencies`.
+
 ## Architecture rules (enforced by `tools/architecture/check-boundaries.mjs` in CI)
 
 - `commerce`, `seo`, `content` import no UI framework and no other internal package.
