@@ -65,7 +65,9 @@ export function calculateTotals(
   method: ShippingMethod,
   config: ShippingConfig,
 ): CartTotals {
-  const itemCount = lines.reduce((n, line) => n + line.quantity, 0);
+  // Validate every line first, so invalid quantities can never cancel out into an "empty" cart.
+  const units = expandUnits(lines);
+  const itemCount = units.length;
   if (itemCount === 0) {
     return { itemCount: 0, subtotal: 0, discount: 0, net: 0, shipping: 0, total: 0 };
   }

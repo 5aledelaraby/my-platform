@@ -1,6 +1,6 @@
 import { defineConfig } from "astro/config";
 
-// Production URL. Staging/preview builds set DEPLOY_ENV (see src/layouts/Base.astro) so they are never indexed.
+// Production URL. Every build must set DEPLOY_ENV=production|staging|preview (src/deploy-env.ts); only production is indexed.
 export default defineConfig({
   site: "https://vicuna-eg.com",
   output: "static",

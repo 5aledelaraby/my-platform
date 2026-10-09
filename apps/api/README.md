@@ -26,26 +26,24 @@ Cloudflare Worker بيستقبل الطلب من الموقع، ويتحقق م�
 
 - `shippingMethod`: `standard` أو `express`. `paymentMethod`: `cod` (عند الاستلام) أو `instapay` (تحويل يدوي، لا يتم خصم أي شيء أونلاين).
 - `website` حقل مخفي في الصفحة (honeypot): لازم يفضل فاضي، وأي بوت بيملاه يتم رفضه.
-- الأخطاء: `422` فيها `errors` بأكواد ثابتة (مثل `invalid_phone`) والواجهة تترجمها. `403` أصل غير مسموح. `413` حجم زائد. `503` تعارض في رقم الطلب (يُعاد المحاولة).
+- الأخطاء: `422` فيها `errors` بأكواد ثابتة (مثل `invalid_phone`) والواجهة تترجمها. `403` أصل غير مسموح (أو `ALLOWED_ORIGINS` مش متضبوط). `413` حجم أكبر من 16 KB (الـ API بيوقف القراءة أول ما الحجم يعدّي الحد). `503` تعارض متكرر في رقم الطلب فقط (يُعاد المحاولة). `500` أي خطأ تاني في التخزين، وبيتسجل اسمه في اللوج.
+- مفيش حماية من تكرار الطلب على مستوى الخادم (idempotency): لو العميلة ضغطت تاني بعد ما الشبكة قطعت والطلب كان اتسجل، ممكن يتسجل مرتين. الواجهة بتمنع الضغط المزدوج أثناء الإرسال بس.
 
 ## الخصوصية
 
 بيانات العملاء (اسم، موبايل، عنوان) بتتخزن في D1 فقط. الـ API **لا يطبع** أي بيانات في اللوجز (بيسجل اسم الخطأ فقط)، ولا يرجّع الموبايل أو العنوان في الرد.
 
-## التشغيل لأول مرة (من جهازك أو Codespaces)
+## النشر (الطريقة المستخدمة فعلًا)
 
-```bash
-pnpm install
-cd apps/api
-pnpm wrangler login                          # تسجيل دخول Cloudflare من المتصفح (لا تبعت أي token لأي حد)
-pnpm wrangler d1 create vicuna-db            # هيطبع database_id: حطه في wrangler.toml
-pnpm db:migrate:remote                       # ينشئ جداول orders وorder_items
-pnpm deploy
-```
+- الـ Worker `vicuna-api` متوصل بالريبو من لوحة Cloudflare (Workers Builds). أي push على `main` بيتنشر تلقائيًا بأمر النشر `cd apps/api && npx wrangler deploy`.
+- قاعدة D1 `vicuna-db` اتعملت من اللوحة، والـ `database_id` في `wrangler.toml` (معرّف، مش سر).
+- الـ migrations بتتنفذ يدويًا من **D1 Console** في اللوحة، أمر في كل سطر. أي migration جديدة لازم تتنفذ على القاعدة **قبل** دمج الكود اللي بيعتمد عليها، لأن الدمج بينشر فورًا.
+- تنبيه: التنفيذ اليدوي ما بيتسجلش في جدول `d1_migrations`. لو حد شغّل بعد كده `pnpm db:migrate:remote` (يعني `wrangler d1 migrations apply --remote`)، هيحاول ينفذ `0001` تاني ويفشل لأن الجداول موجودة. التزموا بطريقة واحدة.
+- المسارات: `staging.vicuna-eg.com/api/*` حاليًا (في `wrangler.toml`). مسار الإنتاج `vicuna-eg.com/api/*` يتضاف وقت تحويل الدومين.
 
-بعدها في Cloudflare: ربط الـ Worker بالمسار `vicuna-eg.com/api/*`، وإضافة **Rate limiting rule** على `POST /api/orders` (مثلًا 10 طلبات كل 10 دقائق لكل IP). الحماية من السبام عند الحافة أرخص وأقوى من كود داخل الـ Worker.
+مطلوب من لوحة Cloudflare قبل الإنتاج: **Rate limiting rule** على `POST /api/orders` لكل IP (القيم المتاحة بتختلف حسب الخطة)، وبعدها إيقاف رابط `workers.dev` للـ API (`workers_dev = false`) لأن قواعد الحماية بتتطبق على الدومين بس. الـ honeypot وفحص `Origin` بيوقفوا البوتات البسيطة بس، وأي حد يقدر يبعت طلب مباشر بـ curl.
 
-للتجربة محليًا: اعمل `apps/api/.dev.vars` فيه `ALLOWED_ORIGINS="http://localhost:4321"` ثم `pnpm dev` و`pnpm db:migrate:local`.
+للتجربة محليًا: اعمل `apps/api/.dev.vars` فيه `ALLOWED_ORIGINS="http://localhost:4321"` ثم `pnpm dev` و`pnpm db:migrate:local`، وشغّل الموقع بـ `PUBLIC_API_URL=http://localhost:8787/orders` علشان السلة تبعت للـ API المحلي بدل `/api/orders` على نفس الموقع.
 
 ## قواعد
 

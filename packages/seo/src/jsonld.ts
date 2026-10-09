@@ -105,6 +105,8 @@ export interface ArticleInput {
   datePublished: string;
   dateModified?: string;
   authorName: string;
+  /** Use "Organization" when the brand, not a named person, is the author. */
+  authorType?: "Person" | "Organization";
   publisherName: string;
   publisherLogo: string;
 }
@@ -119,7 +121,7 @@ export function articleJsonLd(input: ArticleInput): JsonLd {
     image: [...input.images],
     datePublished: input.datePublished,
     dateModified: input.dateModified ?? input.datePublished,
-    author: { "@type": "Person", name: input.authorName },
+    author: { "@type": input.authorType ?? "Person", name: input.authorName },
     publisher: {
       "@type": "Organization",
       name: input.publisherName,

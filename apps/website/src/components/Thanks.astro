@@ -12,8 +12,8 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
 
 <Base title={title} description={title} lang={lang} altPath={ar ? "/en/thanks/" : "/thanks/"} noindex>
   <div class="wrap thanks">
-    <h1>{ar ? "شكرًا، طلبك اتسجّل" : "Thank you, your order is placed"}</h1>
-    <p id="t-id-wrap" hidden>{ar ? "رقم طلبك:" : "Your order number:"} <span class="order-id" id="t-id"></span></p>
+    <h1>{ar ? "شكرًا لكِ" : "Thank you"}</h1>
+    <p id="t-id-wrap" hidden>{ar ? "طلبك اتسجّل، ورقمه:" : "Your order is placed. Order number:"} <span class="order-id" id="t-id"></span></p>
     <p id="t-fallback" class="muted">{ar ? "لو الصفحة اتفتحت من غير طلب، تقدري تتصفحي الأحزمة من تاني." : "If you opened this page without placing an order, you can keep browsing the belts."}</p>
     <p id="t-total" hidden></p>
     <p id="t-instapay" hidden>{ar ? `للدفع بـ InstaPay حوّلي المبلغ على ${site.instapay} وابعتي لنا صورة التحويل على واتساب مع رقم الطلب.` : `To pay by InstaPay, transfer the amount to ${site.instapay} and send us the receipt on WhatsApp with your order number.`}</p>

@@ -16,6 +16,7 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
   </div>
   <p id="cart-empty" class="muted">{ar ? "السلة فاضية." : "Your cart is empty."}</p>
   <div id="cart-lines"></div>
+  <p id="cart-limit" class="muted" role="status" hidden></p>
   <div id="cart-totals" hidden></div>
   <form id="checkout" hidden novalidate>
     <label>{ar ? "الاسم" : "Name"}

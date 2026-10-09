@@ -11,7 +11,7 @@ export interface HandlerDeps {
   allowedOrigins: readonly string[];
   now: () => Date;
   randomBytes: (length: number) => Uint8Array;
-  /** Receives only a short error name, never request data (it contains personal details). */
+  /** Receives only a short error label (name and failure kind), never request data (it contains personal details). */
   reportError?: (name: string) => void;
 }
 
@@ -45,6 +45,45 @@ function publicOrder(order: Order) {
 }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+
+/**
+ * A short, PII-free label for logs: the error name plus the kind of SQLite failure when there is one
+ * (e.g. "Error:CHECK"). Never the message itself, which could one day contain request data.
+ */
+function errorLabel(error: unknown): string {
+  if (!(error instanceof Error)) return "UnknownError";
+  const text = `${error.message} ${error.cause instanceof Error ? error.cause.message : ""}`;
+  const kind = /\b(UNIQUE|CHECK|NOT NULL|FOREIGN KEY) constraint failed\b/.exec(text)?.[1] ?? /\bSQLITE_[A-Z_]+\b/.exec(text)?.[0];
+  return kind ? `${error.name}:${kind.replace(" ", "_")}` : error.name;
+}
+
+/**
+ * Reads the body as UTF-8 text, but stops (and cancels the stream) as soon as it exceeds `limit` bytes,
+ * so a chunked or mislabelled upload is never buffered whole in memory. Returns null when too large.
+ */
+async function readBodyLimited(request: Request, limit: number): Promise<string | null> {
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > limit) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
 
 /**
  * Routes (the optional "/api" prefix is stripped, so the Worker can sit on vicuna-eg.com/api/*):
@@ -86,8 +125,8 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
     const declared = Number(request.headers.get("Content-Length") ?? "0");
     if (declared > MAX_BODY_BYTES) return json(413, { error: "payload_too_large" }, cors);
 
-    const raw = await request.text();
-    if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) return json(413, { error: "payload_too_large" }, cors);
+    const raw = await readBodyLimited(request, MAX_BODY_BYTES);
+    if (raw === null) return json(413, { error: "payload_too_large" }, cors);
 
     let body: unknown;
     try {
@@ -116,7 +155,7 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
       }
       return json(503, { error: "try_again" }, { ...cors, "Retry-After": "2" });
     } catch (error) {
-      deps.reportError?.(error instanceof Error ? error.name : "UnknownError");
+      deps.reportError?.(errorLabel(error));
       return json(500, { error: "server_error" }, cors);
     }
   };

@@ -1,4 +1,17 @@
-export type DeployEnvironment = "production" | "staging" | "preview";
+export const DEPLOY_ENVIRONMENTS = ["production", "staging", "preview"] as const;
+export type DeployEnvironment = (typeof DEPLOY_ENVIRONMENTS)[number];
+
+/**
+ * Reads the DEPLOY_ENV build variable. There is deliberately no default: a missing or misspelt value throws,
+ * so a build can never silently become indexable (or silently drop out of search) because a variable was forgotten.
+ */
+export function parseDeployEnvironment(value: unknown): DeployEnvironment {
+  if (typeof value === "string" && (DEPLOY_ENVIRONMENTS as readonly string[]).includes(value)) {
+    return value as DeployEnvironment;
+  }
+  const got = value === undefined ? "nothing (the variable is not set)" : JSON.stringify(value);
+  throw new Error(`DEPLOY_ENV must be one of ${DEPLOY_ENVIRONMENTS.join(", ")}; got ${got}.`);
+}
 
 /**
  * Only production may be indexed. Staging and preview deployments must never compete

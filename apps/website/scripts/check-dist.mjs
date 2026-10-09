@@ -1,6 +1,7 @@
 // Post-build SEO and quality checks on apps/website/dist. Fails the build on any violation.
 import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
+import { parseDeployEnvironment, robotsDirective } from "@platform/seo";
 
 const DIST = new URL("../dist/", import.meta.url).pathname;
 const SITE = "https://vicuna-eg.com";
@@ -29,7 +30,14 @@ const files = walk(DIST);
 const pages = files.filter((f) => f.endsWith(".html"));
 const urlOf = (file) => "/" + relative(DIST, file).replace(/index\.html$/, "");
 const known = new Set(pages.map(urlOf));
-const production = (process.env.DEPLOY_ENV ?? "production") === "production";
+let env;
+try {
+  env = parseDeployEnvironment(process.env.DEPLOY_ENV);
+} catch (error) {
+  console.error(`check-dist: ${error instanceof Error ? error.message : String(error)}`);
+  process.exit(1);
+}
+const production = env === "production";
 
 for (const file of pages) {
   const url = urlOf(file);
@@ -52,8 +60,7 @@ for (const file of pages) {
   if (!robots) fail(name, "missing robots meta");
   else if (NOINDEX_PAGES.has(url)) {
     if (robots !== "noindex,nofollow") fail(name, "thank-you page must be noindex,nofollow");
-  } else if (production && robots !== "index,follow") fail(name, `production page must be index,follow, got ${robots}`);
-  else if (!production && robots !== "noindex,nofollow") fail(name, "non-production page must be noindex,nofollow");
+  } else if (robots !== robotsDirective(env)) fail(name, `${env} page must be ${robotsDirective(env)}, got ${robots}`);
 
   const h1s = html.match(/<h1[\s>]/g)?.length ?? 0;
   if (h1s !== 1) fail(name, `expected exactly one <h1>, found ${h1s}`);
@@ -91,6 +98,28 @@ for (const file of pages) {
 for (const f of ["sitemap.xml", "robots.txt"]) {
   if (!existsSync(join(DIST, f))) fail(f, "missing from build output");
 }
+if (existsSync(join(DIST, "robots.txt"))) {
+  const txt = readFileSync(join(DIST, "robots.txt"), "utf8");
+  const blocksAll = /^Disallow: \/\s*$/m.test(txt);
+  if (production && (blocksAll || !txt.includes(`Sitemap: ${SITE}/sitemap.xml`))) fail("robots.txt", "production must allow crawling and list the sitemap");
+  if (!production && !blocksAll) fail("robots.txt", `${env} must block all crawling (Disallow: /)`);
+}
+
+// Legacy URLs (old site) -> new URLs. Every target must be a page of this build (no redirect into a 404).
+if (existsSync(join(DIST, "_redirects"))) {
+  const rules = readFileSync(join(DIST, "_redirects"), "utf8").split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
+  const sources = new Set();
+  for (const rule of rules) {
+    const [from, to, code, extra] = rule.split(/\s+/);
+    if (!from?.startsWith("/") || !to?.startsWith("/") || code !== "301" || extra !== undefined) fail("_redirects", `malformed rule: ${rule}`);
+    else if (from.includes("*") || from.includes(":")) fail("_redirects", `use explicit rules only: ${rule}`);
+    else if (sources.has(from)) fail("_redirects", `duplicate source ${from}`);
+    else if (known.has(from)) fail("_redirects", `redirects away from a live page ${from}`);
+    else if (!known.has(to)) fail("_redirects", `target is not a page of this build: ${rule}`);
+    sources.add(from);
+  }
+}
+
 if (production && existsSync(join(DIST, "sitemap.xml"))) {
   const sm = readFileSync(join(DIST, "sitemap.xml"), "utf8");
   const locs = [...sm.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1]);
@@ -105,4 +134,4 @@ if (errors.length) {
   console.error(`check-dist failed (${errors.length}):\n- ${errors.join("\n- ")}`);
   process.exit(1);
 }
-console.log(`check-dist ok: ${pages.length} pages, JS ${jsBytes} bytes.`);
+console.log(`check-dist ok (DEPLOY_ENV=${env}): ${pages.length} pages, JS ${jsBytes} bytes.`);

@@ -15,7 +15,11 @@ export function GET(): Response {
     ...articles.map((a) => articleUrl(a.slug)),
   ];
   const lastmod = new Map(articles.map((a) => [articleUrl(a.slug), a.dateModified ?? a.datePublished]));
-  return new Response(buildSitemapXml(paths.map((p) => ({ loc: `${site.url}${p}`, ...(lastmod.has(p) ? { lastmod: lastmod.get(p) } : {}) }))), {
+  const entries = paths.map((p) => {
+    const date = lastmod.get(p);
+    return date ? { loc: `${site.url}${p}`, lastmod: date } : { loc: `${site.url}${p}` };
+  });
+  return new Response(buildSitemapXml(entries), {
     headers: { "Content-Type": "application/xml; charset=utf-8" },
   });
 }

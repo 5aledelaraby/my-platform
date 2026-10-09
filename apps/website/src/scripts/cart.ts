@@ -1,6 +1,6 @@
 // Global cart: state in localStorage, drawer UI, checkout via POST /api/orders.
 // Prices shown here are for display only. The server recalculates everything from the catalogue.
-import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile } from "@platform/commerce";
+import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile, remainingQuantity } from "@platform/commerce";
 import type { CartLine, ShippingMethod } from "@platform/commerce";
 import { getProduct, productName, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
@@ -19,6 +19,8 @@ const T = {
     required: "مطلوب", too_short: "قصير جدًا", too_long: "طويل جدًا", invalid_phone: "رقم موبايل مصري غير صحيح",
     invalid_governorate: "اختاري المحافظة", fail: "تعذر إرسال الطلب. جرّبي تاني بعد شوية، أو اطلبي على واتساب.",
     busy: "الخدمة مشغولة، جرّبي تاني بعد ثواني.", fix: "راجعي الخانات المميزة.", qtyMax: "أقصى كمية",
+    full: `وصلتِ للحد الأقصى للطلب الواحد (${LIMITS.maxTotalQuantity} حزام أو ${LIMITS.maxDistinctItems} منتج مختلف). للكميات الأكبر كلمينا على واتساب.`,
+    items: "في مشكلة في منتجات السلة. راجعي الكميات أو احذفي المنتج وأضيفيه تاني.",
   },
   en: {
     cur: "EGP", free: "Free", remove: "Remove", sending: "Sending...", submit: "Place order",
@@ -26,6 +28,8 @@ const T = {
     required: "Required", too_short: "Too short", too_long: "Too long", invalid_phone: "Not a valid Egyptian mobile number",
     invalid_governorate: "Choose a governorate", fail: "We could not send the order. Please try again shortly, or order on WhatsApp.",
     busy: "The service is busy, please try again in a few seconds.", fix: "Please check the highlighted fields.", qtyMax: "Maximum quantity",
+    full: `You have reached the limit for one order (${LIMITS.maxTotalQuantity} belts or ${LIMITS.maxDistinctItems} different products). For larger orders, contact us on WhatsApp.`,
+    items: "There is a problem with the items in your cart. Check the quantities, or remove the product and add it again.",
   },
 }[lang];
 
@@ -33,10 +37,19 @@ function load(): Line[] {
   try {
     const raw: unknown = JSON.parse(localStorage.getItem(KEY) ?? "[]");
     if (!Array.isArray(raw)) return [];
-    return raw
+    const stored = raw
       .filter((l): l is Line => typeof l === "object" && l !== null && typeof (l as Line).id === "string" && Number.isInteger((l as Line).quantity))
-      .filter((l) => lookupProduct(l.id) !== undefined && l.quantity > 0)
-      .map((l) => ({ id: l.id, quantity: Math.min(l.quantity, LIMITS.maxQuantityPerItem) }));
+      .filter((l) => lookupProduct(l.id) !== undefined && l.quantity > 0);
+    // Merge duplicate rows and trim to the same limits the API enforces (old or edited storage may break them).
+    const clean: Line[] = [];
+    for (const l of stored) {
+      const take = Math.min(l.quantity, remainingQuantity(clean, l.id));
+      if (take <= 0) continue;
+      const existing = clean.find((c) => c.id === l.id);
+      if (existing) existing.quantity += take;
+      else clean.push({ id: l.id, quantity: take });
+    }
+    return clean;
   } catch {
     return [];
   }
@@ -59,6 +72,7 @@ const emptyEl = $("#cart-empty");
 const form = $<HTMLFormElement>("#checkout");
 const statusEl = $("#checkout-status");
 const submitBtn = $<HTMLButtonElement>("#checkout-submit");
+const limitEl = $("#cart-limit");
 
 const money = (v: number): string => `${formatEgp(v)} ${T.cur}`;
 const cartLines = (): CartLine[] =>
@@ -77,7 +91,8 @@ function el(tag: string, cls?: string, text?: string): HTMLElement {
 }
 
 function setQty(id: string, quantity: number): void {
-  const next = Math.min(quantity, LIMITS.maxQuantityPerItem);
+  const current = lines.find((l) => l.id === id)?.quantity ?? 0;
+  const next = Math.min(quantity, current + remainingQuantity(lines, id));
   lines = next <= 0 ? lines.filter((l) => l.id !== id) : lines.map((l) => (l.id === id ? { ...l, quantity: next } : l));
   save();
   render();
@@ -85,10 +100,12 @@ function setQty(id: string, quantity: number): void {
 
 export function addToCart(id: string): void {
   if (!lookupProduct(id)) return;
-  const existing = lines.find((l) => l.id === id);
-  if (existing) existing.quantity = Math.min(existing.quantity + 1, LIMITS.maxQuantityPerItem);
-  else lines.push({ id, quantity: 1 });
-  save();
+  if (remainingQuantity(lines, id) > 0) {
+    const existing = lines.find((l) => l.id === id);
+    if (existing) existing.quantity += 1;
+    else lines.push({ id, quantity: 1 });
+    save();
+  }
   render();
   openCart();
 }
@@ -125,13 +142,19 @@ function render(): void {
     plus.setAttribute("aria-label", `+ ${name}`);
     minus.addEventListener("click", () => setQty(l.id, l.quantity - 1));
     plus.addEventListener("click", () => setQty(l.id, l.quantity + 1));
-    plus.disabled = l.quantity >= LIMITS.maxQuantityPerItem;
+    plus.disabled = remainingQuantity(lines, l.id) === 0;
     qty.append(minus, el("span", undefined, String(l.quantity)), plus);
     const rm = el("button", "link", T.remove) as HTMLButtonElement;
     rm.type = "button";
     rm.addEventListener("click", () => setQty(l.id, 0));
     row.append(img, info, qty, rm);
     linesEl.append(row);
+  }
+
+  if (limitEl) {
+    const full = lines.length > 0 && remainingQuantity(lines, "") === 0;
+    limitEl.textContent = full ? T.full : "";
+    limitEl.toggleAttribute("hidden", !full);
   }
 
   const t = calculateTotals(cartLines(), shippingMethod(), SHIPPING);
@@ -173,7 +196,7 @@ function clientErrors(): Record<string, string> {
 
 async function submit(event: SubmitEvent): Promise<void> {
   event.preventDefault();
-  if (!form || !submitBtn || !statusEl || lines.length === 0) return;
+  if (!form || !submitBtn || !statusEl || lines.length === 0 || submitBtn.disabled) return;
   statusEl.textContent = "";
   const errs = clientErrors();
   FIELDS.forEach((f) => fieldError(f, errs[f]));
@@ -214,7 +237,8 @@ async function submit(event: SubmitEvent): Promise<void> {
     }
     if (res.status === 422 && data.errors) {
       FIELDS.forEach((f) => fieldError(f, data.errors?.[f]));
-      statusEl.textContent = T.fix;
+      const itemProblem = Object.keys(data.errors).some((k) => k === "items" || k.startsWith("items["));
+      statusEl.textContent = itemProblem ? T.items : T.fix;
     } else {
       statusEl.textContent = res.status === 503 ? T.busy : T.fail;
     }

@@ -15,6 +15,18 @@ export const LIMITS = {
   notes: { max: 300 },
 } as const;
 
+/**
+ * How many more units of `id` a cart may take without breaking LIMITS (the same limits the API enforces).
+ * 0 means the cart is full for this product: per-product, total-quantity or distinct-product limit reached.
+ */
+export function remainingQuantity(lines: ReadonlyArray<{ id: string; quantity: number }>, id: string): number {
+  const current = lines.filter((l) => l.id === id).reduce((n, l) => n + l.quantity, 0);
+  const total = lines.reduce((n, l) => n + l.quantity, 0);
+  const distinct = new Set(lines.filter((l) => l.quantity > 0).map((l) => l.id)).size;
+  if (current === 0 && distinct >= LIMITS.maxDistinctItems) return 0;
+  return Math.max(0, Math.min(LIMITS.maxQuantityPerItem - current, LIMITS.maxTotalQuantity - total));
+}
+
 /** A request that passed validation. Contains NO prices: prices come from the catalogue. */
 export interface ValidOrderRequest {
   items: Array<{ id: string; quantity: number }>;

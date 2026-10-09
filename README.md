@@ -17,8 +17,8 @@
 | `packages/seo` (canonical، robots، sitemap، JSON-LD) | جاهز ومختبر |
 | `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
 | `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
-| `apps/api` (إنشاء الطلبات، D1) | كود واختبارات جاهزة. **محتاج نشر على Cloudflare** (`apps/api/README.md`) |
-| `apps/website` | Astro شغال: تخطيط + رئيسية تعريفية عربي/إنجليزي + فحص SEO بعد البناء. `/belts/` لسه  |
+| `apps/api` (إنشاء الطلبات، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1 (`apps/api/README.md`) |
+| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/belts/` (6 تصاميم و38 منتج) عربي/إنجليزي، المقالات `/blog/`، السلة، صفحات الشكر. منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) |
 | حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
 
 ## تشغيل المشروع (أول مرة)
@@ -27,11 +27,13 @@
 
 ```bash
 corepack enable
-pnpm install          # هيعمل ملف pnpm-lock.yaml: اعمله commit مرة واحدة
-pnpm check            # لازم ينجح كله
+pnpm install --frozen-lockfile   # ملف pnpm-lock.yaml موجود في الريبو: لا تعدّله يدويًا
+pnpm run check                   # لازم ينجح كله (بيبني نسخة الإنتاج للفحص)
 ```
 
-بعد ما `pnpm-lock.yaml` يتحط في الريبو، الـ CI الكامل (typecheck + lint + build) بيشتغل تلقائيًا. قبلها بيشتغل فقط جزء الاختبارات والحراس اللي مش محتاجين تنصيب.
+بناء الموقع لوحده لازم يحدد البيئة صراحةً، ومفيش قيمة افتراضية: `DEPLOY_ENV=production|staging|preview`. أي بناء من غيرها بيفشل برسالة واضحة، علشان ولا نسخة تجريبية تتفهرس في جوجل بالغلط، ولا نسخة الإنتاج تتقفل بالغلط.
+
+الـ CI بيشغّل الحراس والاختبارات وtypecheck وlint وبناء الإنتاج مع كل push على `main` وكل pull request. ملحوظة: كود الموقع نفسه (`apps/website`) لسه مش داخل الـ typecheck، لأنه محتاج `astro check`.
 
 ## إضافة وحدة جديدة
 
@@ -48,12 +50,11 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 ## الخطوة التالية
 
-1. (تم) lockfile وCI.
-2. Scaffold لـ `apps/website` (الخطوات في [`apps/website/README.md`](apps/website/README.md)).
-3. نشر `apps/api` على Cloudflare (D1 + route) واختباره بـ curl.
-4. نقل المقالات والصور والصفحات من الموقع القديم (راجع `MIGRATION.md`) وربط السلة بالـ API.
-5. ربط Cloudflare Pages بـ `staging.vicuna-eg.com` بوضع `noindex`.
-6. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
+1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers.
+2. اختبار الطلب كامل على `staging.vicuna-eg.com` (السلة ثم الـ API ثم D1 ثم صفحة الشكر).
+3. قبل تحويل الدومين: صفحات السياسات (`/privacy/` و`/returns/` و`/terms/`)، وقاعدة rate limiting على `POST /api/orders`، وفصل قاعدة بيانات التجربة عن الإنتاج. القائمة الكاملة في `MIGRATION.md`.
+4. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. تحويلات 301 من روابط الموقع القديم جاهزة في `apps/website/public/_redirects`.
+5. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
 
 ## قاعدة أمان
 

@@ -8,7 +8,7 @@ interface Env {
   /** D1 database binding (see wrangler.toml). */
   DB: D1Like;
   /** Comma-separated exact origins, e.g. "https://vicuna-eg.com,https://staging.vicuna-eg.com". */
-  ALLOWED_ORIGINS: string;
+  ALLOWED_ORIGINS?: string;
 }
 
 export default {
@@ -17,7 +17,8 @@ export default {
       lookup: lookupProduct,
       shipping: SHIPPING,
       repository: d1Repository(env.DB),
-      allowedOrigins: env.ALLOWED_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean),
+      // A missing variable means "no browser origin is allowed" (fail closed), not a crash.
+      allowedOrigins: (env.ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean),
       now: () => new Date(),
       randomBytes: (length) => crypto.getRandomValues(new Uint8Array(length)),
       // Error name only. Never log request bodies: they contain customers' personal details.

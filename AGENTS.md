@@ -7,7 +7,7 @@ The owner is Khaled Elaraby (Vicuna, women's waist belts, Egypt). **Always reply
 A modular-monolith monorepo (pnpm workspaces) for the Vicuna store: storefront, content/SEO, and later admin and workers. Not microservices. Read `architecture/adr/` before changing structure.
 
 ```
-apps/website        storefront (Astro SSG + React islands for the cart)
+apps/website        storefront (Astro SSG; the cart is a small vanilla TypeScript script, no UI framework)
 apps/api            order API: Cloudflare Worker + D1 (ADR 0008)
 packages/commerce   money, pricing, discounts, cart totals (pure TS, no UI)
 packages/seo        canonical, robots policy, sitemap, JSON-LD (pure TS)
@@ -22,7 +22,7 @@ architecture/       ADRs, boundaries.json, ROADMAP.md, HOW-TO-ADD.md
 
 ```
 pnpm install --frozen-lockfile   # install (pnpm only, never npm or yarn)
-pnpm check                       # secrets + boundaries + tests + typecheck + lint + build (must pass before every commit)
+pnpm run check                   # secrets + boundaries + tests + typecheck + lint + production build (must pass before every commit)
 pnpm test                        # node:test, no extra deps
 pnpm check:boundaries            # architecture rules
 ```
@@ -55,6 +55,7 @@ pnpm check:boundaries            # architecture rules
 
 - Pages are pre-rendered HTML. Titles, canonicals, structured data and content must be in the HTML, not injected by client JS.
 - Only the production deployment is indexable. Staging and previews use `robotsDirective()` => `noindex,nofollow`.
+- Every website build must set `DEPLOY_ENV` (`production`, `staging` or `preview`). There is no default; a missing value fails the build. Never add one. (Only the local dev server falls back to `preview`, which is noindex.)
 - JSON-LD only through `@platform/seo` and serialized with `serializeJsonLd()` (XSS-safe).
 - **No `aggregateRating`, `review` or fake social proof, ever.** Only real, verifiable reviews, and only after the owner approves.
 
@@ -73,7 +74,7 @@ pnpm check:boundaries            # architecture rules
 
 ## Definition of done
 
-1. `pnpm check` passes locally and in CI.
+1. `pnpm run check` passes locally and in CI.
 2. New domain logic has tests (pricing, SEO and content helpers are table-tested).
 3. Structure changes have an ADR.
 4. No new warnings, no TODOs without an owner-visible note in the PR description.

@@ -1,6 +1,6 @@
 ---
 import { canonicalUrl, robotsDirective } from "@platform/seo";
-import type { DeployEnvironment } from "@platform/seo";
+import { deployEnvironment } from "../deploy-env.ts";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Cart from "../components/Cart.astro";
@@ -23,8 +23,8 @@ interface Props {
 
 const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/hero-1200.webp" } = Astro.props;
 
-// Only the production build may be indexed (ADR 0005). Set DEPLOY_ENV=staging|preview on non-production deployments.
-const env = (import.meta.env.DEPLOY_ENV ?? "production") as DeployEnvironment;
+// Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
+const env = deployEnvironment();
 const site = Astro.site!.toString();
 const canonical = canonicalUrl(site, Astro.url.pathname);
 const alt = altPath ? canonicalUrl(site, altPath) : undefined;

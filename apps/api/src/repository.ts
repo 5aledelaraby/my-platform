@@ -35,6 +35,16 @@ const INSERT_ORDER = `INSERT INTO orders (
   shipping_method, payment_method, item_count, subtotal, discount, net, shipping, total
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
+/** SQLite's message for a duplicate orders.id (D1 wraps it, e.g. "D1_ERROR: ...: SQLITE_CONSTRAINT"). */
+const ORDER_ID_COLLISION = /UNIQUE constraint failed: orders\.id\b/;
+
+function isOrderIdCollision(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  // Some D1 versions put the SQLite text on `cause` rather than on the message.
+  const cause = (error as { cause?: unknown }).cause;
+  return ORDER_ID_COLLISION.test(error.message) || (cause instanceof Error && ORDER_ID_COLLISION.test(cause.message));
+}
+
 const INSERT_ITEM = `INSERT INTO order_items (order_id, product_id, name, unit_price, quantity, line_total)
 VALUES (?, ?, ?, ?, ?, ?)`;
 
@@ -60,8 +70,9 @@ export function d1Repository(db: D1Like): OrderRepository {
         await db.batch(statements);
         return "ok";
       } catch (error) {
-        // SQLite reports a duplicate primary key as "UNIQUE constraint failed".
-        if (error instanceof Error && /UNIQUE|constraint/i.test(error.message)) return "conflict";
+        // Only a duplicate order id is a retryable collision. Any other failure (CHECK, FOREIGN KEY,
+        // NOT NULL, a duplicate item row) is a real data error and must surface as a server error.
+        if (isOrderIdCollision(error)) return "conflict";
         throw error;
       }
     },

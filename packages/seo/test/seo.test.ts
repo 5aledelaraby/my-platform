@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  articleJsonLd,
   buildSitemapXml,
   canonicalUrl,
+  parseDeployEnvironment,
   productJsonLd,
   robotsDirective,
   serializeJsonLd,
@@ -14,6 +16,20 @@ describe("robotsDirective", () => {
     assert.equal(robotsDirective("production"), "index,follow");
     assert.equal(robotsDirective("staging"), "noindex,nofollow");
     assert.equal(robotsDirective("preview"), "noindex,nofollow");
+  });
+});
+
+describe("parseDeployEnvironment", () => {
+  it("accepts the three known environments", () => {
+    assert.equal(parseDeployEnvironment("production"), "production");
+    assert.equal(parseDeployEnvironment("staging"), "staging");
+    assert.equal(parseDeployEnvironment("preview"), "preview");
+  });
+
+  it("never guesses: missing, empty or misspelt values throw", () => {
+    for (const value of [undefined, "", "Production", "prod", " staging", null, 1]) {
+      assert.throws(() => parseDeployEnvironment(value), /DEPLOY_ENV must be one of/, String(value));
+    }
   });
 });
 
@@ -78,5 +94,29 @@ describe("websiteJsonLd", () => {
     assert.equal(data["@type"], "WebSite");
     assert.equal(data["inLanguage"], "ar");
     assert.equal("potentialAction" in data, false);
+  });
+});
+
+describe("articleJsonLd", () => {
+  const base = {
+    headline: "عنوان",
+    description: "وصف",
+    url: "https://vicuna-eg.com/blog/x/",
+    images: ["https://vicuna-eg.com/img/a.webp"],
+    datePublished: "2026-01-02",
+    authorName: "فيكونا",
+    publisherName: "فيكونا",
+    publisherLogo: "https://vicuna-eg.com/brand/logo.svg",
+  };
+
+  it("defaults the author to a Person and dateModified to datePublished", () => {
+    const ld = articleJsonLd(base);
+    assert.deepEqual(ld["author"], { "@type": "Person", name: "فيكونا" });
+    assert.equal(ld["dateModified"], "2026-01-02");
+  });
+
+  it("lets a brand be the author as an Organization", () => {
+    const ld = articleJsonLd({ ...base, authorType: "Organization" });
+    assert.deepEqual(ld["author"], { "@type": "Organization", name: "فيكونا" });
   });
 });

@@ -26,6 +26,7 @@ const jsonLd = serializeJsonLd([
     datePublished: article.datePublished,
     ...(article.dateModified ? { dateModified: article.dateModified } : {}),
     authorName: site.nameAr,
+    authorType: "Organization",
     publisherName: site.nameAr,
     publisherLogo: `${site.url}/brand/vicuna-lockup.svg`,
   }),

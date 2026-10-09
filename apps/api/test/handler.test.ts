@@ -143,6 +143,78 @@ describe("POST /orders", () => {
     assert.equal((await handler(post("x".repeat(MAX_BODY_BYTES + 1)))).status, 413);
   });
 
+  it("stops reading a body without Content-Length once it passes the limit", async () => {
+    const { handler, repository } = setup();
+    const chunk = new TextEncoder().encode("x".repeat(1024));
+    let pulled = 0;
+    const endless = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulled += 1;
+        if (pulled > 10_000) controller.close(); // ~10 MB if read to the end
+        else controller.enqueue(chunk);
+      },
+    });
+    const req = new Request("https://vicuna-eg.com/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: ORIGIN },
+      body: endless,
+      duplex: "half",
+    } as RequestInit);
+    assert.equal(req.headers.get("Content-Length"), null);
+    const res = await handler(req);
+    assert.equal(res.status, 413);
+    assert.ok(pulled < 64, `read ${pulled} chunks, expected to stop near ${MAX_BODY_BYTES / 1024}`);
+    assert.equal(repository.orders.size, 0);
+  });
+
+  const streamed = (chunks: Uint8Array[]) =>
+    new Request("https://vicuna-eg.com/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: ORIGIN },
+      body: new ReadableStream<Uint8Array>({
+        start(controller) {
+          for (const c of chunks) controller.enqueue(c);
+          controller.close();
+        },
+      }),
+      duplex: "half",
+    } as RequestInit);
+
+  it("decodes Arabic text split across chunks in the middle of a character", async () => {
+    const { handler, repository } = setup();
+    const bytes = new TextEncoder().encode(JSON.stringify(body()));
+    const oneByteChunks = Array.from(bytes, (b) => Uint8Array.of(b));
+    const res = await handler(streamed(oneByteChunks));
+    assert.equal(res.status, 201);
+    assert.equal([...repository.orders.values()][0]?.customer.name, "منى أحمد");
+  });
+
+  it("accepts a body of exactly the limit and rejects one byte more", async () => {
+    const { handler } = setup();
+    const base = JSON.stringify(body({ pad: "" }));
+    const exact = base.replace('"pad":""', `"pad":"${"x".repeat(MAX_BODY_BYTES - new TextEncoder().encode(base).length)}"`);
+    assert.equal(new TextEncoder().encode(exact).length, MAX_BODY_BYTES);
+    assert.equal((await handler(streamed([new TextEncoder().encode(exact)]))).status, 201);
+    const over = exact.replace('"pad":"', '"pad":"x');
+    assert.equal((await handler(streamed([new TextEncoder().encode(over)]))).status, 413);
+  });
+
+  it("rejects a lying Content-Length that understates the real body", async () => {
+    const { handler } = setup();
+    const big = JSON.stringify(body({ customer: { name: "x".repeat(MAX_BODY_BYTES) } }));
+    const res = await handler(post(big, { "Content-Length": "10" }));
+    assert.equal(res.status, 413);
+  });
+
+  it("accepts a multi-byte (Arabic) body just under the limit and counts bytes, not characters", async () => {
+    const { handler } = setup();
+    // Arabic letters are 2 bytes in UTF-8: a body of ~9000 letters is under 16384 characters but over 16384 bytes.
+    const res = await handler(post(body({ padding: "م".repeat(9000) })));
+    assert.equal(res.status, 413);
+    const ok = await handler(post(body({ padding: "م".repeat(7000) })));
+    assert.equal(ok.status, 201);
+  });
+
   it("silently refuses bots that fill the honeypot field", async () => {
     const { handler, repository } = setup();
     const res = await handler(post(body({ website: "http://spam.example" })));
@@ -226,6 +298,41 @@ describe("d1Repository", () => {
 
   it("maps a UNIQUE violation to conflict and rethrows anything else", async () => {
     assert.equal(await d1Repository(fakeD1(new Error("D1_ERROR: UNIQUE constraint failed: orders.id")).db).insert(order), "conflict");
+    assert.equal(
+      await d1Repository(fakeD1(new Error("D1_ERROR: UNIQUE constraint failed: orders.id: SQLITE_CONSTRAINT")).db).insert(order),
+      "conflict",
+    );
     await assert.rejects(d1Repository(fakeD1(new Error("network down")).db).insert(order), /network down/);
+  });
+
+  // Messages as SQLite reports them for this schema (checked against migrations/0001_orders.sql).
+  for (const message of [
+    "D1_ERROR: CHECK constraint failed: total >= 0: SQLITE_CONSTRAINT",
+    "D1_ERROR: FOREIGN KEY constraint failed: SQLITE_CONSTRAINT",
+    "D1_ERROR: UNIQUE constraint failed: order_items.order_id, order_items.product_id: SQLITE_CONSTRAINT",
+    "D1_ERROR: NOT NULL constraint failed: orders.address: SQLITE_CONSTRAINT",
+  ]) {
+    it(`does not mistake another constraint failure for an id collision: ${message}`, async () => {
+      await assert.rejects(d1Repository(fakeD1(new Error(message)).db).insert(order), (e: Error) => e.message === message);
+    });
+  }
+
+  it("recognises a collision reported on error.cause", async () => {
+    const wrapped = new Error("D1_ERROR", { cause: new Error("UNIQUE constraint failed: orders.id: SQLITE_CONSTRAINT") });
+    assert.equal(await d1Repository(fakeD1(wrapped).db).insert(order), "conflict");
+  });
+
+  it("a data error reaches the handler as a 500 and is reported, not retried as a collision", async () => {
+    const { db } = fakeD1(new Error("D1_ERROR: CHECK constraint failed: total >= 0: SQLITE_CONSTRAINT"));
+    let attempts = 0;
+    const repo = d1Repository(db);
+    const counting: OrderRepository = { insert: (o) => (attempts++, repo.insert(o)) };
+    const reported: string[] = [];
+    const { handler } = setup({ repository: counting, reportError: (n) => reported.push(n) });
+    const res = await handler(post(body()));
+    assert.equal(res.status, 500);
+    assert.equal(attempts, 1);
+    // The failure kind is logged (to tell a data bug from an outage), never the message or customer data.
+    assert.deepEqual(reported, ["Error:CHECK"]);
   });
 });

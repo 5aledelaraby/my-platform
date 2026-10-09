@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "The Vicuna storefront. Astro (static) pages, React only for interactive islands (cart).",
+  "description": "The Vicuna storefront. Astro (static) pages; the cart is a small vanilla TypeScript script.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/check-dist.mjs",

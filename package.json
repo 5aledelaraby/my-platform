@@ -14,7 +14,7 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "eslint .",
     "build": "pnpm -r --if-present build",
-    "check": "pnpm check:secrets && pnpm check:boundaries && pnpm test && pnpm typecheck && pnpm lint && pnpm build"
+    "check": "pnpm check:secrets && pnpm check:boundaries && pnpm test && pnpm typecheck && pnpm lint && DEPLOY_ENV=production pnpm build"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

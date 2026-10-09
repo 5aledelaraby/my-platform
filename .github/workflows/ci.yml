@@ -39,4 +39,7 @@ jobs:
       - run: pnpm test
       - run: pnpm typecheck
       - run: pnpm lint
+      # Builds and checks the production output (index,follow, sitemap). DEPLOY_ENV has no default on purpose.
       - run: pnpm build
+        env:
+          DEPLOY_ENV: production
