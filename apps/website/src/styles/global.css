@@ -688,3 +688,12 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .consent-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .consent .btn { min-height: 38px; padding: 0 18px; font-size: 13px; }
 .footer-cookies { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+/* policy table of contents */
+.policy-toc { margin: 18px 0 8px; padding: 14px 16px; border: 1px solid var(--line); font-size: 13px; }
+.policy-toc p { margin: 0 0 6px; font-weight: 700; color: var(--muted); }
+.policy-toc ol { margin: 0; padding-inline-start: 20px; columns: 2; column-gap: 24px; }
+.policy-toc li { break-inside: avoid; line-height: 1.9; }
+.policy-toc a { color: inherit; text-decoration: none; }
+.policy-toc a:hover { text-decoration: underline; }
+@media (max-width: 560px) { .policy-toc ol { columns: 1; } }
+.prose h2[id] { scroll-margin-top: 90px; }

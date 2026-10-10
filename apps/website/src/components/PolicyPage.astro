@@ -11,6 +11,13 @@ const { id, lang } = Astro.props;
 const ar = lang === "ar";
 const doc = getPolicy(id, lang);
 const other: Lang = ar ? "en" : "ar";
+// Table of contents from the page's own headings (each gets an id so the links work).
+const toc: { id: string; text: string }[] = [];
+const html = doc.html.replace(/<h2(?: id="([^"]+)")?>([^<]+)<\/h2>/g, (_m, given: string | undefined, text: string) => {
+  const hid = given ?? `s${toc.length + 1}`;
+  toc.push({ id: hid, text });
+  return `<h2 id="${hid}">${text}</h2>`;
+});
 const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") }, { name: doc.title }];
 ---
 
@@ -21,7 +28,13 @@ const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "
       <h1>{doc.title}</h1>
       <p class="muted">{ar ? "آخر تحديث:" : "Last updated:"} <time datetime={site.policiesUpdated}>{formatPolicyDate(lang, site.policiesUpdated)}</time></p>
     </header>
-    <div class="prose" set:html={doc.html} />
+    {toc.length > 3 && (
+      <nav class="policy-toc" aria-label={ar ? "محتويات الصفحة" : "On this page"}>
+        <p>{ar ? "محتويات الصفحة" : "On this page"}</p>
+        <ol>{toc.map((t) => <li><a href={`#${t.id}`}>{t.text.replace(/^\d+\.\s*/, "")}</a></li>)}</ol>
+      </nav>
+    )}
+    <div class="prose" set:html={html} />
     <p class="muted">{ar ? "عند أي اختلاف بين النسختين العربية والإنجليزية من هذه الصفحة، تُعتمد النسخة العربية." : "If the Arabic and English versions of this page differ, the Arabic version applies."}</p>
     <nav class="policy-nav" aria-label={ar ? "سياسات المتجر" : "Store policies"}>
       {POLICY_IDS.filter((p) => p !== id).map((p) => <a class="textlink" href={policyPath(lang, p)}>{getPolicy(p, lang).title}</a>)}
