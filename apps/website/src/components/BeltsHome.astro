@@ -198,14 +198,14 @@ const tie = ar
   </div>
 </section>
 
-{ar && articles.length > 0 && (
+{articles.length > 0 && (
   <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <h2 class="h2">مقالات ونصائح</h2>
-        <p class="muted">أفكار لاختيار حزام الخصر وربطه وتنسيقه.</p>
+        <h2 class="h2">{ar ? "مقالات ونصائح" : "Style guides"}</h2>
+        <p class="muted">{ar ? "أفكار لاختيار حزام الخصر وربطه وتنسيقه." : "Ideas for choosing, tying and styling a waist belt (in Arabic)."}</p>
       </div>
-      <div class="posts">
+      <div class="posts" lang="ar" dir="rtl">
         {articles.slice(0, 3).map((a) => (
           <a class="post" href={articleUrl(a.slug)}>
             <img src={a.image} alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
@@ -214,7 +214,7 @@ const tie = ar
           </a>
         ))}
       </div>
-      <p class="more"><a class="btn btn-white" href={JOURNAL_PATH}>كل المقالات</a></p>
+      <p class="more"><a class="btn btn-white" href={JOURNAL_PATH}>{ar ? "كل المقالات" : "All style guides"}</a></p>
     </div>
   </section>
 )}

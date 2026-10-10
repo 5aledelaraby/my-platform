@@ -29,7 +29,7 @@ const socialIcon: Record<string, string> = {
       <ul>
         <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
         {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
-        {ar && <li><a href={JOURNAL_PATH}>المقالات</a></li>}
+        <li><a href={JOURNAL_PATH}>{ar ? "المقالات" : "Style guides"}</a></li>
       </ul>
     </div>
     <div>
@@ -39,6 +39,7 @@ const socialIcon: Record<string, string> = {
         <li><a href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a></li>
         <li><a href={langPath(lang, "/faq/")}>{ar ? "الأسئلة الشائعة" : "FAQ"}</a></li>
         {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
+        <li><button type="button" class="footer-cookies" data-cookie-settings>{ar ? "إعدادات الكوكيز" : "Cookie settings"}</button></li>
       </ul>
     </div>
   </div>

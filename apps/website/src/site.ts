@@ -39,12 +39,25 @@ export const site = {
   ],
 } as const;
 
+/**
+ * Analytics and ad tags. Public IDs (not secrets). Empty = not loaded. Nothing loads until the visitor accepts the
+ * cookie banner (Consent.astro); the cookie and privacy policies list every tag here.
+ */
+export const tracking = {
+  ga4: "G-PD8H3JF2WR",
+  meta: "2311877842998870",
+  tiktok: "",
+  snapchat: "68610bce-a5fc-4a69-bfb2-c5623a18b560",
+} as const;
+
 export type Lang = "ar" | "en";
 
-/** Path prefix for a language: Arabic is at the root, English under /en/. */
-export function langPath(lang: Lang, path: string): string {
-  const clean = path.startsWith("/") ? path : `/${path}`;
-  return lang === "ar" ? clean : `/en${clean}`;
+/**
+ * One URL per page (owner, 2026-10-10): the site is English and every page has a single path, no /en/ copy.
+ * A page written in Arabic (the style guides) keeps its own path too. `lang` only sets the page's text and direction.
+ */
+export function langPath(_lang: Lang, path: string): string {
+  return path.startsWith("/") ? path : `/${path}`;
 }
 
 /** The articles index (Arabic only for now). */

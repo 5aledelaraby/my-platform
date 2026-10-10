@@ -3,6 +3,7 @@ import { SHIPPING, formatEgp } from "@platform/commerce";
 import { canonicalUrl, robotsDirective } from "@platform/seo";
 import { deployEnvironment } from "../deploy-env.ts";
 import Header from "../components/Header.astro";
+import Consent from "../components/Consent.astro";
 import Footer from "../components/Footer.astro";
 import Cart from "../components/Cart.astro";
 import { site as store } from "../site.ts";
@@ -13,8 +14,6 @@ interface Props {
   title: string;
   description: string;
   lang?: Lang;
-  /** Site-relative path of the same page in the other language, e.g. "/en/". */
-  altPath?: string;
   /** Optional JSON-LD, already serialized with serializeJsonLd. */
   jsonLd?: string;
   /** Pages that must never be indexed even in production (thank-you page). */
@@ -25,17 +24,13 @@ interface Props {
   theme?: "belts" | "neutral";
 }
 
-const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/hero-1200.webp", theme = "belts" } = Astro.props;
+const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/hero-1200.webp", theme = "belts" } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
 const site = Astro.site!.toString();
 const canonical = canonicalUrl(site, Astro.url.pathname);
-const alt = altPath ? canonicalUrl(site, altPath) : undefined;
 const ogImage = new URL(image, site).toString();
-const arUrl = lang === "ar" ? canonical : alt;
-const enUrl = lang === "en" ? canonical : alt;
-const switchHref = altPath ?? (lang === "ar" ? "/en/" : "/");
 // Facts for the red announcement bar (all from the shared settings).
 const ar = lang === "ar";
 const announce = ar
@@ -52,9 +47,8 @@ const announce = ar
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex,nofollow" : robotsDirective(env)} />
     <link rel="canonical" href={canonical} />
-    {arUrl && <link rel="alternate" hreflang="ar" href={arUrl} />}
-    {enUrl && <link rel="alternate" hreflang="en" href={enUrl} />}
-    <link rel="alternate" hreflang="x-default" href={arUrl ?? canonical} />
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
     <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
     <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -80,12 +74,13 @@ const announce = ar
         </div>
       </div>
     </div>
-    <Header lang={lang} altHref={switchHref} />
+    <Header lang={lang} />
     <main id="main">
       <slot />
     </main>
     <Footer lang={lang} />
     <Cart lang={lang} />
+    <Consent lang={lang} />
     <script>
       // Header shadow once the page scrolls, and a gentle fade-up for sections as they come into view.
       const header = document.querySelector(".site-header");

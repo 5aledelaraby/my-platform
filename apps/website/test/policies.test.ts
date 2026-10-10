@@ -15,7 +15,8 @@ describe("policy pages", () => {
       assert.ok(doc.title.length > 3 && doc.description.length > 20 && doc.html.length > 500, `${id}/${lang}`);
     }
     assert.equal(policyPath("ar", "returns"), "/returns/");
-    assert.equal(policyPath("en", "privacy"), "/en/privacy/");
+    assert.equal(policyPath("en", "privacy"), "/privacy/");
+    assert.equal(policyPath("en", "cookies"), "/privacy/cookies/");
   });
 
   it("take every number from the shared settings", () => {
