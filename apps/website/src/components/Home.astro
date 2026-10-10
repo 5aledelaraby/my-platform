@@ -3,7 +3,7 @@
 // photos. It never shows the product grid or cart UI (ADR 0009); the belts are one of the sections.
 import ContactCards from "./ContactCards.astro";
 import Icon from "./ui/Icon.astro";
-import { JOURNAL_PATH, langPath, site } from "../site.ts";
+import { langPath, site } from "../site.ts";
 import { beltsUrl } from "../store.ts";
 import type { Lang } from "../site.ts";
 
@@ -23,7 +23,6 @@ const sections: Section[] = [
     text: ar ? "تصميمات من جلد PU والدانتيل بألوان كثيرة." : "Designs in PU leather and lace, in many colours.",
     href: beltsUrl(lang),
   },
-  ...(ar ? [{ title: "المقالات", text: "أفكار للتنسيق والاختيار.", href: JOURNAL_PATH }] : []),
 ];
 ---
 

@@ -4,7 +4,8 @@ import ProductCard from "./ProductCard.astro";
 import Perks from "./Perks.astro";
 import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
-import { site } from "../site.ts";
+import { articles, articleUrl } from "../lib/articles.ts";
+import { JOURNAL_PATH, site } from "../site.ts";
 import { beltsUrl, colorName, colors, price, productsOfStyle, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
@@ -201,6 +202,27 @@ const tie = ar
     </div>
   </div>
 </section>
+
+{ar && articles.length > 0 && (
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="h2">مقالات ونصائح</h2>
+        <p class="muted">أفكار لاختيار حزام الخصر وربطه وتنسيقه.</p>
+      </div>
+      <div class="posts">
+        {articles.slice(0, 3).map((a) => (
+          <a class="post" href={articleUrl(a.slug)}>
+            <img src={a.image} alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
+            <h3>{a.title}</h3>
+            <p class="muted">{a.description}</p>
+          </a>
+        ))}
+      </div>
+      <p class="more"><a class="btn btn-white" href={JOURNAL_PATH}>كل المقالات</a></p>
+    </div>
+  </section>
+)}
 
 <section class="section">
   <div class="wrap faq">
