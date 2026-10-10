@@ -4,6 +4,7 @@ import {
   articleJsonLd,
   buildSitemapXml,
   canonicalUrl,
+  organizationJsonLd,
   parseDeployEnvironment,
   productJsonLd,
   robotsDirective,
@@ -76,6 +77,47 @@ describe("productJsonLd", () => {
     assert.equal(offers["availability"], "https://schema.org/InStock");
     assert.equal("aggregateRating" in data, false);
     assert.equal("review" in data, false);
+    assert.equal("shippingDetails" in offers, false, "nothing added when not given");
+    assert.equal("hasMerchantReturnPolicy" in offers, false);
+  });
+
+  it("states OutOfStock for a sold-out product", () => {
+    const offers = productJsonLd({ ...base, inStock: false })["offers"] as Record<string, unknown>;
+    assert.equal(offers["availability"], "https://schema.org/OutOfStock");
+  });
+
+  it("adds shipping rates and the return policy only from the values given", () => {
+    const offers = productJsonLd({
+      ...base,
+      shipping: [{ rate: 80, country: "EG" }, { rate: 120, country: "EG" }],
+      returnPolicy: { country: "EG", days: 14, freeReturn: true },
+    })["offers"] as Record<string, unknown>;
+    assert.deepEqual(offers["shippingDetails"], [
+      { "@type": "OfferShippingDetails", shippingRate: { "@type": "MonetaryAmount", value: "80.00", currency: "EGP" }, shippingDestination: { "@type": "DefinedRegion", addressCountry: "EG" } },
+      { "@type": "OfferShippingDetails", shippingRate: { "@type": "MonetaryAmount", value: "120.00", currency: "EGP" }, shippingDestination: { "@type": "DefinedRegion", addressCountry: "EG" } },
+    ]);
+    assert.deepEqual(offers["hasMerchantReturnPolicy"], {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "EG",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 14,
+      returnFees: "https://schema.org/FreeReturn",
+    });
+  });
+});
+
+describe("organizationJsonLd", () => {
+  it("includes the legal name and address when given, and no sameAs unless given", () => {
+    const data = organizationJsonLd({
+      name: "فيكونا",
+      legalName: "Vicuna for General Trading & Designs",
+      url: "https://vicuna-eg.com",
+      logo: "https://vicuna-eg.com/brand/vicuna-logo.png",
+      address: { streetAddress: "21 Abbas El Akkad street", addressLocality: "Nasr City", addressRegion: "Cairo", postalCode: "11371", addressCountry: "EG" },
+    });
+    assert.equal(data["legalName"], "Vicuna for General Trading & Designs");
+    assert.deepEqual(data["address"], { "@type": "PostalAddress", streetAddress: "21 Abbas El Akkad street", addressLocality: "Nasr City", addressRegion: "Cairo", postalCode: "11371", addressCountry: "EG" });
+    assert.equal("sameAs" in data, false);
   });
 });
 

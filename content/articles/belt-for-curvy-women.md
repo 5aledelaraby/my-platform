@@ -3,16 +3,16 @@ title: "الحزام للجسم الممتلئ: إزاي تختاريه وتلب
 slug: "belt-for-curvy-women"
 description: "دليل بسيط لاختيار حزام الوسط للجسم الممتلئ: العرض المناسب، مكان الربط، الألوان، والخامة المريحة. أحزمة فيكونا بتلبس لحد 90 كيلو وفيها ليكرا طرية."
 datePublished: "2026-10-05"
-image: "/img/products/bow-mustard.webp"
+image: "/img/products/wide-tie-mustard.webp"
 imageWidth: 900
 imageHeight: 900
-imageAlt: "حزام فيكونا فيونكة بلون الخردل"
+imageAlt: "حزام فيكونا برباط عريض بلون الخردل"
 products:
-  - sash-black
-  - bow-burgundy
-  - bow-mustard
-  - classic-navy
-  - sash-cognac
+  - wide-tie-black
+  - wide-tie-burgundy
+  - wide-tie-mustard
+  - thin-tie-navy
+  - wide-tie-cognac
 ---
 
 فيه فكرة غلط منتشرة إن الحزام "مش لكل الأجسام"، وإن لو جسمك ممتلئ شوية يبقى الأحسن تبعدي عنه. الحقيقة عكس كده تمامًا. الحزام المناسب، في المكان المناسب، بيعمل للجسم الممتلئ تحديدًا شكل متناسق جدًا، لأنه بيرسم الوسط وبيقسم الجسم بشكل مريح للعين. الموضوع كله في اختيار **العرض والمكان والخامة**.
@@ -38,15 +38,15 @@ products:
 ## الألوان: إيه اللي بيليق؟
 
 - **لون قريب من الفستان:** بيدّي شكل طويل ومتصل، مناسب لو عايزة لوك هادي.
-- **لون غامق على فستان فاتح:** بيحدد الوسط بوضوح. جربي [الفيونكة السودا](/collections/vicuna-belts/sash-black/) أو [الكحلي](/collections/vicuna-belts/classic-navy/).
-- **لون جريء:** مش ممنوع خالص. [الفيونكة العنابي](/collections/vicuna-belts/bow-burgundy/) أو [المسطردة](/collections/vicuna-belts/bow-mustard/) على لبس سادة بيعملوا لوك واثق جدًا.
+- **لون غامق على فستان فاتح:** بيحدد الوسط بوضوح. جربي [الحزام الأسود برباط عريض](/collections/vicuna-belts/wide-tie-black/) أو [الكحلي](/collections/vicuna-belts/thin-tie-navy/).
+- **لون جريء:** مش ممنوع خالص. [الرباط العريض العنابي](/collections/vicuna-belts/wide-tie-burgundy/) أو [المسطردة](/collections/vicuna-belts/wide-tie-mustard/) على لبس سادة بيعملوا لوك واثق جدًا.
 
 ## 4 لوكات مجرّبة
 
 1. **فستان سادة واسع + حزام عريض** على أضيق نقطة: اللوك الأسهل والأشيك.
 2. **كارديجان طويل مفتوح + حزام فوق البلوزة من جوه:** بيطوّل الجسم وبيحدد الوسط.
 3. **جاكيت جلد أو بليزر + حزام فوقه:** لمسة عصرية للخروج.
-4. **عباية أو كيمونو + فيونكة** [كونياك](/collections/vicuna-belts/sash-cognac/) **بطرف نازل:** الطرف النازل بيعمل خط طولي بيطوّل الشكل.
+4. **عباية أو كيمونو + فيونكة** [كونياك](/collections/vicuna-belts/wide-tie-cognac/) **بطرف نازل:** الطرف النازل بيعمل خط طولي بيطوّل الشكل.
 
 ## خلاصة
 

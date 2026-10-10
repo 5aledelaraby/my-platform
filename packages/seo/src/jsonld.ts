@@ -7,12 +7,25 @@
 
 export type JsonLd = Record<string, unknown>;
 
+export interface PostalAddressInput {
+  streetAddress: string;
+  addressLocality: string;
+  addressRegion?: string;
+  postalCode?: string;
+  /** ISO 3166-1 alpha-2, e.g. "EG". */
+  addressCountry: string;
+}
+
 export interface OrganizationInput {
   name: string;
+  /** The registered company name. */
+  legalName?: string;
   url: string;
   logo: string;
   email?: string;
   telephone?: string;
+  address?: PostalAddressInput;
+  /** Only the brand's own official profiles. */
   sameAs?: readonly string[];
 }
 
@@ -23,8 +36,10 @@ export function organizationJsonLd(input: OrganizationInput): JsonLd {
     name: input.name,
     url: input.url,
     logo: input.logo,
+    ...(input.legalName ? { legalName: input.legalName } : {}),
     ...(input.email ? { email: input.email } : {}),
     ...(input.telephone ? { telephone: input.telephone } : {}),
+    ...(input.address ? { address: { "@type": "PostalAddress", ...input.address } } : {}),
     ...(input.sameAs?.length ? { sameAs: [...input.sameAs] } : {}),
   };
 }
@@ -76,6 +91,10 @@ export interface ProductInput {
   price: number;
   currency: string;
   inStock: boolean;
+  /** Flat shipping rates for one item, in major units, to a country (ISO 3166-1 alpha-2). */
+  shipping?: ReadonlyArray<{ rate: number; country: string }>;
+  /** Return window in days from delivery, for a country; freeReturn = the shop pays the return shipping. */
+  returnPolicy?: { country: string; days: number; freeReturn: boolean };
 }
 
 export function productJsonLd(input: ProductInput): JsonLd {
@@ -93,6 +112,26 @@ export function productJsonLd(input: ProductInput): JsonLd {
       price: input.price.toFixed(2),
       priceCurrency: input.currency,
       availability: input.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      ...(input.shipping?.length
+        ? {
+            shippingDetails: input.shipping.map((s) => ({
+              "@type": "OfferShippingDetails",
+              shippingRate: { "@type": "MonetaryAmount", value: s.rate.toFixed(2), currency: input.currency },
+              shippingDestination: { "@type": "DefinedRegion", addressCountry: s.country },
+            })),
+          }
+        : {}),
+      ...(input.returnPolicy
+        ? {
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: input.returnPolicy.country,
+              returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: input.returnPolicy.days,
+              returnFees: input.returnPolicy.freeReturn ? "https://schema.org/FreeReturn" : "https://schema.org/ReturnShippingFees",
+            },
+          }
+        : {}),
     },
   };
 }

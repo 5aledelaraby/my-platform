@@ -36,30 +36,30 @@ describe("taking stock with an order", () => {
   it("takes units from tracked products in the same transaction", async () => {
     const { repo, qty, db } = setup();
     await repo.setStock("lace-black", 5, null, NOW.toISOString());
-    assert.equal(await repo.insert(makeOrder([{ id: "lace-black", quantity: 2 }, { id: "bow-gold", quantity: 1 }])), "ok");
+    assert.equal(await repo.insert(makeOrder([{ id: "lace-black", quantity: 2 }, { id: "wide-tie-gold", quantity: 1 }])), "ok");
     assert.equal(qty("lace-black"), 3);
     const taken = db.sqlite.prepare("SELECT product_id, stock_taken FROM order_items ORDER BY product_id").all();
-    assert.deepEqual(taken.map((r) => ({ ...r })), [{ product_id: "bow-gold", stock_taken: 0 }, { product_id: "lace-black", stock_taken: 1 }]);
+    assert.deepEqual(taken.map((r) => ({ ...r })), [{ product_id: "lace-black", stock_taken: 1 }, { product_id: "wide-tie-gold", stock_taken: 0 }]);
   });
 
   it("refuses the whole order when one tracked product would go below zero, and stores nothing", async () => {
     const { repo, qty, count } = setup();
     await repo.setStock("lace-black", 1, null, NOW.toISOString());
-    await repo.setStock("bow-gold", 9, null, NOW.toISOString());
-    const result = await repo.insert(makeOrder([{ id: "bow-gold", quantity: 2 }, { id: "lace-black", quantity: 2 }]));
+    await repo.setStock("wide-tie-gold", 9, null, NOW.toISOString());
+    const result = await repo.insert(makeOrder([{ id: "wide-tie-gold", quantity: 2 }, { id: "lace-black", quantity: 2 }]));
     assert.equal(result, "out_of_stock");
     assert.equal(count("SELECT COUNT(*) AS c FROM orders"), 0);
     assert.equal(count("SELECT COUNT(*) AS c FROM order_items"), 0);
-    assert.equal(qty("bow-gold"), 9, "rolled back");
+    assert.equal(qty("wide-tie-gold"), 9, "rolled back");
     assert.equal(qty("lace-black"), 1);
   });
 
   it("sells the last unit exactly once", async () => {
     const { repo, qty } = setup();
-    await repo.setStock("croc-black", 1, null, NOW.toISOString());
-    assert.equal(await repo.insert(makeOrder([{ id: "croc-black", quantity: 1 }])), "ok");
-    assert.equal(qty("croc-black"), 0);
-    assert.equal(await repo.insert(makeOrder([{ id: "croc-black", quantity: 1 }])), "out_of_stock");
+    await repo.setStock("thin-tie-croc-black", 1, null, NOW.toISOString());
+    assert.equal(await repo.insert(makeOrder([{ id: "thin-tie-croc-black", quantity: 1 }])), "ok");
+    assert.equal(qty("thin-tie-croc-black"), 0);
+    assert.equal(await repo.insert(makeOrder([{ id: "thin-tie-croc-black", quantity: 1 }])), "out_of_stock");
   });
 
   it("still reports an id collision as a collision", async () => {
@@ -74,12 +74,12 @@ describe("status changes", () => {
   it("cancelling returns exactly the units the order took, once", async () => {
     const { repo, qty } = setup();
     await repo.setStock("lace-black", 5, null, NOW.toISOString());
-    const order = makeOrder([{ id: "lace-black", quantity: 2 }, { id: "bow-gold", quantity: 1 }]);
+    const order = makeOrder([{ id: "lace-black", quantity: 2 }, { id: "wide-tie-gold", quantity: 1 }]);
     await repo.insert(order);
     assert.equal(qty("lace-black"), 3);
     assert.equal(await repo.setStatus(order.id, "new", "cancelled", 0, NOW.toISOString(), "c1"), "ok");
     assert.equal(qty("lace-black"), 5);
-    assert.equal(qty("bow-gold"), undefined, "an untracked product is not created by a cancellation");
+    assert.equal(qty("wide-tie-gold"), undefined, "an untracked product is not created by a cancellation");
     // A second tab still holding version 0 tries to cancel again: nothing changes.
     assert.equal(await repo.setStatus(order.id, "new", "cancelled", 0, NOW.toISOString(), "c2"), "stale");
     assert.equal(qty("lace-black"), 5);
@@ -96,14 +96,14 @@ describe("status changes", () => {
 
   it("moves through confirmed and shipped, bumping the version, and a returned shipment gives the stock back", async () => {
     const { repo, qty } = setup();
-    await repo.setStock("snake-grey", 3, null, NOW.toISOString());
-    const order = makeOrder([{ id: "snake-grey", quantity: 1 }]);
+    await repo.setStock("thin-tie-snake-grey", 3, null, NOW.toISOString());
+    const order = makeOrder([{ id: "thin-tie-snake-grey", quantity: 1 }]);
     await repo.insert(order);
     assert.equal(await repo.setStatus(order.id, "new", "confirmed", 0, NOW.toISOString(), "a"), "ok");
     assert.equal(await repo.setStatus(order.id, "confirmed", "shipped", 1, NOW.toISOString(), "b"), "ok");
-    assert.equal(qty("snake-grey"), 2);
+    assert.equal(qty("thin-tie-snake-grey"), 2);
     assert.equal(await repo.setStatus(order.id, "shipped", "cancelled", 2, NOW.toISOString(), "c"), "ok");
-    assert.equal(qty("snake-grey"), 3);
+    assert.equal(qty("thin-tie-snake-grey"), 3);
     const stored = await repo.getOrder(order.id);
     assert.equal(stored?.status, "cancelled");
     assert.equal(stored?.version, 3);
@@ -118,7 +118,7 @@ describe("status changes", () => {
 describe("reading orders and stock", () => {
   it("round-trips an order with its items and customer", async () => {
     const { repo } = setup();
-    const order = makeOrder([{ id: "bow-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }]);
+    const order = makeOrder([{ id: "wide-tie-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }]);
     await repo.insert(order);
     const stored = await repo.getOrder(order.id);
     assert.deepEqual({ ...stored, version: undefined, updatedAt: undefined }, { ...order, version: undefined, updatedAt: undefined });
@@ -127,7 +127,7 @@ describe("reading orders and stock", () => {
 
   it("lists newest first and filters by status", async () => {
     const { repo } = setup();
-    const a = makeOrder([{ id: "bow-gold", quantity: 1 }]);
+    const a = makeOrder([{ id: "wide-tie-gold", quantity: 1 }]);
     const b = { ...makeOrder([{ id: "lace-black", quantity: 1 }]), createdAt: "2026-10-09T11:00:00.000Z" };
     await repo.insert(a);
     await repo.insert(b);
@@ -140,16 +140,16 @@ describe("reading orders and stock", () => {
 
   it("sets, updates and stops tracking stock", async () => {
     const { repo } = setup();
-    await repo.setStock("bow-gold", 4, null, NOW.toISOString());
-    await repo.setStock("bow-gold", 7, 4, NOW.toISOString());
-    assert.deepEqual([...(await repo.stock())], [["bow-gold", 7]]);
-    await repo.setStock("bow-gold", null, 7, NOW.toISOString());
+    await repo.setStock("wide-tie-gold", 4, null, NOW.toISOString());
+    await repo.setStock("wide-tie-gold", 7, 4, NOW.toISOString());
+    assert.deepEqual([...(await repo.stock())], [["wide-tie-gold", 7]]);
+    await repo.setStock("wide-tie-gold", null, 7, NOW.toISOString());
     assert.equal((await repo.stock()).size, 0);
   });
 
   it("refuses negative stock at the database level too", async () => {
     const { repo } = setup();
-    await assert.rejects(repo.setStock("bow-gold", -1, null, NOW.toISOString()), /stock_not_negative/);
+    await assert.rejects(repo.setStock("wide-tie-gold", -1, null, NOW.toISOString()), /stock_not_negative/);
   });
 });
 
@@ -163,15 +163,15 @@ payment_method, item_count, subtotal, discount, net, shipping, total) VALUES ('V
 'منى', '01012345678', 'القاهرة', 'عنوان قديم طويل', NULL, 'express', 'instapay', 1, 20000, 0, 20000, 12000, 32000)`,
       )
       .run();
-    db.sqlite.prepare("INSERT INTO order_items VALUES ('V-1009-OLD01', 'bow-gold', 'فيونكة دهبي', 20000, 1, 20000)").run();
+    db.sqlite.prepare("INSERT INTO order_items VALUES ('V-1009-OLD01', 'wide-tie-gold', 'فيونكة دهبي', 20000, 1, 20000)").run();
     db.migrate("0002_inventory.sql");
     const repo = d1Repository(db);
-    await repo.setStock("bow-gold", 2, null, NOW.toISOString());
+    await repo.setStock("wide-tie-gold", 2, null, NOW.toISOString());
     const old = await repo.getOrder("V-1009-OLD01");
     assert.equal(old?.version, 0);
     assert.equal(old?.totals.total, 32000);
     assert.equal(await repo.setStatus("V-1009-OLD01", "new", "cancelled", 0, NOW.toISOString(), "x"), "ok");
-    assert.deepEqual([...(await repo.stock())], [["bow-gold", 2]]);
+    assert.deepEqual([...(await repo.stock())], [["wide-tie-gold", 2]]);
   });
 });
 
@@ -202,7 +202,7 @@ describe("order API with stock", () => {
   it("answers 409 with what is left when stock runs out, and the cart can retry with less", async () => {
     const { handler, repo } = api();
     await repo.setStock("lace-black", 1, null, NOW.toISOString());
-    const res = await handler(post([{ id: "lace-black", quantity: 2 }, { id: "bow-gold", quantity: 1 }]));
+    const res = await handler(post([{ id: "lace-black", quantity: 2 }, { id: "wide-tie-gold", quantity: 1 }]));
     assert.equal(res.status, 409);
     assert.deepEqual(await res.json(), { error: "out_of_stock", items: [{ id: "lace-black", available: 1 }] });
     assert.equal((await handler(post([{ id: "lace-black", quantity: 1 }]))).status, 201);
@@ -212,11 +212,11 @@ describe("order API with stock", () => {
   it("GET /api/stock shows tracked products only, capped at 20, cacheable for 30 seconds", async () => {
     const { handler, repo } = api();
     await repo.setStock("lace-black", 0, null, NOW.toISOString());
-    await repo.setStock("bow-gold", 500, null, NOW.toISOString());
+    await repo.setStock("wide-tie-gold", 500, null, NOW.toISOString());
     const res = await handler(new Request(`${ORIGIN}/api/stock`));
     assert.equal(res.status, 200);
     assert.equal(res.headers.get("Cache-Control"), "public, max-age=30");
-    assert.deepEqual(await res.json(), { stock: { "lace-black": 0, "bow-gold": 20 } });
+    assert.deepEqual(await res.json(), { stock: { "lace-black": 0, "wide-tie-gold": 20 } });
     assert.equal((await handler(new Request(`${ORIGIN}/api/stock`, { method: "POST" }))).status, 405);
   });
 });
@@ -248,5 +248,23 @@ describe("schema check and status guard", () => {
     // Same version number but the order is no longer "new": refused.
     assert.equal(await repo.setStatus(order.id, "new", "cancelled", 1, NOW.toISOString(), "b"), "stale");
     assert.equal(qty("lace-red"), 5);
+  });
+});
+
+describe("migration 0004 (design product ids)", () => {
+  it("moves stock rows to the new ids and leaves unchanged ids alone", () => {
+    const db = sqliteD1({ upTo: "0003_promo_codes.sql" });
+    const put = db.sqlite.prepare("INSERT INTO inventory (product_id, quantity, updated_at) VALUES (?, ?, '2026-10-10')");
+    put.run("bow-gold", 3);
+    put.run("croc-black", 0);
+    put.run("lace-red", 1);
+    db.migrate("0004_design_product_ids.sql");
+    const rows = db.sqlite.prepare("SELECT product_id, quantity FROM inventory ORDER BY product_id").all();
+    assert.deepEqual(rows.map((r) => ({ ...r })), [
+      { product_id: "lace-red", quantity: 1 },
+      { product_id: "thin-tie-croc-black", quantity: 0 },
+      { product_id: "wide-tie-gold", quantity: 3 },
+    ]);
+    for (const r of rows) assert.ok(lookupProduct(String(r["product_id"])), `${String(r["product_id"])} is in the catalog`);
   });
 });

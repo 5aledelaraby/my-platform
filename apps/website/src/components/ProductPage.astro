@@ -2,7 +2,8 @@
 import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { beltsUrl, coverOf, getStyle, imageOf, lookOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, lookOf, priceOfProduct, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
+import { PIASTERS_PER_EGP, SHIPPING, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
@@ -16,6 +17,10 @@ const name = productName(lang, product);
 const st = styleText(lang, product.style);
 const cur = ar ? "جنيه" : "EGP";
 const siblings = productsOfStyle(product.style);
+// Neighbouring colours of the same design, for swipe and the arrows on the photo (wraps around).
+const idx = siblings.findIndex((s) => s.id === product.id);
+const nextP = siblings.length > 1 ? siblings[(idx + 1) % siblings.length]! : null;
+const prevP = siblings.length > 1 ? siblings[(idx - 1 + siblings.length) % siblings.length]! : null;
 const related = styles.filter((x) => x.id !== product.style).slice(0, 4).map((x) => coverOf(x.id));
 const info = ar
   ? [
@@ -32,8 +37,8 @@ const info = ar
     ];
 const title = ar ? `${name} | حزام خصر نسائي | فيكونا` : `${name} | Women's waist belt | Vicuna`;
 const description = ar
-  ? `${name} من فيكونا بسعر ${price(product.style)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل واسترجاع خلال ${site.returnDays} يوم.`
-  : `${name} by Vicuna at ${price(product.style)} EGP. Delivery across Egypt in ${site.deliveryDays} working days, ${site.returnDays}-day returns.`;
+  ? `${name} من فيكونا بسعر ${priceOfProduct(product)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل واسترجاع خلال ${site.returnDays} يوم.`
+  : `${name} by Vicuna at ${priceOfProduct(product)} EGP. Delivery across Egypt in ${site.deliveryDays} working days, ${site.returnDays}-day returns.`;
 const url = `${site.url}${beltsUrl(lang, product.id)}`;
 const look = lookOf(product);
 const crumbs = [
@@ -50,9 +55,15 @@ const jsonLd = serializeJsonLd([
     images: [`${site.url}${imageOf(product)}`],
     sku: product.id,
     brand: "Vicuna",
-    price: Number(price(product.style)),
+    price: Number(priceOfProduct(product)),
     currency: "EGP",
+    // Built as in stock; the site Worker switches it to OutOfStock when the live stock is zero (ADR 0013).
     inStock: true,
+    shipping: [
+      { rate: SHIPPING.standard / PIASTERS_PER_EGP, country: "EG" },
+      { rate: SHIPPING.express / PIASTERS_PER_EGP, country: "EG" },
+    ],
+    returnPolicy: { country: "EG", days: site.returnDays, freeReturn: true },
   }),
   breadcrumbJsonLd([
     { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
@@ -71,22 +82,31 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   <Breadcrumbs items={crumbs} />
   <div class="wrap product">
     <div class="pdp-media">
-    <figure class="pdp-photo" style={`--tint:${product.hex}`}>
+    <figure class="pdp-photo" style={`--tint:${product.hex}`} data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
       <img src={imageOf(product)} alt={name} width="900" height="900" fetchpriority="high" />
+      {nextP && prevP && (
+        <>
+          <a class="pdp-arrow prev" href={beltsUrl(lang, prevP.id)} aria-label={`${ar ? "اللون السابق" : "Previous colour"}: ${productName(lang, prevP)}`}><Icon name="arrow" size={18} /></a>
+          <a class="pdp-arrow next" href={beltsUrl(lang, nextP.id)} aria-label={`${ar ? "اللون التالي" : "Next colour"}: ${productName(lang, nextP)}`}><Icon name="arrow" size={18} /></a>
+          <span class="pdp-count" dir="ltr">{idx + 1} / {siblings.length}</span>
+        </>
+      )}
     </figure>
+    {nextP && <link rel="prefetch" href={beltsUrl(lang, nextP.id)} />}
+    {prevP && prevP !== nextP && <link rel="prefetch" href={beltsUrl(lang, prevP.id)} />}
     {look && (
       <figure class="pdp-look">
         <img src={look.full} srcset={`${look.thumb} 480w, ${look.full} 900w`} sizes="(min-width: 960px) 40vw, 100vw" alt={ar ? `${name} على الخصر` : `${name} worn at the waist`} width="900" height="1125" loading="lazy" decoding="async" />
       </figure>
     )}
     </div>
-    <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={getStyle(product.style).price}>
+    <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={priceOf(product)}>
       <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
       <h1>{name}</h1>
-      <div class="price">{price(product.style)} <small>{cur}</small></div>
+      <div class="price">{priceOfProduct(product)} <small>{cur}</small></div>
       <p class="soldout" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية حاليًا. كلمينا على واتساب نبلغك أول ما يتوفر." : "Sold out for now. Message us on WhatsApp and we will tell you when it is back."}</p>
       <p class="muted">{st.intro}</p>
-      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b>{productName(lang, product)}</b></p>
+      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b>{shadeName(lang, product)}</b></p>
       <div class="pdp-swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
         {siblings.map((sib) => (
           <a class="swatch big" href={beltsUrl(lang, sib.id)} style={`--c:${sib.hex}`} title={productName(lang, sib)} aria-label={productName(lang, sib)} aria-current={sib.id === product.id ? "true" : undefined}></a>
@@ -123,4 +143,33 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   import { track } from "../scripts/tracking.ts";
   const el = document.querySelector<HTMLElement>("[data-view-item]");
   if (el) track({ type: "view_item", item: { id: el.dataset["viewItem"] ?? "", name: el.dataset["viewName"], price: Number(el.dataset["viewPrice"]) } });
+</script>
+
+<script>
+  // Swipe the photo to move to the next or previous colour. A gentle nudge on the first product page of a visit
+  // shows that the photo can be swiped. "Next" follows the reading direction (right-to-left in Arabic).
+  const fig = document.querySelector<HTMLElement>("[data-swipe-next]");
+  if (fig) {
+    const rtl = document.documentElement.dir === "rtl";
+    const go = (forward: boolean) => {
+      const url = forward ? fig.dataset["swipeNext"] : fig.dataset["swipePrev"];
+      if (url) location.assign(url);
+    };
+    let x0 = 0, y0 = 0, active = false;
+    fig.addEventListener("touchstart", (e) => { const t = e.touches[0]!; x0 = t.clientX; y0 = t.clientY; active = true; }, { passive: true });
+    fig.addEventListener("touchend", (e) => {
+      if (!active) return;
+      active = false;
+      const t = e.changedTouches[0]!;
+      const dx = t.clientX - x0, dy = t.clientY - y0;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      const towardStart = rtl ? dx > 0 : dx < 0; // finger moved against the reading direction = next
+      fig.classList.add(towardStart ? "leaving-next" : "leaving-prev");
+      go(towardStart);
+    }, { passive: true });
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let seen = false;
+    try { seen = sessionStorage.getItem("vicuna-swipe-hint") === "1"; sessionStorage.setItem("vicuna-swipe-hint", "1"); } catch { /* ignore */ }
+    if (!calm && !seen) setTimeout(() => fig.classList.add("nudge"), 700);
+  }
 </script>

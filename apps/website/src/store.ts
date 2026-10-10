@@ -1,5 +1,5 @@
 // Website-side view of the catalog: URLs, English copy, display helpers. Prices and ids come from @platform/commerce.
-import { catalog, formatEgp } from "@platform/commerce";
+import { catalog, formatEgp, priceOf } from "@platform/commerce";
 import type { CatalogProduct, CatalogStyle } from "@platform/commerce";
 import { langPath } from "./site.ts";
 import type { Lang } from "./site.ts";
@@ -8,27 +8,17 @@ const styleEn: Record<string, { name: string; headline: string; intro: string }>
   lace: {
     name: "Lace",
     headline: "Lace PU leather belt",
-    intro: "Embroidered lace on a PU leather lining, tied with a thin ribbon.",
+    intro: "Embroidered lace on a PU leather lining, with a thin tie.",
   },
-  "wide-bow": {
-    name: "Wide Bow",
-    headline: "Wide bow PU leather belt",
-    intro: "Soft stretch PU leather that wraps the waist, tied in a big bow or a knot.",
+  "wide-tie": {
+    name: "Wide Tie",
+    headline: "Wide self-tie waist belt with wide ties",
+    intro: "A wide, soft stretch PU leather belt with wide ties that wrap the waist. Tie it your way: a bow, a knot or a twist.",
   },
   "thin-tie": {
     name: "Thin Tie",
-    headline: "Thin tie PU leather belt",
-    intro: "A wide belt with a thin tie, tied in a small bow. Soft stretch PU leather.",
-  },
-  croc: {
-    name: "Croc",
-    headline: "Croc PU leather belt",
-    intro: "Croc pattern on PU leather, with a thin tie.",
-  },
-  snake: {
-    name: "Snake",
-    headline: "Snake PU leather belt",
-    intro: "Snake pattern on PU leather, with a thin tie.",
+    headline: "Wide waist belt with an adjustable thin tie",
+    intro: "A wide PU leather belt with a thin tie that adjusts to your waist. Plain, croc or snake print.",
   },
   ruffle: {
     name: "Ruffle",
@@ -37,13 +27,13 @@ const styleEn: Record<string, { name: string; headline: string; intro: string }>
   },
 };
 
+// English product names are built from the id words.
 const colorWordsEn: Record<string, string> = {
   black: "Black", white: "White", red: "Red", gold: "Gold", caramel: "Caramel", silver: "Silver", mustard: "Mustard",
   burgundy: "Burgundy", taupe: "Taupe", blush: "Blush", green: "Green", cognac: "Cognac", brown: "Brown", grey: "Grey",
-  rose: "Rose", pink: "Pink", suede: "Suede", orange: "Orange", camel: "Camel", sky: "Sky", blue: "Blue", royal: "Royal",
-  navy: "Navy", wine: "Wine", beige: "Beige",
+  rose: "Rose", pink: "Pink", orange: "Orange", camel: "Camel", sky: "Sky", blue: "Blue", royal: "Royal",
+  navy: "Navy", wine: "Wine", beige: "Beige", croc: "Croc", snake: "Snake",
 };
-const prefixEn: Record<string, string> = { sash: "Sash", twist: "Twist", classic: "Classic" };
 
 const colorEn: Record<string, string> = {
   black: "Black", white: "White", red: "Red", pink: "Pink", brown: "Brown", gold: "Gold & beige",
@@ -88,18 +78,27 @@ export function styleText(lang: Lang, id: string): { name: string; headline: str
 
 export function productName(lang: Lang, p: CatalogProduct): string {
   if (lang === "ar") return p.name;
-  const [prefix, ...rest] = p.id.split("-");
-  const color = rest.map((w) => colorWordsEn[w] ?? w).join(" ");
-  const pre = prefix ? (prefixEn[prefix] ?? "") : "";
-  return [styleText("en", p.style).name, pre, color].filter(Boolean).join(" ");
+  // Ids are "<design>-<pattern?>-<colour>", e.g. thin-tie-croc-black.
+  const words = p.id.slice(p.style.length + 1).split("-");
+  return [styleText("en", p.style).name, ...words.map((w) => colorWordsEn[w] ?? w)].join(" ");
 }
 
+/** The style's base price (the lowest in the style). */
+/** The product name without its design ("كروكو أسود", "Croc Black"), for "Colour:" labels next to the design name. */
+export function shadeName(lang: Lang, p: CatalogProduct): string {
+  const full = productName(lang, p);
+  const prefixes = lang === "ar" ? ["رباط عريض ", "رباط رفيع ", `${getStyle(p.style).name} `] : [`${styleText("en", p.style).name} `];
+  const hit = prefixes.find((x) => full.startsWith(x));
+  return hit ? full.slice(hit.length) : full;
+}
 export const price = (id: string): string => formatEgp(getStyle(id).price);
-export const priceOfProduct = (p: CatalogProduct): string => price(p.style);
+export const priceOfProduct = (p: CatalogProduct): string => formatEgp(priceOf(p));
+/** True when some products of the style cost more than its base price (patterned belts). */
+export const hasHigherPrices = (styleId: string): boolean => productsOfStyle(styleId).some((p) => priceOf(p) !== getStyle(styleId).price);
 export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.webp`;
 export const thumbOf = (p: CatalogProduct): string => `/img/products/${p.id}-480.webp`;
 /** Products that also have an on-body photo (public/img/looks/<id>-480|900.webp, 4:5). */
-const LOOKS = new Set(["classic-royal-blue", "bow-burgundy", "bow-taupe", "classic-rose", "bow-gold", "classic-green", "sash-green", "croc-pink", "classic-pink-suede"]);
+const LOOKS = new Set(["thin-tie-royal-blue", "wide-tie-burgundy", "wide-tie-taupe", "thin-tie-rose", "wide-tie-gold", "thin-tie-green", "wide-tie-green", "thin-tie-croc-pink", "thin-tie-pink"]);
 export const lookOf = (p: CatalogProduct): { thumb: string; full: string } | null =>
   LOOKS.has(p.id) ? { thumb: `/img/looks/${p.id}-480.webp`, full: `/img/looks/${p.id}-900.webp` } : null;
 /** First product of a style, used as its cover image. */

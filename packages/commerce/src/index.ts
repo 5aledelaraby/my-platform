@@ -5,7 +5,7 @@ export { MAX_PROMO_AMOUNT, PROMO_CODE_PATTERN, normalizePromoCode, promoAmountFo
 export type { NewPromoInput, PromoCode, PromoProblem } from "./promo.ts";
 export type { CartLine, CartTotals, ShippingConfig, ShippingMethod } from "./pricing.ts";
 export { GOVERNORATES, GOVERNORATES_EN, PAYMENT_METHODS, SHIPPING, SHIPPING_METHODS } from "./store.ts";
-export { catalog, lookupProduct } from "./catalog.ts";
+export { catalog, lookupProduct, priceOf } from "./catalog.ts";
 export type { CatalogProduct, CatalogStyle, PriceLookup, PricedProduct } from "./catalog.ts";
 export { ORDER_STATUSES, canTransition, isOrderStatus, nextStatuses, publicStock, stockShortages } from "./inventory.ts";
 export type { OrderStatus, StockLevels, StockShortage } from "./inventory.ts";

@@ -21,6 +21,15 @@ const description = ar
       <p>{ar ? "عندكِ سؤال عن منتجاتنا أو عن طلبكِ؟ نحن هنا لمساعدتكِ. تحدّثي مع فريقنا وسنرد عليكِ في أقرب وقت." : "Have a question about our products or your order? We are here to help. Chat with our team and we will get back to you soon."}</p>
     </header>
     <ContactCards lang={lang} />
+    <section class="contact-company" aria-labelledby="company-title">
+      <h2 id="company-title">{ar ? "بيانات الشركة" : "Company details"}</h2>
+      <address>
+        <b>{ar ? site.legalNameAr : site.legalNameEn}</b> ({ar ? site.legalFormAr : site.legalFormEn})<br />
+        {ar ? site.addressAr : site.addressEn}<br />
+        {ar ? "سجل تجاري رقم " : "Commercial register no. "}<bdi dir="ltr">{site.commercialRegister}</bdi>
+        {site.taxNumber && <>{ar ? "، رقم التسجيل الضريبي " : ", tax registration no. "}<bdi dir="ltr">{site.taxNumber}</bdi></>}
+      </address>
+    </section>
     <p class="fine-print">
       <a href={policyPath(lang, "shipping")}>{ar ? "الشحن والتوصيل" : "Shipping and delivery"}</a> ·
       <a href={policyPath(lang, "returns")}>{ar ? "الاسترجاع والاستبدال" : "Returns and exchanges"}</a> ·

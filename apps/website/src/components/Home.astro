@@ -28,13 +28,17 @@ const sections: Section[] = [
 
 <section class="intro-hero">
   <figure class="intro-cover">
-    <video id="home-film" src="/video/home.mp4" poster="/video/home.webp" autoplay muted loop playsinline preload="metadata" width="540" height="982"></video>
+    <video id="home-film" data-motion src="/video/home.mp4" poster="/video/home.webp" muted loop playsinline preload="metadata" width="540" height="982"></video>
     <button type="button" class="film-sound" data-film-sound aria-pressed="false">{ar ? "تشغيل الصوت" : "Sound on"}</button>
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
     <h1>{ar ? "تصميمات بسيطة، تُصنع بعناية" : "Simple designs, made with care"}</h1>
     <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا، ونهتم بالتفاصيل الصغيرة." : "Vicuna is an Egyptian trading and design brand. We design and make by hand, and we care about the small details."}</p>
+    <div class="hero-actions">
+      <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي الأحزمة" : "Shop the belts"}</a>
+      <a class="btn btn-white" href={`https://wa.me/${site.whatsappInternational}`} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "تواصلي على واتساب" : "Chat on WhatsApp"}</a>
+    </div>
   </div>
 </section>
 

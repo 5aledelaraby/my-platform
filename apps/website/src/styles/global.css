@@ -100,7 +100,14 @@ p { margin: 0; }
 .marquee-track { display: flex; width: max-content; padding: 7px 0; white-space: nowrap; animation: marquee 48s linear infinite; }
 .marquee-track span { display: inline-flex; align-items: center; gap: 22px; padding-inline-end: 22px; }
 .marquee-track i { font-style: normal; opacity: .75; font-size: 11px; }
-.announce:hover .marquee-track { animation-play-state: paused; }
+.announce { position: relative; }
+.announce:hover .marquee-track, .announce.paused .marquee-track { animation-play-state: paused; }
+/* Pause buttons for moving content (announcement bar, videos). */
+.motion-toggle { display: inline-grid; place-items: center; min-width: 32px; min-height: 32px; padding: 0; border: 0; border-radius: 2px; background: rgb(0 0 0 / .6); color: #fff; font-size: 11px; line-height: 1; cursor: pointer; }
+.motion-toggle:hover { background: #000; }
+.announce-toggle { position: absolute; inset-block: 0; inset-inline-end: 0; z-index: 1; min-height: 0; background: var(--berry); }
+.film-toggle { position: absolute; bottom: 14px; inset-inline-end: 14px; z-index: 2; }
+.detail-media { position: relative; }
 [dir="ltr"] .marquee-track { animation-name: marquee-ltr; }
 
 /* ---------- header ---------- */
@@ -354,6 +361,9 @@ dialog.menu::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
   .card:hover .quick-add, .quick-add:focus-visible { opacity: 1; transform: none; }
 }
 .card-out { position: absolute; top: 10px; inset-inline-start: 10px; z-index: 2; padding: 3px 10px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 800; }
+.card.is-out .card-media img { filter: grayscale(1); opacity: .45; }
+.card.is-out .card-body { opacity: .55; }
+.card.is-out .quick-add { display: none; }
 .card-body { display: grid; gap: 1px; padding: 10px 6px 0; }
 .card-style { font-size: 12px; font-weight: 700; color: var(--muted); }
 .card-name { font-family: var(--font-body); font-size: 15px; font-weight: 800; line-height: 1.5; }
@@ -423,10 +433,14 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 #checkout { display: grid; gap: 12px; }
 #checkout label { display: grid; gap: 4px; font-weight: 700; font-size: 13.5px; color: var(--muted); }
 #checkout label.radio { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-radius: 16px; background: var(--cream); color: var(--ink); font-weight: 600; font-size: 14.5px; cursor: pointer; }
-#checkout label.radio:has(:checked) { box-shadow: inset 0 0 0 2px var(--berry); }
-#checkout input:not([type="radio"]), #checkout select, #checkout textarea { width: 100%; padding: 12px 14px; border: 2px solid transparent; border-radius: 16px; background: var(--cream); color: var(--ink); font: inherit; outline: none; transition: border-color .2s; }
-#checkout input:focus, #checkout select:focus, #checkout textarea:focus { border-color: var(--rose); }
-#checkout [aria-invalid] { border-color: var(--danger); }
+/* The chosen option: dark outline and white card. Red stays for errors only. */
+#checkout label.radio { accent-color: var(--ink); }
+#checkout label.radio:has(:checked) { background: #fff; box-shadow: inset 0 0 0 2px var(--ink); font-weight: 800; }
+/* 16px: smaller text makes Safari on iPhone zoom the page when a field gets focus. */
+#checkout input:not([type="radio"]), #checkout select, #checkout textarea { width: 100%; padding: 12px 14px; border: 2px solid transparent; border-radius: 16px; background: var(--cream); color: var(--ink); font: inherit; font-size: 16px; outline: none; transition: border-color .2s; }
+#checkout input:focus, #checkout select:focus, #checkout textarea:focus { border-color: var(--ink); }
+/* Specific enough to beat the field rule above, also while the field has focus. */
+#checkout input:not([type="radio"])[aria-invalid], #checkout select[aria-invalid], #checkout textarea[aria-invalid] { border-color: var(--danger); }
 #checkout fieldset { display: grid; gap: 8px; margin: 0; padding: 0; border: 0; }
 #checkout legend { margin-bottom: 6px; font-weight: 800; font-size: 14px; }
 #checkout-submit { min-height: 54px; }
@@ -631,6 +645,9 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  /* Still, not "run once to the end": the bar stays at its start and the belts photo shows the first picture only. */
+  .marquee-track, .bh-slide { animation: none !important; }
+  .bh-slide.s2 { opacity: 0; }
 }
 
 /* on-body photo: shown over the product photo when a card is hovered, and under the photo on the product page */
@@ -686,6 +703,7 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .consent { position: fixed; inset-inline: 12px; bottom: 12px; z-index: 70; display: grid; gap: 10px; max-width: 560px; margin-inline: auto; padding: 14px 16px; background: #fff; color: var(--ink); box-shadow: 0 0 0 1px var(--line), 0 18px 40px -18px rgb(0 0 0 / .35); font-size: 13px; line-height: 1.7; }
 .consent a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .consent-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.consent-current { margin: 0; color: var(--muted); font-size: 12.5px; }
 .consent .btn { min-height: 38px; padding: 0 18px; font-size: 13px; }
 .footer-cookies { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
 /* policy table of contents */
@@ -697,3 +715,28 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .policy-toc a:hover { text-decoration: underline; }
 @media (max-width: 560px) { .policy-toc ol { columns: 1; } }
 .prose h2[id] { scroll-margin-top: 90px; }
+.intro-text .hero-actions { justify-content: center; margin-top: 20px; }
+/* product photo: arrows, counter, swipe nudge */
+.pdp-photo { position: relative; touch-action: pan-y; }
+.pdp-arrow { position: absolute; top: 50%; z-index: 2; display: grid; place-items: center; width: 38px; height: 38px; margin-top: -19px; border-radius: 999px; background: rgb(255 255 255 / .9); color: var(--ink); box-shadow: 0 0 0 1px var(--line); text-decoration: none; }
+.pdp-arrow:hover { background: #fff; }
+.pdp-arrow.next { inset-inline-end: 10px; }
+.pdp-arrow.prev { inset-inline-start: 10px; }
+.pdp-arrow.prev .icon { transform: scaleX(-1); }
+[dir="ltr"] .pdp-arrow.next .icon { transform: scaleX(-1); }
+[dir="ltr"] .pdp-arrow.prev .icon { transform: none; }
+.pdp-count { position: absolute; bottom: 10px; inset-inline-start: 50%; transform: translateX(-50%); padding: 2px 10px; background: rgb(255 255 255 / .9); font-size: 12px; font-weight: 700; color: var(--muted); }
+[dir="rtl"] .pdp-count { transform: translateX(50%); }
+.pdp-photo img { transition: transform .35s var(--ease-soft), opacity .35s; }
+.pdp-photo.nudge img { animation: pdp-nudge 1.1s var(--ease-soft) 1; }
+@keyframes pdp-nudge { 0%, 100% { transform: translateX(0); } 30% { transform: translateX(-18px); } 55% { transform: translateX(10px); } 75% { transform: translateX(-4px); } }
+.pdp-photo.leaving-next img { transform: translateX(-30%); opacity: 0; }
+.pdp-photo.leaving-prev img { transform: translateX(30%); opacity: 0; }
+[dir="rtl"] .pdp-photo.leaving-next img { transform: translateX(30%); }
+[dir="rtl"] .pdp-photo.leaving-prev img { transform: translateX(-30%); }
+@view-transition { navigation: auto; }
+
+/* Company details on the contact page (from site.ts, the same facts as the terms page). */
+.contact-company { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); }
+.contact-company h2 { margin: 0 0 6px; font-size: 15px; }
+.contact-company address { font-style: normal; color: var(--muted); font-size: 14px; line-height: 1.9; }

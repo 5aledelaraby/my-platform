@@ -12,7 +12,7 @@ const order: Order = {
   status: "new",
   customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد", notes: "الدور *الثالث* <b>" },
   items: [
-    { productId: "bow-gold", name: "فيونكة دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
+    { productId: "wide-tie-gold", name: "رباط عريض دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
     { productId: "lace-black", name: "دانتيل أسود", unitPrice: 30000, quantity: 1, lineTotal: 30000 },
   ],
   shippingMethod: "express",
@@ -31,7 +31,7 @@ describe("formatOrderMessage", () => {
       "https://wa.me/201012345678",
       "المحافظة: القاهرة",
       "العنوان: مدينة نصر، شارع عباس العقاد",
-      "- فيونكة دهبي (bow-gold) × 2 = 400 ج",
+      "- رباط عريض دهبي (wide-tie-gold) × 2 = 400 ج",
       "- دانتيل أسود (lace-black) × 1 = 300 ج",
       "الخصم: -120 ج",
       "الشحن (سريع): 120 ج",

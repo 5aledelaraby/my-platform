@@ -1,5 +1,7 @@
 ---
 // Cookie consent (Personal Data Protection Law 151/2020): analytics and ad tags load only after "Accept".
+// Placed early in the page (Base.astro) so keyboard and screen-reader users reach it first; shown fixed at the bottom.
+// A first visit does not move focus (no focus stealing). "Cookie settings" moves focus into it and Escape returns it.
 import { policyPath } from "../policies/index.ts";
 import type { Lang } from "../site.ts";
 
@@ -8,33 +10,52 @@ const { lang } = Astro.props;
 const ar = lang === "ar";
 ---
 
-<div class="consent" data-consent hidden role="dialog" aria-live="polite" aria-label={ar ? "الكوكيز" : "Cookies"}>
+<section class="consent" data-consent hidden aria-labelledby="consent-title" data-current-granted={ar ? "اختياركِ الحالي: موافقة." : "Your current choice: accepted."} data-current-denied={ar ? "اختياركِ الحالي: رفض." : "Your current choice: rejected."}>
+  <h2 id="consent-title" class="sr-only">{ar ? "إعدادات الكوكيز" : "Cookie settings"}</h2>
   <p>
     {ar ? "نستخدم الكوكيز للتحليل والإعلانات لتحسين تجربتكِ. " : "We use cookies for analytics and ads to improve your experience. "}
     <a href={policyPath(lang, "cookies")}>{ar ? "سياسة الكوكيز" : "Cookie policy"}</a>
   </p>
+  <p class="consent-current" data-consent-current hidden></p>
   <div class="consent-actions">
     <button type="button" class="btn btn-white" data-consent-choice="denied">{ar ? "رفض" : "Reject"}</button>
     <button type="button" class="btn" data-consent-choice="granted">{ar ? "موافقة" : "Accept"}</button>
   </div>
-</div>
+</section>
 
 <script>
   import { consent, initTracking, setConsent } from "../scripts/tracking.ts";
   const box = document.querySelector<HTMLElement>("[data-consent]");
   if (box) {
+    let opener: HTMLElement | null = null;
+    const current = box.querySelector<HTMLElement>("[data-consent-current]");
+    const close = () => {
+      box.hidden = true;
+      opener?.focus();
+      opener = null;
+    };
     if (consent() === null) box.hidden = false;
     box.addEventListener("click", (event) => {
       const b = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-consent-choice]");
       if (!b) return;
+      close();
       setConsent(b.dataset["consentChoice"] === "granted" ? "granted" : "denied");
-      box.hidden = true;
+    });
+    box.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && opener) close();
     });
     document.addEventListener("click", (event) => {
-      if ((event.target as HTMLElement).closest("[data-cookie-settings]")) {
-        event.preventDefault();
-        box.hidden = false;
+      const trigger = (event.target as HTMLElement).closest<HTMLElement>("[data-cookie-settings]");
+      if (!trigger) return;
+      event.preventDefault();
+      const c = consent();
+      if (current) {
+        current.hidden = c === null;
+        current.textContent = c === "granted" ? (box.dataset["currentGranted"] ?? "") : c === "denied" ? (box.dataset["currentDenied"] ?? "") : "";
       }
+      opener = trigger;
+      box.hidden = false;
+      box.querySelector<HTMLButtonElement>("[data-consent-choice]")?.focus();
     });
   }
   initTracking();

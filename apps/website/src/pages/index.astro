@@ -7,12 +7,15 @@ import { site } from "../site.ts";
 const title = "فيكونا | تصميمات بسيطة تُصنع بعناية";
 const description = "فيكونا علامة مصرية للتجارة العامة والتصميمات: نصمّم ونصنع بأيدينا. تعرّفي علينا وعلى أقسامنا، ومنها الأحزمة والتفصيل على المقاس.";
 const jsonLd = serializeJsonLd([
+  // No sameAs: the social links in site.ts are not confirmed as the brand's own accounts (owner to confirm).
   organizationJsonLd({
     name: site.nameAr,
+    legalName: site.legalNameEn,
     url: site.url,
     logo: `${site.url}/brand/vicuna-logo.png`,
     email: site.email,
-    sameAs: site.social.map((s) => s.href),
+    telephone: `+${site.whatsappInternational}`,
+    address: site.addressParts,
   }),
   websiteJsonLd({ name: site.nameAr, url: site.url, language: "ar" }),
 ]);
