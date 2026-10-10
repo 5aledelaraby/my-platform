@@ -1,7 +1,6 @@
 ---
 import Icon from "./ui/Icon.astro";
 import ProductCard from "./ProductCard.astro";
-import Perks from "./Perks.astro";
 import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
 import { articles, articleUrl } from "../lib/articles.ts";
@@ -46,16 +45,10 @@ const tie = ar
 
 <Stories lang={lang} current="all" />
 
-<div class="wrap stack-sm">
-  <Perks lang={lang} />
-</div>
 
 <section class="section" id="all">
   <div class="wrap">
-    <div class="section-head">
-      <h2 class="h2">{c.stylesTitle}</h2>
-      <p class="muted">{c.stylesLead}</p>
-    </div>
+    <h2 class="sr-only">{c.stylesTitle}</h2>
     <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
       <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
       <div class="swatch-row">
