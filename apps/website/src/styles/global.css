@@ -546,7 +546,7 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 
 /* ---------- home (vicuna-eg.com): a calm introduction ---------- */
 .intro-cover { margin: 0; height: min(68vh, 560px); overflow: hidden; background: var(--cream); }
-.intro-cover img { width: 100%; height: 100%; object-fit: cover; animation: slow-zoom 16s var(--ease-soft) both; }
+.intro-cover img, .intro-cover video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
 .intro-text { max-width: 760px; padding-block: clamp(28px, 6vw, 56px) 4px; text-align: center; }
 .intro-kicker { margin: 0 0 6px; color: var(--muted); font-family: var(--font-latin); font-size: 13px; letter-spacing: .45em; }
 .intro-text h1 { font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 700; }
@@ -646,3 +646,6 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .pdp-look img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
 .pdp-media { min-width: 0; }
 .pdp-photo { border-radius: 2px; box-shadow: 0 0 0 1px var(--line); background: #fff; }
+.intro-cover { position: relative; }
+.film-sound { position: absolute; bottom: 14px; inset-inline-start: 14px; z-index: 2; min-height: 36px; padding: 0 14px; border: 0; border-radius: 2px; background: rgb(0 0 0 / .6); color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.film-sound:hover { background: #000; }
