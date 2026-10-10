@@ -17,7 +17,8 @@ export interface PolicyDoc {
   html: string;
 }
 
-export const policyPath = (lang: Lang, id: PolicyId) => langPath(lang, `/${id}/`);
+/** The cookie policy sits under the privacy policy (/privacy/cookies/); the others are top-level pages. */
+export const policyPath = (lang: Lang, id: PolicyId) => langPath(lang, id === "cookies" ? "/privacy/cookies/" : `/${id}/`);
 
 /** Isolates a left-to-right value (phone, email, number) inside Arabic text. */
 export const ltr = (text: string | number) => `<bdi dir="ltr">${text}</bdi>`;
