@@ -48,7 +48,7 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
     </label>
     <fieldset>
       <legend>{ar ? "الشحن" : "Shipping"}</legend>
-      <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}, {ar ? `مجاني من ${formatEgp(SHIPPING.freeOver)}` : `free from ${formatEgp(SHIPPING.freeOver)}`})</label>
+      <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}{ar ? "، " : ", "}{ar ? `مجاني من ${formatEgp(SHIPPING.freeOver)}` : `free from ${formatEgp(SHIPPING.freeOver)}`})</label>
       <label class="radio"><input type="radio" name="shippingMethod" value="express" /> {ar ? "سريع" : "Express"} ({formatEgp(SHIPPING.express)} {cur})</label>
     </fieldset>
     <fieldset>
@@ -56,6 +56,14 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
       <label class="radio"><input type="radio" name="paymentMethod" value="cod" checked /> {ar ? "الدفع عند الاستلام" : "Cash on delivery"}</label>
       <label class="radio"><input type="radio" name="paymentMethod" value="instapay" /> InstaPay</label>
     </fieldset>
+    <div class="promo-box">
+      <label for="promo-input">{ar ? "كود الخصم (اختياري)" : "Promo code (optional)"}</label>
+      <div class="promo-row">
+        <input id="promo-input" type="text" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" dir="ltr" />
+        <button type="button" class="btn small" data-apply-promo>{ar ? "تطبيق" : "Apply"}</button>
+      </div>
+      <p id="promo-msg" class="muted" role="status"></p>
+    </div>
     <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
     <p id="checkout-status" class="err" role="status"></p>
     <button id="checkout-submit" type="submit" class="btn">{ar ? "تأكيد الطلب" : "Place order"}</button>

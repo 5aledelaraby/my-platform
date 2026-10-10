@@ -1,4 +1,4 @@
-import { SHIPPING, MULTI_ITEM_RATES_BPS, formatEgp } from "@platform/commerce";
+import { SHIPPING, formatEgp } from "@platform/commerce";
 import { site } from "./site.ts";
 import type { Lang } from "./site.ts";
 
@@ -15,7 +15,6 @@ export interface HomeCopy {
   stylesEyebrow: string;
   stylesTitle: string;
   stylesLead: string;
-  stylesAll: string;
   whyEyebrow: string;
   whyTitle: string;
   why: readonly { t: string; d: string }[];
@@ -41,8 +40,6 @@ const r = site.returnDays;
 const kg = site.maxWeightKg;
 const std = formatEgp(SHIPPING.standard);
 const free = formatEgp(SHIPPING.freeOver);
-const second = MULTI_ITEM_RATES_BPS[1] / 100;
-const third = MULTI_ITEM_RATES_BPS[2] / 100;
 
 export const homeCopy: Record<Lang, HomeCopy> = {
   ar: {
@@ -58,7 +55,6 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     stylesEyebrow: "المجموعات",
     stylesTitle: "ستة تصاميم، لكل منها شخصيتها",
     stylesLead: "من الدانتيل الناعم إلى نقشة الكروكو، اختاري التصميم أولًا ثم اللون.",
-    stylesAll: "عرض كل الأحزمة",
     whyEyebrow: "لماذا فيكونا",
     whyTitle: "تفاصيل صغيرة تصنع الفرق",
     why: [
@@ -75,10 +71,10 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     promisesEyebrow: "الالتزامات",
     promisesTitle: "ما نلتزم به معك",
     promises: [
-      { t: "التوصيل", d: `إلى جميع محافظات مصر خلال ${d} أيام عمل. الشحن ${std} جنيهًا، ومجاني للطلبات من ${free} جنيه فأكثر بعد الخصم.` },
+      { t: "التوصيل", d: `إلى جميع محافظات مصر خلال ${d} أيام عمل. الشحن ${std} جنيهًا، ومجاني للطلبات من ${free} جنيه فأكثر.` },
       { t: "الاسترجاع", d: `يمكنك استرجاع الحزام خلال ${r} يومًا، ويُردّ المبلغ خلال ${site.refundDays} أيام.` },
       { t: "الدفع", d: "عند الاستلام أو عبر InstaPay. لا يُطلب منكِ أي دفع إلكتروني على الموقع." },
-      { t: "الخصم على أكثر من حزام", d: `خصم ${second}% على الحزام الثاني و${third}% على الثالث، يُحتسب تلقائيًا في السلة.` },
+      { t: "صنعة يدوية", d: "نقصّ كل حزام بالليزر ونخيطه يدويًا، ونراجعه قبل الشحن." },
     ],
     customEyebrow: "طلب خاص",
     customTitle: "هل تحتاجين مقاسًا أو خامة مختلفة؟",
@@ -106,7 +102,6 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     stylesEyebrow: "Collections",
     stylesTitle: "Six designs, each with its own character",
     stylesLead: "From soft lace to croc texture: choose a design first, then a colour.",
-    stylesAll: "View all belts",
     whyEyebrow: "Why Vicuna",
     whyTitle: "Small details that make the difference",
     why: [
@@ -123,10 +118,10 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     promisesEyebrow: "Our commitments",
     promisesTitle: "What we commit to",
     promises: [
-      { t: "Delivery", d: `To every governorate in Egypt in ${d} working days. Shipping is ${std} EGP, and free on orders of ${free} EGP or more after discount.` },
+      { t: "Delivery", d: `To every governorate in Egypt in ${d} working days. Shipping is ${std} EGP, and free on orders of ${free} EGP or more.` },
       { t: "Returns", d: `You can return a belt within ${r} days, and the amount is refunded within ${site.refundDays} days.` },
       { t: "Payment", d: "Cash on delivery or InstaPay. You are never asked to pay online on this site." },
-      { t: "Discount on more than one belt", d: `${second}% off the second belt and ${third}% off the third, applied automatically in the cart.` },
+      { t: "Handmade", d: "We laser-cut and hand-sew every belt, and check it before it ships." },
     ],
     customEyebrow: "Custom orders",
     customTitle: "Need a different size or material?",

@@ -1,6 +1,8 @@
 export { PIASTERS_PER_EGP, assertPiasters, egp, formatEgp } from "./money.ts";
 export type { Piasters } from "./money.ts";
-export { MULTI_ITEM_RATES_BPS, calculateTotals, multiItemDiscount, shippingCost } from "./pricing.ts";
+export { calculateTotals, shippingCost } from "./pricing.ts";
+export { MAX_PROMO_AMOUNT, PROMO_CODE_PATTERN, normalizePromoCode, promoAmountFor, promoProblem, validateNewPromo } from "./promo.ts";
+export type { NewPromoInput, PromoCode, PromoProblem } from "./promo.ts";
 export type { CartLine, CartTotals, ShippingConfig, ShippingMethod } from "./pricing.ts";
 export { GOVERNORATES, GOVERNORATES_EN, PAYMENT_METHODS, SHIPPING, SHIPPING_METHODS } from "./store.ts";
 export { catalog, lookupProduct } from "./catalog.ts";

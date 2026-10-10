@@ -222,7 +222,7 @@ describe("order API with stock", () => {
 });
 
 describe("schema check and status guard", () => {
-  it("health reports an outdated schema with 503, and 200 once migration 0002 is applied", async () => {
+  it("health reports an outdated schema with 503, and 200 once every migration is applied", async () => {
     const db = sqliteD1({ upTo: "0001_orders.sql" });
     const handler = createHandler({
       lookup: lookupProduct, shipping: SHIPPING, repository: d1Repository(db), allowedOrigins: [],
@@ -233,6 +233,8 @@ describe("schema check and status guard", () => {
     assert.equal(before.status, 503);
     assert.deepEqual(await before.json(), { ok: false, error: "schema_outdated" });
     db.migrate("0002_inventory.sql");
+    assert.equal((await health()).status, 503, "0003 (promo codes) still missing");
+    db.migrate("0003_promo_codes.sql");
     assert.equal((await health()).status, 200);
   });
 

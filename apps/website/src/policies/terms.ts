@@ -1,10 +1,9 @@
 // Terms and conditions. Seller identity and contact details are required on the site by Consumer Protection Law
 // 181/2018, Art. 37 (name, address, phone, email, commercial register and tax number), in Arabic (Art. 5).
 import { site } from "../site.ts";
-import { contactHtml, fees, ltr, offerPercents, policyPath } from "./shared.ts";
+import { contactHtml, fees, ltr, policyPath } from "./shared.ts";
 import type { PolicyDoc } from "./shared.ts";
 
-const [second, third] = offerPercents;
 const ca = site.consumerAgency;
 
 export const termsAr: PolicyDoc = {
@@ -47,17 +46,18 @@ export const termsAr: PolicyDoc = {
 <li>نستبدل أو نردّ ثمن أي منتج به عيب صناعة إذا أبلغتِنا به خلال ${site.defectDays} يومًا من استلامه، والإرجاع والاستبدال لأي سبب آخر حسب <a href="${policyPath("ar", "returns")}">سياسة الشحن والاسترجاع</a>.</li>
 </ul>
 
-<h2 id="offers">5. العروض</h2>
-<p>قد نعلن عروضًا لفترة محددة على الموقع أو على حساباتنا، وشروط كل عرض مكتوبة معه: مدته والمنتجات المشمولة به والخصم. وتسري على كل العروض القواعد التالية، إلا إذا نص العرض على غير ذلك:</p>
+<h2 id="offers">5. العروض وأكواد الخصم</h2>
+<p>قد نعلن عروضًا أو أكواد خصم لفترة محددة على الموقع أو على حساباتنا، وشروط كل منها مكتوبة معه. وتسري عليها القواعد التالية، إلا إذا نُصّ على غير ذلك:</p>
 <ul>
-<li>يُحسب خصم العرض تلقائيًا في السلة، ويظهر في الإجمالي قبل إرسال الطلب.</li>
-<li>الخصم على سعر المنتجات فقط وليس على الشحن، والشحن العادي المجاني (للطلبات من ${fees.freeOver} جنيه) يُحسب على المبلغ بعد الخصم.</li>
-<li>إذا أرجعتِ جزءًا من طلب عليه خصم، يُعاد حساب الخصم على ما بقي معكِ، ونردّ لكِ الفرق بين ما دفعتِه والمبلغ بعد إعادة الحساب.</li>
-<li>لا يُجمع عرضان على الطلب نفسه.</li>
-<li>العرض متاح حتى نهاية مدته أو نفاد الكمية المخصصة له، والطلبات التي أُكِّدت قبل انتهاء العرض أو تعديله تبقى على شروطه وقت تأكيدها.</li>
-<li>إذا تبيّن استخدام غير عادل لعرض، مثل الطلبات الوهمية، يحق لنا إلغاء الخصم.</li>
+<li>كود الخصم مبلغ ثابت يُخصم من سعر الأحزمة، وليس من الشحن. تكتبينه في خانة «كود الخصم» قبل تأكيد الطلب، ويظهر الخصم في الإجمالي قبل الإرسال.</li>
+<li>كود واحد لكل طلب، ولا يُجمع عرضان على الطلب نفسه.</li>
+<li>قد يكون للكود حد أدنى لقيمة الأحزمة، أو آخر يوم، أو عدد مرات استخدام، ونذكر ذلك عند الإعلان عنه.</li>
+<li>الشحن العادي المجاني (للطلبات من ${fees.freeOver} جنيه) يُحسب على المبلغ بعد الخصم.</li>
+<li>إذا أرجعتِ جزءًا من طلب استخدمتِ فيه كود خصم، يُوزَّع الخصم على أحزمة الطلب بنسبة أسعارها، ونردّ لكِ ما دفعتِه فعليًا مقابل ما أرجعتِه.</li>
+<li>الكود لا يُستبدل بمال.</li>
+<li>العرض أو الكود متاح حتى نهاية مدته أو نفاد الكمية المخصصة له، والطلبات التي أُكِّدت قبل انتهائه أو تعديله تبقى على شروطه وقت تأكيدها.</li>
+<li>إذا تبيّن استخدام غير عادل لعرض أو كود، مثل الطلبات الوهمية، يحق لنا إلغاء الخصم.</li>
 </ul>
-<p><b>العرض الحالي: الحزام الثاني بخصم ${second}% والثالث بخصم ${third}%.</b> نرتّب أحزمة الطلب من الأعلى سعرًا إلى الأقل، وفي كل مجموعة من 3 أحزمة يكون الأول بسعره، والثاني بخصم ${second}%، والثالث بخصم ${third}%.</p>
 
 <h2>6. صحة البيانات</h2>
 <p>نحتاج منكِ بيانات صحيحة وكاملة لنستطيع توصيل طلبكِ. وإذا تأخر التوصيل بسبب بيانات غير صحيحة، نتواصل معكِ لحل المشكلة.</p>
@@ -132,17 +132,18 @@ export const termsEn: PolicyDoc = {
 <li>We replace or refund any item with a manufacturing fault that you report within ${site.defectDays} days of delivery; returns and exchanges for any other reason follow the <a href="${policyPath("en", "returns")}">shipping and returns policy</a>.</li>
 </ul>
 
-<h2 id="offers">5. Offers</h2>
-<p>We may announce time-limited offers on the website or our accounts; each offer states its own terms: how long it runs, which products it covers and the discount. These rules apply to every offer unless the offer says otherwise:</p>
+<h2 id="offers">5. Offers and promo codes</h2>
+<p>We may announce time-limited offers or promo codes on the website or our accounts; each one states its own terms. These rules apply unless an offer or code says otherwise:</p>
 <ul>
-<li>The cart applies the offer's discount automatically and shows it in the total before you send the order.</li>
-<li>The discount applies to the products only, not to shipping; free standard shipping (orders of EGP ${fees.freeOver} or more) is based on the amount after discount.</li>
-<li>If you return part of a discounted order, the discount is recalculated on what you keep and we refund the difference between what you paid and the recalculated amount.</li>
-<li>Two offers cannot be combined on the same order.</li>
-<li>An offer lasts until its end date or until its allocated stock runs out; orders confirmed before an offer ends or changes keep its terms as they were when confirmed.</li>
-<li>If an offer is used unfairly, such as through fake orders, we may cancel the discount.</li>
+<li>A promo code takes a fixed amount off the belts, not off shipping. You enter it in the "Promo code" field before placing the order, and the discount shows in the total before you send it.</li>
+<li>One code per order, and two offers cannot be combined on the same order.</li>
+<li>A code may have a minimum belts amount, a last day or a limited number of uses; we say so when we announce it.</li>
+<li>Free standard shipping (orders of EGP ${fees.freeOver} or more) is based on the amount after the discount.</li>
+<li>If you return part of an order that used a promo code, the discount is spread over the order's belts in proportion to their prices, and we refund what you actually paid for what you return.</li>
+<li>A code cannot be exchanged for money.</li>
+<li>An offer or code lasts until its end date or until its allocated stock runs out; orders confirmed before it ends or changes keep its terms as they were when confirmed.</li>
+<li>If an offer or code is used unfairly, such as through fake orders, we may cancel the discount.</li>
 </ul>
-<p><b>Current offer: 2nd belt ${second}% off, 3rd belt ${third}% off.</b> The belts in the order are ranked from highest to lowest price, and in every group of 3 the first is full price, the second is ${second}% off and the third is ${third}% off.</p>
 
 <h2>6. Accurate details</h2>
 <p>We need correct and complete details to deliver your order. If delivery is delayed because of wrong details, we contact you to sort it out.</p>

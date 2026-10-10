@@ -1,125 +1,92 @@
 ---
-// The home page: a short introduction to Vicuna and its sections. It never shows the product grid or cart UI
-// (ADR 0009); the belts have their own landing page (/belts/) and catalogue (/belts/shop/).
+// The home page (vicuna-eg.com): a calm introduction to Vicuna, not a belts page. Images are editorial
+// photos. It never shows the product grid or cart UI (ADR 0009); the belts are one of the sections.
+import ContactCards from "./ContactCards.astro";
 import Icon from "./ui/Icon.astro";
-import { site } from "../site.ts";
-import { beltsUrl, getProduct, shopUrl, thumbOf } from "../store.ts";
+import { JOURNAL_PATH, langPath, site } from "../site.ts";
+import { beltsUrl } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
-const wa = `https://wa.me/${site.whatsappInternational}`;
-const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في حزام جلد طبيعي مفصّل على مقاسي." : "Hello Vicuna, I would like a made-to-measure natural leather belt.")}`;
-const floaters = [
-  { id: "bow-white", pos: "f2", r: "8deg", d: "-1.6s" },
-  { id: "lace-red", pos: "f3", r: "-6deg", d: "-4.4s" },
-].flatMap((f) => {
-  const p = getProduct(f.id);
-  return p ? [{ ...f, src: thumbOf(p) }] : [];
-});
+const customWa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في حزام جلد طبيعي مفصّل على مقاسي." : "Hello Vicuna, I would like a made-to-measure natural leather belt.")}`;
 
-interface Area {
-  title: string;
-  text: string;
-  cta: string;
-  href: string;
-  img: string;
-  size: [number, number];
-  alt: string;
-  external?: boolean;
-}
-const areas: Area[] = [
+const values = ar
+  ? [
+      { t: "التصميم", d: "خطوط بسيطة وألوان هادئة، تناسب يومكِ وتعيش معكِ طويلًا." },
+      { t: "الصنعة", d: "نصنع منتجاتنا بأيدينا، ونراجع كل قطعة قبل أن تصل إليكِ." },
+      { t: "القرب منكِ", d: "نرد على أسئلتكِ بأنفسنا، ونوصّل إلى جميع محافظات مصر." },
+    ]
+  : [
+      { t: "Design", d: "Simple lines and calm colours that suit your day and last." },
+      { t: "Craft", d: "We make our products by hand and check every piece before it reaches you." },
+      { t: "Close to you", d: "We answer your questions ourselves and deliver across Egypt." },
+    ];
+
+interface Section { title: string; text: string; href: string; external?: boolean }
+const sections: Section[] = [
   {
     title: ar ? "الأحزمة" : "Belts",
-    text: ar ? "ستة تصاميم من جلد PU والدانتيل، بألوان كثيرة، توصيل لكل مصر." : "Six designs in PU leather and lace, in many colours, delivered across Egypt.",
-    cta: ar ? "ادخلي إلى الأحزمة" : "Explore the belts",
+    text: ar ? "تصميمات من جلد PU والدانتيل بألوان كثيرة." : "Designs in PU leather and lace, in many colours.",
     href: beltsUrl(lang),
-    img: "/img/mood-bow.webp",
-    size: [900, 900],
-    alt: ar ? "حزام فيونكة من فيكونا على فستان" : "A Vicuna bow belt on a dress",
   },
   {
     title: ar ? "التفصيل على المقاس" : "Made to measure",
-    text: ar
-      ? "أحزمة من الجلد الطبيعي تُفصّل على مقاسكِ وبالتصميم الذي تختارينه، في القاهرة والجيزة."
-      : "Natural leather belts made to your size and the design you choose, in Cairo and Giza.",
-    cta: ar ? "اطلبي على واتساب" : "Ask on WhatsApp",
+    text: ar ? "أحزمة من الجلد الطبيعي تُفصّل على مقاسكِ، في القاهرة والجيزة." : "Natural leather belts made to your size, in Cairo and Giza.",
     href: customWa,
-    img: "/img/leather-600.webp",
-    size: [600, 450],
-    alt: ar ? "جلود طبيعية بألوان مختلفة في الورشة" : "Natural leather hides in different colours in the workshop",
     external: true,
   },
-  ...(ar
-    ? [
-        {
-          title: "المقالات",
-          text: "أفكار لتنسيق الحزام مع ملابسكِ، واختيار المقاس والخامة المناسبة.",
-          cta: "اقرئي المقالات",
-          href: "/blog/",
-          img: "/img/mood-lace.webp",
-          size: [900, 900] as [number, number],
-          alt: "حزام دانتيل من فيكونا",
-        },
-      ]
-    : []),
+  ...(ar ? [{ title: "المقالات", text: "أفكار للتنسيق والاختيار.", href: JOURNAL_PATH }] : []),
 ];
 ---
 
-<section class="hero intro">
-  <div class="hero-box">
-    <div class="hero-text">
-      <p class="hero-tagline">{ar ? "صُنع في مصر" : "Made in Egypt"}</p>
-      <h1>{ar ? <>فيكونا<br /><span class="accent">أحزمة نصنعها بأيدينا</span></> : <>Vicuna<br /><span class="accent">belts we make by hand</span></>}</h1>
-      <p class="lead">
-        {ar
-          ? "علامة مصرية لأحزمة الخصر النسائية. نقصّ كل حزام بالليزر ونخيطه يدويًا، ونوصّله إلى جميع محافظات مصر."
-          : "An Egyptian brand of women's waist belts. We laser-cut and hand-sew every belt, and deliver to every governorate in Egypt."}
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn-berry btn-shine" href={beltsUrl(lang)}>{ar ? "ادخلي إلى الأحزمة" : "Explore the belts"} <Icon name="arrow" size={18} class="dir-icon" /></a>
-        <a class="btn btn-white" href={shopUrl(lang)}>{ar ? "تسوّقي مباشرة" : "Shop now"}</a>
-      </div>
-    </div>
-    <div class="hero-art">
-      <span class="hero-glow" aria-hidden="true"></span>
-      <figure class="arch">
-        <img
-          src="/img/hero-1200.webp"
-          srcset="/img/hero-800.webp 800w, /img/hero-1200.webp 1200w"
-          sizes="(min-width: 960px) 40vw, 80vw"
-          alt={ar ? "أحزمة خصر من فيكونا على مجسّمات عرض" : "Vicuna waist belts on display mannequins"}
-          width="1200"
-          height="810"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-      {floaters.map((f) => (
-        <img class={`floaty ${f.pos}`} src={f.src} alt="" aria-hidden="true" width="480" height="480" decoding="async" style={`--r:${f.r};--d:${f.d}`} />
-      ))}
-    </div>
+<section class="intro-hero">
+  <figure class="intro-cover">
+    <img src="/img/editorial/lace-close-1600.webp" srcset="/img/editorial/lace-close-800.webp 800w, /img/editorial/lace-close-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1200" fetchpriority="high" decoding="async" />
+  </figure>
+  <div class="wrap intro-text">
+    <p class="intro-kicker" lang="en">VICUNA</p>
+    <h1>{ar ? "تصميمات بسيطة، تُصنع بعناية" : "Simple designs, made with care"}</h1>
+    <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا، ونهتم بالتفاصيل الصغيرة." : "Vicuna is an Egyptian trading and design brand. We design and make by hand, and we care about the small details."}</p>
   </div>
 </section>
 
-<section class="section">
-  <div class="wrap">
-    <div class="section-head">
-      <p class="eyebrow">{ar ? "أقسام فيكونا" : "Vicuna"}</p>
-      <h2 class="h2">{ar ? "من أين تبدئين؟" : "Where would you like to start?"}</h2>
-    </div>
-    <div class="areas">
-      {areas.map((a, i) => (
-        <a class="area-card reveal" href={a.href} style={`--i:${i}`} rel={a.external ? "noopener noreferrer" : undefined}>
-          <span class="area-media"><img src={a.img} alt={a.alt} width={a.size[0]} height={a.size[1]} loading="lazy" decoding="async" /></span>
-          <span class="area-body">
-            <span class="area-title">{a.title}</span>
-            <span class="muted">{a.text}</span>
-            <span class="area-cta">{a.cta} <Icon name="arrow" size={16} class="dir-icon" /></span>
-          </span>
-        </a>
-      ))}
-    </div>
+<section class="wrap intro-split reveal">
+  <figure class="intro-photo"><img src="/img/editorial/model-seated-640.webp" srcset="/img/editorial/model-seated-640.webp 640w, /img/editorial/model-seated-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="" width="640" height="800" loading="lazy" decoding="async" /></figure>
+  <div class="intro-copy">
+    <h2>{ar ? "من نحن" : "About us"}</h2>
+    <p>
+      {ar
+        ? `${site.legalNameAr} علامة مصرية مقرها القاهرة. نؤمن بأن القطعة الجيدة تبدأ من تصميم واضح وخامة مختارة وصنعة متأنية، ولهذا نصنع منتجاتنا بأيدينا ونراجع كل قطعة قبل أن تصل إليكِ.`
+        : `${site.legalNameEn} is an Egyptian brand based in Cairo. We believe a good piece starts with a clear design, a chosen material and patient craft, so we make our products by hand and check every piece before it reaches you.`}
+    </p>
+    <ul class="intro-values">
+      {values.map((v) => <li><b>{v.t}</b><span>{v.d}</span></li>)}
+    </ul>
   </div>
+</section>
+
+<section class="wrap intro-split flip reveal">
+  <figure class="intro-photo"><img src="/img/editorial/model-blazer-640.webp" srcset="/img/editorial/model-blazer-640.webp 640w, /img/editorial/model-blazer-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="" width="640" height="800" loading="lazy" decoding="async" /></figure>
+  <div class="intro-copy">
+    <h2>{ar ? "أقسامنا" : "Our sections"}</h2>
+    <ul class="section-links">
+      {sections.map((s) => (
+        <li>
+          <a href={s.href} rel={s.external ? "noopener noreferrer" : undefined}>
+            <span><b>{s.title}</b><span class="muted">{s.text}</span></span>
+            <Icon name="arrow" size={18} class="dir-icon" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="wrap intro-contact reveal">
+  <h2>{ar ? "تواصلي مع فريقنا" : "Contact our team"}</h2>
+  <p class="muted">{ar ? "عندكِ سؤال؟ نحن هنا لمساعدتكِ." : "Have a question? We are here to help."}</p>
+  <ContactCards lang={lang} compact />
+  <p><a class="textlink" href={langPath(lang, "/contact/")}>{ar ? "كل طرق التواصل" : "All the ways to reach us"}</a></p>
 </section>

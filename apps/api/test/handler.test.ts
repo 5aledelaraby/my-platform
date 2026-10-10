@@ -86,10 +86,10 @@ describe("POST /orders", () => {
     assert.equal(res.headers.get("Access-Control-Allow-Origin"), ORIGIN);
     assert.equal(res.headers.get("Cache-Control"), "no-store");
     const { order } = (await res.json()) as { order: Record<string, unknown> & { totals: Order["totals"] } };
-    // 300 + 200 (25% off) + 200 (35% off) = 700 - 120 = 580, + 80 shipping
+    // 300 + 2 x 200 = 700 (no quantity discount), + 80 shipping
     assert.equal(order.totals.subtotal, egp(700));
-    assert.equal(order.totals.discount, egp(120));
-    assert.equal(order.totals.total, egp(660));
+    assert.equal(order.totals.discount, 0);
+    assert.equal(order.totals.total, egp(780));
     assert.match(String(order["id"]), /^V-1009-[2-9A-HJ-NP-Z]{5}$/);
     assert.equal(order["firstName"], "منى");
     assert.equal(repository.orders.size, 1);
@@ -296,7 +296,8 @@ describe("d1Repository", () => {
     assert.equal(calls.length, 5);
     assert.match(calls[0]?.sql ?? "", /INSERT INTO orders/);
     assert.equal(calls[0]?.values[7], null);
-    assert.equal(calls[0]?.values.length, 17);
+    assert.equal(calls[0]?.values.length, 18);
+    assert.equal(calls[0]?.values[17], null, "no promo code");
     assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "bow-gold", "فيونكة دهبي", 20000, 2, 40000, "bow-gold"]);
     assert.match(calls[3]?.sql ?? "", /UPDATE inventory SET quantity = quantity - \?/);
     assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "bow-gold"]);

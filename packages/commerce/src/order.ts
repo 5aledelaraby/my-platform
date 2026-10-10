@@ -3,6 +3,7 @@ import type { OrderStatus, StockLevels } from "./inventory.ts";
 import type { Piasters } from "./money.ts";
 import type { CartTotals, ShippingConfig, ShippingMethod } from "./pricing.ts";
 import { calculateTotals } from "./pricing.ts";
+import { normalizePromoCode } from "./promo.ts";
 import { GOVERNORATES, GOVERNORATES_EN, PAYMENT_METHODS, SHIPPING_METHODS } from "./store.ts";
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
@@ -41,6 +42,8 @@ export interface ValidOrderRequest {
   customer: { name: string; phone: string; governorate: string; address: string; notes?: string };
   shippingMethod: ShippingMethod;
   paymentMethod: PaymentMethod;
+  /** Normalized promo code the customer typed (format checked only; the API checks it exists and applies). */
+  promoCode?: string;
 }
 
 export interface OrderItem {
@@ -62,6 +65,8 @@ export interface Order {
   items: OrderItem[];
   shippingMethod: ShippingMethod;
   paymentMethod: PaymentMethod;
+  /** The promo code applied; `totals.discount` is its amount. Absent when no code was used. */
+  promoCode?: string;
   totals: CartTotals;
 }
 
@@ -71,7 +76,7 @@ export type ValidationResult<T> = { ok: true; value: T } | { ok: false; errors: 
 export type ErrorCode =
   | "required" | "invalid_type" | "too_short" | "too_long"
   | "invalid_phone" | "invalid_governorate" | "invalid_choice"
-  | "unknown_product" | "invalid_quantity" | "too_many_items" | "empty_cart";
+  | "unknown_product" | "invalid_quantity" | "too_many_items" | "empty_cart" | "invalid_promo";
 
 // Control characters, zero-width space, bidi overrides/isolates and BOM. Escapes are written as string
 // escapes so no invisible character ever sits in this source file.
@@ -208,6 +213,14 @@ export function validateOrderRequest(input: unknown, lookup: PriceLookup): Valid
   const paymentMethod = input["paymentMethod"] ?? "cod";
   if (!(PAYMENT_METHODS as readonly unknown[]).includes(paymentMethod)) errors["paymentMethod"] = "invalid_choice" satisfies ErrorCode;
 
+  // optional promo code (format only here)
+  let promoCode: string | undefined;
+  const promoRaw = input["promoCode"];
+  if (promoRaw !== undefined && promoRaw !== null && promoRaw !== "") {
+    promoCode = normalizePromoCode(promoRaw) ?? undefined;
+    if (!promoCode) errors["promoCode"] = "invalid_promo" satisfies ErrorCode;
+  }
+
   if (Object.keys(errors).length > 0 || !name || !address || !phone || !governorate) return { ok: false, errors };
 
   return {
@@ -217,6 +230,7 @@ export function validateOrderRequest(input: unknown, lookup: PriceLookup): Valid
       customer: { name, phone, governorate, address, ...(notes ? { notes } : {}) },
       shippingMethod: shippingMethod as ShippingMethod,
       paymentMethod: paymentMethod as PaymentMethod,
+      ...(promoCode ? { promoCode } : {}),
     },
   };
 }
@@ -238,7 +252,7 @@ export function buildOrder(
   request: ValidOrderRequest,
   lookup: PriceLookup,
   shipping: ShippingConfig,
-  meta: { id: string; now: Date },
+  meta: { id: string; now: Date; promo?: { code: string; amount: Piasters } },
 ): Order {
   const items: OrderItem[] = request.items.map(({ id, quantity }) => {
     const product = lookup(id);
@@ -249,6 +263,7 @@ export function buildOrder(
     items.map((i) => ({ unitPrice: i.unitPrice, quantity: i.quantity })),
     request.shippingMethod,
     shipping,
+    meta.promo?.amount ?? 0,
   );
   return {
     id: meta.id,
@@ -258,6 +273,7 @@ export function buildOrder(
     items,
     shippingMethod: request.shippingMethod,
     paymentMethod: request.paymentMethod,
+    ...(meta.promo ? { promoCode: meta.promo.code } : {}),
     totals,
   };
 }

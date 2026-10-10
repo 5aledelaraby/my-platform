@@ -31,3 +31,6 @@ The owner asked for three levels instead of two:
 2. `/belts/` the belts landing page: the rich page with the moving hero, style shortcuts, perks, offer, styles, craft, promises, bespoke teaser and FAQ (what used to be `/`).
 3. `/belts/shop/` the catalogue: every belt with the colour filter and the grid (what used to be `/belts/`).
 Style and product URLs are unchanged. `shop` is reserved under `/belts/` (checked at build time with the style/product collision check). Breadcrumbs: Home > Belts > All belts / Style > Product.
+
+## Update (2026-10-10): one belts page, new paths
+The owner merged the belts landing page and the catalogue into one full page, so a visitor from an ad sees the belts at once: `/collections/vicuna-belts/` (hero, style shortcuts, perks, every belt with the colour filter, how to tie, craft, FAQ). Styles and products sit under it (`/collections/vicuna-belts/<style>/`, `/collections/vicuna-belts/<product-id>/`); product ids stay permanent. Articles moved to `/journal/style-guides/`. `/belts/`, `/belts/shop/` and `/blog/` are gone, with no redirects (clean start, nothing was published on them). The three-level update above is superseded.

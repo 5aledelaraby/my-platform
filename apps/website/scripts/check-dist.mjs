@@ -84,7 +84,7 @@ for (const file of pages) {
     }
   }
 
-  if (url.startsWith("/belts/") || url.startsWith("/en/belts/")) {
+  if (url.startsWith("/collections/") || url.startsWith("/en/collections/")) {
     const other = url.startsWith("/en/") ? url.replace("/en", "") : "/en" + url;
     if (!known.has(other)) fail(name, `no counterpart page ${other} for hreflang`);
   }

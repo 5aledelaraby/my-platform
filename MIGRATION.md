@@ -24,10 +24,10 @@
 | القديم | الجديد |
 |---|---|
 | `/` (متجر كامل) | `/` تعريف فقط: Hero بنسخة البراند، Perks، MadeByHand، تيزر الخدمات (Bespoke)، تيزر OnBody، FAQ عام، روابط للمتجر |
-| `Shop`, `OfferStrip`, `ShopByStyle`, `TieSteps` من الرئيسية | `/belts/` |
-| `/<style>/` (صفحات الإعلانات) | `/belts/<style>/` |
-| `/p/<id>/` | `/belts/<id>/` (يتأكد من عدم تعارض الـ id مع slug أي ستايل) |
-| `/blog/<slug>/` | `/blog/<slug>/` |
+| `Shop`, `OfferStrip`, `ShopByStyle`, `TieSteps` من الرئيسية | `/collections/vicuna-belts/` |
+| `/<style>/` (صفحات الإعلانات) | `/collections/vicuna-belts/<style>/` |
+| `/p/<id>/` | `/collections/vicuna-belts/<id>/` (يتأكد من عدم تعارض الـ id مع slug أي ستايل) |
+| `/blog/<slug>/` | `/journal/style-guides/<slug>/` |
 | `/en/...` | `/en/...` بنفس الهيكل لو اتقرر الإبقاء على الإنجليزي |
 | سياسات (استرجاع، خصوصية، شروط) | نفس المسارات |
 
@@ -50,7 +50,7 @@
 3. `sitemap.xml` وrobots سليمين، والـ staging عليه `noindex`.
 4. التتبع شغال (GA4, Pixel, CAPI بنفس event_id) ومتحقق منه في Events Manager.
 5. Lighthouse موبايل: أداء وSEO وإتاحة ≥ 90 على الصفحة الرئيسية والمنتج والمقال.
-6. تحويلات 301 من أي URL قديم له قيمة. **تم جزئيًا**: `apps/website/public/_redirects` فيه كل صفحات HTML في الموقع القديم (الستايلات، `/p/<id>/`، `/sash/`، `/croc-snake/`، `/about/`، بالعربي والإنجليزي) ما عدا صفحات السياسات، و`check-dist` بيتأكد إن كل وجهة صفحة موجودة. الملفات اللي مش صفحات (`/catalog/*`، `/assets/*`، `/favicon.ico`، `/apple-touch-icon.png`، `/manifest.webmanifest`) مش متحولة. قرار يحتاج تأكيد المالك: `/sash/` إلى `/belts/wide-bow/`، و`/croc-snake/` إلى `/belts/croc/`، و`/about/` إلى الرئيسية. تحويل 301 بيتحفظ في المتصفحات، فصعب الرجوع فيه بعد النشر على الدومين الحقيقي.
+6. تحويلات الروابط القديمة: **لا**. قرار المالك (2026-10-10): بداية نظيفة تمامًا، لأن الموقع القديم مكانش معروف. مفيش `_redirects`، والفهرسة في جوجل تبدأ من الصفر.
 
 ## متبقي قبل تحويل الدومين (من مراجعة 2026-10-09)
 

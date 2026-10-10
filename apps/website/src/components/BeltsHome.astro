@@ -1,12 +1,11 @@
 ---
-import { formatEgp } from "@platform/commerce";
 import Icon from "./ui/Icon.astro";
-import OfferStrip from "./OfferStrip.astro";
+import ProductCard from "./ProductCard.astro";
 import Perks from "./Perks.astro";
 import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
 import { site } from "../site.ts";
-import { beltsUrl, shopUrl, coverOf, getProduct, getStyle, imageOf, productsOfStyle, styleText, styles, thumbOf } from "../store.ts";
+import { beltsUrl, colorName, colors, price, productsOfStyle, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -16,93 +15,92 @@ const ar = lang === "ar";
 const cur = ar ? "جنيه" : "EGP";
 const wa = `https://wa.me/${site.whatsappInternational}`;
 const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في طلب مقاس خاص." : "Hello Vicuna, I would like to ask about a custom size.")}`;
-// The headline in two lines; the second one in the brand red.
-const [h1a, h1b] = c.h1.split(ar ? "، " : ", ");
-// Belts floating around the hero photo: position, tilt and animation offset.
-const floaters = [
-  { id: "lace-gold", pos: "f1", r: "-9deg", d: "0s" },
-  { id: "bow-white", pos: "f2", r: "8deg", d: "-1.6s" },
-  { id: "croc-cognac", pos: "f3", r: "6deg", d: "-3.1s" },
-  { id: "lace-red", pos: "f4", r: "-6deg", d: "-4.4s" },
-].flatMap((f) => {
-  const p = getProduct(f.id);
-  return p ? [{ ...f, src: thumbOf(p) }] : [];
-});
+const tie = ar
+  ? [["ضعي الحزام على الخصر", "الجزء العريض إلى الأمام"], ["لفّي الشريطين", "وأعيديهما إلى الأمام"], ["اربطي بطريقتك", "فيونكة أو عقدة"]]
+  : [["Place it on your waist", "wide part in front"], ["Wrap the straps", "and bring them forward"], ["Tie it your way", "a bow or a knot"]];
 ---
 
-<section class="hero">
-  <div class="hero-box">
-    <div class="hero-pill-row">
-      <span class="ship-pill">
-        <Icon name="sparkle" size={13} class="spark s1" />
-        <Icon name="sparkle" size={10} class="spark s2" />
-        <Icon name="plane" size={22} class="pill-plane" />
-        {ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}
-      </span>
-    </div>
-    <div class="hero-text">
-      <p class="hero-tagline">{c.eyebrow}</p>
-      <h1>{h1a}{h1b && <><br /><span class="accent">{h1b}</span></>}</h1>
+<section class="bh-hero">
+  <div class="bh-grid">
+    <figure class="bh-media">
+      <video src="/video/lace.mp4" poster="/video/lace.webp" autoplay muted loop playsinline preload="metadata" aria-hidden="true" width="540" height="948"></video>
+    </figure>
+    <div class="bh-text">
+      <p class="bh-kicker" lang="en">VICUNA · BELTS</p>
+      <h1>{c.h1}</h1>
       <p class="lead">{c.lead}</p>
       <div class="hero-actions">
-        <a class="btn btn-berry btn-shine" href={shopUrl(lang)}>{c.cta} <Icon name="arrow" size={18} class="dir-icon" /></a>
+        <a class="btn" href="#all">{c.cta}</a>
         <a class="btn btn-white" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.ctaWhatsapp}</a>
       </div>
-    </div>
-    <div class="hero-art">
-      <span class="hero-glow" aria-hidden="true"></span>
-      <figure class="arch">
-        <img
-          src="/img/hero-1200.webp"
-          srcset="/img/hero-800.webp 800w, /img/hero-1200.webp 1200w"
-          sizes="(min-width: 960px) 40vw, 80vw"
-          alt={c.heroAlt}
-          width="1200"
-          height="810"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-      {floaters.map((f) => (
-        <img class={`floaty ${f.pos}`} src={f.src} alt="" aria-hidden="true" width="480" height="480" decoding="async" style={`--r:${f.r};--d:${f.d}`} />
-      ))}
+      <ul class="bh-facts">
+        <li>{ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}</li>
+        <li>{ar ? `استرجاع خلال ${site.returnDays} يومًا` : `Returns within ${site.returnDays} days`}</li>
+      </ul>
     </div>
   </div>
 </section>
 
-<Stories lang={lang} />
+<Stories lang={lang} current="all" />
 
 <div class="wrap stack-sm">
   <Perks lang={lang} />
-  <OfferStrip lang={lang} />
 </div>
+
+<section class="section" id="all">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="h2">{c.stylesTitle}</h2>
+      <p class="muted">{c.stylesLead}</p>
+    </div>
+    <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
+      <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
+      <div class="swatch-row">
+        {colors.map((cl) => (
+          <button type="button" class="dot" data-color={cl.id} aria-pressed="false" title={colorName(lang, cl.id)} aria-label={colorName(lang, cl.id)} style={`--c:${cl.hex}`}></button>
+        ))}
+      </div>
+      <button type="button" class="pill" data-color="all">{ar ? "عرض الكل" : "Show all"}</button>
+      <span id="filter-status" class="muted" aria-live="polite"></span>
+    </div>
+  </div>
+  {styles.map((s) => {
+    const t = styleText(lang, s.id);
+    const list = productsOfStyle(s.id);
+    return (
+      <div class="wrap style-group" data-group>
+        <div class="group-head">
+          <h3 id={`g-${s.id}`}>{t.name}</h3>
+          <span class="count-chip">{list.length} {ar ? "لون" : "colours"} · {price(s.id)} {cur}</span>
+        </div>
+        <p class="muted group-intro">{t.headline} · <a class="textlink" href={beltsUrl(lang, s.id)}>{ar ? `كل تفاصيل ${t.name}` : `About ${t.name}`}</a></p>
+        <div class="grid">
+          {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
+        </div>
+      </div>
+    );
+  })}
+  <div class="wrap style-group" id="tie">
+    <div class="tie-card reveal">
+      <h2>{ar ? "طريقة الربط" : "How to tie"}</h2>
+      <ol class="tie-steps">
+        {tie.map(([t, d], i) => <li><span class="tie-num" aria-hidden="true">{i + 1}</span><span><b>{t}</b> <span class="muted">{d}</span></span></li>)}
+      </ol>
+    </div>
+  </div>
+</section>
 
 <section class="section">
   <div class="wrap">
     <div class="section-head">
-      <h2 class="h2">{c.stylesTitle} <Icon name="sparkle" size={20} class="twinkle" /></h2>
-      <p class="muted">{c.stylesLead}</p>
+      <h2 class="h2">{ar ? "طرق ارتدائه" : "How to wear it"}</h2>
+      <p class="muted">{ar ? "مع الفستان الواسع أو فوق البليزر، الحزام يحدّد الخصر ويغيّر الإطلالة." : "Over a flowing dress or a blazer, the belt defines the waist and changes the look."}</p>
     </div>
-    <div class="tiles">
-      {styles.map((s, i) => {
-        const cover = coverOf(s.id);
-        const t = styleText(lang, s.id);
-        const count = productsOfStyle(s.id).length;
-        return (
-          <a class="style-tile reveal" href={beltsUrl(lang, s.id)} style={`--i:${i % 3}`}>
-            <span class="tile-media">
-              <img src={thumbOf(cover)} srcset={`${thumbOf(cover)} 480w, ${imageOf(cover)} 900w`} sizes="(min-width: 960px) 30vw, 46vw" alt="" width="480" height="480" loading="lazy" decoding="async" />
-              <span class="tag">{count} {ar ? "لون" : count === 1 ? "colour" : "colours"}</span>
-            </span>
-            <span class="tile-foot">
-              <span class="tile-name">{t.name}</span>
-              <span class="price-chip">{formatEgp(getStyle(s.id).price)} {cur}</span>
-            </span>
-          </a>
-        );
-      })}
+    <div class="lookbook">
+      <figure class="reveal"><img src="/img/editorial/model-walk-640.webp" srcset="/img/editorial/model-walk-640.webp 640w, /img/editorial/model-walk-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 50vw" alt={ar ? "حزام عريض بربطة رفيعة فوق فستان عاجي" : "A wide belt with a thin tie over an ivory dress"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "مع الفستان" : "With a dress"}</figcaption></figure>
+      <figure class="reveal" style="--i:1"><img src="/img/editorial/model-blazer-640.webp" srcset="/img/editorial/model-blazer-640.webp 640w, /img/editorial/model-blazer-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 50vw" alt={ar ? "حزام أسود فوق قميص أبيض تحت البليزر" : "A black belt over a white shirt under a blazer"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "مع البليزر" : "With a blazer"}</figcaption></figure>
+      <figure class="reveal lb-wide" style="--i:2"><img src="/img/editorial/model-seated-640.webp" srcset="/img/editorial/model-seated-640.webp 640w, /img/editorial/model-seated-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 100vw" alt={ar ? "حزام عاجي على الخصر مع فستان طويل" : "An ivory belt at the waist of a long dress"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "إطلالة هادئة" : "A quiet look"}</figcaption></figure>
     </div>
-    <p class="more"><a class="btn btn-white" href={shopUrl(lang)}>{c.stylesAll} <Icon name="arrow" size={18} class="dir-icon" /></a></p>
   </div>
 </section>
 
@@ -120,6 +118,19 @@ const floaters = [
           <p class="muted">{w.d}</p>
         </div>
       ))}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap detail">
+    <figure class="detail-media reveal">
+      <video src="/video/bow-black.mp4" poster="/video/bow-black.webp" autoplay muted loop playsinline preload="none" aria-hidden="true" width="540" height="948"></video>
+    </figure>
+    <div class="reveal">
+      <p class="eyebrow">{ar ? "التفاصيل" : "The details"}</p>
+      <h2 class="h2">{ar ? "خياطة متقنة وحواف نظيفة" : "Careful stitching, clean edges"}</h2>
+      <p class="muted lede">{ar ? "جلد PU طري يلتف على الخصر، بقصّ ليزر وخياطة على الحواف، وربطة تتحمل الشد. نراجع كل حزام قبل أن يصل إليكِ." : "Soft PU leather that wraps the waist, laser-cut and stitched along the edges, with a tie that holds. We check every belt before it reaches you."}</p>
     </div>
   </div>
 </section>
@@ -197,3 +208,30 @@ const floaters = [
     {c.faq.map((f, i) => <details class="reveal" style={`--i:${i % 3}`}><summary>{f.q}</summary><p class="muted">{f.a}</p></details>)}
   </div>
 </section>
+
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-filter]");
+  if (bar) {
+    bar.hidden = false;
+    const cards = [...document.querySelectorAll<HTMLElement>(".card[data-color]")];
+    const groups = [...document.querySelectorAll<HTMLElement>("[data-group]")];
+    const status = document.getElementById("filter-status");
+    const unit = bar.dataset["unit"] ?? "";
+    let active: string | null = null;
+    bar.addEventListener("click", (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-color]");
+      if (!button) return;
+      const picked = button.dataset["color"] ?? "all";
+      active = picked === "all" || picked === active ? null : picked;
+      bar.querySelectorAll<HTMLButtonElement>(".dot").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["color"] === active)));
+      let shown = 0;
+      for (const card of cards) {
+        const show = active === null || card.dataset["color"] === active;
+        card.hidden = !show;
+        if (show) shown += 1;
+      }
+      for (const group of groups) group.hidden = [...group.querySelectorAll<HTMLElement>(".card")].every((c) => c.hidden);
+      if (status) status.textContent = active === null ? "" : `${shown} ${unit}`;
+    });
+  }
+</script>

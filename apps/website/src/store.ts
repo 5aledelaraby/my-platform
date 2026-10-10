@@ -59,16 +59,15 @@ export const colorName = (lang: Lang, id: string): string => {
 export const styles: readonly CatalogStyle[] = catalog.styles;
 export const products: readonly CatalogProduct[] = catalog.products;
 
+/** ADR 0009. Product ids are permanent; this path is not. */
+export const BELTS_PATH = "/collections/vicuna-belts/";
+
 const styleById = new Map(styles.map((s) => [s.id, s]));
 const productById = new Map(products.map((p) => [p.id, p]));
 
-// ADR 0009: styles, products and fixed pages (the catalogue at /belts/shop/) share one namespace under /belts/.
-const RESERVED_BELTS_SLUGS = new Set(["shop"]);
-for (const s of styles) {
-  if (RESERVED_BELTS_SLUGS.has(s.id)) throw new Error(`Style slug "${s.id}" is reserved under /belts/`);
-}
+// ADR 0009: styles and products share one namespace under the belts collection.
 for (const p of products) {
-  if (styleById.has(p.id) || RESERVED_BELTS_SLUGS.has(p.id)) throw new Error(`Product id "${p.id}" collides with a style slug or a reserved page under /belts/`);
+  if (styleById.has(p.id)) throw new Error(`Product id "${p.id}" collides with a style slug under ${BELTS_PATH}`);
 }
 
 export function getStyle(id: string): CatalogStyle {
@@ -99,12 +98,15 @@ export const price = (id: string): string => formatEgp(getStyle(id).price);
 export const priceOfProduct = (p: CatalogProduct): string => price(p.style);
 export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.webp`;
 export const thumbOf = (p: CatalogProduct): string => `/img/products/${p.id}-480.webp`;
+/** Products that also have an on-body photo (public/img/looks/<id>-480|900.webp, 4:5). */
+const LOOKS = new Set(["classic-royal-blue", "bow-burgundy", "bow-taupe", "classic-rose", "bow-gold", "classic-green", "sash-green", "croc-pink", "classic-pink-suede"]);
+export const lookOf = (p: CatalogProduct): { thumb: string; full: string } | null =>
+  LOOKS.has(p.id) ? { thumb: `/img/looks/${p.id}-480.webp`, full: `/img/looks/${p.id}-900.webp` } : null;
 /** First product of a style, used as its cover image. */
 export const coverOf = (styleId: string): CatalogProduct => {
   const first = products.find((p) => p.style === styleId);
   if (!first) throw new Error(`Style ${styleId} has no products`);
   return first;
 };
-export const beltsUrl = (lang: Lang, slug?: string): string => langPath(lang, slug ? `/belts/${slug}/` : "/belts/");
-/** The full catalogue (every belt, with filters). `/belts/` itself is the belts landing page. */
-export const shopUrl = (lang: Lang): string => langPath(lang, "/belts/shop/");
+/** The belts collection: one full page (story and every belt), with styles and products under it. */
+export const beltsUrl = (lang: Lang, slug?: string): string => langPath(lang, slug ? `${BELTS_PATH}${slug}/` : BELTS_PATH);

@@ -48,7 +48,8 @@ describe("policy pages", () => {
     }
     for (const lang of LANGS) {
       const terms = getPolicy("terms", lang).html;
-      assert.match(terms, /25%[\s\S]*35%/);
+      assert.match(terms, lang === "ar" ? /كود الخصم/ : /promo code/i);
+      assert.doesNotMatch(terms, /25%|35%/, "the multi-belt offer was withdrawn");
       assert.ok(terms.includes(site.commercialRegister));
       assert.ok(site.taxNumber && terms.includes(site.taxNumber));
       assert.ok(terms.includes(site.consumerAgency.hotline));

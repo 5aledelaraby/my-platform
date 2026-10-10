@@ -1,18 +1,15 @@
 ---
-// Vicuna seal: a line-drawn bow inside a ring, with the VICUNA wordmark and the Arabic name under it.
-interface Props { size?: number; sub?: string }
-const { size = 40, sub = "فيكونا" } = Astro.props;
-const bow =
-  '<path fill="none" stroke="var(--berry)" stroke-width="4.4" stroke-linejoin="round" d="M50 50C38 30 16 24 14 38C12 52 34 56 50 50ZM50 50C62 30 84 24 86 38C88 52 66 56 50 50Z"/>' +
-  '<rect x="44" y="44" width="12" height="12" rx="3.5" fill="var(--berry)"/>' +
-  '<path d="M47 56C42 66 36 74 30 82M53 56C58 66 64 74 70 82" fill="none" stroke="var(--berry)" stroke-width="4.4" stroke-linecap="round"/>';
-const seal = `<circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="7"/><g transform="translate(34 30) scale(1.32)">${bow}</g>`;
+// Vicuna logo (owner's new mark, 2026-10-10): the navy V with the vicuña and a gold stripe, beside the wordmark.
+// The mark is a transparent PNG cut from the owner's file; replace it with an SVG when the designer sends one.
+interface Props { size?: number }
+const { size = 40 } = Astro.props;
+const w = Math.round((size * 268) / 242);
 ---
 
 <span class="logo">
-  <svg class="logo-mark" width={size} height={size} viewBox="0 0 200 200" aria-hidden="true" set:html={seal} />
-  <span class="logo-word">
-    <span class="logo-en" lang="en">VICUNA</span>
-    <span class="logo-ar">{sub}</span>
+  <img class="logo-mark" src="/brand/vicuna-mark-96.png" srcset="/brand/vicuna-mark-96.png 1x, /brand/vicuna-mark-192.png 2x" width={w} height={size} alt="" decoding="async" />
+  <span class="logo-word" lang="en">
+    <span class="logo-en">VICUNA</span>
+    <span class="logo-sub">DESIGNS</span>
   </span>
 </span>

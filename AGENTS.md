@@ -27,6 +27,8 @@ pnpm test                        # node:test, no extra deps
 pnpm check:boundaries            # architecture rules
 ```
 
+`pnpm typecheck` and `pnpm build` run through Turborepo (`turbo.json`): packages in parallel, results cached in `.turbo/` (CI keeps that cache between runs). The build cache key includes `DEPLOY_ENV` and the root `content/` folder; add any new input outside a package to `globalDependencies`. `typecheck` depends on the `transit` node so a change in a workspace package invalidates the typecheck of every package that imports it; keep that link for any new task without outputs that reads other packages' source. Tests and lint stay plain root commands on purpose: they take seconds and always run in full.
+
 ## Architecture rules (enforced by `tools/architecture/check-boundaries.mjs` in CI)
 
 - `commerce`, `seo`, `content` import no UI framework and no other internal package.
@@ -39,9 +41,9 @@ pnpm check:boundaries            # architecture rules
 
 ## Site structure (ADR 0009)
 
-- Three levels, as the owner asked: `/` is a short brand introduction with cards for the brand's sections; `/belts/` is the belts landing page (moving hero, styles, perks, craft, FAQ); `/belts/shop/` is the catalogue with every belt and the filters. `/` and `/belts/` never contain the product grid or cart-building UI.
-- The store lives under `/belts/` (`/belts/`, `/belts/shop/`, `/belts/<style>/`, `/belts/<product-id>/`). `shop` is a reserved slug there. Other areas get their own top-level section and are only linked from `/`.
-- Ads, Merchant Center and product keywords point to `/belts/...`, never to `/`.
+- Two levels, as the owner asked (2026-10-10): `/` is a short brand introduction with cards for the brand's sections; `/collections/vicuna-belts/` is one full belts page (moving hero, style shortcuts, perks, every belt with the colour filter, how to tie, craft, FAQ). `/` never contains the product grid or cart-building UI.
+- The store lives under `/collections/vicuna-belts/` (the page itself, `<style>/`, `<product-id>/`); the path is `BELTS_PATH` in `store.ts`. Articles live under `/journal/style-guides/` (`JOURNAL_PATH` in `site.ts`). No redirects from the old site (clean start). Other areas get their own top-level section and are only linked from `/`.
+- Ads, Merchant Center and product keywords point to `/collections/vicuna-belts/...`, never to `/`.
 
 ## Commerce rules
 
@@ -49,6 +51,7 @@ pnpm check:boundaries            # architecture rules
 - Discount and totals logic exists **only** in `@platform/commerce`. The cart and the order API both call it. Never trust a price sent by the client: the API recomputes everything from the catalogue.
 - WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. The order API (`apps/api`, ADR 0008) exists, with inventory and an owner-only admin on its own hostname `admin.vicuna-eg.com` (ADR 0010; never serve admin on the store's hostname). Online payment is NOT built; do not build it, or abstractions for it, until the owner asks. Never expose order reads without authentication (orders contain customers' personal data): every admin route goes through the Access JWT check in `apps/api/src/access.ts`.
 - Stock rules live in `@platform/commerce` (`inventory.ts`); the database enforces "never below zero". A new migration must be applied to D1 before the code that needs it is pushed.
+- Belts are sold at full price: the multi-belt offer was withdrawn (2026-10-09). The only discount is a promo code (ADR 0011): a fixed amount off the belts, one per order, created by the owner in the admin; rules in `@platform/commerce` (`promo.ts`), checked again by the API when the order is stored.
 - Orders keep a snapshot of names, unit prices and totals (piasters) as of creation time. The catalogue lives in `packages/commerce/data/catalog.json`; product ids are permanent.
 - Product `id` is permanent. A `slug` may change only together with a 301 redirect entry (ADR 0004).
 
@@ -71,7 +74,7 @@ pnpm check:boundaries            # architecture rules
 - Regular belts are **"جلد PU"**. Never write "جلد طبيعي" for them. Natural leather appears only for the bespoke/custom service.
 - No Fendi / FF-logo belts. No third-party photos without rights. No invented reviews, ratings, sales counts or testimonials.
 - Site language is Arabic (RTL) with Latin digits (0-9).
-- Palette: white `#FFFFFF`, berry `#C8102E`, near-black `#161616`.
+- Palette and look (owner, 2026-10-10): white ground, near-black `#161616` type and buttons, thin lines, square corners, no shadows or decorative sparkles. Berry `#C8102E` is only a small accent on the belts pages (prices, chips); pages that are not about the belts use `theme="neutral"` on `Base` (no red at all). Logo (2026-10-10): navy `#152245` V-and-vicuña mark with a gold stripe, wordmark "VICUNA DESIGNS" (`ui/Logo.astro`, `public/brand/`). Editorial photos live in `public/img/editorial/`, product films in `public/video/` (muted, looping, with a poster).
 
 ## Security rules
 

@@ -5,7 +5,7 @@
 - القواعد لأي مبرمج أو AI: [`AGENTS.md`](AGENTS.md)
 - قرارات المعمارية: [`architecture/adr/`](architecture/adr)
 - جرد ما سيتم نقله من الموقع القديم: [`MIGRATION.md`](MIGRATION.md)
-- هيكل الموقع (الرئيسية تعريف، المتجر `/belts/`): [`ADR 0009`](architecture/adr/0009-homepage-is-brand-introduction.md)
+- هيكل الموقع (الرئيسية تعريف، المتجر `/collections/vicuna-belts/`): [`ADR 0009`](architecture/adr/0009-homepage-is-brand-introduction.md)
 - خريطة التوسع (كل مجال مستقبلي: أين يعيش ومتى يتبني): [`architecture/ROADMAP.md`](architecture/ROADMAP.md)
 - إزاي تضيف أي حاجة جديدة: [`architecture/HOW-TO-ADD.md`](architecture/HOW-TO-ADD.md)
 
@@ -13,12 +13,12 @@
 
 | الجزء | الحالة |
 |---|---|
-| `packages/commerce` (فلوس، خصم، إجماليات السلة) | جاهز ومختبر (مطابق لمنطق الموقع القديم) |
+| `packages/commerce` (فلوس، أكواد الخصم، إجماليات السلة، المخزون) | جاهز ومختبر |
 | `packages/seo` (canonical، robots، sitemap، JSON-LD) | جاهز ومختبر |
 | `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
 | `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
 | `apps/api` (إنشاء الطلبات، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1 (`apps/api/README.md`) |
-| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/belts/` (6 تصاميم و38 منتج) عربي/إنجليزي، المقالات `/blog/`، السلة، صفحات الشكر. منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) |
+| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (6 تصاميم و38 منتج) عربي/إنجليزي، المقالات `/blog/`، السلة، صفحات الشكر. منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) |
 | حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
 
 ## تشغيل المشروع (أول مرة)
@@ -53,7 +53,7 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers.
 2. اختبار الطلب كامل على `staging.vicuna-eg.com` (السلة ثم الـ API ثم D1 ثم صفحة الشكر).
 3. قبل تحويل الدومين: فصل قاعدة بيانات التجربة عن الإنتاج. القائمة الكاملة في `MIGRATION.md`.
-4. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. تحويلات 301 من روابط الموقع القديم جاهزة في `apps/website/public/_redirects`.
+4. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. قرار المالك: بداية نظيفة من غير أي تحويلات من روابط الموقع القديم.
 5. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
 
 ## قاعدة أمان

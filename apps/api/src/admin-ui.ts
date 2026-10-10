@@ -18,6 +18,7 @@ export const ADMIN_HTML = `<!doctype html>
   <nav class="tabs" role="tablist">
     <button type="button" role="tab" data-tab="orders" aria-selected="true">الطلبات</button>
     <button type="button" role="tab" data-tab="stock" aria-selected="false">المخزون</button>
+    <button type="button" role="tab" data-tab="promos" aria-selected="false">أكواد الخصم</button>
   </nav>
 </header>
 <main>
@@ -42,6 +43,20 @@ export const ADMIN_HTML = `<!doctype html>
     <p class="hint">اكتب الكمية <b>المتاحة للبيع</b> واضغط حفظ: يعني اللي على الرف ناقص "المحجوز" (طلبات لسه ما اتشحنتش، وكميتها اتخصمت خلاص). الخانة الفاضية = المنتج غير محدود (مش متتبع). الصفر = نفدت الكمية.</p>
     <p id="stock-msg" class="msg" role="status"></p>
     <div id="stock-list"></div>
+  </section>
+  <section id="promos-view" hidden>
+    <form id="promo-form" class="card promo-form" novalidate>
+      <h2>كود جديد</h2>
+      <label>الكود (حروف إنجليزي وأرقام)<input name="code" maxlength="20" autocomplete="off" autocapitalize="characters" dir="ltr" required></label>
+      <label>الخصم بالجنيه<input name="amount" type="number" inputmode="numeric" min="1" step="1" dir="ltr" required></label>
+      <label>أقل قيمة للأحزمة بالجنيه (اختياري)<input name="minSubtotal" type="number" inputmode="numeric" min="0" step="1" dir="ltr"></label>
+      <label>عدد مرات الاستخدام (اختياري)<input name="maxUses" type="number" inputmode="numeric" min="1" step="1" dir="ltr"></label>
+      <label>آخر يوم للكود (اختياري)<input name="expiresAt" id="promo-expires" type="date" dir="ltr"></label>
+      <button type="submit" class="btn">إضافة الكود</button>
+      <p id="promo-form-msg" class="msg" role="status"></p>
+    </form>
+    <p id="promos-msg" class="msg" role="status"></p>
+    <div id="promos-list"></div>
   </section>
 </main>
 <script src="/app.js"></script>
@@ -83,6 +98,11 @@ button { font: inherit; cursor: pointer; color: var(--ink); }
 .stock-row { display: grid; grid-template-columns: 1fr 96px auto; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .stock-row input { text-align: center; direction: ltr; }
 .out { color: var(--berry); font-weight: 700; font-size: .85rem; }
+.promo-form { display: grid; gap: 10px; }
+.promo-form h2 { font-size: 1rem; margin: 0; }
+.promo-form label { display: grid; gap: 4px; font-size: .9rem; color: var(--muted); }
+.code { font-weight: 800; direction: ltr; letter-spacing: .04em; }
+.off { opacity: .55; }
 [hidden] { display: none !important; }
 `;
 
@@ -132,6 +152,7 @@ export const ADMIN_JS = `
         if (!res.ok) {
           var err = new Error(data && data.error ? data.error : "http_" + res.status);
           err.status = res.status;
+          err.data = data;
           throw err;
         }
         return data;
@@ -146,6 +167,8 @@ export const ADMIN_JS = `
     if (code === "forbidden") return "مش مسموح. سجّل الدخول من تاني.";
     if (code === "admin_not_configured") return "صفحة الإدارة لسه مش مفعلة.";
     if (code === "invalid_quantity") return "الكمية لازم تكون رقم صحيح من 0 أو أكثر، أو فاضية.";
+    if (code === "promo_exists") return "الكود ده اتعمل قبل كده. اختار اسم تاني (الأكواد القديمة مش بتتمسح).";
+    if (code === "validation_failed") return "راجع الخانات المعلّمة.";
     return "حصل خطأ، جرب تاني. (" + code + ")";
   }
 
@@ -206,7 +229,7 @@ export const ADMIN_JS = `
       box.append(el("div", null, "- " + i.name + " (" + i.productId + ") × " + i.quantity + " = " + money(i.lineTotal)));
     });
     var t = order.totals;
-    box.append(el("div", "muted", "الأحزمة " + money(t.subtotal) + (t.discount ? " · خصم " + money(t.discount) : "") +
+    box.append(el("div", "muted", "الأحزمة " + money(t.subtotal) + (t.discount ? " · خصم " + money(t.discount) + (order.promoCode ? " (كود " + order.promoCode + ")" : "") : "") +
       " · شحن " + (SHIP[order.shippingMethod] || order.shippingMethod) + " " + (t.shipping ? money(t.shipping) : "مجاني")));
     box.append(el("b", null, "الإجمالي " + money(t.total) + " · " + (PAY[order.paymentMethod] || order.paymentMethod)));
     var actions = el("div", "actions");
@@ -312,6 +335,103 @@ export const ADMIN_JS = `
     });
   }
 
+  // ---------------- promo codes
+  var promosList = document.getElementById("promos-list");
+  var promosMsg = document.getElementById("promos-msg");
+  var promoForm = document.getElementById("promo-form");
+  var promoFormMsg = document.getElementById("promo-form-msg");
+  var promosLoaded = false;
+  var FIELD = { code: "الكود", amount: "الخصم", minSubtotal: "أقل قيمة", maxUses: "عدد المرات", expiresAt: "آخر يوم" };
+
+  try { document.getElementById("promo-expires").min = new Date().toISOString().slice(0, 10); } catch (e) { /* older browsers */ }
+
+  function loadPromos() {
+    promosLoaded = true;
+    promosMsg.textContent = "";
+    call("GET", "/promos").then(function (data) {
+      promosList.replaceChildren();
+      if (!data.promos.length) promosList.append(el("p", "muted", "مفيش أكواد لسه."));
+      data.promos.forEach(function (p) { promosList.append(promoCard(p)); });
+    }).catch(function (err) { promosMsg.textContent = explain(err); });
+  }
+
+  function cairoOffsetHours(date) {
+    try {
+      var part = new Intl.DateTimeFormat("en-US", { timeZone: "Africa/Cairo", timeZoneName: "shortOffset" })
+        .formatToParts(date).filter(function (x) { return x.type === "timeZoneName"; })[0];
+      var m = /GMT([+-]\\d+)/.exec(part ? part.value : "");
+      return m ? Number(m[1]) : 2;
+    } catch (e) { return 2; }
+  }
+  function cairoMidnightAfter(day) {
+    var next = new Date(day + "T00:00:00Z");
+    next.setUTCDate(next.getUTCDate() + 1);
+    // Midnight in Cairo = UTC midnight minus Cairo's offset at that instant (checked twice around a DST change).
+    var guess = new Date(next.getTime() - cairoOffsetHours(next) * 3600000);
+    return new Date(next.getTime() - cairoOffsetHours(guess) * 3600000).toISOString();
+  }
+  function lastDay(iso) {
+    try {
+      return new Intl.DateTimeFormat("ar-EG-u-nu-latn", { dateStyle: "medium", timeZone: "Africa/Cairo" }).format(new Date(Date.parse(iso) - 1));
+    } catch (e) { return iso; }
+  }
+
+  function promoCard(p) {
+    var card = el("article", "card" + (p.active ? "" : " off"));
+    var head = el("div", "row");
+    head.append(el("span", "code", p.code), el("b", null, "خصم " + money(p.amount)));
+    var rules = [];
+    if (p.minSubtotal) rules.push("لطلبات من " + money(p.minSubtotal));
+    rules.push("استُخدم " + p.used + (p.maxUses ? " من " + p.maxUses : "") + " مرة");
+    if (p.expiresAt) rules.push("آخر يوم " + lastDay(p.expiresAt));
+    var info = el("div", "muted", rules.join(" · "));
+    var toggle = el("button", p.active ? "danger" : "ghost", p.active ? "إيقاف الكود" : "تشغيل الكود");
+    toggle.type = "button";
+    toggle.addEventListener("click", function () {
+      toggle.disabled = true;
+      call("PUT", "/promos/" + encodeURIComponent(p.code), { active: !p.active })
+        .then(function () { loadPromos(); })
+        .catch(function (err) { toggle.disabled = false; promosMsg.textContent = explain(err); });
+    });
+    var actions = el("div", "actions");
+    actions.append(toggle);
+    var expired = p.expiresAt && Date.parse(p.expiresAt) <= Date.now();
+    var usedUp = p.maxUses && p.used >= p.maxUses;
+    var state = !p.active ? "متوقف" : expired ? "انتهت مدته" : usedUp ? "خلص عدد مرات استخدامه" : "شغال";
+    card.append(head, info, el("div", "muted", state), actions);
+    return card;
+  }
+
+  promoForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    promoFormMsg.textContent = "";
+    var f = promoForm.elements;
+    var num = function (v) { return v.trim() === "" ? null : Number(v); };
+    var amount = num(f.amount.value);
+    var min = num(f.minSubtotal.value);
+    var uses = num(f.maxUses.value);
+    // The code works until the end of the chosen day in Cairo (the owner's phone may be in another time zone).
+    var expires = f.expiresAt.value ? cairoMidnightAfter(f.expiresAt.value) : null;
+    var payload = {
+      code: f.code.value,
+      amount: amount === null ? null : Math.round(amount * 100),
+      minSubtotal: min === null ? 0 : Math.round(min * 100),
+      maxUses: uses,
+      expiresAt: expires
+    };
+    if (amount !== null && amount >= 150 && !window.confirm("الكود ده هيخصم " + amount + " جنيه من كل طلب. متأكد؟")) return;
+    var button = promoForm.querySelector("button[type=submit]");
+    button.disabled = true;
+    call("POST", "/promos", payload).then(function () {
+      promoForm.reset();
+      promoFormMsg.textContent = "اتضاف ✓";
+      loadPromos();
+    }).catch(function (err) {
+      var detail = err && err.data && err.data.errors ? Object.keys(err.data.errors).map(function (k) { return FIELD[k] || k; }).join("، ") : "";
+      promoFormMsg.textContent = explain(err) + (detail ? " (" + detail + ")" : "");
+    }).then(function () { button.disabled = false; });
+  });
+
   // ---------------- tabs
   document.querySelectorAll("[data-tab]").forEach(function (tab) {
     tab.addEventListener("click", function () {
@@ -319,7 +439,9 @@ export const ADMIN_JS = `
       document.querySelectorAll("[data-tab]").forEach(function (t) { t.setAttribute("aria-selected", String(t === tab)); });
       document.getElementById("orders-view").hidden = name !== "orders";
       document.getElementById("stock-view").hidden = name !== "stock";
+      document.getElementById("promos-view").hidden = name !== "promos";
       if (name === "stock" && !stockLoaded) loadStock();
+      if (name === "promos" && !promosLoaded) loadPromos();
     });
   });
 

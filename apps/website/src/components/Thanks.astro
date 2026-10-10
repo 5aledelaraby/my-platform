@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
-import { langPath, site } from "../site.ts";
+import { site } from "../site.ts";
+import { beltsUrl } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -19,7 +20,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
     <p id="t-instapay" hidden>{ar ? `للدفع بـ InstaPay حوّلي المبلغ على ${site.instapay} وابعتي لنا صورة التحويل على واتساب مع رقم الطلب.` : `To pay by InstaPay, transfer the amount to ${site.instapay} and send us the receipt on WhatsApp with your order number.`}</p>
     <p class="muted">{ar ? `هنتواصل معاكي لتأكيد الطلب، والتوصيل بياخد حوالي ${site.deliveryDays} أيام عمل.` : `We will contact you to confirm, and delivery takes about ${site.deliveryDays} working days.`}</p>
     <div class="hero-actions">
-      <a class="btn" href={langPath(lang, "/belts/shop/")}>{ar ? "كملي تسوق" : "Keep shopping"}</a>
+      <a class="btn" href={beltsUrl(lang)}>{ar ? "كملي تسوق" : "Keep shopping"}</a>
       <a class="btn ghost" id="t-wa" href={wa} rel="noopener noreferrer">{ar ? "كلمينا على واتساب" : "Chat on WhatsApp"}</a>
     </div>
   </div>
