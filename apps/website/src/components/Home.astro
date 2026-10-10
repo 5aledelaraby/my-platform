@@ -43,7 +43,8 @@ const sections: Section[] = [
 
 <section class="intro-hero">
   <figure class="intro-cover">
-    <video src="/video/home.mp4" poster="/video/home.webp" autoplay muted loop playsinline preload="metadata" aria-hidden="true" width="540" height="982"></video>
+    <video id="home-film" src="/video/home.mp4" poster="/video/home.webp" autoplay muted loop playsinline preload="metadata" width="540" height="982"></video>
+    <button type="button" class="film-sound" data-film-sound aria-pressed="false">{ar ? "تشغيل الصوت" : "Sound on"}</button>
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
@@ -90,3 +91,19 @@ const sections: Section[] = [
   <ContactCards lang={lang} compact />
   <p><a class="textlink" href={langPath(lang, "/contact/")}>{ar ? "كل طرق التواصل" : "All the ways to reach us"}</a></p>
 </section>
+
+<script>
+  // Browsers only autoplay muted video; the visitor turns the sound on with this button.
+  const film = document.getElementById("home-film") as HTMLVideoElement | null;
+  const sound = document.querySelector<HTMLButtonElement>("[data-film-sound]");
+  if (film && sound) {
+    const on = document.documentElement.lang === "ar" ? "إيقاف الصوت" : "Sound off";
+    const off = sound.textContent ?? "";
+    sound.addEventListener("click", () => {
+      film.muted = !film.muted;
+      if (!film.muted) void film.play();
+      sound.setAttribute("aria-pressed", String(!film.muted));
+      sound.textContent = film.muted ? off : on;
+    });
+  }
+</script>
