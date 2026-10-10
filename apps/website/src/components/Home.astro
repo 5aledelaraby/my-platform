@@ -14,8 +14,8 @@ const customWa = `https://wa.me/${site.whatsappInternational}?text=${encodeURICo
 
 // Design, craft and service in one short line (the owner asked for one sentence, in smaller type).
 const valuesLine = ar
-  ? "خطوط بسيطة وألوان هادئة، وصنعة يدوية نراجع فيها كل قطعة، وفريق يرد على أسئلتكِ بنفسه ويوصّل إلى كل محافظات مصر."
-  : "Simple lines and calm colours, handmade pieces we check one by one, and a team that answers you itself and delivers across Egypt.";
+  ? "تصميم بسيط، وتنفيذ متقن نراجع فيه كل تفصيلة، وفريق يرد على أسئلتكِ بنفسه."
+  : "Simple design, careful execution checked detail by detail, and a team that answers you itself.";
 
 interface Section { title: string; text: string; href: string; external?: boolean }
 const sections: Section[] = [
@@ -52,8 +52,8 @@ const sections: Section[] = [
     <h2>{ar ? "من نحن" : "About us"}</h2>
     <p>
       {ar
-        ? `${site.legalNameAr} علامة مصرية مقرها القاهرة. نؤمن بأن القطعة الجيدة تبدأ من تصميم واضح وخامة مختارة وصنعة متأنية، ولهذا نصنع منتجاتنا بأيدينا ونراجع كل قطعة قبل أن تصل إليكِ.`
-        : `${site.legalNameEn} is an Egyptian brand based in Cairo. We believe a good piece starts with a clear design, a chosen material and patient craft, so we make our products by hand and check every piece before it reaches you.`}
+        ? "فيكونا ديزاينز علامة مصرية مقرها القاهرة، نعمل في التصميم بأشكاله المختلفة: من المنتجات والإكسسوارات المصنوعة يدويًا، إلى تصميم المواقع الإلكترونية وبنائها. نؤمن بأن العمل الجيد يبدأ من فكرة واضحة وتنفيذ متقن، ونهتم بالتفاصيل في كل ما نقدمه."
+        : "Vicuna Designs is an Egyptian brand based in Cairo. We work across design: from handmade products and accessories to designing and building websites. We believe good work starts with a clear idea and careful execution, and we care about the details in everything we make."}
     </p>
     <p class="intro-values-line">{valuesLine}</p>
   </div>
