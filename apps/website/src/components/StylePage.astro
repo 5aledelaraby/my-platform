@@ -5,7 +5,7 @@ import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
 import Stories from "./Stories.astro";
 import Icon from "./ui/Icon.astro";
-import { beltsUrl, coverOf, imageOf, price, productsOfStyle, styleText, thumbOf } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, hasHigherPrices, price, productsOfStyle, styleText, thumbOf } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -16,9 +16,10 @@ const t = styleText(lang, styleId);
 const list = productsOfStyle(styleId);
 const cur = ar ? "جنيه" : "EGP";
 const title = ar ? `${t.name} | أحزمة خصر نسائية | فيكونا` : `${t.name} waist belts | Vicuna`;
+const from = hasHigherPrices(styleId);
 const description = ar
-  ? `${t.headline}. ${list.length} لون بسعر ${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
-  : `${t.headline}. ${list.length} colours at ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
+  ? `${t.headline}. ${list.length} لون بسعر ${from ? "يبدأ من " : ""}${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
+  : `${t.headline}. ${list.length} colours ${from ? "from" : "at"} ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
   { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
@@ -38,11 +39,11 @@ const jsonLd = serializeJsonLd(
     <div class="page-hero-box style-hero">
       <div>
         <Breadcrumbs items={crumbs} />
-        <h1>{ar ? <>أحزمة <span class="accent">{t.name}</span></> : <><span class="accent">{t.name}</span> belts</>}</h1>
+        <h1>{ar ? <>حزام <span class="accent">{t.name}</span></> : <><span class="accent">{t.name}</span> belts</>}</h1>
         <p class="hero-sub">{t.headline}</p>
         <p class="lead">{t.intro}</p>
         <div class="hero-actions">
-          <span class="price-pill">{price(styleId)} <small>{cur}</small></span>
+          <span class="price-pill">{from && <small>{ar ? "من" : "from"}</small>} {price(styleId)} <small>{cur}</small></span>
           <a class="btn btn-berry btn-shine" href="#colours">{ar ? "شوفي الألوان" : "See the colours"} <Icon name="arrow" size={18} class="dir-icon" /></a>
         </div>
       </div>

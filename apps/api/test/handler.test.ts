@@ -283,7 +283,7 @@ describe("d1Repository", () => {
     id: "V-1009-AAAAA", createdAt: NOW.toISOString(), status: "new",
     customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "عنوان طويل بما يكفي" },
     items: [
-      { productId: "bow-gold", name: "فيونكة دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
+      { productId: "bow-gold", name: "رباط عريض دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
       { productId: "lace-black", name: "دانتيل أسود", unitPrice: 30000, quantity: 1, lineTotal: 30000 },
     ],
     shippingMethod: "standard", paymentMethod: "cod",
@@ -298,7 +298,7 @@ describe("d1Repository", () => {
     assert.equal(calls[0]?.values[7], null);
     assert.equal(calls[0]?.values.length, 18);
     assert.equal(calls[0]?.values[17], null, "no promo code");
-    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "bow-gold", "فيونكة دهبي", 20000, 2, 40000, "bow-gold"]);
+    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "bow-gold", "رباط عريض دهبي", 20000, 2, 40000, "bow-gold"]);
     assert.match(calls[3]?.sql ?? "", /UPDATE inventory SET quantity = quantity - \?/);
     assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "bow-gold"]);
   });

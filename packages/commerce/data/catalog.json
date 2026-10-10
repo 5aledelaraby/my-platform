@@ -6,42 +6,28 @@
       "name": "دانتيل",
       "price": 30000,
       "headline": "حزام دانتيل من جلد PU",
-      "intro": "دانتيل مطرّز على بطانة من جلد PU، يُربط بشريط رفيع."
+      "intro": "دانتيل مطرّز على بطانة من جلد PU، يُربط برباط رفيع."
     },
     {
-      "id": "wide-bow",
-      "name": "فيونكة عريضة",
+      "id": "wide-tie",
+      "name": "عريض برباط عريض",
       "price": 20000,
-      "headline": "حزام فيونكة عريضة من جلد PU",
-      "intro": "جلد PU بليكرا ناعم يلتف حول الخصر ويُربط بفيونكة كبيرة أو عقدة."
+      "headline": "حزام عريض برباط عريض من جلد PU",
+      "intro": "حزام عريض من جلد PU بليكرا ناعم، برباط عريض يلتف حول الخصر ويُربط بالشكل اللي يعجبك: فيونكة أو عقدة أو جدلة."
     },
     {
       "id": "thin-tie",
-      "name": "شريط رفيع",
+      "name": "عريض برباط رفيع",
       "price": 12000,
-      "headline": "حزام بشريط رفيع من جلد PU",
-      "intro": "حزام عريض بشريط رفيع يُربط بفيونكة صغيرة، من جلد PU بليكرا ناعم."
-    },
-    {
-      "id": "croc",
-      "name": "كروكو",
-      "price": 20000,
-      "headline": "حزام كروكو من جلد PU",
-      "intro": "نقشة كروكو على جلد PU، بشريط رفيع للربط."
-    },
-    {
-      "id": "snake",
-      "name": "ثعبان",
-      "price": 20000,
-      "headline": "حزام ثعبان من جلد PU",
-      "intro": "نقشة ثعبان على جلد PU، بشريط رفيع للربط."
+      "headline": "حزام عريض برباط رفيع من جلد PU",
+      "intro": "حزام عريض من جلد PU برباط رفيع يُضبط على مقاس الخصر. سادة أو بنقشة كروكو أو ثعبان."
     },
     {
       "id": "ruffle",
       "name": "كشكشة",
       "price": 20000,
       "headline": "حزام كشكشة من جلد PU",
-      "intro": "حزام بكشكشة من الأعلى والأسفل وشريط يُربط في المنتصف."
+      "intro": "حزام بكشكشة من الأعلى والأسفل ورباط يُربط في المنتصف."
     }
   ],
   "colors": [
@@ -139,111 +125,111 @@
     },
     {
       "id": "bow-white",
-      "name": "فيونكة أبيض",
-      "style": "wide-bow",
+      "name": "رباط عريض أبيض",
+      "style": "wide-tie",
       "color": "white",
       "hex": "#F4F2EF",
       "texture": "smooth"
     },
     {
       "id": "bow-silver",
-      "name": "فيونكة فضي",
-      "style": "wide-bow",
+      "name": "رباط عريض فضي",
+      "style": "wide-tie",
       "color": "grey",
       "hex": "#C9D2DC",
       "texture": "smooth"
     },
     {
       "id": "bow-gold",
-      "name": "فيونكة دهبي",
-      "style": "wide-bow",
+      "name": "رباط عريض دهبي",
+      "style": "wide-tie",
       "color": "gold",
       "hex": "#D8C18E",
       "texture": "smooth"
     },
     {
       "id": "bow-mustard",
-      "name": "فيونكة مسطردة",
-      "style": "wide-bow",
+      "name": "رباط عريض مسطردة",
+      "style": "wide-tie",
       "color": "yellow",
       "hex": "#E2A93A",
       "texture": "smooth"
     },
     {
       "id": "bow-burgundy",
-      "name": "فيونكة عنابي",
-      "style": "wide-bow",
+      "name": "رباط عريض عنابي",
+      "style": "wide-tie",
       "color": "red",
       "hex": "#7E2632",
       "texture": "smooth"
     },
     {
       "id": "bow-taupe",
-      "name": "فيونكة بني فاتح",
-      "style": "wide-bow",
+      "name": "رباط عريض بني فاتح",
+      "style": "wide-tie",
       "color": "brown",
       "hex": "#9A6B52",
       "texture": "smooth"
     },
     {
       "id": "sash-red",
-      "name": "فيونكة أحمر",
-      "style": "wide-bow",
+      "name": "رباط عريض أحمر",
+      "style": "wide-tie",
       "color": "red",
       "hex": "#C33A40",
       "texture": "smooth"
     },
     {
       "id": "sash-black",
-      "name": "فيونكة أسود",
-      "style": "wide-bow",
+      "name": "رباط عريض أسود",
+      "style": "wide-tie",
       "color": "black",
       "hex": "#1E1E22",
       "texture": "smooth"
     },
     {
       "id": "sash-blush",
-      "name": "فيونكة بينك فاتح",
-      "style": "wide-bow",
+      "name": "رباط عريض بينك فاتح",
+      "style": "wide-tie",
       "color": "pink",
       "hex": "#EBC9C2",
       "texture": "smooth"
     },
     {
       "id": "sash-green",
-      "name": "فيونكة أخضر",
-      "style": "wide-bow",
+      "name": "رباط عريض أخضر",
+      "style": "wide-tie",
       "color": "green",
       "hex": "#3E9B3A",
       "texture": "smooth"
     },
     {
       "id": "sash-cognac",
-      "name": "فيونكة كونياك",
-      "style": "wide-bow",
+      "name": "رباط عريض كونياك",
+      "style": "wide-tie",
       "color": "brown",
       "hex": "#A8613F",
       "texture": "smooth"
     },
     {
       "id": "sash-brown",
-      "name": "فيونكة بني غامق",
-      "style": "wide-bow",
+      "name": "رباط عريض بني غامق",
+      "style": "wide-tie",
       "color": "brown",
       "hex": "#4A2E2B",
       "texture": "smooth"
     },
     {
       "id": "twist-grey",
-      "name": "فيونكة رمادي مجدول",
-      "style": "wide-bow",
+      "name": "رباط عريض رمادي",
+      "style": "wide-tie",
       "color": "grey",
       "hex": "#7D8592",
       "texture": "smooth"
     },
     {
       "id": "classic-white",
-      "name": "شريط رفيع أبيض",
+      "name": "رباط رفيع أبيض",
       "style": "thin-tie",
       "color": "white",
       "hex": "#F4F2EF",
@@ -251,7 +237,7 @@
     },
     {
       "id": "classic-red",
-      "name": "شريط رفيع أحمر",
+      "name": "رباط رفيع أحمر",
       "style": "thin-tie",
       "color": "red",
       "hex": "#C9252C",
@@ -259,7 +245,7 @@
     },
     {
       "id": "classic-rose",
-      "name": "شريط رفيع وردي غامق",
+      "name": "رباط رفيع وردي غامق",
       "style": "thin-tie",
       "color": "red",
       "hex": "#9E4A55",
@@ -267,7 +253,7 @@
     },
     {
       "id": "classic-pink-suede",
-      "name": "شريط رفيع بينك",
+      "name": "رباط رفيع بينك",
       "style": "thin-tie",
       "color": "pink",
       "hex": "#E3C3C8",
@@ -275,7 +261,7 @@
     },
     {
       "id": "classic-mustard",
-      "name": "شريط رفيع مسطردة",
+      "name": "رباط رفيع مسطردة",
       "style": "thin-tie",
       "color": "yellow",
       "hex": "#EBA92E",
@@ -283,7 +269,7 @@
     },
     {
       "id": "classic-orange-suede",
-      "name": "شريط رفيع برتقالي",
+      "name": "رباط رفيع برتقالي",
       "style": "thin-tie",
       "color": "yellow",
       "hex": "#D97A45",
@@ -291,7 +277,7 @@
     },
     {
       "id": "classic-camel-suede",
-      "name": "شريط رفيع كامل",
+      "name": "رباط رفيع كامل",
       "style": "thin-tie",
       "color": "brown",
       "hex": "#A9653F",
@@ -299,7 +285,7 @@
     },
     {
       "id": "classic-green",
-      "name": "شريط رفيع أخضر زمردي",
+      "name": "رباط رفيع أخضر زمردي",
       "style": "thin-tie",
       "color": "green",
       "hex": "#1F8A5C",
@@ -307,7 +293,7 @@
     },
     {
       "id": "classic-sky-blue",
-      "name": "شريط رفيع لبني",
+      "name": "رباط رفيع لبني",
       "style": "thin-tie",
       "color": "blue",
       "hex": "#5BC0DE",
@@ -315,7 +301,7 @@
     },
     {
       "id": "classic-royal-blue",
-      "name": "شريط رفيع أزرق ملكي",
+      "name": "رباط رفيع أزرق ملكي",
       "style": "thin-tie",
       "color": "blue",
       "hex": "#2F55A8",
@@ -323,7 +309,7 @@
     },
     {
       "id": "classic-navy",
-      "name": "شريط رفيع كحلي",
+      "name": "رباط رفيع كحلي",
       "style": "thin-tie",
       "color": "blue",
       "hex": "#24305E",
@@ -331,51 +317,57 @@
     },
     {
       "id": "croc-black",
-      "name": "كروكو أسود",
-      "style": "croc",
+      "name": "رباط رفيع كروكو أسود",
+      "style": "thin-tie",
       "color": "black",
       "hex": "#1C1C1F",
-      "texture": "croc"
+      "texture": "croc",
+      "price": 20000
     },
     {
       "id": "croc-wine",
-      "name": "كروكو عنابي",
-      "style": "croc",
+      "name": "رباط رفيع كروكو عنابي",
+      "style": "thin-tie",
       "color": "red",
       "hex": "#5A2730",
-      "texture": "croc"
+      "texture": "croc",
+      "price": 20000
     },
     {
       "id": "croc-pink",
-      "name": "كروكو بينك",
-      "style": "croc",
+      "name": "رباط رفيع كروكو بينك",
+      "style": "thin-tie",
       "color": "pink",
       "hex": "#D9A79F",
-      "texture": "croc"
+      "texture": "croc",
+      "price": 20000
     },
     {
       "id": "croc-cognac",
-      "name": "كروكو كونياك",
-      "style": "croc",
+      "name": "رباط رفيع كروكو كونياك",
+      "style": "thin-tie",
       "color": "brown",
       "hex": "#A8653C",
-      "texture": "croc"
+      "texture": "croc",
+      "price": 20000
     },
     {
       "id": "snake-grey",
-      "name": "ثعبان رمادي",
-      "style": "snake",
+      "name": "رباط رفيع ثعبان رمادي",
+      "style": "thin-tie",
       "color": "grey",
       "hex": "#9EA3A8",
-      "texture": "snake"
+      "texture": "snake",
+      "price": 20000
     },
     {
       "id": "snake-beige",
-      "name": "ثعبان بيج",
-      "style": "snake",
+      "name": "رباط رفيع ثعبان بيج",
+      "style": "thin-tie",
       "color": "gold",
       "hex": "#C9A57C",
-      "texture": "snake"
+      "texture": "snake",
+      "price": 20000
     },
     {
       "id": "ruffle-red",

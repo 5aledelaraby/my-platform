@@ -2,7 +2,8 @@
 import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { beltsUrl, coverOf, getStyle, imageOf, lookOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, lookOf, priceOfProduct, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
+import { priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
@@ -36,8 +37,8 @@ const info = ar
     ];
 const title = ar ? `${name} | حزام خصر نسائي | فيكونا` : `${name} | Women's waist belt | Vicuna`;
 const description = ar
-  ? `${name} من فيكونا بسعر ${price(product.style)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل واسترجاع خلال ${site.returnDays} يوم.`
-  : `${name} by Vicuna at ${price(product.style)} EGP. Delivery across Egypt in ${site.deliveryDays} working days, ${site.returnDays}-day returns.`;
+  ? `${name} من فيكونا بسعر ${priceOfProduct(product)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل واسترجاع خلال ${site.returnDays} يوم.`
+  : `${name} by Vicuna at ${priceOfProduct(product)} EGP. Delivery across Egypt in ${site.deliveryDays} working days, ${site.returnDays}-day returns.`;
 const url = `${site.url}${beltsUrl(lang, product.id)}`;
 const look = lookOf(product);
 const crumbs = [
@@ -54,7 +55,7 @@ const jsonLd = serializeJsonLd([
     images: [`${site.url}${imageOf(product)}`],
     sku: product.id,
     brand: "Vicuna",
-    price: Number(price(product.style)),
+    price: Number(priceOfProduct(product)),
     currency: "EGP",
     inStock: true,
   }),
@@ -93,13 +94,13 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       </figure>
     )}
     </div>
-    <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={getStyle(product.style).price}>
+    <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={priceOf(product)}>
       <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
       <h1>{name}</h1>
-      <div class="price">{price(product.style)} <small>{cur}</small></div>
+      <div class="price">{priceOfProduct(product)} <small>{cur}</small></div>
       <p class="soldout" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية حاليًا. كلمينا على واتساب نبلغك أول ما يتوفر." : "Sold out for now. Message us on WhatsApp and we will tell you when it is back."}</p>
       <p class="muted">{st.intro}</p>
-      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b>{productName(lang, product)}</b></p>
+      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b>{shadeName(lang, product)}</b></p>
       <div class="pdp-swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
         {siblings.map((sib) => (
           <a class="swatch big" href={beltsUrl(lang, sib.id)} style={`--c:${sib.hex}`} title={productName(lang, sib)} aria-label={productName(lang, sib)} aria-current={sib.id === product.id ? "true" : undefined}></a>

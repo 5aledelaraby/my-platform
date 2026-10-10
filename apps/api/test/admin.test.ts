@@ -356,7 +356,7 @@ describe("admin stock", () => {
       ((await (await handler(get("/api/stock"))).json()) as { products: Array<{ id: string; quantity: number | null; reserved: number }> }).products.find(
         (p) => p.id === "croc-black",
       );
-    assert.deepEqual(await read(), { id: "croc-black", name: "كروكو أسود", style: "croc", styleName: "كروكو", quantity: 3, reserved: 2 });
+    assert.deepEqual(await read(), { id: "croc-black", name: "رباط رفيع كروكو أسود", style: "thin-tie", styleName: "عريض برباط رفيع", quantity: 3, reserved: 2 });
     await handler(send("POST", "/api/orders/V-1009-RES01/status", { to: "confirmed", version: 0 }));
     assert.equal((await read())?.reserved, 2);
     await handler(send("POST", "/api/orders/V-1009-RES01/status", { to: "shipped", version: 1 }));

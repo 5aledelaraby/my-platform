@@ -6,7 +6,7 @@ datePublished: "2026-10-05"
 image: "/img/products/bow-mustard.webp"
 imageWidth: 900
 imageHeight: 900
-imageAlt: "حزام فيكونا فيونكة بلون الخردل"
+imageAlt: "حزام فيكونا برباط عريض بلون الخردل"
 products:
   - sash-black
   - bow-burgundy
@@ -38,8 +38,8 @@ products:
 ## الألوان: إيه اللي بيليق؟
 
 - **لون قريب من الفستان:** بيدّي شكل طويل ومتصل، مناسب لو عايزة لوك هادي.
-- **لون غامق على فستان فاتح:** بيحدد الوسط بوضوح. جربي [الفيونكة السودا](/collections/vicuna-belts/sash-black/) أو [الكحلي](/collections/vicuna-belts/classic-navy/).
-- **لون جريء:** مش ممنوع خالص. [الفيونكة العنابي](/collections/vicuna-belts/bow-burgundy/) أو [المسطردة](/collections/vicuna-belts/bow-mustard/) على لبس سادة بيعملوا لوك واثق جدًا.
+- **لون غامق على فستان فاتح:** بيحدد الوسط بوضوح. جربي [الحزام الأسود برباط عريض](/collections/vicuna-belts/sash-black/) أو [الكحلي](/collections/vicuna-belts/classic-navy/).
+- **لون جريء:** مش ممنوع خالص. [الرباط العريض العنابي](/collections/vicuna-belts/bow-burgundy/) أو [المسطردة](/collections/vicuna-belts/bow-mustard/) على لبس سادة بيعملوا لوك واثق جدًا.
 
 ## 4 لوكات مجرّبة
 
