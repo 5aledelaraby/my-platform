@@ -6,8 +6,8 @@ import Logo from "./ui/Logo.astro";
 import { JOURNAL_PATH, langPath } from "../site.ts";
 import type { Lang } from "../site.ts";
 
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props { lang: Lang; altHref: string }
+const { lang, altHref } = Astro.props;
 const ar = lang === "ar";
 const home = langPath(lang, "/");
 ---
@@ -20,10 +20,11 @@ const home = langPath(lang, "/");
     <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo /></a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
       <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
-      <a class="nav-pill" href={JOURNAL_PATH}>{ar ? "المقالات" : "Style guides"}</a>
+      {ar && <a class="nav-pill" href={JOURNAL_PATH}>المقالات</a>}
       <a class="nav-pill" href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a>
     </nav>
     <div class="header-end">
+      <a class="lang-switch" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"} aria-label={ar ? "English" : "العربية"}>{ar ? "EN" : "ع"}</a>
       <button type="button" class="bag-btn" data-open-cart aria-label={ar ? "السلة" : "Cart"}>
         <span class="bag-shine"><Icon name="bag" size={22} /></span>
         <span class="count-badge" data-cart-count hidden>0</span>
@@ -42,7 +43,7 @@ const home = langPath(lang, "/");
     <ul class="menu-list">
       <li><a href={home}>{ar ? "الرئيسية" : "Home"}</a></li>
       <li><a href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a></li>
-      <li><a href={JOURNAL_PATH}>{ar ? "المقالات" : "Style guides"}</a></li>
+      {ar && <li><a href={JOURNAL_PATH}>المقالات</a></li>}
     </ul>
     <p class="menu-label">{ar ? "الموديلات" : "Styles"}</p>
     <ul class="menu-list sub">
@@ -55,6 +56,7 @@ const home = langPath(lang, "/");
       <li><a href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a></li>
       <li><a href={langPath(lang, "/faq/")}>{ar ? "الأسئلة الشائعة" : "FAQ"}</a></li>
     </ul>
+    <a class="menu-lang" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"}>{ar ? "English" : "العربية"}</a>
   </nav>
   </div>
 </dialog>

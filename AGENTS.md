@@ -65,7 +65,7 @@ pnpm check:boundaries            # architecture rules
 
 ## Policy pages
 
-- `/shipping/`, `/returns/`, `/terms/`, `/privacy/` and `/privacy/cookies/` are built from `apps/website/src/policies/`. Every fee, day count and percentage comes from `site.ts` or `@platform/commerce`; never type one into the text.
+- `/shipping/`, `/returns/`, `/terms/` and `/privacy/` (and `/en/...`) are built from `apps/website/src/policies/`. Every fee, day count and percentage comes from `site.ts` or `@platform/commerce`; never type one into the text.
 - The privacy page must describe what the site really does with personal data. Adding analytics, an ad pixel, or any new service that receives order or customer data requires updating `privacy.ts` and `cookies.ts` (and `site.policiesUpdated`) in the same change, before it goes live. Analytics and ad tags (GA4, Meta, TikTok, Snap; `tracking` in `site.ts`) load only after "Accept" in the cookie banner (`Consent.astro`, `scripts/tracking.ts`).
 - Policies may give customers more than Egypt's Consumer Protection Law 181/2018 and Personal Data Protection Law 151/2020 require, never less.
 
@@ -73,7 +73,7 @@ pnpm check:boundaries            # architecture rules
 
 - Regular belts are **"جلد PU"**. Never write "جلد طبيعي" for them. Natural leather appears only for the bespoke/custom service.
 - No third-party photos without rights. No invented reviews, ratings, sales counts or testimonials.
-- Site language is English (owner, 2026-10-10), one URL per page with no `/en/` copy; a page the owner chooses may be in Arabic (RTL, `lang="ar"`), such as the style guides. Latin digits (0-9).
+- Site language is Arabic (RTL) with Latin digits (0-9).
 - Palette and look (owner, 2026-10-10): white ground, near-black `#161616` type and buttons, thin lines, square corners, no shadows or decorative sparkles. Berry `#C8102E` is only a small accent on the belts pages (prices, chips); pages that are not about the belts use `theme="neutral"` on `Base` (no red at all). Logo (2026-10-10): navy `#152245` V-and-vicuña mark with a gold stripe, wordmark "VICUNA DESIGNS" (`ui/Logo.astro`, `public/brand/`). Editorial photos live in `public/img/editorial/`, product films in `public/video/` (muted, looping, with a poster).
 
 ## Security rules

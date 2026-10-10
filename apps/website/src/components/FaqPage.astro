@@ -84,7 +84,7 @@ const groups = ar
     ];
 ---
 
-<Base title={title} description={description} lang={lang} theme="neutral">
+<Base title={title} description={description} lang={lang} altPath={langPath(ar ? "en" : "ar", "/faq/")} theme="neutral">
   <section class="wrap faq-page">
     <h1>{ar ? "الأسئلة الشائعة" : "Frequently asked questions"}</h1>
     {groups.map((g) => (

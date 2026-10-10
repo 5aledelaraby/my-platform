@@ -1,14 +1,23 @@
 ---
 import Base from "../layouts/Base.astro";
 import Home from "../components/Home.astro";
-import { serializeJsonLd, websiteJsonLd } from "@platform/seo";
+import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../site.ts";
 
-const title = "Vicuna | Simple designs, made with care";
-const description = "Vicuna is an Egyptian trading and design brand: we design and make by hand. Meet us and our sections, including belts and made-to-measure pieces.";
-const jsonLd = serializeJsonLd(websiteJsonLd({ name: site.nameEn, url: `${site.url}/`, language: "en" }));
+const title = "فيكونا | تصميمات بسيطة تُصنع بعناية";
+const description = "فيكونا علامة مصرية للتجارة العامة والتصميمات: نصمّم ونصنع بأيدينا. تعرّفي علينا وعلى أقسامنا، ومنها الأحزمة والتفصيل على المقاس.";
+const jsonLd = serializeJsonLd([
+  organizationJsonLd({
+    name: site.nameAr,
+    url: site.url,
+    logo: `${site.url}/brand/vicuna-logo.png`,
+    email: site.email,
+    sameAs: site.social.map((s) => s.href),
+  }),
+  websiteJsonLd({ name: site.nameAr, url: site.url, language: "ar" }),
+]);
 ---
 
-<Base title={title} description={description} lang="en" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp">
-  <Home lang="en" />
+<Base title={title} description={description} lang="ar" altPath="/en/" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp">
+  <Home lang="ar" />
 </Base>

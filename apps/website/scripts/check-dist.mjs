@@ -9,7 +9,7 @@ const SITE = "https://vicuna-eg.com";
 const PLANNED_PREFIXES = [];
 const JS_BUDGET_BYTES = 90 * 1024;
 // Pages that must stay out of search results and the sitemap even in production.
-const NOINDEX_PAGES = new Set(["/thanks/", "/404.html"]);
+const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/", "/404.html"]);
 
 const errors = [];
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
@@ -84,9 +84,13 @@ for (const file of pages) {
     }
   }
 
+  if (url.startsWith("/collections/") || url.startsWith("/en/collections/")) {
+    const other = url.startsWith("/en/") ? url.replace("/en", "") : "/en" + url;
+    if (!known.has(other)) fail(name, `no counterpart page ${other} for hreflang`);
+  }
 
   // ADR 0009: the homepage introduces the brand, it is not the store.
-  if (url === "/") {
+  if (url === "/" || url === "/en/") {
     if (/data-product|class="product-card|add-to-cart/i.test(html)) fail(name, "homepage must not contain a product grid or cart UI (ADR 0009)");
   }
 }

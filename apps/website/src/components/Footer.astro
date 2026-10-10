@@ -29,7 +29,7 @@ const socialIcon: Record<string, string> = {
       <ul>
         <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
         {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
-        <li><a href={JOURNAL_PATH}>{ar ? "المقالات" : "Style guides"}</a></li>
+        {ar && <li><a href={JOURNAL_PATH}>المقالات</a></li>}
       </ul>
     </div>
     <div>

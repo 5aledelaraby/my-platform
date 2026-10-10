@@ -440,7 +440,7 @@ async function submit(event: SubmitEvent): Promise<void> {
       }
       lines = [];
       save();
-      location.assign("/thanks/");
+      location.assign(lang === "en" ? "/en/thanks/" : "/thanks/");
       return;
     }
     if (res.status === 409 && Array.isArray(data.items)) {

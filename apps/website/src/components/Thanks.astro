@@ -11,7 +11,7 @@ const title = ar ? "تم استلام طلبك | فيكونا" : "Order received
 const wa = `https://wa.me/${site.whatsappInternational}`;
 ---
 
-<Base title={title} description={title} lang={lang} noindex>
+<Base title={title} description={title} lang={lang} altPath={ar ? "/en/thanks/" : "/thanks/"} noindex>
   <div class="wrap thanks">
     <h1>{ar ? "شكرًا لكِ" : "Thank you"}</h1>
     <p id="t-id-wrap" hidden>{ar ? "طلبك اتسجّل، ورقمه:" : "Your order is placed. Order number:"} <span class="order-id" id="t-id"></span></p>

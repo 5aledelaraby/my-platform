@@ -10,10 +10,11 @@ interface Props { id: PolicyId; lang: Lang }
 const { id, lang } = Astro.props;
 const ar = lang === "ar";
 const doc = getPolicy(id, lang);
+const other: Lang = ar ? "en" : "ar";
 const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") }, { name: doc.title }];
 ---
 
-<Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang} theme="neutral">
+<Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang} altPath={policyPath(other, id)} theme="neutral">
   <Breadcrumbs items={crumbs} />
   <article class="wrap article policy">
     <header>
@@ -21,6 +22,7 @@ const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "
       <p class="muted">{ar ? "آخر تحديث:" : "Last updated:"} <time datetime={site.policiesUpdated}>{formatPolicyDate(lang, site.policiesUpdated)}</time></p>
     </header>
     <div class="prose" set:html={doc.html} />
+    <p class="muted">{ar ? "عند أي اختلاف بين النسختين العربية والإنجليزية من هذه الصفحة، تُعتمد النسخة العربية." : "If the Arabic and English versions of this page differ, the Arabic version applies."}</p>
     <nav class="policy-nav" aria-label={ar ? "سياسات المتجر" : "Store policies"}>
       {POLICY_IDS.filter((p) => p !== id).map((p) => <a class="textlink" href={policyPath(lang, p)}>{getPolicy(p, lang).title}</a>)}
     </nav>
