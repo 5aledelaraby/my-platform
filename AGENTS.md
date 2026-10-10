@@ -72,7 +72,7 @@ pnpm check:boundaries            # architecture rules
 ## Brand and content rules (non-negotiable)
 
 - Regular belts are **"جلد PU"**. Never write "جلد طبيعي" for them. Natural leather appears only for the bespoke/custom service.
-- No Fendi / FF-logo belts. No third-party photos without rights. No invented reviews, ratings, sales counts or testimonials.
+- No third-party photos without rights. No invented reviews, ratings, sales counts or testimonials.
 - Site language is Arabic (RTL) with Latin digits (0-9).
 - Palette and look (owner, 2026-10-10): white ground, near-black `#161616` type and buttons, thin lines, square corners, no shadows or decorative sparkles. Berry `#C8102E` is only a small accent on the belts pages (prices, chips); pages that are not about the belts use `theme="neutral"` on `Base` (no red at all). Logo (2026-10-10): navy `#152245` V-and-vicuña mark with a gold stripe, wordmark "VICUNA DESIGNS" (`ui/Logo.astro`, `public/brand/`). Editorial photos live in `public/img/editorial/`, product films in `public/video/` (muted, looping, with a poster).
 
