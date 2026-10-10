@@ -2,9 +2,10 @@
 // Each "page" is a fresh copy of tracking.ts (a new module instance) on top of the same storage and cookies.
 import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
+import type * as TrackingModule from "../src/scripts/tracking.ts";
 import { tracking } from "../src/site.ts";
 
-type Tracking = typeof import("../src/scripts/tracking.ts");
+type Tracking = typeof TrackingModule;
 const g = globalThis as unknown as Record<string, unknown>;
 
 interface Browser {
