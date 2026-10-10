@@ -5,7 +5,7 @@
 // delivery is late (Art. 40). The store's own terms below are at or above that floor; terms that reduce a consumer
 // right are void anyway (Art. 28).
 import { site } from "../site.ts";
-import { contactHtml, fees, ltr, policyPath } from "./shared.ts";
+import { contactHtml, ltr, policyPath } from "./shared.ts";
 import type { PolicyDoc } from "./shared.ts";
 
 const r = site.returnDays;
