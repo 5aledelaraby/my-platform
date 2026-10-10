@@ -12,11 +12,15 @@ describe("catalog", () => {
     }
   });
 
+  it("every product id starts with its design, so stock, orders and links read the same", () => {
+    for (const p of catalog.products) assert.ok(p.id.startsWith(`${p.style}-`), p.id);
+  });
+
   it("a product price overrides its style price", () => {
     // Croc and snake are the thin-tie design with a printed pattern, priced above the plain ones.
-    assert.equal(lookupProduct("classic-red")?.unitPrice, 12000);
-    assert.equal(lookupProduct("croc-black")?.unitPrice, 20000);
-    assert.equal(lookupProduct("snake-grey")?.unitPrice, 20000);
+    assert.equal(lookupProduct("thin-tie-red")?.unitPrice, 12000);
+    assert.equal(lookupProduct("thin-tie-croc-black")?.unitPrice, 20000);
+    assert.equal(lookupProduct("thin-tie-snake-grey")?.unitPrice, 20000);
   });
 
   it("product names never say suede (every belt is PU leather)", () => {

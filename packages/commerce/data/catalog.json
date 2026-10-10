@@ -124,7 +124,7 @@
       "texture": "lace"
     },
     {
-      "id": "bow-white",
+      "id": "wide-tie-white",
       "name": "رباط عريض أبيض",
       "style": "wide-tie",
       "color": "white",
@@ -132,7 +132,7 @@
       "texture": "smooth"
     },
     {
-      "id": "bow-silver",
+      "id": "wide-tie-silver",
       "name": "رباط عريض فضي",
       "style": "wide-tie",
       "color": "grey",
@@ -140,7 +140,7 @@
       "texture": "smooth"
     },
     {
-      "id": "bow-gold",
+      "id": "wide-tie-gold",
       "name": "رباط عريض دهبي",
       "style": "wide-tie",
       "color": "gold",
@@ -148,7 +148,7 @@
       "texture": "smooth"
     },
     {
-      "id": "bow-mustard",
+      "id": "wide-tie-mustard",
       "name": "رباط عريض مسطردة",
       "style": "wide-tie",
       "color": "yellow",
@@ -156,7 +156,7 @@
       "texture": "smooth"
     },
     {
-      "id": "bow-burgundy",
+      "id": "wide-tie-burgundy",
       "name": "رباط عريض عنابي",
       "style": "wide-tie",
       "color": "red",
@@ -164,7 +164,7 @@
       "texture": "smooth"
     },
     {
-      "id": "bow-taupe",
+      "id": "wide-tie-taupe",
       "name": "رباط عريض بني فاتح",
       "style": "wide-tie",
       "color": "brown",
@@ -172,7 +172,7 @@
       "texture": "smooth"
     },
     {
-      "id": "sash-red",
+      "id": "wide-tie-red",
       "name": "رباط عريض أحمر",
       "style": "wide-tie",
       "color": "red",
@@ -180,7 +180,7 @@
       "texture": "smooth"
     },
     {
-      "id": "sash-black",
+      "id": "wide-tie-black",
       "name": "رباط عريض أسود",
       "style": "wide-tie",
       "color": "black",
@@ -188,7 +188,7 @@
       "texture": "smooth"
     },
     {
-      "id": "sash-blush",
+      "id": "wide-tie-blush",
       "name": "رباط عريض بينك فاتح",
       "style": "wide-tie",
       "color": "pink",
@@ -196,7 +196,7 @@
       "texture": "smooth"
     },
     {
-      "id": "sash-green",
+      "id": "wide-tie-green",
       "name": "رباط عريض أخضر",
       "style": "wide-tie",
       "color": "green",
@@ -204,7 +204,7 @@
       "texture": "smooth"
     },
     {
-      "id": "sash-cognac",
+      "id": "wide-tie-cognac",
       "name": "رباط عريض كونياك",
       "style": "wide-tie",
       "color": "brown",
@@ -212,7 +212,7 @@
       "texture": "smooth"
     },
     {
-      "id": "sash-brown",
+      "id": "wide-tie-brown",
       "name": "رباط عريض بني غامق",
       "style": "wide-tie",
       "color": "brown",
@@ -220,7 +220,7 @@
       "texture": "smooth"
     },
     {
-      "id": "twist-grey",
+      "id": "wide-tie-grey",
       "name": "رباط عريض رمادي",
       "style": "wide-tie",
       "color": "grey",
@@ -228,7 +228,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-white",
+      "id": "thin-tie-white",
       "name": "رباط رفيع أبيض",
       "style": "thin-tie",
       "color": "white",
@@ -236,7 +236,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-red",
+      "id": "thin-tie-red",
       "name": "رباط رفيع أحمر",
       "style": "thin-tie",
       "color": "red",
@@ -244,7 +244,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-rose",
+      "id": "thin-tie-rose",
       "name": "رباط رفيع وردي غامق",
       "style": "thin-tie",
       "color": "red",
@@ -252,7 +252,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-pink-suede",
+      "id": "thin-tie-pink",
       "name": "رباط رفيع بينك",
       "style": "thin-tie",
       "color": "pink",
@@ -260,7 +260,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-mustard",
+      "id": "thin-tie-mustard",
       "name": "رباط رفيع مسطردة",
       "style": "thin-tie",
       "color": "yellow",
@@ -268,7 +268,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-orange-suede",
+      "id": "thin-tie-orange",
       "name": "رباط رفيع برتقالي",
       "style": "thin-tie",
       "color": "yellow",
@@ -276,7 +276,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-camel-suede",
+      "id": "thin-tie-camel",
       "name": "رباط رفيع كامل",
       "style": "thin-tie",
       "color": "brown",
@@ -284,7 +284,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-green",
+      "id": "thin-tie-green",
       "name": "رباط رفيع أخضر زمردي",
       "style": "thin-tie",
       "color": "green",
@@ -292,7 +292,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-sky-blue",
+      "id": "thin-tie-sky-blue",
       "name": "رباط رفيع لبني",
       "style": "thin-tie",
       "color": "blue",
@@ -300,7 +300,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-royal-blue",
+      "id": "thin-tie-royal-blue",
       "name": "رباط رفيع أزرق ملكي",
       "style": "thin-tie",
       "color": "blue",
@@ -308,7 +308,7 @@
       "texture": "smooth"
     },
     {
-      "id": "classic-navy",
+      "id": "thin-tie-navy",
       "name": "رباط رفيع كحلي",
       "style": "thin-tie",
       "color": "blue",
@@ -316,7 +316,7 @@
       "texture": "smooth"
     },
     {
-      "id": "croc-black",
+      "id": "thin-tie-croc-black",
       "name": "رباط رفيع كروكو أسود",
       "style": "thin-tie",
       "color": "black",
@@ -325,7 +325,7 @@
       "price": 20000
     },
     {
-      "id": "croc-wine",
+      "id": "thin-tie-croc-wine",
       "name": "رباط رفيع كروكو عنابي",
       "style": "thin-tie",
       "color": "red",
@@ -334,7 +334,7 @@
       "price": 20000
     },
     {
-      "id": "croc-pink",
+      "id": "thin-tie-croc-pink",
       "name": "رباط رفيع كروكو بينك",
       "style": "thin-tie",
       "color": "pink",
@@ -343,7 +343,7 @@
       "price": 20000
     },
     {
-      "id": "croc-cognac",
+      "id": "thin-tie-croc-cognac",
       "name": "رباط رفيع كروكو كونياك",
       "style": "thin-tie",
       "color": "brown",
@@ -352,7 +352,7 @@
       "price": 20000
     },
     {
-      "id": "snake-grey",
+      "id": "thin-tie-snake-grey",
       "name": "رباط رفيع ثعبان رمادي",
       "style": "thin-tie",
       "color": "grey",
@@ -361,7 +361,7 @@
       "price": 20000
     },
     {
-      "id": "snake-beige",
+      "id": "thin-tie-snake-beige",
       "name": "رباط رفيع ثعبان بيج",
       "style": "thin-tie",
       "color": "gold",

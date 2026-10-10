@@ -33,8 +33,8 @@ describe("catalogue", () => {
   });
   it("keeps the legacy prices", () => {
     assert.equal(lookupProduct("lace-black")?.unitPrice, egp(300));
-    assert.equal(lookupProduct("bow-gold")?.unitPrice, egp(200));
-    assert.equal(lookupProduct("classic-navy")?.unitPrice, egp(120));
+    assert.equal(lookupProduct("wide-tie-gold")?.unitPrice, egp(200));
+    assert.equal(lookupProduct("thin-tie-navy")?.unitPrice, egp(120));
   });
   it("governorate lists are aligned", () => {
     assert.equal(GOVERNORATES.length, GOVERNORATES_EN.length);
@@ -158,7 +158,7 @@ describe("generateOrderId", () => {
 
 describe("buildOrder", () => {
   it("snapshots catalogue prices and computes totals with the shared pricing logic", () => {
-    const body = { ...validBody(), items: [{ id: "bow-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }] };
+    const body = { ...validBody(), items: [{ id: "wide-tie-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }] };
     const r = validateOrderRequest(body, lookupProduct);
     assert.ok(r.ok);
     if (!r.ok) return;

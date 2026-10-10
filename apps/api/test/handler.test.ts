@@ -27,7 +27,7 @@ function setup(overrides: Partial<HandlerDeps> = {}) {
 }
 
 const body = (extra: Record<string, unknown> = {}) => ({
-  items: [{ id: "bow-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }],
+  items: [{ id: "wide-tie-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }],
   customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد، عمارة 21" },
   shippingMethod: "standard",
   paymentMethod: "cod",
@@ -283,7 +283,7 @@ describe("d1Repository", () => {
     id: "V-1009-AAAAA", createdAt: NOW.toISOString(), status: "new",
     customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "عنوان طويل بما يكفي" },
     items: [
-      { productId: "bow-gold", name: "رباط عريض دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
+      { productId: "wide-tie-gold", name: "رباط عريض دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
       { productId: "lace-black", name: "دانتيل أسود", unitPrice: 30000, quantity: 1, lineTotal: 30000 },
     ],
     shippingMethod: "standard", paymentMethod: "cod",
@@ -298,9 +298,9 @@ describe("d1Repository", () => {
     assert.equal(calls[0]?.values[7], null);
     assert.equal(calls[0]?.values.length, 18);
     assert.equal(calls[0]?.values[17], null, "no promo code");
-    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "bow-gold", "رباط عريض دهبي", 20000, 2, 40000, "bow-gold"]);
+    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "wide-tie-gold", "رباط عريض دهبي", 20000, 2, 40000, "wide-tie-gold"]);
     assert.match(calls[3]?.sql ?? "", /UPDATE inventory SET quantity = quantity - \?/);
-    assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "bow-gold"]);
+    assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "wide-tie-gold"]);
   });
 
   it("maps a UNIQUE violation to conflict and rethrows anything else", async () => {

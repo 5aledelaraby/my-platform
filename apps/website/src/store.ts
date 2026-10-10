@@ -27,14 +27,13 @@ const styleEn: Record<string, { name: string; headline: string; intro: string }>
   },
 };
 
-// English product names come from the id (permanent, so some ids keep old words). Words mapped to "" are dropped.
+// English product names are built from the id words.
 const colorWordsEn: Record<string, string> = {
   black: "Black", white: "White", red: "Red", gold: "Gold", caramel: "Caramel", silver: "Silver", mustard: "Mustard",
   burgundy: "Burgundy", taupe: "Taupe", blush: "Blush", green: "Green", cognac: "Cognac", brown: "Brown", grey: "Grey",
-  rose: "Rose", pink: "Pink", suede: "", orange: "Orange", camel: "Camel", sky: "Sky", blue: "Blue", royal: "Royal",
-  navy: "Navy", wine: "Wine", beige: "Beige",
+  rose: "Rose", pink: "Pink", orange: "Orange", camel: "Camel", sky: "Sky", blue: "Blue", royal: "Royal",
+  navy: "Navy", wine: "Wine", beige: "Beige", croc: "Croc", snake: "Snake",
 };
-const prefixEn: Record<string, string> = { croc: "Croc", snake: "Snake" };
 
 const colorEn: Record<string, string> = {
   black: "Black", white: "White", red: "Red", pink: "Pink", brown: "Brown", gold: "Gold & beige",
@@ -79,10 +78,9 @@ export function styleText(lang: Lang, id: string): { name: string; headline: str
 
 export function productName(lang: Lang, p: CatalogProduct): string {
   if (lang === "ar") return p.name;
-  const [prefix, ...rest] = p.id.split("-");
-  const color = rest.map((w) => colorWordsEn[w] ?? w).filter(Boolean).join(" ");
-  const pre = prefix ? (prefixEn[prefix] ?? "") : "";
-  return [styleText("en", p.style).name, pre, color].filter(Boolean).join(" ");
+  // Ids are "<design>-<pattern?>-<colour>", e.g. thin-tie-croc-black.
+  const words = p.id.slice(p.style.length + 1).split("-");
+  return [styleText("en", p.style).name, ...words.map((w) => colorWordsEn[w] ?? w)].join(" ");
 }
 
 /** The style's base price (the lowest in the style). */
@@ -100,7 +98,7 @@ export const hasHigherPrices = (styleId: string): boolean => productsOfStyle(sty
 export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.webp`;
 export const thumbOf = (p: CatalogProduct): string => `/img/products/${p.id}-480.webp`;
 /** Products that also have an on-body photo (public/img/looks/<id>-480|900.webp, 4:5). */
-const LOOKS = new Set(["classic-royal-blue", "bow-burgundy", "bow-taupe", "classic-rose", "bow-gold", "classic-green", "sash-green", "croc-pink", "classic-pink-suede"]);
+const LOOKS = new Set(["thin-tie-royal-blue", "wide-tie-burgundy", "wide-tie-taupe", "thin-tie-rose", "wide-tie-gold", "thin-tie-green", "wide-tie-green", "thin-tie-croc-pink", "thin-tie-pink"]);
 export const lookOf = (p: CatalogProduct): { thumb: string; full: string } | null =>
   LOOKS.has(p.id) ? { thumb: `/img/looks/${p.id}-480.webp`, full: `/img/looks/${p.id}-900.webp` } : null;
 /** First product of a style, used as its cover image. */

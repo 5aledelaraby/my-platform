@@ -3,17 +3,17 @@ title: "ترند الأحزمة 2026: العريض والفيونكة والمع
 slug: "belt-trends-2026"
 description: "أحزمة الخصر من أهم إكسسوارات 2026. اعرفي أبرز الترندات: الحزام العريض، الفيونكة، الألوان الترابية والعنابي، المعدني الدهبي والفضي، والنقشات، وإزاي تلبسيها."
 datePublished: "2026-10-05"
-image: "/img/products/bow-gold.webp"
+image: "/img/products/wide-tie-gold.webp"
 imageWidth: 900
 imageHeight: 900
 imageAlt: "حزام دهبي عريض برباط عريض على خلفية بيضا"
 products:
-  - bow-gold
-  - bow-silver
-  - bow-burgundy
-  - sash-green
-  - croc-black
-  - snake-grey
+  - wide-tie-gold
+  - wide-tie-silver
+  - wide-tie-burgundy
+  - wide-tie-green
+  - thin-tie-croc-black
+  - thin-tie-snake-grey
   - ruffle-black
 ---
 
@@ -31,19 +31,19 @@ products:
 
 ## 3. الألوان الترابية والعنابي
 
-الأسود والبني دايمًا موجودين، بس السنة دي الألوان الترابية الدافية زي الكونياك والكامل والبيج داخلة بقوة، ومعاها **العنابي** والأخضر الهادي. جربي [الرباط العريض العنابي](/collections/vicuna-belts/bow-burgundy/) على أسود أو بيج، أو [الأخضر](/collections/vicuna-belts/sash-green/) على أبيض.
+الأسود والبني دايمًا موجودين، بس السنة دي الألوان الترابية الدافية زي الكونياك والكامل والبيج داخلة بقوة، ومعاها **العنابي** والأخضر الهادي. جربي [الرباط العريض العنابي](/collections/vicuna-belts/wide-tie-burgundy/) على أسود أو بيج، أو [الأخضر](/collections/vicuna-belts/wide-tie-green/) على أبيض.
 
 ## 4. المعدني: دهبي وفضي
 
 لمسة اللمعة رجعت، خصوصًا في السهرات. الحزام الدهبي أو الفضي على فستان سادة بيعمل لوك سهرة كامل من غير أي إكسسوار تاني.
 
-![حزام دهبي عريض برباط عريض](/img/products/bow-gold.webp)
+![حزام دهبي عريض برباط عريض](/img/products/wide-tie-gold.webp)
 
-شوفي [الرباط العريض الدهبي](/collections/vicuna-belts/bow-gold/) و[الرباط العريض الفضي](/collections/vicuna-belts/bow-silver/).
+شوفي [الرباط العريض الدهبي](/collections/vicuna-belts/wide-tie-gold/) و[الرباط العريض الفضي](/collections/vicuna-belts/wide-tie-silver/).
 
 ## 5. النقشات: كروكو وثعبان
 
-النقشة البارزة بتدي اللبس السادة شخصية من غير مجهود. [الكروكو الأسود](/collections/vicuna-belts/croc-black/) كلاسيكي ويمشي مع كل حاجة، و[الثعبان الرمادي](/collections/vicuna-belts/snake-grey/) أجرأ وأعصر.
+النقشة البارزة بتدي اللبس السادة شخصية من غير مجهود. [الكروكو الأسود](/collections/vicuna-belts/thin-tie-croc-black/) كلاسيكي ويمشي مع كل حاجة، و[الثعبان الرمادي](/collections/vicuna-belts/thin-tie-snake-grey/) أجرأ وأعصر.
 
 ## 6. الكشكشة والتفاصيل الناعمة
 
