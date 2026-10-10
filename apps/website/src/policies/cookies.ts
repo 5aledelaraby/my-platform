@@ -15,14 +15,11 @@ export const cookiesAr: PolicyDoc = {
 <p>الكوكيز ملفات نصية صغيرة يحفظها الموقع في متصفحكِ. ويشبهها «التخزين المحلي» (localStorage و sessionStorage)، وهو مساحة في متصفحكِ يحفظ فيها الموقع بيانات بسيطة على جهازكِ. في هذه الصفحة نسمّي الاثنين «كوكيز».</p>
 
 <h2>2. ما نستخدمه</h2>
-<table>
-<thead><tr><th>الاسم</th><th>النوع</th><th>الغرض</th><th>المدة</th></tr></thead>
-<tbody>
-<tr><td><bdi dir="ltr">vicuna-cart-v1</bdi></td><td>تخزين محلي</td><td>حفظ محتوى السلة حتى لا يضيع عند غلق الصفحة. لا يصلنا إلا عند إرسال الطلب.</td><td>حتى تفرغي السلة أو تمسحي بيانات المتصفح</td></tr>
-<tr><td><bdi dir="ltr">vicuna-last-order</bdi></td><td>تخزين مؤقت</td><td>عرض رقم الطلب وإجماليه في صفحة الشكر.</td><td>يُحذف عند غلق التبويب</td></tr>
-<tr><td><bdi dir="ltr">__cf_bm</bdi>، <bdi dir="ltr">cf_clearance</bdi></td><td>كوكيز ضرورية من Cloudflare</td><td>حماية الموقع من الهجمات والزيارات الآلية الضارة. قد تُضاف فقط عند الحاجة.</td><td>من 30 دقيقة حتى سنة</td></tr>
-</tbody>
-</table>
+<ul>
+<li><b><bdi dir="ltr">vicuna-cart-v1</bdi></b> (تخزين محلي): حفظ محتوى السلة حتى لا يضيع عند غلق الصفحة. لا يصلنا إلا عند إرسال الطلب. <span class="muted">المدة: حتى تفرغي السلة أو تمسحي بيانات المتصفح.</span></li>
+<li><b><bdi dir="ltr">vicuna-last-order</bdi></b> (تخزين مؤقت): عرض رقم الطلب وإجماليه في صفحة الشكر. <span class="muted">المدة: يُحذف عند غلق التبويب.</span></li>
+<li><b><bdi dir="ltr">__cf_bm</bdi>، <bdi dir="ltr">cf_clearance</bdi></b> (كوكيز ضرورية من Cloudflare): حماية الموقع من الهجمات والزيارات الآلية الضارة. قد تُضاف فقط عند الحاجة. <span class="muted">المدة: من 30 دقيقة حتى سنة.</span></li>
+</ul>
 <p>كل ما سبق ضروري لعمل الموقع أو حمايته، لذلك لا نطلب موافقة عليه، ولا نستخدمه لتتبعكِ أو لعرض إعلانات.</p>
 
 <h2>3. ما لا نستخدمه</h2>
@@ -52,14 +49,11 @@ export const cookiesEn: PolicyDoc = {
 <p>Cookies are small text files a website saves in your browser. "Local storage" (localStorage and sessionStorage) is similar: space in your browser where a site keeps simple data on your device. On this page we call both "cookies".</p>
 
 <h2>2. What we use</h2>
-<table>
-<thead><tr><th>Name</th><th>Type</th><th>Purpose</th><th>Duration</th></tr></thead>
-<tbody>
-<tr><td>vicuna-cart-v1</td><td>Local storage</td><td>Keeps your cart so it is not lost when you close the page. It reaches us only when you send the order.</td><td>Until you empty the cart or clear your browser data</td></tr>
-<tr><td>vicuna-last-order</td><td>Session storage</td><td>Shows your order number and total on the thank-you page.</td><td>Deleted when you close the tab</td></tr>
-<tr><td>__cf_bm, cf_clearance</td><td>Strictly necessary Cloudflare cookies</td><td>Protect the site from attacks and harmful automated traffic. Set only when needed.</td><td>30 minutes to one year</td></tr>
-</tbody>
-</table>
+<ul>
+<li><b>vicuna-cart-v1</b> (Local storage): Keeps your cart so it is not lost when you close the page. It reaches us only when you send the order. <span class="muted">Duration: Until you empty the cart or clear your browser data.</span></li>
+<li><b>vicuna-last-order</b> (Session storage): Shows your order number and total on the thank-you page. <span class="muted">Duration: Deleted when you close the tab.</span></li>
+<li><b>__cf_bm, cf_clearance</b> (Strictly necessary Cloudflare cookies): Protect the site from attacks and harmful automated traffic. Set only when needed. <span class="muted">Duration: 30 minutes to one year.</span></li>
+</ul>
 <p>All of the above is needed for the site to work or stay secure, so we do not ask for consent, and we never use it to track you or show ads.</p>
 
 <h2>3. What we do not use</h2>
