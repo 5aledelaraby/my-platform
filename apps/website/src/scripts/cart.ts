@@ -142,8 +142,11 @@ export function addToCart(id: string, from?: HTMLElement): void {
     save();
   }
   render();
-  // Stay on the page so she can keep shopping; a small notice offers the cart.
-  showToast(id, added);
+  // The first time in a visit, the cart opens for a moment so she sees where her belt went, then closes by
+  // itself (unless she touches it). After that, a small notice offers the cart and she keeps shopping.
+  if (added && peekCart()) {
+    /* the cart is showing */
+  } else showToast(id, added);
   if (added) {
     flyToBag(from);
     bumpCount();
@@ -347,6 +350,25 @@ async function applyPromo(): Promise<void> {
     promoMsg.textContent = T.promoFail;
   }
   promoBtn.disabled = false;
+}
+
+let peekTimer: ReturnType<typeof setTimeout> | undefined;
+function peekCart(): boolean {
+  try {
+    if (sessionStorage.getItem("vicuna-cart-peeked") === "1") return false;
+    sessionStorage.setItem("vicuna-cart-peeked", "1");
+  } catch {
+    return false;
+  }
+  if (!dialog) return false;
+  openCart();
+  const stop = () => clearTimeout(peekTimer);
+  dialog.addEventListener("pointerdown", stop, { once: true });
+  dialog.addEventListener("keydown", stop, { once: true });
+  peekTimer = setTimeout(() => {
+    if (dialog.open && step === "cart") dialog.close();
+  }, 2200);
+  return true;
 }
 
 function openCart(): void {
