@@ -1,5 +1,6 @@
 // The store's policy pages: one entry per page and language.
 import type { Lang } from "../site.ts";
+import { cookiesAr, cookiesEn } from "./cookies.ts";
 import { privacyAr, privacyEn } from "./privacy.ts";
 import { returnsAr, returnsEn } from "./returns.ts";
 import { shippingAr, shippingEn } from "./shipping.ts";
@@ -14,6 +15,7 @@ const DOCS: Record<PolicyId, Record<Lang, PolicyDoc>> = {
   returns: { ar: returnsAr, en: returnsEn },
   terms: { ar: termsAr, en: termsEn },
   privacy: { ar: privacyAr, en: privacyEn },
+  cookies: { ar: cookiesAr, en: cookiesEn },
 };
 
 export function getPolicy(id: PolicyId, lang: Lang): PolicyDoc {

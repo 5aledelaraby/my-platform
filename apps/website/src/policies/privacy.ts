@@ -74,7 +74,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <p>الاتصال بالموقع مشفّر (HTTPS)، ولا يُفتح سجل الطلبات من جهتنا إلا من حسابات محمية بتسجيل دخول. وإذا حدث اختراق يمس بياناتكِ، نبلغ مركز حماية البيانات الشخصية ونبلغكِ خلال المدد التي يحددها القانون. ومع ذلك، لا توجد طريقة نقل أو حفظ على الإنترنت آمنة بنسبة 100%.</p>
 
 <h2>9. الكوكيز وأدوات القياس</h2>
-<p>الموقع حاليًا لا يستخدم أدوات تحليل أو تتبع إعلاني، مثل Google Analytics أو Meta Pixel. وقد تضيف خدمة الاستضافة كوكيز ضرورية لحماية الموقع فقط. وإذا أضفنا أدوات قياس أو إعلانات لاحقًا، نحدّث هذه الصفحة قبل تشغيلها.</p>
+<p>الموقع حاليًا لا يستخدم أدوات تحليل أو تتبع إعلاني، مثل Google Analytics أو Meta Pixel. وقد تضيف خدمة الاستضافة كوكيز ضرورية لحماية الموقع فقط. وإذا أضفنا أدوات قياس أو إعلانات لاحقًا، نحدّث هذه الصفحة قبل تشغيلها. التفاصيل في <a href="${policyPath("ar", "cookies")}">سياسة الكوكيز</a>.</p>
 
 <h2>10. السن</h2>
 <p>الموقع موجّه لمن بلغن سن الرشد. إذا لم تبلغيه بعد، اطلبي بمعرفة وليّ أمركِ وموافقته.</p>
@@ -153,7 +153,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <p>The connection to the website is encrypted (HTTPS), and on our side the order records can only be opened from accounts protected by a sign-in. If a breach affects your data, we notify the Personal Data Protection Center and you within the periods set by law. Still, no way of sending or storing data on the internet is 100% secure.</p>
 
 <h2>9. Cookies and measurement tools</h2>
-<p>The website currently uses no analytics or advertising trackers, such as Google Analytics or the Meta Pixel. Our hosting provider may set cookies that are strictly needed to protect the website. If we add measurement or advertising tools later, we will update this page before turning them on.</p>
+<p>The website currently uses no analytics or advertising trackers, such as Google Analytics or the Meta Pixel. Our hosting provider may set cookies that are strictly needed to protect the website. If we add measurement or advertising tools later, we will update this page before turning them on. Details are in the <a href="${policyPath("en", "cookies")}">cookie policy</a>.</p>
 
 <h2>10. Age</h2>
 <p>The website is meant for adults of legal age. If you are not of legal age yet, order with your parent's or guardian's knowledge and consent.</p>
