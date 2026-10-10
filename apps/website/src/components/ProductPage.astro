@@ -2,7 +2,7 @@
 import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { beltsUrl, coverOf, imageOf, lookOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
+import { beltsUrl, coverOf, getStyle, imageOf, lookOf, price, productName, productsOfStyle, styleText, styles } from "../store.ts";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
@@ -80,7 +80,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       </figure>
     )}
     </div>
-    <div class="pdp-info">
+    <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={getStyle(product.style).price}>
       <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
       <h1>{name}</h1>
       <div class="price">{price(product.style)} <small>{cur}</small></div>
@@ -118,3 +118,9 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
     </div>
   </section>
 </Base>
+
+<script>
+  import { track } from "../scripts/tracking.ts";
+  const el = document.querySelector<HTMLElement>("[data-view-item]");
+  if (el) track({ type: "view_item", item: { id: el.dataset["viewItem"] ?? "", name: el.dataset["viewName"], price: Number(el.dataset["viewPrice"]) } });
+</script>

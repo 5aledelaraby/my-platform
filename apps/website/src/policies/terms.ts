@@ -18,6 +18,7 @@ export const termsAr: PolicyDoc = {
 <ul>
 <li>باستخدامكِ للموقع تؤكدين أنكِ بلغتِ سن الرشد، أو أن وليّ أمركِ موافق على طلبكِ.</li>
 <li>لا يجوز استخدام الموقع أو منتجاتنا في أي غرض غير قانوني.</li>
+<li>لا تحتاجين إلى إنشاء حساب أو كلمة سر للطلب، ولا نطلب منكِ إلا البيانات اللازمة لتوصيل الطلب.</li>
 </ul>
 
 <h2>2. الطلبات</h2>
@@ -71,22 +72,35 @@ export const termsAr: PolicyDoc = {
 <h2>9. حقوق الملكية</h2>
 <p>صور المنتجات والتصميمات والشعار ومحتوى الموقع ملك لفيكونا، ولا يجوز نقلها أو استخدامها تجاريًا دون إذن مكتوب منا.</p>
 
-<h2>10. المسؤولية</h2>
+<h2>10. ما ترسلينه لنا وآراء العميلات</h2>
+<ul>
+<li>لا ننشر صورتكِ أو رأيكِ أو اسمكِ إلا بإذنكِ الصريح، ويمكنكِ طلب حذفها في أي وقت فنحذفها.</li>
+<li>لا ننشر آراء أو تقييمات مختلَقة، ولا نعدّل رأيًا نشرناه بما يغيّر معناه.</li>
+<li>اقتراحاتكِ وملاحظاتكِ على الموقع والمنتجات تساعدنا، ويمكننا استخدامها لتحسين ما نقدمه.</li>
+</ul>
+
+<h2>11. الإبلاغ عن مخالفة</h2>
+<p>إذا رأيتِ على الموقع ما يخالف القانون، أو ما تعتقدين أنه يعتدي على حقوق ملكيتكِ الفكرية، راسلينا مع رابط الصفحة وشرح بسيط. نؤكد استلام رسالتكِ، ونراجعها، ونخبركِ بما فعلناه.</p>
+
+<h2>12. تغيير المنتجات والموقع</h2>
+<p>قد نغيّر التصميمات أو الأسعار أو نوقف بعض المنتجات أو أجزاء من الموقع. ولا يؤثر ذلك على أي طلب تأكد قبل التغيير، فيبقى بسعره وشروطه.</p>
+
+<h2>13. المسؤولية</h2>
 <p>نبذل كل جهدنا ليعمل الموقع دون أخطاء، لكن لا نضمن أن يعمل طوال الوقت دون انقطاع. ولا يحد ذلك من مسؤوليتنا عن المنتجات التي نبيعها أو من أي حق لكِ في القانون.</p>
 
-<h2>11. حماية المستهلك</h2>
+<h2>14. حماية المستهلك</h2>
 <p>هذه الشروط لا تنتقص من أي حق لكِ في قانون حماية المستهلك رقم 181 لسنة 2018، وأي شرط يخالفه لا يُعمل به. ويمكنكِ تقديم شكوى إلى جهاز حماية المستهلك على الخط الساخن ${ltr(ca.hotline)} أو من موقعه <a href="${ca.url}" rel="noopener noreferrer">${ltr("cpa.gov.eg")}</a>.</p>
 
-<h2>12. إذا بطل بند</h2>
+<h2>15. إذا بطل بند</h2>
 <p>إذا تبيّن أن أي بند في هذه الشروط غير قانوني أو غير قابل للتطبيق، تبقى بقية البنود سارية.</p>
 
-<h2>13. القانون المطبق</h2>
+<h2>16. القانون المطبق</h2>
 <p>تخضع هذه الشروط للقوانين المصرية، وتختص بنظر أي نزاع المحاكم المصرية المختصة.</p>
 
-<h2>14. تعديل الشروط</h2>
-<p>قد نحدّث هذه الشروط من وقت لآخر، ويسري التعديل من وقت نشره هنا، وتاريخ آخر تحديث مكتوب أعلى الصفحة. الطلبات التي تأكدت قبل التعديل تبقى على الشروط التي كانت سارية وقتها.</p>
+<h2>17. تعديل الشروط</h2>
+<p>قد نحدّث هذه الشروط من وقت لآخر، ويسري التعديل من وقت نشره هنا، وتاريخ آخر تحديث مكتوب أعلى الصفحة. الطلبات التي تأكدت قبل التعديل تبقى على الشروط التي كانت سارية وقتها. هذه الشروط مع <a href="${policyPath("ar", "shipping")}">الشحن والتوصيل</a> و<a href="${policyPath("ar", "returns")}">الاسترجاع والاستبدال</a> و<a href="${policyPath("ar", "privacy")}">الخصوصية</a> و<a href="${policyPath("ar", "cookies")}">الكوكيز</a> هي الاتفاق الكامل بيننا، وأي وعد إضافي نعطيكِ إياه كتابةً على واتساب أو البريد نلتزم به.</p>
 
-<h2>15. تواصلي معنا</h2>
+<h2>18. تواصلي معنا</h2>
 ${contactHtml("ar", "السلام عليكم، عندي سؤال عن الشروط")}
 <p>اقرئي أيضًا <a href="${policyPath("ar", "returns")}">الاسترجاع والاستبدال</a> و<a href="${policyPath("ar", "privacy")}">سياسة الخصوصية</a>.</p>
 `,
@@ -104,6 +118,7 @@ export const termsEn: PolicyDoc = {
 <ul>
 <li>By using the website you confirm that you are of legal age, or that your parent or guardian agrees to your order.</li>
 <li>You may not use the website or our products for any unlawful purpose.</li>
+<li>You do not need an account or a password to order, and we only ask for the details needed to deliver your order.</li>
 </ul>
 
 <h2>2. Orders</h2>
@@ -157,22 +172,35 @@ export const termsEn: PolicyDoc = {
 <h2>9. Intellectual property</h2>
 <p>Product photos, designs, the logo and the website's content belong to Vicuna and may not be copied or used commercially without our written permission.</p>
 
-<h2>10. Liability</h2>
+<h2>10. What you send us, and reviews</h2>
+<ul>
+<li>We publish your photo, review or name only with your explicit permission, and we remove it whenever you ask.</li>
+<li>We never publish invented reviews or ratings, and we never edit a published review in a way that changes its meaning.</li>
+<li>Your suggestions about the website and products help us, and we may use them to improve what we offer.</li>
+</ul>
+
+<h2>11. Reporting a problem</h2>
+<p>If you see anything on the website that breaks the law, or that you believe infringes your intellectual property, message us with the page link and a short explanation. We confirm we received it, review it, and tell you what we did.</p>
+
+<h2>12. Changes to products and the website</h2>
+<p>We may change designs or prices, or stop some products or parts of the website. This does not affect any order confirmed before the change, which keeps its price and terms.</p>
+
+<h2>13. Liability</h2>
 <p>We do our best to keep the website working without errors, but we cannot guarantee it will always be available. This does not limit our responsibility for the products we sell or any of your rights under the law.</p>
 
-<h2>11. Consumer protection</h2>
+<h2>14. Consumer protection</h2>
 <p>These terms do not reduce any of your rights under Egypt's Consumer Protection Law No. 181 of 2018, and any term that conflicts with it does not apply. You can complain to the Consumer Protection Agency on hotline ${ca.hotline} or at <a href="${ca.url}" rel="noopener noreferrer">cpa.gov.eg</a>.</p>
 
-<h2>12. Severability</h2>
+<h2>15. Severability</h2>
 <p>If any term here is found unlawful or unenforceable, the remaining terms stay in force.</p>
 
-<h2>13. Governing law</h2>
+<h2>16. Governing law</h2>
 <p>These terms are governed by Egyptian law, and the competent Egyptian courts hear any dispute.</p>
 
-<h2>14. Changes</h2>
-<p>We may update these terms from time to time. Changes apply from when they are published here; the date of the last update is shown at the top. Orders confirmed before a change keep the terms in force when they were confirmed.</p>
+<h2>17. Changes</h2>
+<p>We may update these terms from time to time. Changes apply from when they are published here; the date of the last update is shown at the top. Orders confirmed before a change keep the terms in force when they were confirmed. These terms, together with <a href="${policyPath("en", "shipping")}">shipping and delivery</a>, <a href="${policyPath("en", "returns")}">returns and exchanges</a>, <a href="${policyPath("en", "privacy")}">privacy</a> and <a href="${policyPath("en", "cookies")}">cookies</a>, are the whole agreement between us, and we keep any extra promise we give you in writing on WhatsApp or by email.</p>
 
-<h2>15. Contact us</h2>
+<h2>18. Contact us</h2>
 ${contactHtml("en", "Hello, I have a question about the terms")}
 <p>See also <a href="${policyPath("en", "returns")}">returns and exchanges</a> and the <a href="${policyPath("en", "privacy")}">privacy policy</a>.</p>
 `,

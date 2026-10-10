@@ -2,7 +2,8 @@
 // (Decree 816/2025): controller identity, data collected, purposes, recipients, transfer abroad, retention, rights,
 // and the right to complain to the Personal Data Protection Center. It must describe what the site really does:
 // orders go to the order API (Cloudflare Worker + D1), a Telegram message reaches the owner, the cart lives in the
-// browser, and there are no analytics or ad pixels. Change this page in the same commit as any change to that.
+// browser, and analytics/ad tags (GA4, Meta, TikTok, Snap; site.ts `tracking`) load only after cookie consent.
+// Change this page in the same commit as any change to that.
 import { site } from "../site.ts";
 import { contactHtml, ltr, policyPath } from "./shared.ts";
 import type { PolicyDoc } from "./shared.ts";
@@ -24,6 +25,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li><b>الدفع:</b> عند الدفع بـ InstaPay يصلنا ما يظهر في إيصال التحويل، مثل اسم المحوِّل والمبلغ. وعند ردّ مبلغ، نحتاج رقم InstaPay أو المحفظة الذي تختارينه. لا نطلب ولا نحفظ أرقام بطاقات بنكية.</li>
 <li><b>الطلبات الخاصة:</b> مقاساتكِ عند طلب مقاس خاص أو حزام مفصّل.</li>
 <li><b>بيانات تقنية:</b> عنوان IP ونوع المتصفح والجهاز، تسجلها خدمة الاستضافة تلقائيًا لتشغيل الموقع وحمايته، مثل تحديد عدد الطلبات المسموح به من الجهاز نفسه.</li>
+<li><b>بيانات التحليل والإعلانات (فقط إذا وافقتِ على الكوكيز):</b> الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وبدء الطلب، وقيمة الطلب ورقمه، ونوع الجهاز والمتصفح، والموقع التقريبي، ومعرّفات الكوكيز. تجمعها Google Analytics وMeta وTikTok وSnapchat.</li>
 <li><b>على جهازكِ:</b> محتوى السلة يُحفظ في متصفحكِ (localStorage) حتى لا يضيع عند غلق الصفحة، ولا يصلنا إلا عند إرسال الطلب. ورقم آخر طلب وإجماليه وطريقة دفعه تُحفظ مؤقتًا في المتصفح لعرضها في صفحة الشكر، وتُحذف عند غلق تبويب المتصفح.</li>
 </ul>
 
@@ -32,6 +34,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li><b>تنفيذ طلبكِ:</b> تأكيده وتجهيزه وتوصيله، والتواصل معكِ بشأنه، والإرجاع والاستبدال والضمان. أساس ذلك تنفيذ عقد الشراء بيننا.</li>
 <li><b>التزاماتنا القانونية:</b> حفظ سجلات المبيعات كما يقتضي القانون المصري، والرد على الجهات الرسمية المختصة.</li>
 <li><b>حماية الموقع:</b> منع الطلبات الوهمية والإساءة.</li>
+<li><b>القياس والإعلانات (بموافقتكِ):</b> لنفهم كيف يُستخدم الموقع، ولعرض إعلاناتنا وقياس نتائجها على Google وFacebook وInstagram وTikTok وSnapchat. أساس ذلك موافقتكِ، ويمكنكِ سحبها في أي وقت من «إعدادات الكوكيز» أسفل الموقع.</li>
 </ul>
 <p>لا نرسل لكِ رسائل تسويقية أو عروضًا إلا بعد موافقتكِ الصريحة المسبقة، ويمكنكِ إيقافها في أي وقت.</p>
 
@@ -40,6 +43,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <ul>
 <li><b>شركة الشحن:</b> الاسم ورقم الموبايل والعنوان، لتوصيل الطلب.</li>
 <li><b>Cloudflare:</b> تستضيف الموقع وقاعدة بيانات الطلبات وتحمي الموقع، وتعالج البيانات لحسابنا.</li>
+<li><b>Google وMeta وTikTok وSnap (فقط إذا وافقتِ على الكوكيز):</b> تستلم بيانات التحليل والإعلانات الموضحة أعلاه وتستخدمها وفق سياساتها، وقد تنقلها إلى خارج مصر.</li>
 <li><b>خدمات نتواصل من خلالها،</b> ولكل منها سياسة خصوصية خاصة بها:
 <ul>
 <li>Telegram: نستلم عليه رسالة بكل طلب جديد وكل تغيير في حالته، فيها رقم الطلب وبياناتكِ والمنتجات والإجمالي.</li>
@@ -74,7 +78,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <p>الاتصال بالموقع مشفّر (HTTPS)، ولا يُفتح سجل الطلبات من جهتنا إلا من حسابات محمية بتسجيل دخول. وإذا حدث اختراق يمس بياناتكِ، نبلغ مركز حماية البيانات الشخصية ونبلغكِ خلال المدد التي يحددها القانون. ومع ذلك، لا توجد طريقة نقل أو حفظ على الإنترنت آمنة بنسبة 100%.</p>
 
 <h2>9. الكوكيز وأدوات القياس</h2>
-<p>الموقع حاليًا لا يستخدم أدوات تحليل أو تتبع إعلاني، مثل Google Analytics أو Meta Pixel. وقد تضيف خدمة الاستضافة كوكيز ضرورية لحماية الموقع فقط. وإذا أضفنا أدوات قياس أو إعلانات لاحقًا، نحدّث هذه الصفحة قبل تشغيلها.</p>
+<p>نستخدم Google Analytics وMeta Pixel وTikTok Pixel وSnap Pixel فقط بعد موافقتكِ في شريط الكوكيز، ويمكنكِ تغيير اختياركِ في أي وقت من «إعدادات الكوكيز» أسفل الموقع. الكوكيز الضرورية لعمل الموقع وحمايته لا تحتاج موافقة. التفاصيل في <a href="${policyPath("ar", "cookies")}">سياسة الكوكيز</a>.</p>
 
 <h2>10. السن</h2>
 <p>الموقع موجّه لمن بلغن سن الرشد. إذا لم تبلغيه بعد، اطلبي بمعرفة وليّ أمركِ وموافقته.</p>
@@ -103,6 +107,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li><b>Payment:</b> with InstaPay we see what the transfer receipt shows, such as the sender's name and the amount. To send a refund we need the InstaPay or wallet number you choose. We never ask for or keep card numbers.</li>
 <li><b>Special orders:</b> your measurements for a custom size or a made-to-measure belt.</li>
 <li><b>Technical data:</b> IP address, browser and device type, logged automatically by our hosting provider to run and protect the website, for example to limit how many orders one device can send.</li>
+<li><b>Analytics and advertising data (only if you accept cookies):</b> pages and products you view, items you add to the cart, starting checkout, order value and number, device and browser type, approximate location and cookie identifiers. Collected by Google Analytics, Meta, TikTok and Snapchat.</li>
 <li><b>On your device:</b> your cart is kept in your browser (localStorage) so it is not lost when you close the page; it reaches us only when you send the order. Your last order's number, total and payment method are kept briefly in the browser for the thank-you page and are deleted when you close the browser tab.</li>
 </ul>
 
@@ -111,6 +116,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li><b>To fulfil your order:</b> confirm, prepare and deliver it, contact you about it, and handle returns, exchanges and warranty. The basis is our sales contract.</li>
 <li><b>Legal duties:</b> keeping sales records as Egyptian law requires, and answering competent authorities.</li>
 <li><b>Protecting the website:</b> preventing fake orders and abuse.</li>
+<li><b>Measurement and advertising (with your consent):</b> to understand how the website is used and to show and measure our ads on Google, Facebook, Instagram, TikTok and Snapchat. The basis is your consent, which you can withdraw at any time from "Cookie settings" at the bottom of the website.</li>
 </ul>
 <p>We send marketing messages or offers only with your explicit prior consent, and you can stop them at any time.</p>
 
@@ -119,6 +125,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <ul>
 <li><b>The courier:</b> name, mobile number and address, to deliver the order.</li>
 <li><b>Cloudflare:</b> hosts the website and the order database and protects the website, processing data on our behalf.</li>
+<li><b>Google, Meta, TikTok and Snap (only if you accept cookies):</b> receive the analytics and advertising data described above and use it under their own policies; they may transfer it outside Egypt.</li>
 <li><b>Services we communicate through,</b> each with its own privacy policy:
 <ul>
 <li>Telegram: we receive a message for every new order and every status change, with the order number, your details, the items and the total.</li>
@@ -153,7 +160,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <p>The connection to the website is encrypted (HTTPS), and on our side the order records can only be opened from accounts protected by a sign-in. If a breach affects your data, we notify the Personal Data Protection Center and you within the periods set by law. Still, no way of sending or storing data on the internet is 100% secure.</p>
 
 <h2>9. Cookies and measurement tools</h2>
-<p>The website currently uses no analytics or advertising trackers, such as Google Analytics or the Meta Pixel. Our hosting provider may set cookies that are strictly needed to protect the website. If we add measurement or advertising tools later, we will update this page before turning them on.</p>
+<p>We use Google Analytics, the Meta Pixel, the TikTok Pixel and the Snap Pixel only after you accept them in the cookie banner, and you can change your choice at any time from "Cookie settings" at the bottom of the website. Cookies strictly needed to run and protect the website need no consent. Details are in the <a href="${policyPath("en", "cookies")}">cookie policy</a>.</p>
 
 <h2>10. Age</h2>
 <p>The website is meant for adults of legal age. If you are not of legal age yet, order with your parent's or guardian's knowledge and consent.</p>

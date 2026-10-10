@@ -10,7 +10,7 @@ const count = (html: string, re: RegExp) => (html.match(re) ?? []).length;
 
 describe("policy pages", () => {
   it("exist for every policy and language, with a title and a description", () => {
-    assert.equal(all.length, 8);
+    assert.equal(all.length, 10);
     for (const { id, lang, doc } of all) {
       assert.ok(doc.title.length > 3 && doc.description.length > 20 && doc.html.length > 500, `${id}/${lang}`);
     }

@@ -3,6 +3,7 @@ import { SHIPPING, formatEgp } from "@platform/commerce";
 import { canonicalUrl, robotsDirective } from "@platform/seo";
 import { deployEnvironment } from "../deploy-env.ts";
 import Header from "../components/Header.astro";
+import Consent from "../components/Consent.astro";
 import Footer from "../components/Footer.astro";
 import Cart from "../components/Cart.astro";
 import { site as store } from "../site.ts";
@@ -86,6 +87,7 @@ const announce = ar
     </main>
     <Footer lang={lang} />
     <Cart lang={lang} />
+    <Consent lang={lang} />
     <script>
       // Header shadow once the page scrolls, and a gentle fade-up for sections as they come into view.
       const header = document.querySelector(".site-header");

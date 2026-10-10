@@ -28,6 +28,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
 
 <script>
   import { formatEgp } from "@platform/commerce";
+  import { track } from "../scripts/tracking.ts";
   const lang = document.documentElement.lang === "en" ? "en" : "ar";
   try {
     const raw = sessionStorage.getItem("vicuna-last-order");
@@ -40,6 +41,12 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
         const t = document.getElementById("t-total")!;
         t.textContent = `${lang === "ar" ? "الإجمالي:" : "Total:"} ${formatEgp(order.totals.total)} ${lang === "ar" ? "جنيه" : "EGP"}`;
         t.hidden = false;
+      }
+      // Once per order, even if the thank-you page is reloaded.
+      const sent = `vicuna-tracked-${order.id}`;
+      if (typeof order.totals?.total === "number" && !sessionStorage.getItem(sent)) {
+        track({ type: "purchase", orderId: order.id, value: order.totals.total });
+        sessionStorage.setItem(sent, "1");
       }
       if (order.paymentMethod === "instapay") document.getElementById("t-instapay")!.hidden = false;
       const wa = document.getElementById("t-wa") as HTMLAnchorElement;

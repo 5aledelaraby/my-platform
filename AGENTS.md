@@ -66,7 +66,7 @@ pnpm check:boundaries            # architecture rules
 ## Policy pages
 
 - `/shipping/`, `/returns/`, `/terms/` and `/privacy/` (and `/en/...`) are built from `apps/website/src/policies/`. Every fee, day count and percentage comes from `site.ts` or `@platform/commerce`; never type one into the text.
-- The privacy page must describe what the site really does with personal data. Adding analytics, an ad pixel, or any new service that receives order or customer data requires updating `privacy.ts` (and `site.policiesUpdated`) in the same change, before it goes live.
+- The privacy page must describe what the site really does with personal data. Adding analytics, an ad pixel, or any new service that receives order or customer data requires updating `privacy.ts` and `cookies.ts` (and `site.policiesUpdated`) in the same change, before it goes live. Analytics and ad tags (GA4, Meta, TikTok, Snap; `tracking` in `site.ts`) load only after "Accept" in the cookie banner (`Consent.astro`, `scripts/tracking.ts`).
 - Policies may give customers more than Egypt's Consumer Protection Law 181/2018 and Personal Data Protection Law 151/2020 require, never less.
 
 ## Brand and content rules (non-negotiable)

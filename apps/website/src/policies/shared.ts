@@ -8,7 +8,7 @@ import { SHIPPING, formatEgp } from "@platform/commerce";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
-export const POLICY_IDS = ["shipping", "returns", "terms", "privacy"] as const;
+export const POLICY_IDS = ["shipping", "returns", "terms", "privacy", "cookies"] as const;
 export type PolicyId = (typeof POLICY_IDS)[number];
 
 export interface PolicyDoc {
@@ -17,7 +17,8 @@ export interface PolicyDoc {
   html: string;
 }
 
-export const policyPath = (lang: Lang, id: PolicyId) => langPath(lang, `/${id}/`);
+/** The cookie policy sits under the privacy policy (/privacy/cookies/); the others are top-level pages. */
+export const policyPath = (lang: Lang, id: PolicyId) => langPath(lang, id === "cookies" ? "/privacy/cookies/" : `/${id}/`);
 
 /** Isolates a left-to-right value (phone, email, number) inside Arabic text. */
 export const ltr = (text: string | number) => `<bdi dir="ltr">${text}</bdi>`;

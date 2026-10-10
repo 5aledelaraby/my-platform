@@ -4,6 +4,7 @@ import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeE
 import type { CartLine, ShippingMethod } from "@platform/commerce";
 import { getProduct, productName, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
+import { track } from "./tracking.ts";
 
 interface Line { id: string; quantity: number }
 
@@ -146,6 +147,8 @@ export function addToCart(id: string, from?: HTMLElement): void {
   if (added) {
     flyToBag(from);
     bumpCount();
+    const p = getProduct(id);
+    track({ type: "add_to_cart", item: { id, name: p ? productName(lang, p) : id, price: lookupProduct(id)?.unitPrice } });
   }
 }
 
@@ -357,6 +360,7 @@ function openCart(): void {
 
 function goToCheckout(): void {
   step = "checkout";
+  track({ type: "begin_checkout", value: currentTotals().total, items: lines.map((l) => ({ id: l.id, quantity: l.quantity })) });
   render();
   form?.querySelector<HTMLInputElement>('[name="customer.name"]')?.focus();
 }
