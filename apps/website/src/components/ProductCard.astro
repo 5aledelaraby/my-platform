@@ -13,7 +13,7 @@ const shown = siblings.slice(0, 3);
 const look = lookOf(product);
 ---
 
-<article class="card reveal" data-color={product.color} style={`--i:${index % 2}`}>
+<article class="card reveal" data-color={product.color} data-product={product.id} style={`--i:${index % 2}`}>
   <div class="card-media">
     <a href={href} aria-label={name}>
       <img src={thumbOf(product)} srcset={`${thumbOf(product)} 480w, ${imageOf(product)} 900w`} sizes="(min-width: 960px) 23vw, 46vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />

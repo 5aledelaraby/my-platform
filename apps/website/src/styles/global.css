@@ -354,6 +354,9 @@ dialog.menu::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
   .card:hover .quick-add, .quick-add:focus-visible { opacity: 1; transform: none; }
 }
 .card-out { position: absolute; top: 10px; inset-inline-start: 10px; z-index: 2; padding: 3px 10px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 800; }
+.card.is-out .card-media img { filter: grayscale(1); opacity: .45; }
+.card.is-out .card-body { opacity: .55; }
+.card.is-out .quick-add { display: none; }
 .card-body { display: grid; gap: 1px; padding: 10px 6px 0; }
 .card-style { font-size: 12px; font-weight: 700; color: var(--muted); }
 .card-name { font-family: var(--font-body); font-size: 15px; font-weight: 800; line-height: 1.5; }

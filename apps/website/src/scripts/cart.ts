@@ -521,6 +521,13 @@ function markSoldOut(): void {
     }
     b.disabled = out;
   });
+  // Sold-out cards fade and move to the end of their grid, so the first rows are always buyable.
+  document.querySelectorAll<HTMLElement>("[data-grid]").forEach((grid) => {
+    const cards = [...grid.querySelectorAll<HTMLElement>(".card[data-product]")];
+    const out = cards.filter((c) => stock?.get(c.dataset["product"] ?? "") === 0);
+    cards.forEach((c) => c.classList.toggle("is-out", out.includes(c)));
+    for (const c of out) grid.append(c);
+  });
 }
 
 function applyStock(next: Map<string, number>): void {

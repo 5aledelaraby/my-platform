@@ -5,14 +5,19 @@ import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
 import { articles, articleUrl } from "../lib/articles.ts";
 import { JOURNAL_PATH, site } from "../site.ts";
-import { beltsUrl, colorName, colors, price, productsOfStyle, styleText, styles } from "../store.ts";
+import { colorName, colors, products, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = homeCopy[lang];
 const ar = lang === "ar";
-const cur = ar ? "جنيه" : "EGP";
+// One grid ordered by colour family (all the black belts together, then white, ...), then by style:
+// the eye moves through one colour at a time instead of jumping between colours.
+const colourRank = new Map(colors.map((cl, i) => [cl.id, i]));
+const styleRank = new Map(styles.map((st, i) => [st.id, i]));
+const byColour = [...products].sort((a, b) =>
+  (colourRank.get(a.color) ?? 99) - (colourRank.get(b.color) ?? 99) || (styleRank.get(a.style) ?? 99) - (styleRank.get(b.style) ?? 99));
 const wa = `https://wa.me/${site.whatsappInternational}`;
 const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في حجز موعد لتفصيل حزام من الجلد الطبيعي على مقاسي." : "Hello Vicuna, I would like to book a made-to-measure natural leather belt.")}`;
 const tie = ar
@@ -60,22 +65,11 @@ const tie = ar
       <span id="filter-status" class="muted" aria-live="polite"></span>
     </div>
   </div>
-  {styles.map((s) => {
-    const t = styleText(lang, s.id);
-    const list = productsOfStyle(s.id);
-    return (
-      <div class="wrap style-group" data-group>
-        <div class="group-head">
-          <h3 id={`g-${s.id}`}>{t.name}</h3>
-          <span class="count-chip">{list.length} {ar ? "لون" : "colours"} · {price(s.id)} {cur}</span>
-        </div>
-        <p class="muted group-intro">{t.headline} · <a class="textlink" href={beltsUrl(lang, s.id)}>{ar ? `كل تفاصيل ${t.name}` : `About ${t.name}`}</a></p>
-        <div class="grid">
-          {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
-        </div>
-      </div>
-    );
-  })}
+  <div class="wrap style-group" data-group>
+    <div class="grid" data-grid>
+      {byColour.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
+    </div>
+  </div>
   <div class="wrap style-group" id="tie">
     <div class="tie-card reveal">
       <h2>{ar ? "طريقة الربط" : "How to tie"}</h2>
