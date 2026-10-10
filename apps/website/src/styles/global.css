@@ -649,9 +649,10 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .fine-print a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .checkout-consent { font-size: 11.5px; }
 .footer-legal, .footer-legal p { font-size: 11.5px; }
-/* belts hero: two lace photos that slowly cross-fade with a gentle zoom (still for reduced motion) */
+/* belts hero: two lace photos shown as one picture; one fades out as the other fades in, slowly */
 .bh-media .bh-slide { position: absolute; inset: 0; }
-.bh-slide.s1 { animation: bh-zoom 16s ease-in-out infinite alternate; }
-.bh-slide.s2 { opacity: 0; animation: bh-fade 14s ease-in-out infinite, bh-zoom 16s ease-in-out -8s infinite alternate; }
-@keyframes bh-fade { 0%, 38% { opacity: 0; } 50%, 88% { opacity: 1; } 100% { opacity: 0; } }
-@keyframes bh-zoom { from { transform: scale(1); } to { transform: scale(1.08); } }
+.bh-slide.s1 { animation: bh-a 12s ease-in-out infinite; }
+.bh-slide.s2 { animation: bh-b 12s ease-in-out infinite; }
+@keyframes bh-a { 0%, 35% { opacity: 1; } 50%, 85% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes bh-b { 0%, 35% { opacity: 0; } 50%, 85% { opacity: 1; } 100% { opacity: 0; } }
+.bh-caption { position: absolute; inset-inline: 0; bottom: 0; z-index: 2; padding: 40px 16px 16px; text-align: center; color: #fff; font-family: var(--font-latin); font-size: 15px; letter-spacing: .18em; background: linear-gradient(transparent, rgb(0 0 0 / .35)); }
