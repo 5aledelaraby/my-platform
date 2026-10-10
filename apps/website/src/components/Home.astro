@@ -35,6 +35,10 @@ const sections: Section[] = [
     <p class="intro-kicker" lang="en">VICUNA</p>
     <h1>{ar ? "تصميمات بسيطة، تُصنع بعناية" : "Simple designs, made with care"}</h1>
     <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا، ونهتم بالتفاصيل الصغيرة." : "Vicuna is an Egyptian trading and design brand. We design and make by hand, and we care about the small details."}</p>
+    <div class="hero-actions">
+      <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي الأحزمة" : "Shop the belts"}</a>
+      <a class="btn btn-white" href={`https://wa.me/${site.whatsappInternational}`} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "تواصلي على واتساب" : "Chat on WhatsApp"}</a>
+    </div>
   </div>
 </section>
 

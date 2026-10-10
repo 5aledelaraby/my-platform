@@ -165,18 +165,6 @@ const tie = ar
 
 <section class="section">
   <div class="wrap">
-    <div class="section-head">
-      <p class="eyebrow">{c.promisesEyebrow}</p>
-      <h2 class="h2">{c.promisesTitle}</h2>
-    </div>
-    <dl class="promise-cards">
-      {c.promises.map((p, i) => <div class="soft-card reveal" style={`--i:${i % 2}`}><dt>{p.t}</dt><dd class="muted">{p.d}</dd></div>)}
-    </dl>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
     <div class="bespoke reveal">
       <div class="bespoke-text">
         <p class="eyebrow">{c.customEyebrow}</p>

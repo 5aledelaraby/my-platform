@@ -697,3 +697,4 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .policy-toc a:hover { text-decoration: underline; }
 @media (max-width: 560px) { .policy-toc ol { columns: 1; } }
 .prose h2[id] { scroll-margin-top: 90px; }
+.intro-text .hero-actions { justify-content: center; margin-top: 20px; }
