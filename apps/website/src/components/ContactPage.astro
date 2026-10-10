@@ -22,8 +22,9 @@ const description = ar
     </header>
     <ContactCards lang={lang} />
     <p class="fine-print">
-      {ar ? "لمعرفة تفاصيل التوصيل والاسترجاع: " : "Delivery and returns details: "}
-      <a href={policyPath(lang, "returns")}>{ar ? "سياسة الاسترجاع" : "returns policy"}</a>
+      <a href={policyPath(lang, "shipping")}>{ar ? "الشحن والتوصيل" : "Shipping and delivery"}</a> ·
+      <a href={policyPath(lang, "returns")}>{ar ? "الاسترجاع والاستبدال" : "Returns and exchanges"}</a> ·
+      <a href={langPath(lang, "/faq/")}>{ar ? "الأسئلة الشائعة" : "FAQ"}</a>
     </p>
   </section>
 </Base>

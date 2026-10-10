@@ -10,7 +10,7 @@ const count = (html: string, re: RegExp) => (html.match(re) ?? []).length;
 
 describe("policy pages", () => {
   it("exist for every policy and language, with a title and a description", () => {
-    assert.equal(all.length, 6);
+    assert.equal(all.length, 8);
     for (const { id, lang, doc } of all) {
       assert.ok(doc.title.length > 3 && doc.description.length > 20 && doc.html.length > 500, `${id}/${lang}`);
     }
@@ -20,7 +20,7 @@ describe("policy pages", () => {
 
   it("take every number from the shared settings", () => {
     const egp = (v: number) => formatEgp(v);
-    const ar = getPolicy("returns", "ar").html;
+    const ar = getPolicy("shipping", "ar").html + getPolicy("returns", "ar").html;
     for (const phrase of [
       `${egp(SHIPPING.standard)} جنيه`,
       `${egp(SHIPPING.express)} جنيه`,
@@ -33,7 +33,7 @@ describe("policy pages", () => {
     ]) {
       assert.ok(ar.includes(phrase), `ar: ${phrase}`);
     }
-    const en = getPolicy("returns", "en").html;
+    const en = getPolicy("shipping", "en").html + getPolicy("returns", "en").html;
     for (const phrase of [
       `EGP ${egp(SHIPPING.standard)}`,
       `EGP ${egp(SHIPPING.express)}`,

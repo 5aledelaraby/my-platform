@@ -52,7 +52,9 @@ const home = langPath(lang, "/");
     <p class="menu-label">{ar ? "المساعدة" : "Help"}</p>
     <ul class="menu-list sub">
       {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
+      <li><a href={langPath(lang, "/about/")}>{ar ? "من نحن" : "About us"}</a></li>
       <li><a href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a></li>
+      <li><a href={langPath(lang, "/faq/")}>{ar ? "الأسئلة الشائعة" : "FAQ"}</a></li>
     </ul>
     <a class="menu-lang" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"}>{ar ? "English" : "العربية"}</a>
   </nav>

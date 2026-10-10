@@ -25,7 +25,7 @@ export const termsAr: PolicyDoc = {
 <li>ترسلين طلبكِ من السلة في الموقع، فيظهر لكِ رقم الطلب.</li>
 <li>نتواصل معكِ على واتساب أو بالهاتف لتأكيد البيانات والإجمالي وطريقة الدفع، ويُعد الطلب مؤكدًا بعد هذا التواصل.</li>
 <li>إذا نفدت كمية منتج بعد طلبكِ لأي سبب، نخبركِ فورًا، فتختارين بديلًا أو نلغي الطلب دون مصاريف ونردّ أي مبلغ دفعتِه.</li>
-<li>يمكنكِ تعديل الطلب أو إلغاؤه دون مصاريف في أي وقت قبل شحنه، وبعد الشحن يمكنكِ الإرجاع أو الاستبدال حسب <a href="${policyPath("ar", "returns")}">سياسة الشحن والاسترجاع</a>.</li>
+<li>يمكنكِ تعديل الطلب أو إلغاؤه دون مصاريف في أي وقت قبل شحنه، وبعد الشحن يمكنكِ الإرجاع أو الاستبدال حسب <a href="${policyPath("ar", "returns")}">سياسة الاسترجاع والاستبدال</a>.</li>
 <li>قد نعتذر عن تنفيذ طلب إذا كانت بياناته ناقصة أو غير صحيحة ولم نتمكن من التواصل معكِ، أو إذا كانت الكميات تدل على إعادة البيع. وفي هذه الحالة نردّ أي مبلغ دفعتِه.</li>
 </ul>
 
@@ -33,7 +33,7 @@ export const termsAr: PolicyDoc = {
 <ul>
 <li>الأسعار بالجنيه المصري ومكتوبة على كل منتج، وهي نهائية: لا نضيف عليها أي ضرائب أو رسوم غير مصاريف الشحن الظاهرة في السلة.</li>
 <li>السعر الذي أُكِّد به طلبكِ هو ما تدفعينه، حتى لو تغير السعر بعد ذلك.</li>
-<li>مصاريف الشحن موضحة في صفحة <a href="${policyPath("ar", "returns")}">الشحن والاسترجاع</a>، وتظهر في الإجمالي قبل إرسال الطلب.</li>
+<li>مصاريف الشحن موضحة في صفحة <a href="${policyPath("ar", "shipping")}">الشحن والتوصيل</a>، وتظهر في الإجمالي قبل إرسال الطلب.</li>
 <li>طرق الدفع: الدفع عند الاستلام، أو التحويل عبر InstaPay إلى ${ltr(site.instapay)}.</li>
 <li>إذا ظهر خطأ في سعر أو وصف على الموقع، نخبركِ قبل الشحن، ولكِ أن تكملي بالسعر الصحيح أو تلغي الطلب دون مصاريف.</li>
 </ul>
@@ -43,7 +43,7 @@ export const termsAr: PolicyDoc = {
 <li>الأحزمة مصنوعة من جلد PU مستورد، أو من الدانتيل حسب الموديل، والخامة والمقاس مكتوبان في تفاصيل كل منتج.</li>
 <li>أحزمة الجلد الطبيعي تُفصّل حسب الطلب فقط، بالتواصل على واتساب، وهي متاحة في القاهرة والجيزة فقط، ويُتفق على سعرها ومقاسها قبل التنفيذ.</li>
 <li>نعرض الألوان والتفاصيل بأدق شكل ممكن، لكن الألوان قد تختلف قليلًا حسب الشاشة.</li>
-<li>نستبدل أو نردّ ثمن أي منتج به عيب صناعة إذا أبلغتِنا به خلال ${site.defectDays} يومًا من استلامه، والإرجاع والاستبدال لأي سبب آخر حسب <a href="${policyPath("ar", "returns")}">سياسة الشحن والاسترجاع</a>.</li>
+<li>نستبدل أو نردّ ثمن أي منتج به عيب صناعة إذا أبلغتِنا به خلال ${site.defectDays} يومًا من استلامه، والإرجاع والاستبدال لأي سبب آخر حسب <a href="${policyPath("ar", "returns")}">سياسة الاسترجاع والاستبدال</a>.</li>
 </ul>
 
 <h2 id="offers">5. العروض وأكواد الخصم</h2>
@@ -88,7 +88,7 @@ export const termsAr: PolicyDoc = {
 
 <h2>15. تواصلي معنا</h2>
 ${contactHtml("ar", "السلام عليكم، عندي سؤال عن الشروط")}
-<p>اقرئي أيضًا <a href="${policyPath("ar", "returns")}">الشحن والاسترجاع</a> و<a href="${policyPath("ar", "privacy")}">سياسة الخصوصية</a>.</p>
+<p>اقرئي أيضًا <a href="${policyPath("ar", "returns")}">الاسترجاع والاستبدال</a> و<a href="${policyPath("ar", "privacy")}">سياسة الخصوصية</a>.</p>
 `,
 };
 
@@ -111,7 +111,7 @@ export const termsEn: PolicyDoc = {
 <li>You send your order from the cart on the website and see its order number.</li>
 <li>We contact you on WhatsApp or by phone to confirm your details, the total and the payment method; the order is confirmed after that contact.</li>
 <li>If an item runs out after you order for any reason, we tell you at once: you choose a replacement, or we cancel the order free of charge and refund anything you paid.</li>
-<li>You can change or cancel the order free of charge at any time before it ships; after it ships you can return or exchange it under the <a href="${policyPath("en", "returns")}">shipping and returns policy</a>.</li>
+<li>You can change or cancel the order free of charge at any time before it ships; after it ships you can return or exchange it under the <a href="${policyPath("en", "returns")}">returns and exchanges policy</a>.</li>
 <li>We may decline an order if its details are missing or wrong and we cannot reach you, or if the quantities suggest resale. We then refund anything you paid.</li>
 </ul>
 
@@ -119,7 +119,7 @@ export const termsEn: PolicyDoc = {
 <ul>
 <li>Prices are in Egyptian pounds, shown on each product, and final: we add no taxes or fees other than the shipping fee shown in the cart.</li>
 <li>You pay the price your order was confirmed at, even if the price changes later.</li>
-<li>Shipping fees are on the <a href="${policyPath("en", "returns")}">shipping and returns</a> page and appear in the total before you send the order.</li>
+<li>Shipping fees are on the <a href="${policyPath("en", "shipping")}">shipping and delivery</a> page and appear in the total before you send the order.</li>
 <li>Payment: cash on delivery, or InstaPay to ${site.instapay}.</li>
 <li>If a price or description on the website is wrong, we tell you before shipping, and you may continue at the correct price or cancel free of charge.</li>
 </ul>
@@ -129,7 +129,7 @@ export const termsEn: PolicyDoc = {
 <li>Our belts are made of imported PU leather, or lace depending on the style; the material and size are listed on each product.</li>
 <li>Natural leather belts are made to measure only, on request via WhatsApp, available in Cairo and Giza only, with price and size agreed before we start.</li>
 <li>We show colours and details as accurately as we can, but colours can look slightly different on different screens.</li>
-<li>We replace or refund any item with a manufacturing fault that you report within ${site.defectDays} days of delivery; returns and exchanges for any other reason follow the <a href="${policyPath("en", "returns")}">shipping and returns policy</a>.</li>
+<li>We replace or refund any item with a manufacturing fault that you report within ${site.defectDays} days of delivery; returns and exchanges for any other reason follow the <a href="${policyPath("en", "returns")}">returns and exchanges policy</a>.</li>
 </ul>
 
 <h2 id="offers">5. Offers and promo codes</h2>
@@ -174,6 +174,6 @@ export const termsEn: PolicyDoc = {
 
 <h2>15. Contact us</h2>
 ${contactHtml("en", "Hello, I have a question about the terms")}
-<p>See also <a href="${policyPath("en", "returns")}">shipping and returns</a> and the <a href="${policyPath("en", "privacy")}">privacy policy</a>.</p>
+<p>See also <a href="${policyPath("en", "returns")}">returns and exchanges</a> and the <a href="${policyPath("en", "privacy")}">privacy policy</a>.</p>
 `,
 };

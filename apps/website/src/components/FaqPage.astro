@@ -1,0 +1,102 @@
+---
+// /faq/: common questions in one place. Numbers come from site.ts and @platform/commerce; the belts questions are the
+// same ones shown on the belts page (home-copy.ts).
+import { SHIPPING, formatEgp } from "@platform/commerce";
+import Base from "../layouts/Base.astro";
+import { homeCopy } from "../home-copy.ts";
+import { policyPath } from "../policies/index.ts";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const std = formatEgp(SHIPPING.standard);
+const exp = formatEgp(SHIPPING.express);
+const free = formatEgp(SHIPPING.freeOver);
+const title = ar ? "الأسئلة الشائعة | فيكونا" : "FAQ | Vicuna";
+const description = ar
+  ? "إجابات عن التوصيل والشحن والدفع والاسترجاع والمقاسات وأكواد الخصم في فيكونا."
+  : "Answers about delivery, shipping, payment, returns, sizes and promo codes at Vicuna.";
+
+const groups = ar
+  ? [
+      {
+        t: "الطلب والتوصيل",
+        items: [
+          { q: "كم تكلفة الشحن؟", a: `الشحن العادي ${std} جنيه لأي محافظة، ومجاني للطلبات من ${free} جنيه. الشحن السريع ${exp} جنيه ونتفق معكِ على موعده.` },
+          homeCopy.ar.faq[0]!,
+          homeCopy.ar.faq[1]!,
+          { q: "هل يمكنني تعديل الطلب أو إلغاؤه؟", a: "نعم، دون أي مصاريف في أي وقت قبل شحنه. راسلينا على واتساب ومعكِ رقم الطلب." },
+          { q: "كيف أستخدم كود الخصم؟", a: "اكتبي الكود في خانة «كود الخصم» في السلة قبل تأكيد الطلب، ويظهر الخصم في الإجمالي على الفور." },
+        ],
+      },
+      {
+        t: "الاسترجاع والاستبدال",
+        items: [
+          homeCopy.ar.faq[2]!,
+          { q: "هل أدفع مصاريف شحن الإرجاع؟", a: "لا، نتحمل نحن مصاريف شحن الإرجاع والاستبدال." },
+        ],
+      },
+      {
+        t: "الأحزمة والمقاسات",
+        items: [
+          homeCopy.ar.faq[3]!,
+          homeCopy.ar.faq[4]!,
+          { q: "هل تفصّلون أحزمة من الجلد الطبيعي؟", a: "نعم، في القاهرة والجيزة: تقابلكِ واحدة من فريقنا لتأخذ المقاس وتعرض عليكِ الجلود، ونتفق على التصميم والسعر قبل البدء." },
+        ],
+      },
+      {
+        t: "التواصل",
+        items: [{ q: "متى يمكنني التواصل معكم؟", a: `على واتساب أو بالهاتف ${site.supportHours.ar}.` }],
+      },
+    ]
+  : [
+      {
+        t: "Orders and delivery",
+        items: [
+          { q: "How much is shipping?", a: `Standard shipping is EGP ${std} to any governorate and free on orders of EGP ${free} or more. Express is EGP ${exp}, on a date we agree with you.` },
+          homeCopy.en.faq[0]!,
+          homeCopy.en.faq[1]!,
+          { q: "Can I change or cancel my order?", a: "Yes, free of charge at any time before it ships. Message us on WhatsApp with your order number." },
+          { q: "How do I use a promo code?", a: "Type it in the promo code field in the cart before you place the order; the discount shows in the total at once." },
+        ],
+      },
+      {
+        t: "Returns and exchanges",
+        items: [
+          homeCopy.en.faq[2]!,
+          { q: "Do I pay for return shipping?", a: "No, we pay the shipping for returns and exchanges." },
+        ],
+      },
+      {
+        t: "Belts and sizes",
+        items: [
+          homeCopy.en.faq[3]!,
+          homeCopy.en.faq[4]!,
+          { q: "Do you make natural leather belts to measure?", a: "Yes, in Cairo and Giza: a member of our team takes your measurements and shows you the leathers, and we agree on the design and price before we start." },
+        ],
+      },
+      {
+        t: "Contact",
+        items: [{ q: "When can I reach you?", a: `On WhatsApp or by phone, ${site.supportHours.en}.` }],
+      },
+    ];
+---
+
+<Base title={title} description={description} lang={lang} altPath={langPath(ar ? "en" : "ar", "/faq/")} theme="neutral">
+  <section class="wrap faq-page">
+    <h1>{ar ? "الأسئلة الشائعة" : "Frequently asked questions"}</h1>
+    {groups.map((g) => (
+      <div class="faq">
+        <h2 class="faq-group">{g.t}</h2>
+        {g.items.map((f) => <details><summary>{f.q}</summary><p class="muted">{f.a}</p></details>)}
+      </div>
+    ))}
+    <p class="fine-print">
+      <a href={policyPath(lang, "shipping")}>{ar ? "الشحن والتوصيل" : "Shipping and delivery"}</a> ·
+      <a href={policyPath(lang, "returns")}>{ar ? "الاسترجاع والاستبدال" : "Returns and exchanges"}</a> ·
+      <a href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a>
+    </p>
+  </section>
+</Base>

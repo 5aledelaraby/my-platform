@@ -35,7 +35,9 @@ const socialIcon: Record<string, string> = {
     <div>
       <h3 class="footer-h">{ar ? "المساعدة" : "Help"}</h3>
       <ul>
+        <li><a href={langPath(lang, "/about/")}>{ar ? "من نحن" : "About us"}</a></li>
         <li><a href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a></li>
+        <li><a href={langPath(lang, "/faq/")}>{ar ? "الأسئلة الشائعة" : "FAQ"}</a></li>
         {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
       </ul>
     </div>
