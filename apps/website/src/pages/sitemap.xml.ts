@@ -12,6 +12,7 @@ export function GET(): Response {
       ...styles.map((s) => beltsUrl(lang, s.id)),
       ...products.map((p) => beltsUrl(lang, p.id)),
       ...POLICY_IDS.map((id) => policyPath(lang, id)),
+      langPath(lang, "/about/"),
       langPath(lang, "/contact/"),
     ]),
     JOURNAL_PATH,
