@@ -73,8 +73,10 @@ const announce = ar
   </head>
   <body>
     <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
-    <div class="announce">
+    <Consent lang={lang} />
+    <div class="announce" data-announce>
       <p class="sr-only">{announce.join(" · ")}</p>
+      <button type="button" class="motion-toggle announce-toggle" data-announce-toggle data-label-pause={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"} data-label-play={ar ? "تشغيل الشريط المتحرك" : "Play the moving bar"} aria-label={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"}><span aria-hidden="true">❚❚</span></button>
       <div class="marquee" aria-hidden="true">
         <div class="marquee-track">
           {[0, 1].map(() => announce.map((a) => <span>{a}<i>✦</i></span>))}
@@ -87,7 +89,6 @@ const announce = ar
     </main>
     <Footer lang={lang} />
     <Cart lang={lang} />
-    <Consent lang={lang} />
     <script>
       // Header shadow once the page scrolls, and a gentle fade-up for sections as they come into view.
       const header = document.querySelector(".site-header");
@@ -109,6 +110,41 @@ const announce = ar
           { rootMargin: "0px 0px -6% 0px" },
         );
         items.forEach((el) => io.observe(el));
+      }
+
+      // Moving content (WCAG 2.2.2): videos marked data-motion and the announcement bar can be paused, and they do not
+      // move at all when the visitor's device asks for reduced motion.
+      const lang = document.documentElement.lang === "en" ? "en" : "ar";
+      const words = lang === "ar" ? { pause: "إيقاف الفيديو", play: "تشغيل الفيديو" } : { pause: "Pause video", play: "Play video" };
+      document.querySelectorAll<HTMLVideoElement>("video[data-motion]").forEach((video) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "motion-toggle film-toggle";
+        const show = () => {
+          const paused = video.paused;
+          button.setAttribute("aria-label", paused ? words.play : words.pause);
+          button.innerHTML = paused ? '<span aria-hidden="true">▶</span>' : '<span aria-hidden="true">❚❚</span>';
+        };
+        button.addEventListener("click", () => {
+          if (video.paused) void video.play().catch(() => undefined);
+          else video.pause();
+        });
+        video.addEventListener("play", show);
+        video.addEventListener("pause", show);
+        video.after(button);
+        if (calm) video.pause();
+        else void video.play().catch(() => undefined);
+        show();
+      });
+      const bar = document.querySelector<HTMLElement>("[data-announce]");
+      const barButton = document.querySelector<HTMLButtonElement>("[data-announce-toggle]");
+      if (bar && barButton) {
+        if (calm) barButton.hidden = true;
+        barButton.addEventListener("click", () => {
+          const paused = bar.classList.toggle("paused");
+          barButton.setAttribute("aria-label", (paused ? barButton.dataset["labelPlay"] : barButton.dataset["labelPause"]) ?? "");
+          barButton.innerHTML = paused ? '<span aria-hidden="true">▶</span>' : '<span aria-hidden="true">❚❚</span>';
+        });
       }
     </script>
   </body>

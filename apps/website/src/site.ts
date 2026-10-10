@@ -20,6 +20,8 @@ export const site = {
   taxNumber: "704-112-639",
   addressAr: "21 شارع عباس العقاد، مدينة نصر، القاهرة 11371",
   addressEn: "21 Abbas El Akkad street, Nasr City, Cairo 11371, Egypt",
+  /** The same address split for structured data (Organization). Keep in step with addressAr/addressEn. */
+  addressParts: { streetAddress: "21 Abbas El Akkad street", addressLocality: "Nasr City", addressRegion: "Cairo", postalCode: "11371", addressCountry: "EG" },
   refundDays: 7,
   deliveryDays: 3,
   returnDays: 14,

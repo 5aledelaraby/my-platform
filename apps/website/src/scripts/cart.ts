@@ -382,7 +382,7 @@ function openCart(): void {
 
 function goToCheckout(): void {
   step = "checkout";
-  track({ type: "begin_checkout", value: currentTotals().total, items: lines.map((l) => ({ id: l.id, quantity: l.quantity })) });
+  track({ type: "begin_checkout", value: currentTotals().total, items: lines.map((l) => ({ id: l.id, quantity: l.quantity, price: lookupProduct(l.id)?.unitPrice })) });
   render();
   form?.querySelector<HTMLInputElement>('[name="customer.name"]')?.focus();
 }
@@ -393,6 +393,11 @@ function fieldError(name: string, code: string | undefined): void {
   input?.toggleAttribute("aria-invalid", code !== undefined);
   const text = code ? (T as unknown as Record<string, unknown>)[code] : "";
   if (msg) msg.textContent = typeof text === "string" ? text : T.required;
+}
+
+/** After a failed submit, take the keyboard and screen reader to the first field that needs fixing. */
+function focusFirstInvalid(): void {
+  form?.querySelector<HTMLElement>("[aria-invalid]")?.focus();
 }
 
 const FIELDS = ["customer.name", "customer.phone", "customer.governorate", "customer.address", "customer.notes"] as const;
@@ -416,6 +421,7 @@ async function submit(event: SubmitEvent): Promise<void> {
   FIELDS.forEach((f) => fieldError(f, errs[f]));
   if (Object.keys(errs).length > 0) {
     statusEl.textContent = T.fix;
+    focusFirstInvalid();
     return;
   }
   // A code typed but not applied yet: check it now instead of silently ordering at full price.
@@ -423,6 +429,7 @@ async function submit(event: SubmitEvent): Promise<void> {
     await applyPromo();
     if (!promo) {
       statusEl.textContent = T.promoFix;
+      promoInput.focus();
       return;
     }
   }
@@ -454,9 +461,16 @@ async function submit(event: SubmitEvent): Promise<void> {
     };
     if (res.status === 201 && data.order) {
       try {
-        // Only what the thank-you page shows; the customer's name, phone and address are not kept in the browser.
-        const o = data.order as { id?: unknown; paymentMethod?: unknown; totals?: { total?: unknown } };
-        sessionStorage.setItem(ORDER_KEY, JSON.stringify({ id: o.id, paymentMethod: o.paymentMethod, totals: { total: o.totals?.total } }));
+        // Only what the thank-you page shows and counts; the customer's name, phone and address are not kept in the browser.
+        const o = data.order as { id?: unknown; paymentMethod?: unknown; totals?: { total?: unknown }; items?: unknown };
+        const items = Array.isArray(o.items)
+          ? (o.items as Array<{ productId?: unknown; quantity?: unknown; unitPrice?: unknown }>).flatMap((i) =>
+              typeof i.productId === "string" && typeof i.quantity === "number" && typeof i.unitPrice === "number"
+                ? [{ id: i.productId, quantity: i.quantity, price: i.unitPrice }]
+                : [],
+            )
+          : [];
+        sessionStorage.setItem(ORDER_KEY, JSON.stringify({ id: o.id, paymentMethod: o.paymentMethod, totals: { total: o.totals?.total }, items }));
       } catch {
         /* the thank-you page still shows a generic message */
       }
@@ -478,6 +492,8 @@ async function submit(event: SubmitEvent): Promise<void> {
       const promoProblem = data.errors["promoCode"];
       if (promoProblem) setPromoError(promoProblem);
       statusEl.textContent = itemProblem ? T.items : promoProblem ? T.promoFix : T.fix;
+      if (form?.querySelector("[aria-invalid]")) focusFirstInvalid();
+      else if (promoProblem) promoInput?.focus();
     } else {
       statusEl.textContent = res.status === 503 ? T.busy : T.fail;
     }
@@ -513,11 +529,13 @@ function markSoldOut(): void {
   });
   document.querySelectorAll<HTMLButtonElement>("button[data-add]").forEach((b) => {
     const out = stock?.get(b.dataset["add"] ?? "") === 0;
-    if (out && !b.disabled) {
+    // The site Worker may have disabled the button already (sold out when the page was served): still show the label.
+    if (out && b.dataset["label"] === undefined) {
       b.dataset["label"] = b.textContent ?? "";
       b.textContent = T.soldOutBtn;
-    } else if (!out && b.disabled && b.dataset["label"]) {
+    } else if (!out && b.dataset["label"] !== undefined) {
       b.textContent = b.dataset["label"];
+      delete b.dataset["label"];
     }
     b.disabled = out;
   });

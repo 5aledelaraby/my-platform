@@ -32,7 +32,9 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
   const lang = document.documentElement.lang === "en" ? "en" : "ar";
   try {
     const raw = sessionStorage.getItem("vicuna-last-order");
-    const order = raw ? (JSON.parse(raw) as { id?: string; paymentMethod?: string; totals?: { total?: number } }) : null;
+    const order = raw
+      ? (JSON.parse(raw) as { id?: string; paymentMethod?: string; totals?: { total?: number }; items?: Array<{ id: string; quantity: number; price: number }> })
+      : null;
     if (order && typeof order.id === "string") {
       document.getElementById("t-id")!.textContent = order.id;
       document.getElementById("t-id-wrap")!.hidden = false;
@@ -42,10 +44,11 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
         t.textContent = `${lang === "ar" ? "الإجمالي:" : "Total:"} ${formatEgp(order.totals.total)} ${lang === "ar" ? "جنيه" : "EGP"}`;
         t.hidden = false;
       }
-      // Once per order, even if the thank-you page is reloaded.
+      // Once per order, even if the thank-you page is reloaded. Without consent the event is dropped, and it is not
+      // sent later either: the flag is set in both cases.
       const sent = `vicuna-tracked-${order.id}`;
       if (typeof order.totals?.total === "number" && !sessionStorage.getItem(sent)) {
-        track({ type: "purchase", orderId: order.id, value: order.totals.total });
+        track({ type: "purchase", orderId: order.id, value: order.totals.total, items: Array.isArray(order.items) ? order.items : [] });
         sessionStorage.setItem(sent, "1");
       }
       if (order.paymentMethod === "instapay") document.getElementById("t-instapay")!.hidden = false;

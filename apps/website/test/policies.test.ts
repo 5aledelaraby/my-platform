@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it } from "node:test";
 import { SHIPPING, formatEgp } from "@platform/commerce";
 import { POLICY_IDS, formatPolicyDate, getPolicy, policyPath } from "../src/policies/index.ts";
-import { site } from "../src/site.ts";
+import { site, tracking } from "../src/site.ts";
 
 const LANGS = ["ar", "en"] as const;
 const all = POLICY_IDS.flatMap((id) => LANGS.map((lang) => ({ id, lang, doc: getPolicy(id, lang) })));
@@ -88,6 +90,51 @@ describe("policy pages", () => {
     for (const lang of LANGS) {
       const html = getPolicy("privacy", lang).html;
       for (const service of ["Cloudflare", "Telegram", "WhatsApp", "Gmail", "localStorage"]) assert.ok(html.includes(service), `${lang} ${service}`);
+    }
+  });
+});
+
+describe("privacy and cookie policies match what the site really loads and stores", () => {
+  const docs = ["privacy", "cookies"] as const;
+  const text = (lang: "ar" | "en") => docs.map((id) => getPolicy(id, lang).html).join("\n");
+
+  it("name a tag only when it has an ID in site.ts (so TikTok is not mentioned while its ID is empty)", () => {
+    const vendors: Array<[keyof typeof tracking, RegExp]> = [
+      ["ga4", /Google Analytics/],
+      ["meta", /Meta/],
+      ["tiktok", /TikTok|_ttp/],
+      ["snapchat", /Snap|_scid/],
+    ];
+    for (const lang of LANGS) {
+      for (const [key, re] of vendors) {
+        if (tracking[key]) assert.match(text(lang), re, `${lang}: ${key} is active and must be described`);
+        else assert.doesNotMatch(text(lang), re, `${lang}: ${key} has no ID and must not be mentioned`);
+      }
+    }
+  });
+
+  it("list every cookie of the active tags in both languages, including _ga_* and _fbc", () => {
+    for (const lang of LANGS) {
+      const html = getPolicy("cookies", lang).html;
+      if (tracking.ga4) for (const c of ["_ga", "_ga_*"]) assert.ok(html.includes(`${c}</`), `${lang}: ${c}`);
+      if (tracking.meta) for (const c of ["_fbp", "_fbc"]) assert.ok(html.includes(`${c}</`), `${lang}: ${c}`);
+      if (tracking.snapchat) assert.ok(html.includes("_scid</"), `${lang}: _scid`);
+    }
+  });
+
+  it("list every key the site saves in the browser", () => {
+    const src = new URL("../src/", import.meta.url).pathname;
+    const files = readdirSync(src, { recursive: true, encoding: "utf8" }).filter((f) => /\.(ts|astro)$/.test(f));
+    const keys = new Set<string>();
+    for (const f of files) {
+      const code = readFileSync(join(src, f), "utf8");
+      for (const m of code.matchAll(/(?:KEY\s*=\s*|Storage\.setItem\(\s*)"(vicuna-[a-z0-9-]+)"/g)) keys.add(m[1]!);
+      for (const m of code.matchAll(/`(vicuna-[a-z-]+-)\$\{/g)) keys.add(m[1]!);
+    }
+    assert.ok(keys.size >= 6, `found ${[...keys].join(", ")}`);
+    for (const lang of LANGS) {
+      const html = getPolicy("cookies", lang).html;
+      for (const k of keys) assert.ok(html.includes(k), `${lang}: cookie policy must list ${k}`);
     }
   });
 });

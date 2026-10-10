@@ -3,7 +3,7 @@ import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo"
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import { beltsUrl, coverOf, imageOf, lookOf, priceOfProduct, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
-import { priceOf } from "@platform/commerce";
+import { PIASTERS_PER_EGP, SHIPPING, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
@@ -57,7 +57,13 @@ const jsonLd = serializeJsonLd([
     brand: "Vicuna",
     price: Number(priceOfProduct(product)),
     currency: "EGP",
+    // Built as in stock; the site Worker switches it to OutOfStock when the live stock is zero (ADR 0013).
     inStock: true,
+    shipping: [
+      { rate: SHIPPING.standard / PIASTERS_PER_EGP, country: "EG" },
+      { rate: SHIPPING.express / PIASTERS_PER_EGP, country: "EG" },
+    ],
+    returnPolicy: { country: "EG", days: site.returnDays, freeReturn: true },
   }),
   breadcrumbJsonLd([
     { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
