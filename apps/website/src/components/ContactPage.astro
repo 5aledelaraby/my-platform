@@ -21,10 +21,9 @@ const description = ar
       <p>{ar ? "عندكِ سؤال عن منتجاتنا أو عن طلبكِ؟ نحن هنا لمساعدتكِ. تحدّثي مع فريقنا وسنرد عليكِ في أقرب وقت." : "Have a question about our products or your order? We are here to help. Chat with our team and we will get back to you soon."}</p>
     </header>
     <ContactCards lang={lang} />
-    <div class="outline-box">
-      <h2>{ar ? "الشحن والاسترجاع" : "Shipping and returns"}</h2>
-      <p>{ar ? "كل ما تحتاجين معرفته عن التوصيل والإرجاع والاستبدال واسترداد المبلغ." : "Everything about delivery, returns, exchanges and refunds."}</p>
-      <a class="btn btn-outline" href={policyPath(lang, "returns")}>{ar ? "اقرئي السياسة" : "Read the policy"}</a>
-    </div>
+    <p class="fine-print">
+      {ar ? "لمعرفة تفاصيل التوصيل والاسترجاع: " : "Delivery and returns details: "}
+      <a href={policyPath(lang, "returns")}>{ar ? "سياسة الاسترجاع" : "returns policy"}</a>
+    </p>
   </section>
 </Base>
