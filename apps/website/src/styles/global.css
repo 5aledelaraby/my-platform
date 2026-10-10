@@ -649,3 +649,9 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .fine-print a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .checkout-consent { font-size: 11.5px; }
 .footer-legal, .footer-legal p { font-size: 11.5px; }
+/* belts hero: two lace photos that slowly cross-fade with a gentle zoom (still for reduced motion) */
+.bh-media .bh-slide { position: absolute; inset: 0; }
+.bh-slide.s1 { animation: bh-zoom 16s ease-in-out infinite alternate; }
+.bh-slide.s2 { opacity: 0; animation: bh-fade 14s ease-in-out infinite, bh-zoom 16s ease-in-out -8s infinite alternate; }
+@keyframes bh-fade { 0%, 38% { opacity: 0; } 50%, 88% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes bh-zoom { from { transform: scale(1); } to { transform: scale(1.08); } }
