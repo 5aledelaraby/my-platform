@@ -4,7 +4,8 @@ import ProductCard from "./ProductCard.astro";
 import Perks from "./Perks.astro";
 import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
-import { site } from "../site.ts";
+import { articles, articleUrl } from "../lib/articles.ts";
+import { JOURNAL_PATH, site } from "../site.ts";
 import { beltsUrl, colorName, colors, price, productsOfStyle, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
@@ -14,7 +15,7 @@ const c = homeCopy[lang];
 const ar = lang === "ar";
 const cur = ar ? "جنيه" : "EGP";
 const wa = `https://wa.me/${site.whatsappInternational}`;
-const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في طلب مقاس خاص." : "Hello Vicuna, I would like to ask about a custom size.")}`;
+const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في حجز موعد لتفصيل حزام من الجلد الطبيعي على مقاسي." : "Hello Vicuna, I would like to book a made-to-measure natural leather belt.")}`;
 const tie = ar
   ? [["ضعي الحزام على الخصر", "الجزء العريض إلى الأمام"], ["لفّي الشريطين", "وأعيديهما إلى الأمام"], ["اربطي بطريقتك", "فيونكة أو عقدة"]]
   : [["Place it on your waist", "wide part in front"], ["Wrap the straps", "and bring them forward"], ["Tie it your way", "a bow or a knot"]];
@@ -23,7 +24,9 @@ const tie = ar
 <section class="bh-hero">
   <div class="bh-grid">
     <figure class="bh-media">
-      <video src="/video/lace.mp4" poster="/video/lace.webp" autoplay muted loop playsinline preload="metadata" aria-hidden="true" width="540" height="948"></video>
+      <img class="bh-slide s1" src="/img/editorial/lace-ivory-1-1200.webp" srcset="/img/editorial/lace-ivory-1-640.webp 640w, /img/editorial/lace-ivory-1-1200.webp 1200w" sizes="(min-width: 900px) 50vw, 100vw" alt={ar ? "حزام دانتيل عاجي بشريط ساتان" : "An ivory lace belt with a satin tie"} width="1200" height="1500" fetchpriority="high" decoding="async" />
+      <img class="bh-slide s2" src="/img/editorial/lace-ivory-2-1200.webp" srcset="/img/editorial/lace-ivory-2-640.webp 640w, /img/editorial/lace-ivory-2-1200.webp 1200w" sizes="(min-width: 900px) 50vw, 100vw" alt="" width="1200" height="1500" decoding="async" />
+      <figcaption class="bh-caption" lang="en">Shine like a diamond</figcaption>
     </figure>
     <div class="bh-text">
       <p class="bh-kicker" lang="en">VICUNA · BELTS</p>
@@ -201,6 +204,27 @@ const tie = ar
     </div>
   </div>
 </section>
+
+{ar && articles.length > 0 && (
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="h2">مقالات ونصائح</h2>
+        <p class="muted">أفكار لاختيار حزام الخصر وربطه وتنسيقه.</p>
+      </div>
+      <div class="posts">
+        {articles.slice(0, 3).map((a) => (
+          <a class="post" href={articleUrl(a.slug)}>
+            <img src={a.image} alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
+            <h3>{a.title}</h3>
+            <p class="muted">{a.description}</p>
+          </a>
+        ))}
+      </div>
+      <p class="more"><a class="btn btn-white" href={JOURNAL_PATH}>كل المقالات</a></p>
+    </div>
+  </section>
+)}
 
 <section class="section">
   <div class="wrap faq">

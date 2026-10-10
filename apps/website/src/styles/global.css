@@ -538,9 +538,6 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .cc-body p { margin: 0; }
 .cc-number { font-weight: 700; text-underline-offset: 4px; }
 .cc-body .btn { margin-top: 10px; }
-.outline-box { margin-top: 40px; padding: 30px 24px; border: 1px solid rgb(0 0 0 / .18); text-align: center; }
-.outline-box h2 { font-size: 1.6rem; }
-.outline-box p { margin: 8px 0 18px; }
 .btn-outline { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
 .btn-outline:hover { background: var(--ink); color: #fff; }
 
@@ -557,9 +554,6 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .intro-photo:hover img { transform: scale(1.03); }
 .intro-copy h2 { margin-bottom: 12px; font-size: clamp(1.7rem, 4vw, 2.5rem); }
 .intro-copy > p { color: var(--muted); }
-.intro-values { display: grid; gap: 0; margin: 22px 0 0; padding: 0; list-style: none; }
-.intro-values li { display: grid; gap: 2px; padding: 14px 0; border-top: 1px solid rgb(0 0 0 / .1); }
-.intro-values span { color: var(--muted); }
 .section-links { margin: 0; padding: 0; list-style: none; border-top: 1px solid rgb(0 0 0 / .1); }
 .section-links a { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 0; border-bottom: 1px solid rgb(0 0 0 / .1); text-decoration: none; }
 .section-links a > span { display: grid; gap: 2px; }
@@ -649,3 +643,16 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .intro-cover { position: relative; }
 .film-sound { position: absolute; bottom: 14px; inset-inline-start: 14px; z-index: 2; min-height: 36px; padding: 0 14px; border: 0; border-radius: 2px; background: rgb(0 0 0 / .6); color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .film-sound:hover { background: #000; }
+.intro-values-line { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; line-height: 1.9; }
+/* Policy links (owner, 2026-10-10): small and quiet, but always present and readable. */
+.fine-print { margin-top: 28px; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.fine-print a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.checkout-consent { font-size: 11.5px; }
+.footer-legal, .footer-legal p { font-size: 11.5px; }
+/* belts hero: two lace photos shown as one picture; one fades out as the other fades in, slowly */
+.bh-media .bh-slide { position: absolute; inset: 0; }
+.bh-slide.s1 { animation: bh-a 12s ease-in-out infinite; }
+.bh-slide.s2 { animation: bh-b 12s ease-in-out infinite; }
+@keyframes bh-a { 0%, 35% { opacity: 1; } 50%, 85% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes bh-b { 0%, 35% { opacity: 0; } 50%, 85% { opacity: 1; } 100% { opacity: 0; } }
+.bh-caption { position: absolute; inset-inline: 0; bottom: 0; z-index: 2; padding: 40px 16px 16px; text-align: center; color: #fff; font-family: var(--font-latin); font-size: 15px; letter-spacing: .18em; background: linear-gradient(transparent, rgb(0 0 0 / .35)); }
