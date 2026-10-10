@@ -10,7 +10,6 @@ import type { Lang } from "../site.ts";
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
-const customWa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في حزام جلد طبيعي مفصّل على مقاسي." : "Hello Vicuna, I would like a made-to-measure natural leather belt.")}`;
 
 // Design, craft and service in one short line (the owner asked for one sentence, in smaller type).
 const valuesLine = ar
@@ -23,12 +22,6 @@ const sections: Section[] = [
     title: ar ? "الأحزمة" : "Belts",
     text: ar ? "تصميمات من جلد PU والدانتيل بألوان كثيرة." : "Designs in PU leather and lace, in many colours.",
     href: beltsUrl(lang),
-  },
-  {
-    title: ar ? "التفصيل على المقاس" : "Made to measure",
-    text: ar ? "أحزمة من الجلد الطبيعي تُفصّل على مقاسكِ، في القاهرة والجيزة." : "Natural leather belts made to your size, in Cairo and Giza.",
-    href: customWa,
-    external: true,
   },
   ...(ar ? [{ title: "المقالات", text: "أفكار للتنسيق والاختيار.", href: JOURNAL_PATH }] : []),
 ];
