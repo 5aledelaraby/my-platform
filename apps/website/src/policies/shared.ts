@@ -8,7 +8,7 @@ import { SHIPPING, formatEgp } from "@platform/commerce";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
-export const POLICY_IDS = ["returns", "terms", "privacy"] as const;
+export const POLICY_IDS = ["shipping", "returns", "terms", "privacy"] as const;
 export type PolicyId = (typeof POLICY_IDS)[number];
 
 export interface PolicyDoc {

@@ -12,32 +12,12 @@ const r = site.returnDays;
 const ca = site.consumerAgency;
 
 export const returnsAr: PolicyDoc = {
-  title: "الشحن والاسترجاع",
-  description: `مصاريف الشحن ومدته، وطرق الدفع، والإلغاء، والاسترجاع والاستبدال خلال ${r} يومًا، واسترداد المبلغ في فيكونا.`,
+  title: "الاسترجاع والاستبدال",
+  description: `الإلغاء، والاسترجاع والاستبدال خلال ${r} يومًا، واسترداد المبلغ في فيكونا.`,
   html: `
 <p class="policy-summary"><b>باختصار:</b> لكِ ${r} يومًا من يوم الاستلام لتُرجعي أي حزام وتستردي ما دفعتِه، أو تستبدليه، دون ذكر السبب ودون أي مصاريف شحن عليكِ، عدا المقاسات الخاصة والأحزمة المفصّلة.</p>
 
-<h2>مصاريف الشحن</h2>
-<table>
-<thead><tr><th>نوع الشحن</th><th>التكلفة</th></tr></thead>
-<tbody>
-<tr><td>شحن عادي إلى أي محافظة</td><td>${fees.standard} جنيه</td></tr>
-<tr><td>شحن عادي لطلب قيمته ${fees.freeOver} جنيه أو أكثر بعد الخصم</td><td>مجاني</td></tr>
-<tr><td>شحن سريع</td><td>${fees.express} جنيه</td></tr>
-</tbody>
-</table>
-<p>تظهر مصاريف الشحن والإجمالي في السلة قبل إرسال الطلب، ولا نضيف على هذا الإجمالي أي رسوم عند الاستلام.</p>
-
-<h2>مدة التوصيل</h2>
-<p>نوصّل إلى جميع محافظات مصر خلال ${site.deliveryDays} أيام عمل من تأكيد الطلب. موعد الشحن السريع نتفق عليه معكِ عند تأكيد الطلب. المقاسات الخاصة تُصنع حسب الطلب وقد تحتاج وقتًا أطول، ونخبركِ بالمدة قبل أن نبدأ.</p>
-<p>إذا لم يصلكِ الطلب في الموعد الذي اتفقنا عليه، أو خلال ${site.lateDeliveryDays} يومًا إذا لم نحدد موعدًا، فمن حقكِ إلغاؤه واسترداد كل ما دفعتِه، ونتحمل نحن كل مصاريف الشحن والإرجاع.</p>
-
-<h2>طرق الدفع</h2>
-<ul>
-<li><b>الدفع عند الاستلام:</b> تدفعين للمندوب عند استلام الطلب.</li>
-<li><b>InstaPay:</b> تحوّلين الإجمالي إلى ${ltr(site.instapay)}، وترسلين صورة التحويل مع رقم الطلب على واتساب.</li>
-</ul>
-<p>لا نطلب ولا نحفظ أي أرقام بطاقات أو حسابات بنكية.</p>
+<p>مصاريف الشحن ومدة التوصيل وطرق الدفع في صفحة <a href="${policyPath("ar", "shipping")}">الشحن والتوصيل</a>.</p>
 
 <h2>تأكيد الطلب وتعديله وإلغاؤه</h2>
 <p>بعد إرسال الطلب من السلة يظهر لكِ رقمه، ثم نتواصل معكِ على واتساب أو بالهاتف لتأكيد بيانات الطلب والإجمالي.</p>
@@ -83,32 +63,12 @@ ${contactHtml("ar", "السلام عليكم، أريد إرجاع أو استب
 };
 
 export const returnsEn: PolicyDoc = {
-  title: "Shipping and returns",
-  description: `Vicuna shipping fees and times, payment, cancellation, ${r}-day returns and exchanges, and refunds.`,
+  title: "Returns and exchanges",
+  description: `Vicuna cancellation, ${r}-day returns and exchanges, and refunds.`,
   html: `
 <p class="policy-summary"><b>In short:</b> you have ${r} days from delivery to return any belt and get back what you paid, or to exchange it, without giving a reason and with no shipping cost to you, except custom sizes and made-to-measure belts.</p>
 
-<h2>Shipping fees</h2>
-<table>
-<thead><tr><th>Shipping</th><th>Cost</th></tr></thead>
-<tbody>
-<tr><td>Standard, to any governorate</td><td>EGP ${fees.standard}</td></tr>
-<tr><td>Standard, orders of EGP ${fees.freeOver} or more after discount</td><td>Free</td></tr>
-<tr><td>Express</td><td>EGP ${fees.express}</td></tr>
-</tbody>
-</table>
-<p>The cart shows the shipping fee and the total before you send the order, and we add no fees to that total on delivery.</p>
-
-<h2>Delivery time</h2>
-<p>We deliver to every governorate in Egypt within ${site.deliveryDays} working days of confirming the order. The express delivery date is agreed with you when we confirm the order. Custom sizes are made to order and may take longer; we tell you how long before we start.</p>
-<p>If your order does not arrive on the agreed date, or within ${site.lateDeliveryDays} days when no date was agreed, you may cancel it and get back everything you paid, and we cover all shipping and return costs.</p>
-
-<h2>Payment</h2>
-<ul>
-<li><b>Cash on delivery:</b> you pay the courier when the order arrives.</li>
-<li><b>InstaPay:</b> transfer the total to ${site.instapay} and send the receipt with your order number on WhatsApp.</li>
-</ul>
-<p>We never ask for or keep card or bank account numbers.</p>
+<p>Shipping fees, delivery times and payment are on the <a href="${policyPath("en", "shipping")}">shipping and delivery</a> page.</p>
 
 <h2>Confirming, changing and cancelling an order</h2>
 <p>When you send the order from the cart, you see its number; we then contact you on WhatsApp or by phone to confirm the order details and the total.</p>

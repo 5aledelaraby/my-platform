@@ -82,7 +82,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <h2>11. تعديل السياسة</h2>
 <p>قد نحدّث هذه السياسة من وقت لآخر، وتاريخ آخر تحديث مكتوب أعلى الصفحة. وإذا غيّرنا طريقة استخدام بياناتكِ تغييرًا مهمًا، نوضحه في هذه الصفحة.</p>
 
-<p>اقرئي أيضًا <a href="${policyPath("ar", "terms")}">الشروط والأحكام</a> و<a href="${policyPath("ar", "returns")}">الشحن والاسترجاع</a>.</p>
+<p>اقرئي أيضًا <a href="${policyPath("ar", "terms")}">الشروط والأحكام</a> و<a href="${policyPath("ar", "returns")}">الاسترجاع والاستبدال</a>.</p>
 `,
 };
 
@@ -161,6 +161,6 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <h2>11. Changes</h2>
 <p>We may update this policy from time to time; the date of the last update is shown at the top. If we make an important change to how we use your data, we explain it on this page.</p>
 
-<p>See also the <a href="${policyPath("en", "terms")}">terms and conditions</a> and <a href="${policyPath("en", "returns")}">shipping and returns</a>.</p>
+<p>See also the <a href="${policyPath("en", "terms")}">terms and conditions</a> and <a href="${policyPath("en", "returns")}">returns and exchanges</a>.</p>
 `,
 };

@@ -14,6 +14,7 @@ export function GET(): Response {
       ...POLICY_IDS.map((id) => policyPath(lang, id)),
       langPath(lang, "/about/"),
       langPath(lang, "/contact/"),
+      langPath(lang, "/faq/"),
     ]),
     JOURNAL_PATH,
     ...articles.map((a) => articleUrl(a.slug)),
