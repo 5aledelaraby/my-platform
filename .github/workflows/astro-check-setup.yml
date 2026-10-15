@@ -46,4 +46,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps/website/package.json pnpm-lock.yaml astro-check.log
           git commit -m "chore(website): add @astrojs/check and typescript, typecheck script (generated)"
-          git push
+          if ! out=$(git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}" 2>&1); then
+            echo "::error title=push failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"
+            exit 1
+          fi
