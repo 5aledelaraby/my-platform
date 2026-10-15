@@ -36,9 +36,9 @@ jobs:
       - name: Run the checks and keep their output
         run: |
           set +e
-          { echo "## versions"; pnpm --filter @platform/website exec astro --version; pnpm --filter @platform/website exec tsc -v; } > astro-check.log 2>&1
-          { echo; echo "## pnpm --filter @platform/website typecheck"; pnpm --filter @platform/website typecheck; echo "exit: $?"; } >> astro-check.log 2>&1
-          { echo; echo "## pnpm typecheck (root, turbo)"; pnpm typecheck; echo "exit: $?"; } >> astro-check.log 2>&1
+          { echo "## versions"; pnpm --filter @platform/website exec astro --version; pnpm --filter @platform/website exec tsc -v; } > astro-check-output.txt 2>&1
+          { echo; echo "## pnpm --filter @platform/website typecheck"; pnpm --filter @platform/website typecheck; echo "exit: $?"; } >> astro-check-output.txt 2>&1
+          { echo; echo "## pnpm typecheck (root, turbo)"; pnpm typecheck; echo "exit: $?"; } >> astro-check-output.txt 2>&1
           exit 0
       - name: Commit the lockfile, package.json and the log back to this branch
         run: |
@@ -47,6 +47,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           note "status before add" "$(git status --short 2>&1 | head -20)"
-          out=$(git add apps/website/package.json pnpm-lock.yaml astro-check.log 2>&1) || { note "add failed" "$out"; exit 1; }
+          out=$(git add apps/website/package.json pnpm-lock.yaml astro-check-output.txt 2>&1) || { note "add failed" "$out"; exit 1; }
           out=$(git commit -m "chore(website): add @astrojs/check and typescript, typecheck script (generated)" 2>&1) || { note "commit failed" "$out"; exit 1; }
           out=$(git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}" 2>&1) || { note "push failed" "$out"; exit 1; }
