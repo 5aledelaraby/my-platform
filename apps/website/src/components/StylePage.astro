@@ -44,12 +44,11 @@ const jsonLd = serializeJsonLd(
         <p class="lead">{t.intro}</p>
         <div class="hero-actions">
           <span class="price-pill">{from && <small>{ar ? "من" : "from"}</small>} {price(styleId)} <small>{cur}</small></span>
-          <a class="btn btn-berry btn-shine" href="#colours">{ar ? "شوفي الألوان" : "See the colours"} <Icon name="arrow" size={18} class="dir-icon" /></a>
+          <a class="btn" href="#colours">{ar ? "شوفي الألوان" : "See the colours"} <Icon name="arrow" size={18} class="dir-icon" /></a>
         </div>
       </div>
       <div class="style-collage" aria-hidden="true">
-        {list.slice(0, 3).map((p, i) => <img class={`floaty c${i + 1}`} src={thumbOf(p)} alt="" width="480" height="480" decoding="async" style={`--r:${["-8deg", "7deg", "-2deg"][i]};--d:${-i * 1.8}s`} />)}
-        <Icon name="sparkle" size={18} class="twinkle collage-spark" />
+        {list.slice(0, 3).map((p) => <span><img src={thumbOf(p)} alt="" width="480" height="480" decoding="async" /></span>)}
       </div>
     </div>
   </section>
@@ -58,7 +57,7 @@ const jsonLd = serializeJsonLd(
 
   <section class="wrap style-group" id="colours">
     <div class="group-head">
-      <h2>{ar ? `كل ألوان ${t.name}` : `Every ${t.name} colour`} <Icon name="sparkle" size={16} class="twinkle" /></h2>
+      <h2>{ar ? `كل ألوان ${t.name}` : `Every ${t.name} colour`}</h2>
       <span class="count-chip">{list.length} {ar ? "لون" : "colours"}</span>
     </div>
     <div class="grid">

@@ -8,6 +8,7 @@ import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
 import { langPath, site } from "../site.ts";
+import { lookOf } from "../lib/looks.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang; product: CatalogProduct }
@@ -21,6 +22,7 @@ const siblings = productsOfStyle(product.style);
 const idx = siblings.findIndex((s) => s.id === product.id);
 const nextP = siblings.length > 1 ? siblings[(idx + 1) % siblings.length]! : null;
 const prevP = siblings.length > 1 ? siblings[(idx - 1 + siblings.length) % siblings.length]! : null;
+const look = lookOf(product);
 const related = styles.filter((x) => x.id !== product.style).slice(0, 4).map((x) => coverOf(x.id));
 const info = ar
   ? [
@@ -99,7 +101,6 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       <h1>{name}</h1>
       <div class="price">{priceOfProduct(product)} <small>{cur}</small></div>
       <p class="soldout" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية حاليًا. كلمينا على واتساب نبلغك أول ما يتوفر." : "Sold out for now. Message us on WhatsApp and we will tell you when it is back."}</p>
-      <p class="muted">{st.intro}</p>
       <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b>{shadeName(lang, product)}</b></p>
       <div class="pdp-swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
         {siblings.map((sib) => (
@@ -115,7 +116,13 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
         <li><Icon name="return" size={26} /> {ar ? `استرجاع خلال ${site.returnDays} يومًا دون مصاريف شحن` : `${site.returnDays}-day returns, no shipping cost to you`}</li>
         <li><Icon name="cash" size={26} /> {ar ? "الدفع عند الاستلام أو InstaPay" : "Cash on delivery or InstaPay"}</li>
       </ul>
-        </div>
+      <p class="pdp-intro muted">{st.intro}</p>
+    </div>
+    {look && (
+      <figure class="pdp-look reveal">
+        <img src={look.src} srcset={look.srcset} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? `${name} على الخصر` : `${name}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
+      </figure>
+    )}
   </div>
   <section class="wrap">
     <div class="spec-card reveal">
@@ -126,7 +133,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
     </div>
   </section>
   <section class="wrap style-group">
-    <div class="group-head"><h2>{ar ? "قد يعجبك أيضًا" : "You may also like"} <Icon name="sparkle" size={16} class="twinkle" /></h2></div>
+    <div class="group-head"><h2>{ar ? "قد يعجبك أيضًا" : "You may also like"}</h2></div>
     <div class="grid">
       {related.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
