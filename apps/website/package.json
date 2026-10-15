@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/check-dist.mjs",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "typecheck": "astro-check"
   },
   "dependencies": {
     "@platform/commerce": "workspace:*",
@@ -15,5 +16,9 @@
     "@platform/seo": "workspace:*",
     "@platform/ui": "workspace:*",
     "astro": "^7.3.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
   }
 }
