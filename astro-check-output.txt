@@ -1,0 +1,73 @@
+## versions
+  [42m[30m astro [39m[49m [32mv7.3.8[39m
+Version 6.0.3
+
+## pnpm --filter @platform/website typecheck
+
+> @platform/website@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/website
+> astro check
+
+To continue, Astro requires the following dependency to be installed: [1m@astrojs/check[22m. Packages cannot be installed automatically in CI environments.
+[31m[1m18:39:30[22m [ERROR] [check][39m The `@astrojs/check` and `typescript` packages are required for this command to work. Please manually install them into your project and try again.
+exit: 0
+
+## pnpm typecheck (root, turbo)
+
+> my-platform@ typecheck /home/runner/work/my-platform/my-platform
+> turbo run typecheck
+
+
+   • Packages in scope: @platform/api, @platform/commerce, @platform/content, @platform/seo, @platform/ui, @platform/website
+   • Running typecheck in 6 packages
+   • Remote caching disabled
+
+::group::@platform/content:typecheck
+cache miss, executing 6f769ab09a6e0a73
+
+> @platform/content@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/content
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/ui:typecheck
+cache miss, executing b0888c51539f53df
+
+> @platform/ui@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/ui
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/seo:typecheck
+cache miss, executing 41ff274c74bf25ac
+
+> @platform/seo@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/seo
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/commerce:typecheck
+cache miss, executing cbd7ede76b1f33c5
+
+> @platform/commerce@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/commerce
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/website:typecheck
+cache miss, executing 27f5c09f33b5be9a
+
+> @platform/website@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/website
+> astro check
+
+To continue, Astro requires the following dependency to be installed: [1m@astrojs/check[22m. Packages cannot be installed automatically in CI environments.
+[31m[1m18:39:34[22m [ERROR] [check][39m The `@astrojs/check` and `typescript` packages are required for this command to work. Please manually install them into your project and try again.
+::endgroup::
+::group::@platform/api:typecheck
+cache miss, executing 5f758ddfbfd9a6eb
+
+> @platform/api@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/api
+> tsc -p tsconfig.json
+
+::endgroup::
+
+ Tasks:    6 successful, 6 total
+Cached:    0 cached, 6 total
+  Time:    4.596s 
+
+exit: 0
