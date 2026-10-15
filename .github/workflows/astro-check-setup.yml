@@ -1,4 +1,5 @@
-# TEMPORARY (delete after use): adds astro check to apps/website with a real lockfile update, because the
+# TEMPORARY (delete after use): adds astro check (run 2: astro-check binary, since `astro check` cannot resolve
+# @astrojs/check under pnpm and then exits 0) to apps/website with a real lockfile update, because the
 # development machine cannot reach the npm registry. Runs only on the chore/astro-check branch and never deploys.
 name: astro-check setup (temporary)
 
@@ -22,15 +23,13 @@ jobs:
         with:
           node-version: 22
       - run: pnpm install --frozen-lockfile
-      # Same TypeScript major as the repo root; @astrojs/check at the version that matches the installed Astro.
-      - run: pnpm add -D @astrojs/check "typescript@^6.0.3" --filter @platform/website
       - name: Add the typecheck script
         run: |
           node -e '
             const fs = require("fs");
             const f = "apps/website/package.json";
             const p = JSON.parse(fs.readFileSync(f, "utf8"));
-            p.scripts = { ...p.scripts, typecheck: "astro check" };
+            p.scripts = { ...p.scripts, typecheck: "astro-check" };
             fs.writeFileSync(f, JSON.stringify(p, null, 2) + "\n");
           '
       - name: Run the checks and keep their output
@@ -47,6 +46,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           note "status before add" "$(git status --short 2>&1 | head -20)"
-          out=$(git add apps/website/package.json pnpm-lock.yaml astro-check-output.txt 2>&1) || { note "add failed" "$out"; exit 1; }
-          out=$(git commit -m "chore(website): add @astrojs/check and typescript, typecheck script (generated)" 2>&1) || { note "commit failed" "$out"; exit 1; }
+          out=$(git add apps/website/package.json astro-check-output.txt 2>&1) || { note "add failed" "$out"; exit 1; }
+          out=$(git commit -m "chore(website): typecheck runs astro-check directly (generated)" 2>&1) || { note "commit failed" "$out"; exit 1; }
           out=$(git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}" 2>&1) || { note "push failed" "$out"; exit 1; }
