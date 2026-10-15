@@ -17,8 +17,8 @@
 | `packages/seo` (canonical، robots، sitemap، JSON-LD) | جاهز ومختبر |
 | `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
 | `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
-| `apps/api` (إنشاء الطلبات، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1 (`apps/api/README.md`) |
-| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (6 تصاميم و38 منتج) عربي/إنجليزي، المقالات `/blog/`، السلة، صفحات الشكر. منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) |
+| `apps/api` (الطلبات، المخزون، أكواد الخصم، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1، ومعاه صفحة الإدارة على `admin.vicuna-eg.com` وإشعارات Telegram (`apps/api/README.md`) |
+| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (4 تصميمات و16 منتج) عربي/إنجليزي، المقالات `/journal/style-guides/`، السلة، صفحة الشكر، صفحات السياسات، شريط الكوكيز، وملف الكتالوج `/catalog/products.csv` لـ Meta وGoogle. Worker صغير بيخفي أي حزام مخزونه صفر (ADR 0013). منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) (`apps/website/README.md`) |
 | حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
 
 ## تشغيل المشروع (أول مرة)
@@ -33,7 +33,7 @@ pnpm run check                   # لازم ينجح كله (بيبني نسخة
 
 بناء الموقع لوحده لازم يحدد البيئة صراحةً، ومفيش قيمة افتراضية: `DEPLOY_ENV=production|staging|preview`. أي بناء من غيرها بيفشل برسالة واضحة، علشان ولا نسخة تجريبية تتفهرس في جوجل بالغلط، ولا نسخة الإنتاج تتقفل بالغلط.
 
-الـ CI بيشغّل الحراس والاختبارات وtypecheck وlint وبناء الإنتاج مع كل push على `main` وكل pull request. ملحوظة: كود الموقع نفسه (`apps/website`) لسه مش داخل الـ typecheck، لأنه محتاج `astro check`.
+الـ CI بيشغّل الحراس والاختبارات وtypecheck وlint وبناء الإنتاج مع كل push على `main` وكل pull request. الـ typecheck بيشمل الموقع كمان (ملفات Astro وTypeScript) بـ `astro-check`.
 
 ## إضافة وحدة جديدة
 
@@ -46,16 +46,17 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 ## قرار واتساب والطلبات
 
-واتساب قناة اختيارية بعد إنشاء الطلب، مش أساس نظام الطلبات ([ADR 0007](architecture/adr/0007-whatsapp-is-an-optional-channel.md)). الطلب بيتسجل عبر الـ API ([ADR 0008](architecture/adr/0008-order-api.md)). لوحة الإدارة والدفع الأونلاين لسه مش مبنيين.
+واتساب قناة اختيارية بعد إنشاء الطلب، مش أساس نظام الطلبات ([ADR 0007](architecture/adr/0007-whatsapp-is-an-optional-channel.md)). الطلب بيتسجل عبر الـ API ([ADR 0008](architecture/adr/0008-order-api.md)). صفحة الإدارة (الطلبات والمخزون وأكواد الخصم) شغالة على `admin.vicuna-eg.com` ([ADR 0010](architecture/adr/0010-inventory-and-owner-admin.md)). الدفع الأونلاين مش مبني، ومش هيتبني غير لما المالك يطلبه: الدفع عند الاستلام أو InstaPay يدويًا.
 
 ## الخطوة التالية
 
-1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers.
-2. اختبار الطلب كامل على `staging.vicuna-eg.com` (السلة ثم الـ API ثم D1 ثم صفحة الشكر).
-3. قبل تحويل الدومين: فصل قاعدة بيانات التجربة عن الإنتاج. القائمة الكاملة في `MIGRATION.md`.
-4. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. قرار المالك: بداية نظيفة من غير أي تحويلات من روابط الموقع القديم.
-5. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
+1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers، وصفحة الإدارة، والمخزون، وأكواد الخصم.
+2. مع أول نشر لأسماء المنتجات الجديدة (ADR 0012): تنفيذ `apps/api/migrations/0004_design_product_ids.sql` على D1 من الـ Console.
+3. اختبار الطلب كامل على `staging.vicuna-eg.com` (السلة ثم الـ API ثم D1 ثم صفحة الشكر).
+4. قبل تحويل الدومين: مسح طلبات التجربة. القائمة الكاملة في `MIGRATION.md`.
+5. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. قرار المالك: بداية نظيفة من غير أي تحويلات من روابط الموقع القديم. ملف الكتالوج على نفس الرابط القديم، فـ Meta وGoogle بيكمّلوا من غير تغيير.
+6. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
 
 ## قاعدة أمان
 
-لا تعطي أي AI أو أي شخص: كلمات سر، أو tokens، أو مفاتيح API. توكن Meta CAPI يعيش في Cloudflare Secrets فقط باسم `META_TOKEN`.
+لا تعطي أي AI أو أي شخص: كلمات سر، أو tokens، أو مفاتيح API. الأسرار (Telegram وCloudflare Access) بتتحط في Cloudflare Secrets بس. المشروع مش بيستخدم Meta Conversions API، والتتبع كله من المتصفح بعد موافقة الزائرة على الكوكيز.
