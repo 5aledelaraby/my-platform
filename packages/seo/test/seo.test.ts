@@ -63,7 +63,7 @@ describe("productJsonLd", () => {
     description: "d",
     url: "https://vicuna-eg.com/p/",
     images: ["https://vicuna-eg.com/i.jpg"],
-    sku: "lace-black",
+    sku: "lace-white",
     brand: "Vicuna",
     price: 300,
     currency: "EGP",

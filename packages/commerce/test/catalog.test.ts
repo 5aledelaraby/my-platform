@@ -19,8 +19,8 @@ describe("catalog", () => {
   it("a product price overrides its style price", () => {
     // Croc and snake are the thin-tie design with a printed pattern, priced above the plain ones.
     assert.equal(lookupProduct("thin-tie-red")?.unitPrice, 12000);
-    assert.equal(lookupProduct("thin-tie-croc-black")?.unitPrice, 20000);
-    assert.equal(lookupProduct("thin-tie-snake-grey")?.unitPrice, 20000);
+    assert.equal(lookupProduct("thin-tie-croc-wine")?.unitPrice, 20000);
+    assert.equal(lookupProduct("thin-tie-croc-pink")?.unitPrice, 20000);
   });
 
   it("product names never say suede (every belt is PU leather)", () => {

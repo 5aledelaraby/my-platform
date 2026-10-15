@@ -18,7 +18,7 @@ const styleEn: Record<string, { name: string; headline: string; intro: string }>
   "thin-tie": {
     name: "Thin Tie",
     headline: "Wide waist belt with an adjustable thin tie",
-    intro: "A wide PU leather belt with a thin tie that adjusts to your waist. Plain, croc or snake print.",
+    intro: "A wide PU leather belt with a thin tie that adjusts to your waist. Plain or croc print.",
   },
   ruffle: {
     name: "Ruffle",
@@ -97,10 +97,6 @@ export const priceOfProduct = (p: CatalogProduct): string => formatEgp(priceOf(p
 export const hasHigherPrices = (styleId: string): boolean => productsOfStyle(styleId).some((p) => priceOf(p) !== getStyle(styleId).price);
 export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.webp`;
 export const thumbOf = (p: CatalogProduct): string => `/img/products/${p.id}-480.webp`;
-/** Products that also have an on-body photo (public/img/looks/<id>-480|900.webp, 4:5). */
-const LOOKS = new Set(["thin-tie-royal-blue", "wide-tie-burgundy", "wide-tie-taupe", "thin-tie-rose", "wide-tie-gold", "thin-tie-green", "wide-tie-green", "thin-tie-croc-pink", "thin-tie-pink"]);
-export const lookOf = (p: CatalogProduct): { thumb: string; full: string } | null =>
-  LOOKS.has(p.id) ? { thumb: `/img/looks/${p.id}-480.webp`, full: `/img/looks/${p.id}-900.webp` } : null;
 /** First product of a style, used as its cover image. */
 export const coverOf = (styleId: string): CatalogProduct => {
   const first = products.find((p) => p.style === styleId);

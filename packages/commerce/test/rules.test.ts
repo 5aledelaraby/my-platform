@@ -96,7 +96,7 @@ describe("server-side order totals", () => {
 
   it("ignores prices, discounts and totals sent by the client", () => {
     const tampered = {
-      items: [{ id: "lace-black", quantity: 3, unitPrice: 1, price: 1, lineTotal: 1 }],
+      items: [{ id: "lace-white", quantity: 3, unitPrice: 1, price: 1, lineTotal: 1 }],
       customer,
       totals: { total: 1, discount: 99999, shipping: 0 },
       discount: 99999,
@@ -156,8 +156,10 @@ describe("remainingQuantity (cart-side mirror of the API limits)", () => {
   });
 
   it("refuses a new product once the distinct-product limit is reached, but lets existing ones grow", () => {
-    const full = ids.slice(0, LIMITS.maxDistinctItems).map((id) => ({ id, quantity: 1 }));
-    assert.equal(remainingQuantity(full, ids[LIMITS.maxDistinctItems] ?? ""), 0);
+    // The limit is above the catalogue size, so pad with made-up ids (the cart-side check only counts distinct ids).
+    const many = [...ids, ...Array.from({ length: LIMITS.maxDistinctItems + 1 }, (_, i) => `extra-${i}`)];
+    const full = many.slice(0, LIMITS.maxDistinctItems).map((id) => ({ id, quantity: 1 }));
+    assert.equal(remainingQuantity(full, many[LIMITS.maxDistinctItems] ?? ""), 0);
     assert.equal(remainingQuantity(full, a), LIMITS.maxQuantityPerItem - 1);
   });
 

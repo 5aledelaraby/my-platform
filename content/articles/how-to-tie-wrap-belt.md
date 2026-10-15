@@ -3,16 +3,12 @@ title: "إزاي تربطي حزام الوسط بالربط: 5 طرق سهلة 
 slug: "how-to-tie-wrap-belt"
 description: "5 طرق لربط حزام الوسط: الفيونكة الكلاسيك، الفيونكة على جنب، العقدة بطرف نازل، اللفة المزدوجة، والعقدة المخفية. خطوات بسيطة ونصايح عشان الحزام يفضل ثابت."
 datePublished: "2026-10-05"
-image: "/img/products/wide-tie-red.webp"
+image: "/img/products/wide-tie-burgundy.webp"
 imageWidth: 900
 imageHeight: 900
-imageAlt: "حزام أحمر برباط عريض مربوط عقدة بطرف طويل نازل"
+imageAlt: "حزام عنابي برباط عريض على خلفية فاتحة"
 products:
-  - wide-tie-red
   - wide-tie-white
-  - thin-tie-navy
-  - lace-black
-  - wide-tie-cognac
 ---
 
 أحلى حاجة في حزام الوسط بالربط إنه **حزام واحد بكذا شكل**. نفس الحزام ممكن تربطيه فيونكة النهارده، وعقدة بطرف نازل بكرة، ولفة مزدوجة بعده، وكل مرة يبان كأنه حزام مختلف. في المقال ده هنشرح 5 طرق، كل واحدة في خطوات قليلة.
@@ -40,7 +36,7 @@ products:
 2. اعملي عقدة واحدة بس، مش فيونكة.
 3. سيبي الطرفين نازلين على الفستان، أو خلي واحد أطول من التاني.
 
-الطرف النازل بيعمل خط طولي بيطوّل الجسم. جربيها مع [الرباط العريض الأحمر](/collections/vicuna-belts/wide-tie-red/) أو [الكونياك](/collections/vicuna-belts/wide-tie-cognac/).
+الطرف النازل بيعمل خط طولي بيطوّل الجسم. جربيها مع [الرباط العريض العنابي](/collections/vicuna-belts/wide-tie-burgundy/) أو [الأخضر](/collections/vicuna-belts/wide-tie-green/).
 
 ## 4. اللفة المزدوجة
 

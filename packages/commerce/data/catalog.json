@@ -20,7 +20,7 @@
       "name": "عريض برباط رفيع",
       "price": 12000,
       "headline": "حزام عريض برباط رفيع من جلد PU",
-      "intro": "حزام عريض من جلد PU برباط رفيع يُضبط على مقاس الخصر. سادة أو بنقشة كروكو أو ثعبان."
+      "intro": "حزام عريض من جلد PU برباط رفيع يُضبط على مقاس الخصر. سادة أو بنقشة كروكو."
     },
     {
       "id": "ruffle",
@@ -84,22 +84,6 @@
   ],
   "products": [
     {
-      "id": "lace-black",
-      "name": "دانتيل أسود",
-      "style": "lace",
-      "color": "black",
-      "hex": "#1E1E22",
-      "texture": "lace"
-    },
-    {
-      "id": "lace-red",
-      "name": "دانتيل أحمر",
-      "style": "lace",
-      "color": "red",
-      "hex": "#C8232B",
-      "texture": "lace"
-    },
-    {
       "id": "lace-white",
       "name": "دانتيل أبيض",
       "style": "lace",
@@ -108,43 +92,11 @@
       "texture": "lace"
     },
     {
-      "id": "lace-gold",
-      "name": "دانتيل دهبي",
-      "style": "lace",
-      "color": "gold",
-      "hex": "#CDB98A",
-      "texture": "lace"
-    },
-    {
-      "id": "lace-caramel",
-      "name": "دانتيل كراميل",
-      "style": "lace",
-      "color": "brown",
-      "hex": "#A8652F",
-      "texture": "lace"
-    },
-    {
       "id": "wide-tie-white",
       "name": "رباط عريض أبيض",
       "style": "wide-tie",
       "color": "white",
       "hex": "#F4F2EF",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-silver",
-      "name": "رباط عريض فضي",
-      "style": "wide-tie",
-      "color": "grey",
-      "hex": "#C9D2DC",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-gold",
-      "name": "رباط عريض دهبي",
-      "style": "wide-tie",
-      "color": "gold",
-      "hex": "#D8C18E",
       "texture": "smooth"
     },
     {
@@ -164,75 +116,11 @@
       "texture": "smooth"
     },
     {
-      "id": "wide-tie-taupe",
-      "name": "رباط عريض بني فاتح",
-      "style": "wide-tie",
-      "color": "brown",
-      "hex": "#9A6B52",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-red",
-      "name": "رباط عريض أحمر",
-      "style": "wide-tie",
-      "color": "red",
-      "hex": "#C33A40",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-black",
-      "name": "رباط عريض أسود",
-      "style": "wide-tie",
-      "color": "black",
-      "hex": "#1E1E22",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-blush",
-      "name": "رباط عريض بينك فاتح",
-      "style": "wide-tie",
-      "color": "pink",
-      "hex": "#EBC9C2",
-      "texture": "smooth"
-    },
-    {
       "id": "wide-tie-green",
       "name": "رباط عريض أخضر",
       "style": "wide-tie",
       "color": "green",
       "hex": "#3E9B3A",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-cognac",
-      "name": "رباط عريض كونياك",
-      "style": "wide-tie",
-      "color": "brown",
-      "hex": "#A8613F",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-brown",
-      "name": "رباط عريض بني غامق",
-      "style": "wide-tie",
-      "color": "brown",
-      "hex": "#4A2E2B",
-      "texture": "smooth"
-    },
-    {
-      "id": "wide-tie-grey",
-      "name": "رباط عريض رمادي",
-      "style": "wide-tie",
-      "color": "grey",
-      "hex": "#7D8592",
-      "texture": "smooth"
-    },
-    {
-      "id": "thin-tie-white",
-      "name": "رباط رفيع أبيض",
-      "style": "thin-tie",
-      "color": "white",
-      "hex": "#F4F2EF",
       "texture": "smooth"
     },
     {
@@ -249,22 +137,6 @@
       "style": "thin-tie",
       "color": "red",
       "hex": "#9E4A55",
-      "texture": "smooth"
-    },
-    {
-      "id": "thin-tie-pink",
-      "name": "رباط رفيع بينك",
-      "style": "thin-tie",
-      "color": "pink",
-      "hex": "#E3C3C8",
-      "texture": "smooth"
-    },
-    {
-      "id": "thin-tie-mustard",
-      "name": "رباط رفيع مسطردة",
-      "style": "thin-tie",
-      "color": "yellow",
-      "hex": "#EBA92E",
       "texture": "smooth"
     },
     {
@@ -308,23 +180,6 @@
       "texture": "smooth"
     },
     {
-      "id": "thin-tie-navy",
-      "name": "رباط رفيع كحلي",
-      "style": "thin-tie",
-      "color": "blue",
-      "hex": "#24305E",
-      "texture": "smooth"
-    },
-    {
-      "id": "thin-tie-croc-black",
-      "name": "رباط رفيع كروكو أسود",
-      "style": "thin-tie",
-      "color": "black",
-      "hex": "#1C1C1F",
-      "texture": "croc",
-      "price": 20000
-    },
-    {
       "id": "thin-tie-croc-wine",
       "name": "رباط رفيع كروكو عنابي",
       "style": "thin-tie",
@@ -343,46 +198,11 @@
       "price": 20000
     },
     {
-      "id": "thin-tie-croc-cognac",
-      "name": "رباط رفيع كروكو كونياك",
-      "style": "thin-tie",
-      "color": "brown",
-      "hex": "#A8653C",
-      "texture": "croc",
-      "price": 20000
-    },
-    {
-      "id": "thin-tie-snake-grey",
-      "name": "رباط رفيع ثعبان رمادي",
-      "style": "thin-tie",
-      "color": "grey",
-      "hex": "#9EA3A8",
-      "texture": "snake",
-      "price": 20000
-    },
-    {
-      "id": "thin-tie-snake-beige",
-      "name": "رباط رفيع ثعبان بيج",
-      "style": "thin-tie",
-      "color": "gold",
-      "hex": "#C9A57C",
-      "texture": "snake",
-      "price": 20000
-    },
-    {
       "id": "ruffle-red",
       "name": "كشكشة أحمر",
       "style": "ruffle",
       "color": "red",
       "hex": "#D3262E",
-      "texture": "ruffle"
-    },
-    {
-      "id": "ruffle-black",
-      "name": "كشكشة أسود",
-      "style": "ruffle",
-      "color": "black",
-      "hex": "#1C1C1F",
       "texture": "ruffle"
     },
     {

@@ -15,16 +15,17 @@ import {
 } from "../src/index.ts";
 
 const validBody = () => ({
-  items: [{ id: "lace-black", quantity: 1 }],
+  items: [{ id: "lace-white", quantity: 1 }],
   customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد، عمارة 21" },
   shippingMethod: "standard",
   paymentMethod: "cod",
 });
 
 describe("catalogue", () => {
-  it("has 38 products with unique ids, each priced by a known style", () => {
-    assert.equal(catalog.products.length, 38);
-    assert.equal(new Set(catalog.products.map((p) => p.id)).size, 38);
+  it("has 16 products with unique ids, each priced by a known style", () => {
+    // 22 sold-out belts were removed on 2026-10-16 (owner).
+    assert.equal(catalog.products.length, 16);
+    assert.equal(new Set(catalog.products.map((p) => p.id)).size, 16);
     for (const p of catalog.products) {
       const priced = lookupProduct(p.id);
       assert.ok(priced, p.id);
@@ -32,9 +33,9 @@ describe("catalogue", () => {
     }
   });
   it("keeps the legacy prices", () => {
-    assert.equal(lookupProduct("lace-black")?.unitPrice, egp(300));
-    assert.equal(lookupProduct("wide-tie-gold")?.unitPrice, egp(200));
-    assert.equal(lookupProduct("thin-tie-navy")?.unitPrice, egp(120));
+    assert.equal(lookupProduct("lace-white")?.unitPrice, egp(300));
+    assert.equal(lookupProduct("wide-tie-mustard")?.unitPrice, egp(200));
+    assert.equal(lookupProduct("thin-tie-sky-blue")?.unitPrice, egp(120));
   });
   it("governorate lists are aligned", () => {
     assert.equal(GOVERNORATES.length, GOVERNORATES_EN.length);
@@ -90,17 +91,17 @@ describe("validateOrderRequest", () => {
   });
 
   it("ignores any client-sent price or total", () => {
-    const body = { ...validBody(), total: 1, items: [{ id: "lace-black", quantity: 1, price: 1, unitPrice: 1 }] };
+    const body = { ...validBody(), total: 1, items: [{ id: "lace-white", quantity: 1, price: 1, unitPrice: 1 }] };
     const r = validateOrderRequest(body, lookupProduct);
     assert.ok(r.ok);
-    if (r.ok) assert.deepEqual(r.value.items, [{ id: "lace-black", quantity: 1 }]);
+    if (r.ok) assert.deepEqual(r.value.items, [{ id: "lace-white", quantity: 1 }]);
   });
 
   it("merges duplicate product ids", () => {
-    const body = { ...validBody(), items: [{ id: "lace-black", quantity: 1 }, { id: "lace-black", quantity: 2 }] };
+    const body = { ...validBody(), items: [{ id: "lace-white", quantity: 1 }, { id: "lace-white", quantity: 2 }] };
     const r = validateOrderRequest(body, lookupProduct);
     assert.ok(r.ok);
-    if (r.ok) assert.deepEqual(r.value.items, [{ id: "lace-black", quantity: 3 }]);
+    if (r.ok) assert.deepEqual(r.value.items, [{ id: "lace-white", quantity: 3 }]);
   });
 
   it("collapses control characters and bidi overrides in text", () => {
@@ -114,10 +115,10 @@ describe("validateOrderRequest", () => {
   const rejects: Array<[string, (b: ReturnType<typeof validBody>) => unknown, string, string]> = [
     ["empty cart", (b) => ({ ...b, items: [] }), "items", "empty_cart"],
     ["unknown product", (b) => ({ ...b, items: [{ id: "nope", quantity: 1 }] }), "items[0].id", "unknown_product"],
-    ["zero quantity", (b) => ({ ...b, items: [{ id: "lace-black", quantity: 0 }] }), "items[0].quantity", "invalid_quantity"],
-    ["fractional quantity", (b) => ({ ...b, items: [{ id: "lace-black", quantity: 1.5 }] }), "items[0].quantity", "invalid_quantity"],
-    ["huge quantity", (b) => ({ ...b, items: [{ id: "lace-black", quantity: LIMITS.maxQuantityPerItem + 1 }] }), "items[0].quantity", "invalid_quantity"],
-    ["string quantity", (b) => ({ ...b, items: [{ id: "lace-black", quantity: "2" }] }), "items[0].quantity", "invalid_quantity"],
+    ["zero quantity", (b) => ({ ...b, items: [{ id: "lace-white", quantity: 0 }] }), "items[0].quantity", "invalid_quantity"],
+    ["fractional quantity", (b) => ({ ...b, items: [{ id: "lace-white", quantity: 1.5 }] }), "items[0].quantity", "invalid_quantity"],
+    ["huge quantity", (b) => ({ ...b, items: [{ id: "lace-white", quantity: LIMITS.maxQuantityPerItem + 1 }] }), "items[0].quantity", "invalid_quantity"],
+    ["string quantity", (b) => ({ ...b, items: [{ id: "lace-white", quantity: "2" }] }), "items[0].quantity", "invalid_quantity"],
     ["short name", (b) => ({ ...b, customer: { ...b.customer, name: "م" } }), "customer.name", "too_short"],
     ["missing name", (b) => ({ ...b, customer: { ...b.customer, name: "" } }), "customer.name", "required"],
     ["bad phone", (b) => ({ ...b, customer: { ...b.customer, phone: "123" } }), "customer.phone", "invalid_phone"],
@@ -158,7 +159,7 @@ describe("generateOrderId", () => {
 
 describe("buildOrder", () => {
   it("snapshots catalogue prices and computes totals with the shared pricing logic", () => {
-    const body = { ...validBody(), items: [{ id: "wide-tie-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }] };
+    const body = { ...validBody(), items: [{ id: "wide-tie-mustard", quantity: 2 }, { id: "lace-white", quantity: 1 }] };
     const r = validateOrderRequest(body, lookupProduct);
     assert.ok(r.ok);
     if (!r.ok) return;
@@ -177,7 +178,7 @@ describe("buildOrder", () => {
 
   it("charges standard shipping below the threshold and express whenever chosen", () => {
     // 4 x 300 = 1200 (< 1500) => standard shipping is charged
-    const four = { ...validBody(), items: [{ id: "lace-black", quantity: 4 }] };
+    const four = { ...validBody(), items: [{ id: "lace-white", quantity: 4 }] };
     const r1 = validateOrderRequest(four, lookupProduct);
     assert.ok(r1.ok);
     if (r1.ok) {
@@ -191,7 +192,7 @@ describe("buildOrder", () => {
       assert.equal(coded.promoCode, "WELCOME50");
     }
     // 5 x 300 = 1500 (>= 1500) => standard is free, express is not
-    const eight = { ...validBody(), items: [{ id: "lace-black", quantity: 5 }] };
+    const eight = { ...validBody(), items: [{ id: "lace-white", quantity: 5 }] };
     const free = validateOrderRequest(eight, lookupProduct);
     const express = validateOrderRequest({ ...eight, shippingMethod: "express" }, lookupProduct);
     assert.ok(free.ok && express.ok);

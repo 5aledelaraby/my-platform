@@ -12,8 +12,8 @@ const order: Order = {
   status: "new",
   customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد", notes: "الدور *الثالث* <b>" },
   items: [
-    { productId: "wide-tie-gold", name: "رباط عريض دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
-    { productId: "lace-black", name: "دانتيل أسود", unitPrice: 30000, quantity: 1, lineTotal: 30000 },
+    { productId: "wide-tie-mustard", name: "رباط عريض مسطردة", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
+    { productId: "lace-white", name: "دانتيل أبيض", unitPrice: 30000, quantity: 1, lineTotal: 30000 },
   ],
   shippingMethod: "express",
   paymentMethod: "instapay",
@@ -31,8 +31,8 @@ describe("formatOrderMessage", () => {
       "https://wa.me/201012345678",
       "المحافظة: القاهرة",
       "العنوان: مدينة نصر، شارع عباس العقاد",
-      "- رباط عريض دهبي (wide-tie-gold) × 2 = 400 ج",
-      "- دانتيل أسود (lace-black) × 1 = 300 ج",
+      "- رباط عريض مسطردة (wide-tie-mustard) × 2 = 400 ج",
+      "- دانتيل أبيض (lace-white) × 1 = 300 ج",
       "الخصم: -120 ج",
       "الشحن (سريع): 120 ج",
       "الإجمالي: 700 ج",
@@ -140,7 +140,7 @@ describe("handler + notification", () => {
   it("notifies once for a stored order, in the background", async () => {
     const sent: string[] = [];
     const { handler, background, repository } = setup((o) => (sent.push(o.id), Promise.resolve()));
-    const res = await handler(request([{ id: "lace-black", quantity: 1 }]));
+    const res = await handler(request([{ id: "lace-white", quantity: 1 }]));
     assert.equal(res.status, 201);
     await Promise.all(background);
     assert.equal(sent.length, 1);
@@ -149,7 +149,7 @@ describe("handler + notification", () => {
 
   it("a failed notification does not fail the order and is reported without details", async () => {
     const { handler, background, reported, repository } = setup(() => Promise.reject(new Error("telegram_http_500")));
-    const res = await handler(request([{ id: "lace-black", quantity: 1 }]));
+    const res = await handler(request([{ id: "lace-white", quantity: 1 }]));
     assert.equal(res.status, 201);
     await Promise.all(background);
     assert.equal(repository.orders.size, 1);
@@ -183,7 +183,7 @@ describe("worker wiring", () => {
       method: "POST",
       headers: { "Content-Type": "application/json", Origin: "https://staging.vicuna-eg.com" },
       body: JSON.stringify({
-        items: [{ id: "lace-black", quantity: 1 }],
+        items: [{ id: "lace-white", quantity: 1 }],
         customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد" },
       }),
     });

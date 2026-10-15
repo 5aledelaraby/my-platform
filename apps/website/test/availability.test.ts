@@ -1,69 +1,91 @@
-// Live availability on product pages (ADR 0013): the pure rewrite and the site Worker around it.
+// Sold-out belts are hidden (ADR 0013): the pure rewrites and the site Worker around them.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { productJsonLd, serializeJsonLd } from "@platform/seo";
-import { IN_STOCK, OUT_OF_STOCK, isSoldOut, markSoldOut, productIdFromPath, statedAvailability } from "../src/lib/availability.ts";
+import { catalog } from "@platform/commerce";
+import { designPath, hideSoldOut, isSoldOut, productFromPath, productIdFromPath, sitemapWithoutSoldOut, skipSoldOutSiblings } from "../src/lib/availability.ts";
 import worker from "../src/worker.ts";
 
-/** The parts of a built product page that carry the stock state (same markup as ProductPage.astro). */
-function productPage(id: string): string {
-  const ld = serializeJsonLd(
-    productJsonLd({ name: "x", description: "x", url: `https://vicuna-eg.com/collections/vicuna-belts/${id}/`, images: [], sku: id, brand: "Vicuna", price: 300, currency: "EGP", inStock: true }),
-  );
+const B = "/collections/vicuna-belts/";
+const card = (id: string) => `<article class="card reveal" data-color="red" data-product="${id}" style="--i:0"><a href="${B}${id}/">x</a></article>`;
+const swatch = (id: string, current = false) => `<a class="swatch" href="${B}${id}/" style="--c:#000"${current ? ' aria-current="true"' : ""} aria-label="x" title="x"></a>`;
+const thinTie = catalog.products.filter((p) => p.style === "thin-tie").map((p) => p.id);
+
+/** The parts of a built product page the Worker rewrites (same markup as ProductPage.astro). */
+function productPage(id: string, prev: string, next: string, n: number, total: number): string {
   return [
-    `<script type="application/ld+json">${ld}</script>`,
-    `<p class="soldout" data-soldout-for="${id}" hidden>نفدت الكمية</p>`,
-    `<button type="button" class="btn btn-berry btn-block" data-add="${id}">أضيفي للسلة</button>`,
-    // a related card for another product must stay untouched
-    `<span class="card-out" data-soldout-for="lace-red" hidden>x</span><button type="button" class="quick-add" data-add="lace-red">x</button>`,
+    `<figure class="pdp-photo" style="--tint:#000" data-swipe-next="${B}${next}/" data-swipe-prev="${B}${prev}/">`,
+    `<a class="pdp-arrow prev" href="${B}${prev}/" aria-label="اللون السابق: x"><svg></svg></a>`,
+    `<a class="pdp-arrow next" href="${B}${next}/" aria-label="اللون التالي: x"><svg></svg></a>`,
+    `<span class="pdp-count" dir="ltr">${n} / ${total}</span></figure>`,
+    `<link rel="prefetch" href="${B}${next}/"><link rel="prefetch" href="${B}${prev}/">`,
   ].join("\n");
 }
 
-describe("availability rules", () => {
+describe("hiding sold-out belts", () => {
   it("finds product pages in both languages and ignores other pages", () => {
-    assert.equal(productIdFromPath("/collections/vicuna-belts/lace-gold/"), "lace-gold");
-    assert.equal(productIdFromPath("/en/collections/vicuna-belts/thin-tie-croc-black/"), "thin-tie-croc-black");
-    assert.equal(productIdFromPath("/collections/vicuna-belts/thin-tie/"), null, "a style page");
-    assert.equal(productIdFromPath("/collections/vicuna-belts/"), null);
-    assert.equal(productIdFromPath("/collections/vicuna-belts/not-a-product/"), null);
+    assert.equal(productIdFromPath(`${B}lace-white/`), "lace-white");
+    assert.deepEqual(productFromPath(`/en${B}ruffle-red/`)?.en, true);
+    assert.equal(productIdFromPath(`${B}thin-tie/`), null, "a style page");
+    assert.equal(productIdFromPath(B), null);
+    assert.equal(productIdFromPath(`${B}not-a-product/`), null);
   });
 
-  it("sold out only when the product is tracked at zero; untracked products stay available", () => {
-    assert.equal(isSoldOut({ "lace-gold": 0 }, "lace-gold"), true);
-    assert.equal(isSoldOut({ "lace-gold": 3 }, "lace-gold"), false);
-    assert.equal(isSoldOut({}, "lace-gold"), false);
+  it("sold out only when the product is tracked at zero; untracked products stay", () => {
+    assert.equal(isSoldOut({ "lace-white": 0 }, "lace-white"), true);
+    assert.equal(isSoldOut({ "lace-white": 3 }, "lace-white"), false);
+    assert.equal(isSoldOut({}, "lace-white"), false);
   });
 
-  it("a sold-out page says OutOfStock and shows the sold-out state; the visible state and the data agree", () => {
-    const html = markSoldOut(productPage("lace-gold"), "lace-gold");
-    assert.equal(statedAvailability(html), OUT_OF_STOCK);
-    assert.match(html, /<p class="soldout" data-soldout-for="lace-gold">/);
-    assert.match(html, /<button disabled type="button" class="btn btn-berry btn-block" data-add="lace-gold">/);
-    // the other product on the page is not touched
-    assert.match(html, /data-soldout-for="lace-red" hidden>/);
-    assert.match(html, /<button type="button" class="quick-add" data-add="lace-red">/);
-    // idempotent
-    assert.equal(markSoldOut(html, "lace-gold"), html);
+  it("a sold-out product page sends the visitor to its design, in the same language", () => {
+    const p = catalog.products.find((x) => x.id === "ruffle-red")!;
+    assert.equal(designPath(p, false), `${B}ruffle/`);
+    assert.equal(designPath(p, true), `/en${B}ruffle/`);
   });
 
-  it("the built page states InStock (the Worker only ever changes it to OutOfStock)", () => {
-    assert.equal(statedAvailability(productPage("lace-gold")), IN_STOCK);
+  it("removes the cards and colour swatches of sold-out belts, and nothing else", () => {
+    const html = [card("ruffle-red"), card("ruffle-brown"), swatch("ruffle-red"), swatch("ruffle-brown")].join("\n");
+    const out = hideSoldOut(html, ["ruffle-red"]);
+    assert.doesNotMatch(out, /data-product="ruffle-red"/);
+    assert.doesNotMatch(out, /href="\/collections\/vicuna-belts\/ruffle-red\/"/);
+    assert.match(out, /data-product="ruffle-brown"/);
+    assert.match(out, /href="\/collections\/vicuna-belts\/ruffle-brown\/"/);
+    assert.equal(hideSoldOut(html, []), html);
   });
 
-  it("ProductPage.astro still has the markup the rewrite looks for", () => {
-    const src = readFileSync(new URL("../src/components/ProductPage.astro", import.meta.url), "utf8");
-    assert.match(src, /data-soldout-for=\{product\.id\} hidden>/);
-    assert.match(src, /<button type="button"[^>]*data-add=\{product\.id\}>/);
-    assert.match(src, /inStock: true/);
+  it("product photo arrows skip sold-out colours; with no other colour left, arrows and counter go", () => {
+    const [a, b, c] = thinTie as [string, string, string];
+    const html = productPage(a, thinTie.at(-1)!, b, 1, thinTie.length);
+    const out = skipSoldOutSiblings(html, catalog.products.find((p) => p.id === a)!, false, [b]);
+    assert.match(out, new RegExp(`class="pdp-arrow next" href="${B}${c}/"`));
+    assert.match(out, new RegExp(`data-swipe-next="${B}${c}/"`));
+    assert.match(out, new RegExp(`>1 / ${thinTie.length - 1}<`));
+    assert.doesNotMatch(out, /rel="prefetch"/);
+    const alone = skipSoldOutSiblings(html, catalog.products.find((p) => p.id === a)!, false, thinTie.filter((id) => id !== a));
+    assert.doesNotMatch(alone, /pdp-arrow|pdp-count|data-swipe-/);
+  });
+
+  it("removes sold-out product pages (both languages) from the sitemap", () => {
+    const xml = ["ruffle-red", "ruffle-brown"].flatMap((id) => [`<url><loc>https://vicuna-eg.com${B}${id}/</loc></url>`, `<url><loc>https://vicuna-eg.com/en${B}${id}/</loc></url>`]).join("\n");
+    const out = sitemapWithoutSoldOut(xml, ["ruffle-red"]);
+    assert.doesNotMatch(out, /ruffle-red/);
+    assert.equal((out.match(/ruffle-brown/g) ?? []).length, 2);
+  });
+
+  it("the components still have the markup the rewrites look for", () => {
+    const read = (f: string) => readFileSync(new URL(`../src/components/${f}`, import.meta.url), "utf8");
+    assert.match(read("ProductCard.astro"), /<article class="card reveal" data-color=\{product\.color\} data-product=\{product\.id\}/);
+    assert.match(read("ProductCard.astro"), /<a class="swatch" href=\{beltsUrl\(lang, q\.id\)\}/);
+    const page = read("ProductPage.astro");
+    for (const re of [/<a class="pdp-arrow prev" href=/, /<a class="pdp-arrow next" href=/, /<span class="pdp-count"/, /data-swipe-next=/, /<link rel="prefetch"/]) assert.match(page, re);
   });
 });
 
 describe("site Worker", () => {
-  const asset = (id: string) => ({
+  const assets = (body: string, type = "text/html; charset=utf-8") => ({
     fetch: async (req: Request) => {
       assert.equal(req.headers.get("If-None-Match"), null, "conditional headers are removed");
-      return new Response(productPage(id), { headers: { "Content-Type": "text/html; charset=utf-8", ETag: '"abc"' } });
+      return new Response(body, { headers: { "Content-Type": type, ETag: '"abc"' } });
     },
   });
   const api = (stock: Record<string, number> | "down") => ({
@@ -75,37 +97,40 @@ describe("site Worker", () => {
   });
   const get = (path: string) => new Request(`https://staging.vicuna-eg.com${path}`, { headers: { "If-None-Match": '"abc"' } });
 
-  it("in stock: the page is served as built, InStock, button enabled", async () => {
-    const res = await worker.fetch(get("/collections/vicuna-belts/wide-tie-gold/"), { ASSETS: asset("wide-tie-gold"), API: api({ "wide-tie-gold": 5 }) });
-    const html = await res.text();
+  it("a sold-out product page redirects to its design (English too)", async () => {
+    const res = await worker.fetch(get(`/en${B}ruffle-red/`), { ASSETS: assets("page"), API: api({ "ruffle-red": 0 }) });
+    assert.equal(res.status, 302);
+    assert.equal(res.headers.get("Location"), `/en${B}ruffle/`);
+  });
+
+  it("an in-stock product page is served, without ETag and with no-cache", async () => {
+    const res = await worker.fetch(get(`${B}ruffle-brown/`), { ASSETS: assets(card("ruffle-brown")), API: api({ "ruffle-brown": 5 }) });
     assert.equal(res.status, 200);
-    assert.equal(statedAvailability(html), IN_STOCK);
-    assert.match(html, /data-soldout-for="wide-tie-gold" hidden>/);
+    assert.match(await res.text(), /ruffle-brown/);
     assert.equal(res.headers.get("ETag"), null);
     assert.equal(res.headers.get("Cache-Control"), "no-cache");
   });
 
-  it("sold out (English page too): OutOfStock, message shown, button disabled", async () => {
-    const res = await worker.fetch(get("/en/collections/vicuna-belts/lace-gold/"), { ASSETS: asset("lace-gold"), API: api({ "lace-gold": 0 }) });
+  it("the belts page loses the sold-out cards", async () => {
+    const res = await worker.fetch(get(B), { ASSETS: assets(card("ruffle-red") + card("ruffle-brown")), API: api({ "ruffle-red": 0 }) });
     const html = await res.text();
-    assert.equal(statedAvailability(html), OUT_OF_STOCK);
-    assert.match(html, /data-soldout-for="lace-gold">/);
-    assert.match(html, /<button disabled[^>]*data-add="lace-gold"/);
+    assert.doesNotMatch(html, /ruffle-red/);
+    assert.match(html, /ruffle-brown/);
   });
 
-  it("API down: the page is still served (as built)", async () => {
-    const res = await worker.fetch(get("/collections/vicuna-belts/lace-gold/"), { ASSETS: asset("lace-gold"), API: api("down") });
+  it("API down: pages are served as built", async () => {
+    const res = await worker.fetch(get(`${B}ruffle-red/`), { ASSETS: assets(card("ruffle-red")), API: api("down") });
     assert.equal(res.status, 200);
-    assert.equal(statedAvailability(await res.text()), IN_STOCK);
+    assert.match(await res.text(), /ruffle-red/);
   });
 
-  it("other paths go straight to the assets", async () => {
+  it("other paths go straight to the assets, without a stock lookup", async () => {
     let seen = "";
-    const res = await worker.fetch(new Request("https://staging.vicuna-eg.com/collections/vicuna-belts/thin-tie/"), {
-      ASSETS: { fetch: async (req: Request) => ((seen = new URL(req.url).pathname), new Response("style page")) },
-      API: { fetch: async () => assert.fail("no stock lookup for a style page") },
+    const res = await worker.fetch(new Request("https://staging.vicuna-eg.com/about/"), {
+      ASSETS: { fetch: async (req: Request) => ((seen = new URL(req.url).pathname), new Response("about")) },
+      API: { fetch: async () => assert.fail("no stock lookup for other pages") },
     });
-    assert.equal(seen, "/collections/vicuna-belts/thin-tie/");
-    assert.equal(await res.text(), "style page");
+    assert.equal(seen, "/about/");
+    assert.equal(await res.text(), "about");
   });
 });

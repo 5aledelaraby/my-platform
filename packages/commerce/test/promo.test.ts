@@ -52,7 +52,7 @@ describe("promo codes", () => {
   });
 
   it("takes an optional code with the order request (format only)", () => {
-    const base = { items: [{ id: "lace-black", quantity: 1 }], customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد" } };
+    const base = { items: [{ id: "lace-white", quantity: 1 }], customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد" } };
     const withCode = validateOrderRequest({ ...base, promoCode: " eid50 " }, lookupProduct);
     assert.ok(withCode.ok && withCode.value.promoCode === "EID50");
     const empty = validateOrderRequest({ ...base, promoCode: "" }, lookupProduct);

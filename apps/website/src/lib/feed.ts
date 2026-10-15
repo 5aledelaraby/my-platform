@@ -1,7 +1,7 @@
 // The product feed for Meta (Commerce Manager, "Vicuna designs catalog") and Google Merchant Center, served at
 // /catalog/products.csv like on the old site, with the same columns. Product ids are the catalogue ids, the same ids
 // the Pixel sends as content_ids and the product pages use as sku, so catalog ads match each visitor's belts.
-// Built as "in stock"; the site Worker marks sold-out rows when it serves the file (ADR 0013).
+// Every row is "in stock": the site Worker drops sold-out rows when it serves the file (ADR 0013).
 import { PIASTERS_PER_EGP, catalog, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 
@@ -10,7 +10,6 @@ export const FEED_HEADER = [
   "id", "title", "description", "availability", "condition", "price", "link", "image_link", "additional_image_link",
   "brand", "google_product_category", "fb_product_category", "product_type", "item_group_id", "color", "material", "gender", "age_group",
 ] as const;
-const AVAILABILITY_COL = FEED_HEADER.indexOf("availability");
 
 const cell = (v: string | number) => `"${String(v).replace(/"/g, '""').replace(/\s+/g, " ").trim()}"`;
 
@@ -18,8 +17,6 @@ export interface FeedOptions {
   siteUrl: string;
   brand: string;
   productUrl: (p: CatalogProduct) => string;
-  /** Products that also have an on-body photo (public/catalog/img/<id>-look.jpg). */
-  hasLook: (p: CatalogProduct) => boolean;
 }
 
 export function buildFeedCsv(o: FeedOptions): string {
@@ -39,7 +36,7 @@ export function buildFeedCsv(o: FeedOptions): string {
       `${(priceOf(p) / PIASTERS_PER_EGP).toFixed(2)} EGP`,
       o.productUrl(p),
       `${o.siteUrl}/catalog/img/${p.id}.jpg`,
-      o.hasLook(p) ? `${o.siteUrl}/catalog/img/${p.id}-look.jpg` : "",
+      "",
       o.brand,
       "169",
       "Clothing & Accessories > Accessories > Belts",
@@ -56,18 +53,14 @@ export function buildFeedCsv(o: FeedOptions): string {
   return [FEED_HEADER.join(","), ...rows].join("\n") + "\n";
 }
 
-/** Marks the rows of sold-out products (tracked at zero) as "out of stock". Other rows are unchanged. */
+/** Drops the rows of sold-out products (tracked at zero), so Meta and Google stop showing them until restocked. */
 export function feedWithStock(csv: string, isSoldOut: (id: string) => boolean): string {
   return csv
     .split("\n")
-    .map((line, i) => {
-      if (i === 0 || line === "") return line;
+    .filter((line, i) => {
+      if (i === 0 || line === "") return true;
       const id = /^"([^"]*)"/.exec(line)?.[1];
-      if (!id || !isSoldOut(id)) return line;
-      const cells = line.split('","');
-      if (cells[AVAILABILITY_COL] !== "in stock") return line;
-      cells[AVAILABILITY_COL] = "out of stock";
-      return cells.join('","');
+      return !(id && isSoldOut(id));
     })
     .join("\n");
 }

@@ -200,7 +200,7 @@ describe("admin access", () => {
 
   it("refuses everything without a verified owner", async () => {
     const { handler } = adminApp(() => Promise.resolve(null));
-    for (const req of [get("/"), get("/app.js"), get("/api/orders"), get("/api/stock"), send("PUT", "/api/stock/wide-tie-gold", { quantity: 1, expected: null })]) {
+    for (const req of [get("/"), get("/app.js"), get("/api/orders"), get("/api/stock"), send("PUT", "/api/stock/wide-tie-mustard", { quantity: 1, expected: null })]) {
       assert.equal((await handler(req)).status, 403, req.url);
     }
   });
@@ -219,16 +219,16 @@ describe("admin access", () => {
 
   it("blocks cross-site changes: custom header and same origin are required", async () => {
     const { handler } = adminApp();
-    assert.equal((await handler(send("PUT", "/api/stock/wide-tie-gold", { quantity: 1, expected: null }, { [ADMIN_HEADER]: "" }))).status, 403);
-    assert.equal((await handler(send("PUT", "/api/stock/wide-tie-gold", { quantity: 1, expected: null }, { Origin: "https://evil.example" }))).status, 403);
-    assert.equal((await handler(send("PUT", "/api/stock/wide-tie-gold", { quantity: 1, expected: null }, { "Content-Type": "text/plain" }))).status, 415);
+    assert.equal((await handler(send("PUT", "/api/stock/wide-tie-mustard", { quantity: 1, expected: null }, { [ADMIN_HEADER]: "" }))).status, 403);
+    assert.equal((await handler(send("PUT", "/api/stock/wide-tie-mustard", { quantity: 1, expected: null }, { Origin: "https://evil.example" }))).status, 403);
+    assert.equal((await handler(send("PUT", "/api/stock/wide-tie-mustard", { quantity: 1, expected: null }, { "Content-Type": "text/plain" }))).status, 415);
   });
 });
 
 describe("admin orders", () => {
   it("lists and shows orders, raw customer text included (the page renders it as text)", async () => {
     const { handler, repo } = adminApp();
-    await placeOrder(repo, "V-1009-AAAA1", [{ id: "wide-tie-gold", quantity: 1 }]);
+    await placeOrder(repo, "V-1009-AAAA1", [{ id: "wide-tie-mustard", quantity: 1 }]);
     const list = (await (await handler(get("/api/orders"))).json()) as { orders: Array<{ id: string; customerName: string }> };
     assert.deepEqual(list.orders.map((o) => o.id), ["V-1009-AAAA1"]);
     const one = (await (await handler(get("/api/orders/V-1009-AAAA1"))).json()) as { order: { id: string }; next: string[] };
@@ -240,8 +240,8 @@ describe("admin orders", () => {
 
   it("changes status step by step, refuses skips, stale versions and changes after cancel", async () => {
     const { handler, repo } = adminApp();
-    await repo.setStock("lace-black", 3, null, NOW.toISOString());
-    await placeOrder(repo, "V-1009-AAAA2", [{ id: "lace-black", quantity: 2 }]);
+    await repo.setStock("lace-white", 3, null, NOW.toISOString());
+    await placeOrder(repo, "V-1009-AAAA2", [{ id: "lace-white", quantity: 2 }]);
     const move = (to: string, version: number) => handler(send("POST", "/api/orders/V-1009-AAAA2/status", { to, version }));
 
     assert.equal((await move("delivered", 0)).status, 409, "cannot skip to delivered");
@@ -250,10 +250,10 @@ describe("admin orders", () => {
     assert.equal(((await confirmed.json()) as { order: { status: string; version: number } }).order.version, 1);
     assert.equal((await move("shipped", 0)).status, 409, "stale version");
     assert.equal((await move("cancelled", 1)).status, 200);
-    assert.deepEqual([...(await repo.stock())], [["lace-black", 3]], "stock returned");
+    assert.deepEqual([...(await repo.stock())], [["lace-white", 3]], "stock returned");
     assert.equal((await move("confirmed", 2)).status, 409, "cancelled is final");
     assert.equal((await move("cancelled", 2)).status, 409, "no double cancel");
-    assert.deepEqual([...(await repo.stock())], [["lace-black", 3]], "still returned only once");
+    assert.deepEqual([...(await repo.stock())], [["lace-white", 3]], "still returned only once");
     assert.equal((await handler(send("POST", "/api/orders/V-1009-AAAA2/status", { to: "lost", version: 2 }))).status, 400);
   });
 
@@ -272,7 +272,7 @@ describe("admin orders", () => {
       notifyStatus: (o, from, to) => (fail ? Promise.reject(new Error("telegram_http_500")) : (sent.push(`${o.id} ${from}>${to} ${o.customer.phone}`), Promise.resolve())),
       waitUntil: (w) => work.push(w),
     });
-    await placeOrder(repo, "V-1009-BBBB3", [{ id: "wide-tie-gold", quantity: 1 }]);
+    await placeOrder(repo, "V-1009-BBBB3", [{ id: "wide-tie-mustard", quantity: 1 }]);
     const move = (to: string, version: number) => admin(send("POST", "/api/orders/V-1009-BBBB3/status", { to, version }), "/admin/api/orders/V-1009-BBBB3/status");
 
     assert.equal((await move("confirmed", 0)).status, 200);
@@ -316,18 +316,18 @@ describe("admin promo codes", () => {
 describe("admin stock", () => {
   it("lists every catalogue product with its stock (null = untracked)", async () => {
     const { handler, repo } = adminApp();
-    await repo.setStock("wide-tie-gold", 4, null, NOW.toISOString());
+    await repo.setStock("wide-tie-mustard", 4, null, NOW.toISOString());
     const data = (await (await handler(get("/api/stock"))).json()) as { products: Array<{ id: string; quantity: number | null; name: string }> };
     assert.equal(data.products.length, catalog.products.length);
-    assert.equal(data.products.find((p) => p.id === "wide-tie-gold")?.quantity, 4);
-    assert.equal(data.products.find((p) => p.id === "lace-black")?.quantity, null);
+    assert.equal(data.products.find((p) => p.id === "wide-tie-mustard")?.quantity, 4);
+    assert.equal(data.products.find((p) => p.id === "lace-white")?.quantity, null);
   });
 
   it("sets, clears and validates quantities against the value the owner saw", async () => {
     const { handler, repo } = adminApp();
-    const put = (body: unknown, id = "wide-tie-gold") => handler(send("PUT", `/api/stock/${id}`, body));
+    const put = (body: unknown, id = "wide-tie-mustard") => handler(send("PUT", `/api/stock/${id}`, body));
     assert.equal((await put({ quantity: 6, expected: null })).status, 200);
-    assert.deepEqual([...(await repo.stock())], [["wide-tie-gold", 6]]);
+    assert.deepEqual([...(await repo.stock())], [["wide-tie-mustard", 6]]);
     assert.equal((await put({ quantity: 9, expected: 6 })).status, 200);
     assert.equal((await put({ quantity: null, expected: 9 })).status, 200);
     assert.equal((await repo.stock()).size, 0);
@@ -340,23 +340,23 @@ describe("admin stock", () => {
 
   it("refuses to overwrite stock that an order changed meanwhile (no lost update)", async () => {
     const { handler, repo } = adminApp();
-    await handler(send("PUT", "/api/stock/lace-black", { quantity: 3, expected: null }));
-    await placeOrder(repo, "V-1009-LOST1", [{ id: "lace-black", quantity: 1 }]); // a customer buys one: 2 left
-    const res = await handler(send("PUT", "/api/stock/lace-black", { quantity: 8, expected: 3 })); // owner typed 3 + 5
+    await handler(send("PUT", "/api/stock/lace-white", { quantity: 3, expected: null }));
+    await placeOrder(repo, "V-1009-LOST1", [{ id: "lace-white", quantity: 1 }]); // a customer buys one: 2 left
+    const res = await handler(send("PUT", "/api/stock/lace-white", { quantity: 8, expected: 3 })); // owner typed 3 + 5
     assert.equal(res.status, 409);
     assert.deepEqual(await res.json(), { error: "stale", current: 2 });
-    assert.deepEqual([...(await repo.stock())], [["lace-black", 2]]);
+    assert.deepEqual([...(await repo.stock())], [["lace-white", 2]]);
   });
 
   it("shows units held by open orders, and releases them when the order ships or is cancelled", async () => {
     const { handler, repo } = adminApp();
-    await handler(send("PUT", "/api/stock/thin-tie-croc-black", { quantity: 5, expected: null }));
-    await placeOrder(repo, "V-1009-RES01", [{ id: "thin-tie-croc-black", quantity: 2 }]);
+    await handler(send("PUT", "/api/stock/thin-tie-croc-wine", { quantity: 5, expected: null }));
+    await placeOrder(repo, "V-1009-RES01", [{ id: "thin-tie-croc-wine", quantity: 2 }]);
     const read = async () =>
       ((await (await handler(get("/api/stock"))).json()) as { products: Array<{ id: string; quantity: number | null; reserved: number }> }).products.find(
-        (p) => p.id === "thin-tie-croc-black",
+        (p) => p.id === "thin-tie-croc-wine",
       );
-    assert.deepEqual(await read(), { id: "thin-tie-croc-black", name: "رباط رفيع كروكو أسود", style: "thin-tie", styleName: "عريض برباط رفيع", quantity: 3, reserved: 2 });
+    assert.deepEqual(await read(), { id: "thin-tie-croc-wine", name: "رباط رفيع كروكو عنابي", style: "thin-tie", styleName: "عريض برباط رفيع", quantity: 3, reserved: 2 });
     await handler(send("POST", "/api/orders/V-1009-RES01/status", { to: "confirmed", version: 0 }));
     assert.equal((await read())?.reserved, 2);
     await handler(send("POST", "/api/orders/V-1009-RES01/status", { to: "shipped", version: 1 }));

@@ -72,7 +72,7 @@ const dataLayer = () => ((g["dataLayer"] as unknown[][] | undefined) ?? []).map(
 const fbqCalls = () => ((g["fbq"] as { queue?: unknown[][] } | undefined)?.queue ?? []).map((a) => [...a]);
 const snapCalls = () => ((g["snaptr"] as { queue?: unknown[][] } | undefined)?.queue ?? []).map((a) => [...a]);
 const hosts = () => b.scripts.map((s) => new URL(s).host).sort();
-const viewItem = { type: "view_item" as const, item: { id: "lace-gold", name: "دانتيل دهبي", price: 30000 } };
+const viewItem = { type: "view_item" as const, item: { id: "lace-white", name: "دانتيل دهبي", price: 30000 } };
 
 describe("tracking and consent", () => {
   beforeEach(() => {
@@ -110,7 +110,7 @@ describe("tracking and consent", () => {
     next.initTracking();
     assert.equal(next.consent(), "granted");
     assert.ok(hosts().includes("www.googletagmanager.com"));
-    assert.equal(next.track({ type: "add_to_cart", item: { id: "wide-tie-gold", price: 20000 } }), true);
+    assert.equal(next.track({ type: "add_to_cart", item: { id: "wide-tie-mustard", price: 20000 } }), true);
   });
 
   it("reject: nothing loads now or on the next page, and the page does not reload", async () => {
@@ -142,7 +142,7 @@ describe("tracking and consent", () => {
     assert.equal(b.store.get("vicuna-consent"), "denied");
     // Until the reload happens, nothing else is sent.
     const before = [dataLayer().length, fbqCalls().length, snapCalls().length];
-    assert.equal(t.track({ type: "add_to_cart", item: { id: "lace-gold", price: 30000 } }), false);
+    assert.equal(t.track({ type: "add_to_cart", item: { id: "lace-white", price: 30000 } }), false);
     assert.deepEqual([dataLayer().length, fbqCalls().length, snapCalls().length], before);
     // After the reload: nothing loads.
     const next = await page();
@@ -177,17 +177,17 @@ describe("tracking and consent", () => {
   it("purchase sends the product ids (the catalogue SKUs) to every vendor, and no personal data", async () => {
     const t = await page();
     t.setConsent("granted");
-    const items = [{ id: "wide-tie-gold", quantity: 2, price: 20000 }, { id: "lace-black", quantity: 1, price: 30000 }];
+    const items = [{ id: "wide-tie-mustard", quantity: 2, price: 20000 }, { id: "lace-white", quantity: 1, price: 30000 }];
     t.track({ type: "purchase", orderId: "V-1010-ABCDE", value: 78000, items });
     const ga = dataLayer().find((a) => a[1] === "purchase")?.[2] as { items: Array<{ item_id: string; quantity: number; price: number }>; value: number };
-    assert.deepEqual(ga.items.map((i) => [i.item_id, i.quantity, i.price]), [["wide-tie-gold", 2, 200], ["lace-black", 1, 300]]);
+    assert.deepEqual(ga.items.map((i) => [i.item_id, i.quantity, i.price]), [["wide-tie-mustard", 2, 200], ["lace-white", 1, 300]]);
     assert.equal(ga.value, 780);
     const fb = fbqCalls().find((a) => a[1] === "Purchase");
-    assert.deepEqual((fb?.[2] as { content_ids: string[] }).content_ids, ["wide-tie-gold", "lace-black"]);
+    assert.deepEqual((fb?.[2] as { content_ids: string[] }).content_ids, ["wide-tie-mustard", "lace-white"]);
     assert.equal((fb?.[2] as { num_items: number }).num_items, 3);
     assert.deepEqual(fb?.[3], { eventID: "V-1010-ABCDE" });
     const snap = snapCalls().find((a) => a[1] === "PURCHASE")?.[2] as { item_ids: string[]; number_items: number };
-    assert.deepEqual(snap.item_ids, ["wide-tie-gold", "lace-black"]);
+    assert.deepEqual(snap.item_ids, ["wide-tie-mustard", "lace-white"]);
     assert.equal(snap.number_items, 3);
     const all = JSON.stringify([dataLayer(), fbqCalls(), snapCalls()]);
     assert.doesNotMatch(all, /customer|phone|address|01[0125]\d{8}/i);

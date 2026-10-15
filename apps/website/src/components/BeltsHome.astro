@@ -57,7 +57,7 @@ const tie = ar
     <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
       <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
       <div class="swatch-row">
-        {colors.map((cl) => (
+        {colors.filter((cl) => products.some((p) => p.color === cl.id)).map((cl) => (
           <button type="button" class="dot" data-color={cl.id} aria-pressed="false" title={colorName(lang, cl.id)} aria-label={colorName(lang, cl.id)} style={`--c:${cl.hex}`}></button>
         ))}
       </div>
@@ -76,20 +76,6 @@ const tie = ar
       <ol class="tie-steps">
         {tie.map(([t, d], i) => <li><span class="tie-num" aria-hidden="true">{i + 1}</span><span><b>{t}</b> <span class="muted">{d}</span></span></li>)}
       </ol>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="section-head">
-      <h2 class="h2">{ar ? "طرق ارتدائه" : "How to wear it"}</h2>
-      <p class="muted">{ar ? "مع الفستان الواسع أو فوق البليزر، الحزام يحدّد الخصر ويغيّر الإطلالة." : "Over a flowing dress or a blazer, the belt defines the waist and changes the look."}</p>
-    </div>
-    <div class="lookbook">
-      <figure class="reveal"><img src="/img/editorial/model-walk-640.webp" srcset="/img/editorial/model-walk-640.webp 640w, /img/editorial/model-walk-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 50vw" alt={ar ? "حزام عريض بربطة رفيعة فوق فستان عاجي" : "A wide belt with a thin tie over an ivory dress"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "مع الفستان" : "With a dress"}</figcaption></figure>
-      <figure class="reveal" style="--i:1"><img src="/img/editorial/model-blazer-640.webp" srcset="/img/editorial/model-blazer-640.webp 640w, /img/editorial/model-blazer-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 50vw" alt={ar ? "حزام أسود فوق قميص أبيض تحت البليزر" : "A black belt over a white shirt under a blazer"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "مع البليزر" : "With a blazer"}</figcaption></figure>
-      <figure class="reveal lb-wide" style="--i:2"><img src="/img/editorial/model-seated-640.webp" srcset="/img/editorial/model-seated-640.webp 640w, /img/editorial/model-seated-1200.webp 1200w" sizes="(min-width: 900px) 30vw, 100vw" alt={ar ? "حزام عاجي على الخصر مع فستان طويل" : "An ivory belt at the waist of a long dress"} width="640" height="800" loading="lazy" decoding="async" /><figcaption>{ar ? "إطلالة هادئة" : "A quiet look"}</figcaption></figure>
     </div>
   </div>
 </section>
@@ -214,6 +200,8 @@ const tie = ar
     bar.hidden = false;
     const cards = [...document.querySelectorAll<HTMLElement>(".card[data-color]")];
     const groups = [...document.querySelectorAll<HTMLElement>("[data-group]")];
+    // A colour whose belts are all sold out (removed by the site Worker) has no dot.
+    bar.querySelectorAll<HTMLButtonElement>(".dot").forEach((d) => (d.hidden = !cards.some((c) => c.dataset["color"] === d.dataset["color"])));
     const status = document.getElementById("filter-status");
     const unit = bar.dataset["unit"] ?? "";
     let active: string | null = null;
@@ -225,7 +213,7 @@ const tie = ar
       bar.querySelectorAll<HTMLButtonElement>(".dot").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["color"] === active)));
       let shown = 0;
       for (const card of cards) {
-        const show = active === null || card.dataset["color"] === active;
+        const show = (active === null || card.dataset["color"] === active) && !card.hasAttribute("data-sold-out");
         card.hidden = !show;
         if (show) shown += 1;
       }

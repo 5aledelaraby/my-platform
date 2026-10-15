@@ -19,7 +19,7 @@ function app(repository: OrderRepository = memoryRepository()) {
   return { handler, repository };
 }
 
-const order = (promoCode?: string, items = [{ id: "lace-black", quantity: 1 }]) =>
+const order = (promoCode?: string, items = [{ id: "lace-white", quantity: 1 }]) =>
   new Request(`${ORIGIN}/api/orders`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Origin: ORIGIN },
@@ -72,14 +72,14 @@ describe("promo codes in the order API", () => {
       assert.equal(res.status, 422, code);
       assert.deepEqual(((await res.json()) as { errors: Record<string, string> }).errors, { promoCode: error }, code);
     }
-    assert.equal((await handler(order("BIG100", [{ id: "lace-black", quantity: 2 }]))).status, 201, "600 >= 500");
+    assert.equal((await handler(order("BIG100", [{ id: "lace-white", quantity: 2 }]))).status, 201, "600 >= 500");
   });
 });
 
 describe("promo codes in D1", () => {
   const build = (code: string, id: string): Order => {
     const r = validateOrderRequest(
-      { items: [{ id: "lace-black", quantity: 1 }], customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد" } },
+      { items: [{ id: "lace-white", quantity: 1 }], customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد" } },
       lookupProduct,
     );
     if (!r.ok) throw new Error("invalid");

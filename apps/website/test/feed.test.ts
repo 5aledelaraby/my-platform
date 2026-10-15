@@ -11,7 +11,6 @@ const csv = buildFeedCsv({
   siteUrl: "https://vicuna-eg.com",
   brand: "Vicuna",
   productUrl: (p) => `https://vicuna-eg.com/collections/vicuna-belts/${p.id}/`,
-  hasLook: (p) => p.id === "wide-tie-burgundy",
 });
 const parse = (line: string) => line.slice(1, -1).split('","');
 const rows = csv.trim().split("\n").slice(1).map(parse);
@@ -31,13 +30,13 @@ describe("catalog feed", () => {
       assert.equal(r[col("price")], `${(p!.unitPrice / 100).toFixed(2)} EGP`);
       assert.equal(r[col("availability")], "in stock");
     }
-    assert.equal(rows.find((r) => r[0] === "thin-tie-croc-black")?.[col("price")], "200.00 EGP");
+    assert.equal(rows.find((r) => r[0] === "thin-tie-croc-wine")?.[col("price")], "200.00 EGP");
     assert.equal(rows.find((r) => r[0] === "thin-tie-red")?.[col("price")], "120.00 EGP");
   });
 
   it("titles name the design and colour, and every image the feed points to exists", () => {
-    assert.equal(rows.find((r) => r[0] === "thin-tie-croc-black")?.[col("title")], "حزام عريض برباط رفيع كروكو أسود");
-    assert.equal(rows.find((r) => r[0] === "lace-black")?.[col("title")], "حزام دانتيل أسود");
+    assert.equal(rows.find((r) => r[0] === "thin-tie-croc-wine")?.[col("title")], "حزام عريض برباط رفيع كروكو عنابي");
+    assert.equal(rows.find((r) => r[0] === "lace-white")?.[col("title")], "حزام دانتيل أبيض");
     for (const r of rows) {
       for (const link of [r[col("image_link")], r[col("additional_image_link")]]) {
         if (!link) continue;
@@ -47,22 +46,23 @@ describe("catalog feed", () => {
     }
   });
 
-  it("marks only sold-out rows as out of stock", () => {
-    const out = feedWithStock(csv, (id) => id === "lace-gold");
+  it("drops only the sold-out rows", () => {
+    const out = feedWithStock(csv, (id) => id === "lace-white");
     const after = out.trim().split("\n").slice(1).map(parse);
-    assert.equal(after.find((r) => r[0] === "lace-gold")?.[col("availability")], "out of stock");
-    assert.equal(after.filter((r) => r[col("availability")] === "out of stock").length, 1);
-    assert.equal(feedWithStock(out, (id) => id === "lace-gold"), out, "idempotent");
+    assert.equal(after.length, rows.length - 1);
+    assert.equal(after.some((r) => r[0] === "lace-white"), false);
+    assert.equal(out.split("\n")[0], FEED_HEADER.join(","), "header kept");
+    assert.equal(feedWithStock(out, (id) => id === "lace-white"), out, "idempotent");
   });
 
   it("the site Worker serves the feed with live stock", async () => {
     const res = await worker.fetch(new Request(`https://vicuna-eg.com${FEED_PATH}`), {
       ASSETS: { fetch: async () => new Response(csv, { headers: { "Content-Type": "text/csv", ETag: '"x"' } }) },
-      API: { fetch: async () => Response.json({ stock: { "lace-gold": 0, "lace-black": 4 } }) },
+      API: { fetch: async () => Response.json({ stock: { "lace-white": 0, "ruffle-red": 4 } }) },
     });
     const after = (await res.text()).trim().split("\n").slice(1).map(parse);
-    assert.equal(after.find((r) => r[0] === "lace-gold")?.[col("availability")], "out of stock");
-    assert.equal(after.find((r) => r[0] === "lace-black")?.[col("availability")], "in stock");
+    assert.equal(after.some((r) => r[0] === "lace-white"), false);
+    assert.equal(after.find((r) => r[0] === "ruffle-red")?.[col("availability")], "in stock");
     assert.equal(res.headers.get("ETag"), null);
   });
 });

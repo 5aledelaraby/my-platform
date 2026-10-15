@@ -539,12 +539,17 @@ function markSoldOut(): void {
     }
     b.disabled = out;
   });
-  // Sold-out cards fade and move to the end of their grid, so the first rows are always buyable.
-  document.querySelectorAll<HTMLElement>("[data-grid]").forEach((grid) => {
-    const cards = [...grid.querySelectorAll<HTMLElement>(".card[data-product]")];
-    const out = cards.filter((c) => stock?.get(c.dataset["product"] ?? "") === 0);
-    cards.forEach((c) => c.classList.toggle("is-out", out.includes(c)));
-    for (const c of out) grid.append(c);
+  // Sold-out belts are hidden (ADR 0013). The site Worker already removes them from the belts pages; this covers the
+  // other pages with product cards (articles) and the case where the Worker could not read the stock.
+  document.querySelectorAll<HTMLElement>(".card[data-product]").forEach((c) => {
+    const out = stock?.get(c.dataset["product"] ?? "") === 0;
+    c.toggleAttribute("data-sold-out", out);
+    if (out) c.hidden = true;
+    else if (c.hidden && !document.querySelector("[data-filter] .dot[aria-pressed='true']")) c.hidden = false;
+  });
+  document.querySelectorAll<HTMLAnchorElement>("a.swatch[href]").forEach((a) => {
+    const id = /\/collections\/vicuna-belts\/([a-z0-9-]+)\/$/.exec(a.pathname)?.[1] ?? "";
+    a.hidden = a.getAttribute("aria-current") !== "true" && stock?.get(id) === 0;
   });
 }
 

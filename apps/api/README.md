@@ -19,7 +19,7 @@ Cloudflare Worker بيستقبل الطلب من الموقع، ويتحقق م�
 
 ```json
 {
-  "items": [{ "id": "lace-black", "quantity": 1 }],
+  "items": [{ "id": "lace-white", "quantity": 1 }],
   "customer": { "name": "منى أحمد", "phone": "01012345678", "governorate": "القاهرة", "address": "المنطقة، الشارع، العمارة، الدور", "notes": "" },
   "shippingMethod": "standard",
   "paymentMethod": "cod",

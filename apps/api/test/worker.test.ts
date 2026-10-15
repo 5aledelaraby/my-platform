@@ -21,7 +21,7 @@ const order = (origin: string) =>
     method: "POST",
     headers: { "Content-Type": "application/json", Origin: origin },
     body: JSON.stringify({
-      items: [{ id: "lace-black", quantity: 1 }],
+      items: [{ id: "lace-white", quantity: 1 }],
       customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد" },
     }),
   });

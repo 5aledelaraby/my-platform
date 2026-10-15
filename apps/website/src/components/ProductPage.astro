@@ -2,7 +2,7 @@
 import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { beltsUrl, coverOf, imageOf, lookOf, priceOfProduct, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, priceOfProduct, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
 import { PIASTERS_PER_EGP, SHIPPING, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
@@ -40,7 +40,6 @@ const description = ar
   ? `${name} من فيكونا بسعر ${priceOfProduct(product)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل واسترجاع خلال ${site.returnDays} يوم.`
   : `${name} by Vicuna at ${priceOfProduct(product)} EGP. Delivery across Egypt in ${site.deliveryDays} working days, ${site.returnDays}-day returns.`;
 const url = `${site.url}${beltsUrl(lang, product.id)}`;
-const look = lookOf(product);
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
   { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
@@ -94,11 +93,6 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
     </figure>
     {nextP && <link rel="prefetch" href={beltsUrl(lang, nextP.id)} />}
     {prevP && prevP !== nextP && <link rel="prefetch" href={beltsUrl(lang, prevP.id)} />}
-    {look && (
-      <figure class="pdp-look">
-        <img src={look.full} srcset={`${look.thumb} 480w, ${look.full} 900w`} sizes="(min-width: 960px) 40vw, 100vw" alt={ar ? `${name} على الخصر` : `${name} worn at the waist`} width="900" height="1125" loading="lazy" decoding="async" />
-      </figure>
-    )}
     </div>
     <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={priceOf(product)}>
       <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>

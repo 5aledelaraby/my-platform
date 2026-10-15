@@ -27,7 +27,7 @@ function setup(overrides: Partial<HandlerDeps> = {}) {
 }
 
 const body = (extra: Record<string, unknown> = {}) => ({
-  items: [{ id: "wide-tie-gold", quantity: 2 }, { id: "lace-black", quantity: 1 }],
+  items: [{ id: "wide-tie-mustard", quantity: 2 }, { id: "lace-white", quantity: 1 }],
   customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد، عمارة 21" },
   shippingMethod: "standard",
   paymentMethod: "cod",
@@ -95,7 +95,7 @@ describe("POST /orders", () => {
     assert.equal(repository.orders.size, 1);
     const stored = repository.orders.get(String(order["id"]));
     assert.equal(stored?.customer.phone, "01012345678");
-    assert.equal(stored?.items.find((i) => i.productId === "lace-black")?.unitPrice, egp(300));
+    assert.equal(stored?.items.find((i) => i.productId === "lace-white")?.unitPrice, egp(300));
   });
 
   it("does not echo phone or address back", async () => {
@@ -107,7 +107,7 @@ describe("POST /orders", () => {
 
   it("ignores prices and totals sent by the client", async () => {
     const { handler, repository } = setup();
-    const tampered = body({ total: 1, items: [{ id: "lace-black", quantity: 1, price: 1, unitPrice: 1 }] });
+    const tampered = body({ total: 1, items: [{ id: "lace-white", quantity: 1, price: 1, unitPrice: 1 }] });
     const res = await handler(post(tampered));
     assert.equal(res.status, 201);
     const stored = [...repository.orders.values()][0];
@@ -283,8 +283,8 @@ describe("d1Repository", () => {
     id: "V-1009-AAAAA", createdAt: NOW.toISOString(), status: "new",
     customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "عنوان طويل بما يكفي" },
     items: [
-      { productId: "wide-tie-gold", name: "رباط عريض دهبي", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
-      { productId: "lace-black", name: "دانتيل أسود", unitPrice: 30000, quantity: 1, lineTotal: 30000 },
+      { productId: "wide-tie-mustard", name: "رباط عريض مسطردة", unitPrice: 20000, quantity: 2, lineTotal: 40000 },
+      { productId: "lace-white", name: "دانتيل أبيض", unitPrice: 30000, quantity: 1, lineTotal: 30000 },
     ],
     shippingMethod: "standard", paymentMethod: "cod",
     totals: { itemCount: 3, subtotal: 70000, discount: 12000, net: 58000, shipping: 8000, total: 66000 },
@@ -298,9 +298,9 @@ describe("d1Repository", () => {
     assert.equal(calls[0]?.values[7], null);
     assert.equal(calls[0]?.values.length, 18);
     assert.equal(calls[0]?.values[17], null, "no promo code");
-    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "wide-tie-gold", "رباط عريض دهبي", 20000, 2, 40000, "wide-tie-gold"]);
+    assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "wide-tie-mustard", "رباط عريض مسطردة", 20000, 2, 40000, "wide-tie-mustard"]);
     assert.match(calls[3]?.sql ?? "", /UPDATE inventory SET quantity = quantity - \?/);
-    assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "wide-tie-gold"]);
+    assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "wide-tie-mustard"]);
   });
 
   it("maps a UNIQUE violation to conflict and rethrows anything else", async () => {
