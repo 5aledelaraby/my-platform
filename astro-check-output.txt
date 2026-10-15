@@ -32,6 +32,13 @@ cache miss, executing b0888c51539f53df
 > tsc -p tsconfig.json
 
 ::endgroup::
+::group::@platform/content:typecheck
+cache miss, executing 6f769ab09a6e0a73
+
+> @platform/content@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/content
+> tsc -p tsconfig.json
+
+::endgroup::
 ::group::@platform/seo:typecheck
 cache miss, executing 41ff274c74bf25ac
 
@@ -43,13 +50,6 @@ cache miss, executing 41ff274c74bf25ac
 cache miss, executing cbd7ede76b1f33c5
 
 > @platform/commerce@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/commerce
-> tsc -p tsconfig.json
-
-::endgroup::
-::group::@platform/content:typecheck
-cache miss, executing 6f769ab09a6e0a73
-
-> @platform/content@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/content
 > tsc -p tsconfig.json
 
 ::endgroup::
@@ -76,6 +76,85 @@ Result (68 files):
 
  Tasks:    6 successful, 6 total
 Cached:    0 cached, 6 total
-  Time:    6.122s 
+  Time:    9.124s 
 
 exit: 0
+
+## pnpm typecheck with a deliberate error in Footer.astro (must fail)
+
+> my-platform@ typecheck /home/runner/work/my-platform/my-platform
+> turbo run typecheck
+
+
+   • Packages in scope: @platform/api, @platform/commerce, @platform/content, @platform/seo, @platform/ui, @platform/website
+   • Running typecheck in 6 packages
+   • Remote caching disabled
+
+::group::@platform/ui:typecheck
+cache hit, replaying logs b0888c51539f53df
+
+> @platform/ui@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/ui
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/seo:typecheck
+cache hit, replaying logs 41ff274c74bf25ac
+
+> @platform/seo@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/seo
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/api:typecheck
+cache hit, replaying logs 5f758ddfbfd9a6eb
+
+> @platform/api@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/api
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/content:typecheck
+cache hit, replaying logs 6f769ab09a6e0a73
+
+> @platform/content@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/content
+> tsc -p tsconfig.json
+
+::endgroup::
+::group::@platform/commerce:typecheck
+cache hit, replaying logs cbd7ede76b1f33c5
+
+> @platform/commerce@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/commerce
+> tsc -p tsconfig.json
+
+::endgroup::
+[;31m@platform/website:typecheck[;0m
+cache miss, executing c6288c1f03dadb39
+
+> @platform/website@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/website
+> astro-check
+
+Getting diagnostics for Astro files in /home/runner/work/my-platform/my-platform/apps/website...
+[96msrc/components/Footer.astro[0m:[93m2[0m:[93m7[0m - [91merror[0m[90m ts(2322): [0mType 'string' is not assignable to type 'number'.
+
+[7m2[0m const broken: number = "not a number";
+[7m [0m [91m      ~~~~~~[0m
+[96msrc/components/Footer.astro[0m:[93m2[0m:[93m7[0m - [93mwarning[0m[90m ts(6133): [0m'broken' is declared but its value is never read.
+
+[7m2[0m const broken: number = "not a number";
+[7m [0m [93m      ~~~~~~[0m
+
+Result (68 files): 
+- 1 error
+- 0 warnings
+- 1 hint
+
+ ELIFECYCLE  Command failed with exit code 1.
+::error::command (/home/runner/work/my-platform/my-platform/apps/website) /home/runner/setup-pnpm/node_modules/.bin/bin/pnpm run typecheck exited (1)
+@platform/website#typecheck:  ERROR  command (/home/runner/work/my-platform/my-platform/apps/website) /home/runner/setup-pnpm/node_modules/.bin/bin/pnpm run typecheck exited (1)
+
+ Tasks:    5 successful, 6 total
+Cached:    5 cached, 6 total
+  Time:    5.143s 
+Failed:    @platform/website#typecheck
+
+ ERROR  run failed: command  exited (1)
+ ELIFECYCLE  Command failed with exit code 1.
+exit: 1
