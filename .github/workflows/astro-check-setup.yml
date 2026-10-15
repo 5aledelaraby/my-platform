@@ -42,11 +42,11 @@ jobs:
           exit 0
       - name: Commit the lockfile, package.json and the log back to this branch
         run: |
+          set +e
+          note() { echo "::error title=$1::$(echo "$2" | tr '\n' ' ' | cut -c1-900)"; }
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/website/package.json pnpm-lock.yaml astro-check.log
-          git commit -m "chore(website): add @astrojs/check and typescript, typecheck script (generated)"
-          if ! out=$(git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}" 2>&1); then
-            echo "::error title=push failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"
-            exit 1
-          fi
+          note "status before add" "$(git status --short 2>&1 | head -20)"
+          out=$(git add apps/website/package.json pnpm-lock.yaml astro-check.log 2>&1) || { note "add failed" "$out"; exit 1; }
+          out=$(git commit -m "chore(website): add @astrojs/check and typescript, typecheck script (generated)" 2>&1) || { note "commit failed" "$out"; exit 1; }
+          out=$(git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}" 2>&1) || { note "push failed" "$out"; exit 1; }
