@@ -1,0 +1,49 @@
+# TEMPORARY (delete after use): adds astro check to apps/website with a real lockfile update, because the
+# development machine cannot reach the npm registry. Runs only on the chore/astro-check branch and never deploys.
+name: astro-check setup (temporary)
+
+on:
+  push:
+    branches: [chore/astro-check]
+    paths: [.github/workflows/astro-check-setup.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      # Same TypeScript major as the repo root; @astrojs/check at the version that matches the installed Astro.
+      - run: pnpm add -D @astrojs/check "typescript@^6.0.3" --filter @platform/website
+      - name: Add the typecheck script
+        run: |
+          node -e '
+            const fs = require("fs");
+            const f = "apps/website/package.json";
+            const p = JSON.parse(fs.readFileSync(f, "utf8"));
+            p.scripts = { ...p.scripts, typecheck: "astro check" };
+            fs.writeFileSync(f, JSON.stringify(p, null, 2) + "\n");
+          '
+      - name: Run the checks and keep their output
+        run: |
+          set +e
+          { echo "## versions"; pnpm --filter @platform/website exec astro --version; pnpm --filter @platform/website exec tsc -v; } > astro-check.log 2>&1
+          { echo; echo "## pnpm --filter @platform/website typecheck"; pnpm --filter @platform/website typecheck; echo "exit: $?"; } >> astro-check.log 2>&1
+          { echo; echo "## pnpm typecheck (root, turbo)"; pnpm typecheck; echo "exit: $?"; } >> astro-check.log 2>&1
+          exit 0
+      - name: Commit the lockfile, package.json and the log back to this branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/website/package.json pnpm-lock.yaml astro-check.log
+          git commit -m "chore(website): add @astrojs/check and typescript, typecheck script (generated)"
+          git push
