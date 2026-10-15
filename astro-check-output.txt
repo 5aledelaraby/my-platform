@@ -5,10 +5,14 @@ Version 6.0.3
 ## pnpm --filter @platform/website typecheck
 
 > @platform/website@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/website
-> astro check
+> astro-check
 
-To continue, Astro requires the following dependency to be installed: [1m@astrojs/check[22m. Packages cannot be installed automatically in CI environments.
-[31m[1m18:39:30[22m [ERROR] [check][39m The `@astrojs/check` and `typescript` packages are required for this command to work. Please manually install them into your project and try again.
+Getting diagnostics for Astro files in /home/runner/work/my-platform/my-platform/apps/website...
+Result (68 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
 exit: 0
 
 ## pnpm typecheck (root, turbo)
@@ -21,13 +25,6 @@ exit: 0
    • Running typecheck in 6 packages
    • Remote caching disabled
 
-::group::@platform/content:typecheck
-cache miss, executing 6f769ab09a6e0a73
-
-> @platform/content@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/content
-> tsc -p tsconfig.json
-
-::endgroup::
 ::group::@platform/ui:typecheck
 cache miss, executing b0888c51539f53df
 
@@ -49,14 +46,12 @@ cache miss, executing cbd7ede76b1f33c5
 > tsc -p tsconfig.json
 
 ::endgroup::
-::group::@platform/website:typecheck
-cache miss, executing 27f5c09f33b5be9a
+::group::@platform/content:typecheck
+cache miss, executing 6f769ab09a6e0a73
 
-> @platform/website@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/website
-> astro check
+> @platform/content@0.0.0 typecheck /home/runner/work/my-platform/my-platform/packages/content
+> tsc -p tsconfig.json
 
-To continue, Astro requires the following dependency to be installed: [1m@astrojs/check[22m. Packages cannot be installed automatically in CI environments.
-[31m[1m18:39:34[22m [ERROR] [check][39m The `@astrojs/check` and `typescript` packages are required for this command to work. Please manually install them into your project and try again.
 ::endgroup::
 ::group::@platform/api:typecheck
 cache miss, executing 5f758ddfbfd9a6eb
@@ -65,9 +60,22 @@ cache miss, executing 5f758ddfbfd9a6eb
 > tsc -p tsconfig.json
 
 ::endgroup::
+::group::@platform/website:typecheck
+cache miss, executing 042b706e2b301078
+
+> @platform/website@0.0.0 typecheck /home/runner/work/my-platform/my-platform/apps/website
+> astro-check
+
+Getting diagnostics for Astro files in /home/runner/work/my-platform/my-platform/apps/website...
+Result (68 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
+::endgroup::
 
  Tasks:    6 successful, 6 total
 Cached:    0 cached, 6 total
-  Time:    4.596s 
+  Time:    6.122s 
 
 exit: 0
