@@ -2,9 +2,11 @@ name = "vicuna-api"
 main = "src/worker.ts"
 compatibility_date = "2026-10-01"
 # Top-level key: must stay above the first [table], or TOML attaches it to that table and wrangler ignores it.
-# The API shares the site's hostname under /api/*. Production route is added at cutover.
-# admin.vicuna-eg.com serves only the owner admin (ADR 0010), on its own origin, behind Cloudflare Access.
+# The API shares the site's hostname under /api/*: the public site and staging (each picks its own database, see
+# STAGING_HOST below). admin.vicuna-eg.com serves only the owner admin (ADR 0010), on its own origin, behind
+# Cloudflare Access.
 routes = [
+  { pattern = "vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" },
   { pattern = "staging.vicuna-eg.com/api/*", zone_name = "vicuna-eg.com" },
   { pattern = "admin.vicuna-eg.com", custom_domain = true },
 ]

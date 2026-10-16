@@ -49,6 +49,15 @@ describe("wrangler.toml", () => {
     assert.deepEqual(topLevelViolations(ok), []);
   });
 
+  it("the API serves the public site, staging and the admin", () => {
+    const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
+    const routes = /^routes\s*=\s*\[([^\]]*)\]/m.exec(toml)?.[1] ?? "";
+    assert.match(routes, /\{ pattern = "vicuna-eg\.com\/api\/\*", zone_name = "vicuna-eg\.com" \}/);
+    assert.match(routes, /\{ pattern = "staging\.vicuna-eg\.com\/api\/\*", zone_name = "vicuna-eg\.com" \}/);
+    assert.match(routes, /\{ pattern = "admin\.vicuna-eg\.com", custom_domain = true \}/);
+    assert.match(toml, /^STAGING_HOST = "staging\.vicuna-eg\.com"$/m);
+  });
+
   it("the website's production Worker serves only vicuna-eg.com", () => {
     const toml = readFileSync(new URL("../../website/wrangler.toml", import.meta.url), "utf8");
     const env = toml.slice(toml.indexOf("[env.production]"));
