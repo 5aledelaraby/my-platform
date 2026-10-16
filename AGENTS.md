@@ -50,7 +50,7 @@ pnpm check:boundaries            # architecture rules
 - Money is **integer piasters** (`Piasters`). Never floats, never pounds in domain code. Convert at the edges with `egp()` / `formatEgp()`.
 - Discount and totals logic exists **only** in `@platform/commerce`. The cart and the order API both call it. Never trust a price sent by the client: the API recomputes everything from the catalogue.
 - WhatsApp is an optional channel, not the order system (ADR 0007). Cart, pricing and products never depend on it. The order API (`apps/api`, ADR 0008) exists, with inventory and an owner-only admin on its own hostname `admin.vicuna-eg.com` (ADR 0010; never serve admin on the store's hostname). Online payment is NOT built; do not build it, or abstractions for it, until the owner asks. Never expose order reads without authentication (orders contain customers' personal data): every admin route goes through the Access JWT check in `apps/api/src/access.ts`.
-- Stock rules live in `@platform/commerce` (`inventory.ts`); the database enforces "never below zero". A new migration must be applied to D1 before the code that needs it is pushed.
+- Stock rules live in `@platform/commerce` (`inventory.ts`); the database enforces "never below zero". Staging has its own D1 database (`vicuna-db-staging`, binding `DB_STAGING`, chosen by `STAGING_HOST`), so test orders never touch live orders or stock; a staging request without it is refused, never sent to the live database. Apply every new migration to both databases. A new migration must be applied to D1 before the code that needs it is pushed.
 - Belts are sold at full price: the multi-belt offer was withdrawn (2026-10-09). The only discount is a promo code (ADR 0011): a fixed amount off the belts, one per order, created by the owner in the admin; rules in `@platform/commerce` (`promo.ts`), checked again by the API when the order is stored.
 - Orders keep a snapshot of names, unit prices and totals (piasters) as of creation time. The catalogue lives in `packages/commerce/data/catalog.json`; product ids are permanent.
 - Product `id` is permanent. A `slug` may change only together with a 301 redirect entry (ADR 0004).
@@ -91,3 +91,14 @@ pnpm check:boundaries            # architecture rules
 3. Structure changes have an ADR.
 4. No new warnings, no TODOs without an owner-visible note in the PR description.
 5. Summarize the change to the owner in Arabic, plainly, without jargon.
+
+<!-- BEGIN:turborepo-agent-rules -->
+
+# This is NOT the Turborepo you know
+
+Turborepo configuration, task behavior, and CLI commands can vary between installed versions and may differ from your training data. Resolve the `turbo` package from this file's directory or relevant workspace; in monorepos, it may not be visible from the repository root. For example, run `node -p "require.resolve('turbo/package.json')"` from a workspace that depends on `turbo`.
+
+Read `docs/README.md` inside that installed package first, then read the relevant pages from its `docs/` directory before changing Turborepo configuration or commands. Heed deprecation notices. These bundled docs match the installed package version and are available without network access.
+
+This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
+<!-- END:turborepo-agent-rules -->

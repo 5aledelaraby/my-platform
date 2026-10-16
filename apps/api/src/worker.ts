@@ -8,8 +8,12 @@ import { d1Repository } from "./repository.ts";
 import type { D1Like } from "./repository.ts";
 
 interface Env {
-  /** D1 database binding (see wrangler.toml). */
+  /** D1 database binding (see wrangler.toml): live orders and stock. */
   DB: D1Like;
+  /** Staging's own database, used for every request on STAGING_HOST. */
+  DB_STAGING?: D1Like;
+  /** Hostname of the staging site, e.g. "staging.vicuna-eg.com" (wrangler.toml [vars]). */
+  STAGING_HOST?: string;
   /** Comma-separated exact origins, e.g. "https://vicuna-eg.com,https://staging.vicuna-eg.com". */
   ALLOWED_ORIGINS?: string;
   /** Secret (Cloudflare dashboard: Settings > Variables and Secrets). Never in git. */
@@ -42,7 +46,13 @@ export default {
   fetch(request: Request, env: Env, ctx?: Ctx): Promise<Response> {
     const token = env.TELEGRAM_BOT_TOKEN?.trim();
     const chatId = env.TELEGRAM_CHAT_ID?.trim();
-    const repository = d1Repository(env.DB);
+    // Staging never shares the live database: its requests use DB_STAGING, and without it they are refused.
+    const stagingHost = env.STAGING_HOST?.trim().toLowerCase();
+    const onStaging = !!stagingHost && new URL(request.url).hostname === stagingHost;
+    if (onStaging && !env.DB_STAGING) {
+      return Promise.resolve(new Response(JSON.stringify({ error: "staging_database_missing" }), { status: 503, headers: { "Content-Type": "application/json; charset=utf-8" } }));
+    }
+    const repository = d1Repository(onStaging && env.DB_STAGING ? env.DB_STAGING : env.DB);
     const now = () => new Date();
     const randomBytes = (length: number) => crypto.getRandomValues(new Uint8Array(length));
     // eslint-disable-next-line no-console

@@ -21,12 +21,22 @@ keep_vars = true
 ALLOWED_ORIGINS = "https://vicuna-eg.com,https://www.vicuna-eg.com,https://staging.vicuna-eg.com"
 # The only hostname that serves the admin. Not a secret.
 ADMIN_HOST = "admin.vicuna-eg.com"
+# Requests on this hostname use DB_STAGING (fail closed: without that binding they get 503, never the live DB).
+STAGING_HOST = "staging.vicuna-eg.com"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "vicuna-db"
 # D1 database id (an identifier, not a secret). Created in the Cloudflare dashboard.
 database_id = "626197fa-3c59-48b3-944f-e2a2dd3978a0"
+migrations_dir = "migrations"
+
+# Staging has its own database, so test orders on staging.vicuna-eg.com never touch real orders or real stock.
+# The Worker picks it by hostname (STAGING_HOST); the admin host and the live site always use DB above.
+[[d1_databases]]
+binding = "DB_STAGING"
+database_name = "vicuna-db-staging"
+database_id = "fba399ec-f29d-4776-b39d-7004ca0f8e54"
 migrations_dir = "migrations"
 
 # Rate limits per visitor (Workers Rate Limiting, counted per Cloudflare location). Orders take stock, so a flood
