@@ -17,6 +17,9 @@ const list = productsOfStyle(styleId);
 const cur = ar ? "جنيه" : "EGP";
 const title = ar ? `${t.name} | أحزمة خصر نسائية | فيكونا` : `${t.name} waist belts | Vicuna`;
 const from = hasHigherPrices(styleId);
+// A film for the designs that have one (owner, 2026-10-16); the others keep the row of product photos.
+const films: Record<string, string> = { "wide-tie": "/video/wide-tie-white", "thin-tie": "/video/thin-tie-camel" };
+const film = films[styleId];
 const description = ar
   ? `${t.headline}. ${list.length} لون بسعر ${from ? "يبدأ من " : ""}${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
   : `${t.headline}. ${list.length} colours ${from ? "from" : "at"} ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
@@ -47,9 +50,15 @@ const jsonLd = serializeJsonLd(
           <a class="btn" href="#colours">{ar ? "شوفي الألوان" : "See the colours"} <Icon name="arrow" size={18} class="dir-icon" /></a>
         </div>
       </div>
-      <div class="style-collage" aria-hidden="true">
-        {list.slice(0, 3).map((p) => <span><img src={thumbOf(p)} alt="" width="480" height="480" decoding="async" /></span>)}
-      </div>
+      {film ? (
+        <figure class="style-film">
+          <video data-motion src={`${film}.mp4`} poster={`${film}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
+        </figure>
+      ) : (
+        <div class="style-collage" aria-hidden="true">
+          {list.slice(0, 3).map((p) => <span><img src={thumbOf(p)} alt="" width="480" height="480" decoding="async" /></span>)}
+        </div>
+      )}
     </div>
   </section>
 

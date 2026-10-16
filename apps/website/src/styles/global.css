@@ -1033,3 +1033,9 @@ main:has(> .lux:last-child) + .site-footer { margin-top: 0; border-top: 1px soli
 /* the header is taller with the design bar: keep anchors and the sticky product details clear of it */
 [id] { scroll-margin-top: 128px; }
 @media (min-width: 900px) { .pdp-info { top: 140px; } }
+/* design pages with a film: the film sits beside the title (below it on phones) */
+.style-film { position: relative; margin: 0; width: 100%; max-width: 420px; aspect-ratio: 4 / 5; justify-self: center; overflow: hidden; background: #ebe7e0; }
+.style-film video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
+@media (min-width: 960px) { .style-film { max-width: 440px; aspect-ratio: 3 / 4; } }
+@media (prefers-reduced-motion: no-preference) { .style-film video { animation: lux-settle 2.6s var(--ease-soft) both; } }
+.style-collage:has(> span:only-child) { grid-template-columns: minmax(0, 280px); justify-content: center; }
