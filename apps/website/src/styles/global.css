@@ -1470,3 +1470,96 @@ dialog.menu { border-radius: 26px; }
 .co-submit #checkout-submit { width: 100%; min-height: 52px; }
 :root[data-mode="dark"] .co-submit { background: linear-gradient(to bottom, rgb(20 19 18 / 0), #141312 22%); }
 :root[data-mode="dark"] .co-more > summary { color: #f2ede4; }
+
+/* ---------- every design page in the signature style (owner, 2026-10-16) ---------- */
+.lux-title.is-long .lux-line:last-child { font-size: clamp(2.5rem, 10.5vw, 5.4rem); }
+.lux-hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+@media (prefers-reduced-motion: no-preference) { .lux-hero-media img { animation: lux-settle 3.2s var(--ease-soft) both; } }
+/* many colours: smaller swatches that still fit one line on a phone */
+.lux-swatches { flex-wrap: wrap; }
+@media (max-width: 959px) {
+  .lux-stage .lux-swatches.many { gap: 5px; padding: 5px 8px; max-width: 100%; }
+  .lux-stage .lux-swatches.many .swatch.big { width: 30px; height: 30px; padding: 4px; }
+  .lux-stage .lux-swatches.many .lux-swatch-name { display: none; }
+}
+/* the mosaic as columns, so any number of films and photos packs without holes */
+.lux-mosaic { display: block; columns: 2; column-gap: 10px; }
+.lux-mosaic .lux-tile { break-inside: avoid; margin: 0 0 10px; }
+.lux-mosaic .lux-tile, .lux-mosaic .lux-tile:not(.lux-tile-film) { aspect-ratio: 4 / 5; min-height: 0; }
+.lux-mosaic .lux-tile.lux-tile-film { aspect-ratio: 9 / 16; min-height: 0; }
+.lux-mosaic .lux-tile.lux-tile-still { aspect-ratio: var(--ar, 1); }
+@media (min-width: 900px) {
+  .lux-mosaic { columns: 3; column-gap: 20px; }
+  .lux-mosaic .lux-tile { margin-bottom: 20px; }
+}
+@media (min-width: 1200px) { .lux-mosaic { columns: 4; } }
+/* more designs */
+.lux-others { margin-top: var(--section); }
+.lux-others-row { display: grid; grid-auto-flow: column; grid-auto-columns: 44%; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
+.lux-others-row::-webkit-scrollbar { display: none; }
+.lux-other { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; border-radius: var(--r-md, 14px); background: #141414; scroll-snap-align: start; text-decoration: none; }
+.lux-other img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-soft); }
+.lux-other:hover img { transform: scale(1.05); }
+.lux-other-text { position: absolute; inset-inline: 0; bottom: 0; display: grid; gap: 2px; padding: 64px 14px 14px; background: linear-gradient(transparent, rgb(0 0 0 / .55) 40%, rgb(0 0 0 / .85)); }
+.lux-other-text small { font-family: var(--font-latin); font-size: 10px; letter-spacing: .3em; color: var(--gold); }
+.lux-other-text b { font-family: var(--font-display); font-size: 18px; color: #fff; }
+@media (min-width: 900px) { .lux-others-row { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); gap: 20px; overflow: visible; margin-inline: 0; padding-inline: 0; } .lux-other-text b { font-size: 21px; } }
+
+/* ---------- the belts collection: a lookbook of the designs ---------- */
+.dx-intro { display: grid; gap: 14px; padding-top: clamp(36px, 7vw, 88px); padding-bottom: clamp(28px, 4vw, 48px); }
+.dx-title .lux-line:last-child { font-size: clamp(2.8rem, 12vw, 6rem); }
+.dx-index { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.dx-index a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 1px solid var(--lux-line); border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: rgb(255 255 255 / .86); transition: border-color .3s, background-color .3s, color .3s; }
+.dx-index a span { font-family: var(--font-latin); font-size: 11px; letter-spacing: .14em; color: var(--gold); }
+.dx-index a:hover { border-color: var(--gold); background: rgb(201 169 107 / .1); color: #fff; }
+.dx-panel { position: relative; display: grid; }
+.dx-panel + .dx-panel { margin-top: 4px; }
+.dx-hit { position: absolute; inset: 0; z-index: 1; }
+.dx-media { position: relative; margin: 0; height: min(86svh, 780px); overflow: hidden; background: #141414; }
+.dx-media video, .dx-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; transition: transform 1.6s var(--ease-soft); }
+.dx-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgb(10 10 10 / .55) 55%, rgb(10 10 10 / .95) 100%); pointer-events: none; }
+.dx-media .film-toggle { z-index: 3; bottom: auto; top: 12px; }
+.dx-panel:hover .dx-media video, .dx-panel:hover .dx-media img { transform: scale(1.04); }
+.dx-text { position: absolute; inset-inline: 0; bottom: 0; z-index: 2; display: grid; justify-items: start; gap: 10px; padding: 0 var(--gutter) 28px; pointer-events: none; }
+.dx-text a { pointer-events: auto; }
+.dx-num { font-family: var(--font-latin); font-size: 12px; letter-spacing: .3em; color: rgb(255 255 255 / .6); }
+.dx-name { font-family: var(--font-display); font-size: clamp(2.5rem, 11vw, 4.8rem); font-weight: 700; line-height: 1.05; color: #fff; }
+.dx-name a { text-decoration: none; }
+.dx-name small { display: block; margin-bottom: 4px; font-size: .38em; font-weight: 500; color: rgb(255 255 255 / .78); }
+.dx-name small.dx-sub { display: block; margin: 6px 0 0; font-family: var(--font-latin); letter-spacing: .2em; text-transform: uppercase; font-size: .26em; color: #d4b77c; }
+.dx-line { max-width: 30em; color: rgb(255 255 255 / .74); font-size: 15px; line-height: 1.85; }
+.dx-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.dx-price { font-size: 22px; font-weight: 700; color: #fff; }
+.dx-price small { font-size: 13px; font-weight: 600; color: rgb(255 255 255 / .6); }
+.dx-swatches { display: flex; flex-wrap: wrap; gap: 3px; }
+.dx-swatches .swatch { width: 26px; height: 26px; box-shadow: inset 0 0 0 3px #0a0a0a, inset 0 0 0 4px rgb(255 255 255 / .35); }
+.lux .btn.dx-cta { margin-top: 4px; min-height: 50px; transition: background-color .3s, transform .3s var(--ease-soft); }
+.dx-panel:hover .btn.dx-cta { background: var(--gold); }
+.dx-cta .dir-icon { transition: translate .35s var(--ease-soft); }
+.dx-panel:hover .dx-cta .dir-icon { translate: -5px 0; }
+[dir="ltr"] .dx-panel:hover .dx-cta .dir-icon { translate: 5px 0; }
+@media (min-width: 960px) {
+  .dx-panel { grid-template-columns: 1.15fr 1fr; align-items: center; max-width: 1440px; margin-inline: auto; }
+  .dx-panel + .dx-panel { margin-top: 0; border-top: 1px solid var(--lux-line); }
+  .dx-panel:nth-of-type(even) .dx-media { order: 2; }
+  .dx-media { height: min(88vh, 860px); }
+  .dx-media::after { background: linear-gradient(0deg, rgb(10 10 10 / .35), transparent 30%); }
+  .dx-text { position: relative; gap: 14px; padding: 64px clamp(32px, 6vw, 112px); }
+  .dx-line { font-size: 16px; }
+}
+.dx-bespoke { display: grid; gap: 28px; align-items: center; padding-top: 28px; border-top: 1px solid var(--lux-line); }
+.dx-bespoke > div { display: grid; justify-items: start; gap: 14px; }
+.dx-bespoke img { width: 100%; height: auto; border-radius: var(--r-md, 14px); }
+@media (min-width: 900px) { .dx-bespoke { grid-template-columns: 1.1fr 1fr; gap: 64px; } }
+.dx-posts { display: grid; gap: 16px; }
+.dx-post { display: grid; gap: 12px; text-decoration: none; }
+.dx-post img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--r-md, 14px); transition: transform 1.2s var(--ease-soft); }
+.dx-post:hover img { transform: scale(1.02); }
+.dx-post b { font-family: var(--font-display); font-size: 19px; line-height: 1.4; color: #fff; }
+@media (min-width: 900px) { .dx-posts { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+.dx-more { margin-top: 24px; }
+.dx-faq { max-width: 860px; }
+.dx-faq details { border-bottom: 1px solid var(--lux-line); }
+.dx-faq details:first-of-type { border-top: 1px solid var(--lux-line); }
+.dx-faq summary { padding: 20px 0; font-size: 17px; font-weight: 600; color: #fff; cursor: pointer; }
+.dx-faq details p { padding-bottom: 20px; color: rgb(255 255 255 / .74); line-height: 1.9; }

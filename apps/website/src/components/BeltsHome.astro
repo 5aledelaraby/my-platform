@@ -1,176 +1,137 @@
 ---
+// The belts collection (owner, 2026-10-16): a lookbook of the designs in the "signature pattern" style. Each design
+// is one large panel led by its film (or, without one, an on-model photo); the visitor picks a design and goes in.
+// The colours of each design are swatch links (<a class="swatch">), which the site Worker removes when sold out.
 import Icon from "./ui/Icon.astro";
 import Sparkles from "./ui/Sparkles.astro";
-import ProductCard from "./ProductCard.astro";
-import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
 import { articles, articleUrl } from "../lib/articles.ts";
+import { designOf } from "../lib/designs.ts";
+import { looksOf } from "../lib/looks.ts";
 import { JOURNAL_PATH, site } from "../site.ts";
-import { colorName, colors, products, styles } from "../store.ts";
+import { beltsUrl, getProduct, hasHigherPrices, price, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = homeCopy[lang];
 const ar = lang === "ar";
-// One grid ordered by colour family (all the black belts together, then white, ...), then by style:
-// the eye moves through one colour at a time instead of jumping between colours.
-const colourRank = new Map(colors.map((cl, i) => [cl.id, i]));
-const styleRank = new Map(styles.map((st, i) => [st.id, i]));
-const byColour = [...products].sort((a, b) =>
-  (colourRank.get(a.color) ?? 99) - (colourRank.get(b.color) ?? 99) || (styleRank.get(a.style) ?? 99) - (styleRank.get(b.style) ?? 99));
+const cur = ar ? "جنيه" : "EGP";
+const pad = (n: number) => String(n).padStart(2, "0");
+const panels = styles.map((s, i) => {
+  const d = designOf(s.id);
+  const look = d.lead.kind === "look" ? getProduct(d.lead.productId) : undefined;
+  return {
+    id: s.id,
+    i,
+    t: styleText(lang, s.id),
+    word: d.word,
+    film: d.lead.kind === "film" ? d.lead.src : undefined,
+    photo: look ? { ...looksOf(look)[0]!, alt: ar ? `${productName(lang, look)} على الخصر` : `${productName(lang, look)}, worn at the waist` } : undefined,
+    colours: productsOfStyle(s.id),
+    from: hasHigherPrices(s.id),
+  };
+});
 const wa = `https://wa.me/${site.whatsappInternational}`;
 const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، أرغب في حجز موعد لتفصيل حزام من الجلد الطبيعي على مقاسي." : "Hello Vicuna, I would like to book a made-to-measure natural leather belt.")}`;
-const tie = ar
-  ? [["ضعي الحزام على الخصر", "الجزء العريض إلى الأمام"], ["لفّي الشريطين", "وأعيديهما إلى الأمام"], ["اربطي بطريقتك", "فيونكة أو عقدة"]]
-  : [["Place it on your waist", "wide part in front"], ["Wrap the straps", "and bring them forward"], ["Tie it your way", "a bow or a knot"]];
 ---
 
-<section class="bh-hero">
-  <div class="bh-grid">
-    <figure class="bh-media">
-      <img class="bh-slide s1" src="/img/editorial/lace-ivory-1-1200.webp" srcset="/img/editorial/lace-ivory-1-640.webp 640w, /img/editorial/lace-ivory-1-1200.webp 1200w" sizes="(min-width: 900px) 50vw, 100vw" alt={ar ? "حزام دانتيل عاجي بشريط ساتان" : "An ivory lace belt with a satin tie"} width="1200" height="1500" fetchpriority="high" decoding="async" />
-      <img class="bh-slide s2" src="/img/editorial/lace-ivory-2-1200.webp" srcset="/img/editorial/lace-ivory-2-640.webp 640w, /img/editorial/lace-ivory-2-1200.webp 1200w" sizes="(min-width: 900px) 50vw, 100vw" alt="" width="1200" height="1500" decoding="async" />
-      <figcaption class="bh-caption" lang="en">Shine like a diamond</figcaption>
-    </figure>
-    <div class="bh-text">
-      <p class="bh-kicker" lang="en">VICUNA · BELTS</p>
-      <h1 class="has-sparkles">{c.h1}<Sparkles variant="b" /></h1>
-      <p class="lead">{c.lead}</p>
-      <div class="hero-actions">
-        <a class="btn" href="#all">{c.cta}</a>
-        <a class="btn btn-white" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.ctaWhatsapp}</a>
+<div class="lux dx">
+  <section class="dx-intro wrap">
+    <p class="lux-kicker lux-in" lang="en" style="--d:0"><span class="lux-rule" aria-hidden="true"></span>VICUNA · WAIST BELTS</p>
+    <h1 class="lux-title dx-title">
+      <span class="lux-line"><span class="lux-in" style="--d:1">{ar ? "أحزمة خصر نسائية" : "Women's waist belts"}</span></span>
+      <span class="lux-line"><span class="lux-in" style="--d:2">{ar ? "اختاري تصميمك" : "Choose your design"}</span></span>
+    </h1>
+    <p class="lux-lead lux-in" style="--d:3">{c.lead}</p>
+    <nav class="dx-index lux-in" style="--d:4" aria-label={ar ? "التصميمات" : "Designs"}>
+      {panels.map((p) => <a href={beltsUrl(lang, p.id)} data-jump={`d-${p.id}`}><span dir="ltr">{pad(p.i + 1)}</span> {p.t.name}</a>)}
+    </nav>
+  </section>
+
+  {panels.map((p) => (
+    <article class="dx-panel" id={`d-${p.id}`}>
+      <a class="dx-hit" href={beltsUrl(lang, p.id)} tabindex="-1" aria-hidden="true"></a>
+      <figure class="dx-media">
+        {p.film ? (
+          <video data-motion src={`${p.film}.mp4`} poster={`${p.film}.webp`} muted loop playsinline preload={p.i === 0 ? "metadata" : "none"} aria-hidden="true" width="704" height="1280"></video>
+        ) : p.photo ? (
+          <img src={p.photo.src} srcset={p.photo.srcset} sizes="(min-width: 960px) 56vw, 100vw" alt={p.photo.alt} width="640" height="800" loading={p.i === 0 ? "eager" : "lazy"} decoding="async" />
+        ) : null}
+      </figure>
+      <div class="dx-text reveal">
+        <p class="dx-num" dir="ltr">{pad(p.i + 1)} / {pad(panels.length)}</p>
+        <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>{p.word}</p>
+        <h2 class={`dx-name${p.i === 0 ? " has-sparkles" : ""}`}>
+          <a class="dx-link" href={beltsUrl(lang, p.id)}>{ar ? <><small>حزام خصر</small> {p.t.name}</> : <>{p.t.name} <small class="dx-sub">waist belt</small></>}</a>
+          {p.i === 0 && <Sparkles variant="b" />}
+        </h2>
+        <p class="dx-line">{p.t.intro}</p>
+        <div class="dx-meta">
+          <span class="dx-price">{p.from && <small>{ar ? "من" : "from"}</small>} {price(p.id)} <small>{cur}</small></span>
+          <span class="dx-swatches" aria-label={ar ? "الألوان" : "Colours"}>
+            {p.colours.map((x) => <a class="swatch" href={beltsUrl(lang, x.id)} style={`--c:${x.hex}`} aria-label={productName(lang, x)} title={shadeName(lang, x)}></a>)}
+          </span>
+        </div>
+        <span class="btn lux-btn dx-cta" aria-hidden="true">{ar ? "ادخلي على التصميم" : "See the design"} <Icon name="arrow" size={18} class="dir-icon" /></span>
       </div>
-      <ul class="bh-facts">
-        <li>{ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}</li>
-        <li>{ar ? `استرجاع خلال ${site.returnDays} يومًا` : `Returns within ${site.returnDays} days`}</li>
-      </ul>
-    </div>
-  </div>
-</section>
+    </article>
+  ))}
 
-<Stories lang={lang} current="all" />
-
-
-<section class="section" id="all">
-  <div class="wrap">
-    <h2 class="sr-only">{c.stylesTitle}</h2>
-    <div class="filter" data-filter data-unit={ar ? "حزام" : "belts"} hidden>
-      <span class="filter-label">{ar ? "اللون:" : "Colour:"}</span>
-      <div class="swatch-row">
-        {colors.filter((cl) => products.some((p) => p.color === cl.id)).map((cl) => (
-          <button type="button" class="dot" data-color={cl.id} aria-pressed="false" title={colorName(lang, cl.id)} aria-label={colorName(lang, cl.id)} style={`--c:${cl.hex}`}></button>
-        ))}
-      </div>
-      <button type="button" class="pill" data-color="all">{ar ? "عرض الكل" : "Show all"}</button>
-      <span id="filter-status" class="muted" aria-live="polite"></span>
-    </div>
-  </div>
-  <div class="wrap style-group" data-group>
-    <div class="grid" data-grid>
-      {byColour.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
-    </div>
-  </div>
-  <div class="wrap style-group" id="tie">
-    <div class="tie-card reveal">
-      <h2>{ar ? "طريقة الربط" : "How to tie"}</h2>
-      <ol class="tie-steps">
-        {tie.map(([t, d], i) => <li><span class="tie-num" aria-hidden="true">{i + 1}</span><span><b>{t}</b> <span class="muted">{d}</span></span></li>)}
-      </ol>
-    </div>
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="wrap detail">
-    <figure class="detail-media reveal">
-      <video data-motion src="/video/belt-detail.mp4" poster="/video/belt-detail.webp" muted loop playsinline preload="none" aria-hidden="true" width="720" height="1264"></video>
-    </figure>
-    <div class="reveal">
-      <h2 class="h2">{ar ? "التفاصيل" : "The details"}</h2>
-      <p class="muted lede">{ar ? "جلد PU طري يلتف على الخصر، بقصّ ليزر وخياطة على الحواف." : "Soft PU leather that wraps the waist, laser-cut and stitched along the edges."}</p>
-    </div>
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="wrap">
-    <div class="bespoke reveal">
-      <div class="bespoke-text">
-        <p class="eyebrow">{c.customEyebrow}</p>
-        <h2 class="h2">{c.customTitle}</h2>
-        <p class="lede">{c.customBody}</p>
-        <a class="btn btn-gold" href={customWa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.customCta}</a>
-      </div>
-      <img
-        src="/img/leather-600.webp"
-        srcset="/img/leather-600.webp 600w, /img/leather-1000.webp 1000w"
-        sizes="(min-width: 960px) 40vw, 100vw"
-        alt={ar ? "جلود طبيعية بألوان مختلفة معلّقة في الورشة" : "Natural leather hides in different colours hanging in the workshop"}
-        width="600"
-        height="450"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-  </div>
-</section>
-
-{ar && articles.length > 0 && (
-  <section class="section">
+  <section class="lux-section">
     <div class="wrap">
-      <div class="section-head">
-        <h2 class="h2">مقالات ونصائح</h2>
-        <p class="muted">أفكار لاختيار حزام الخصر وربطه وتنسيقه.</p>
+      <div class="dx-bespoke reveal">
+        <div>
+          <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>MADE TO MEASURE</p>
+          <h2 class="lux-h2">{c.customTitle}</h2>
+          <p class="lux-lead">{c.customBody}</p>
+          <a class="btn lux-btn" href={customWa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {c.customCta}</a>
+        </div>
+        <img src="/img/leather-600.webp" srcset="/img/leather-600.webp 600w, /img/leather-1000.webp 1000w" sizes="(min-width: 960px) 40vw, 100vw" alt={ar ? "جلود طبيعية بألوان مختلفة معلّقة في الورشة" : "Natural leather hides in different colours hanging in the workshop"} width="600" height="450" loading="lazy" decoding="async" />
       </div>
-      <div class="posts">
-        {articles.slice(0, 3).map((a) => (
-          <a class="post" href={articleUrl(a.slug)}>
-            <img src={a.image} alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
-            <h3>{a.title}</h3>
-            <p class="muted">{a.description}</p>
-          </a>
-        ))}
-      </div>
-      <p class="more"><a class="btn btn-white" href={JOURNAL_PATH}>كل المقالات</a></p>
     </div>
   </section>
-)}
 
-<section class="section">
-  <div class="wrap faq">
-    <h2 class="h2">{c.faqTitle}</h2>
-    {c.faq.map((f, i) => <details class="reveal" style={`--i:${i % 3}`}><summary>{f.q}</summary><p class="muted">{f.a}</p></details>)}
-  </div>
-</section>
+  {ar && articles.length > 0 && (
+    <section class="lux-section">
+      <div class="wrap">
+        <header class="lux-head reveal">
+          <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>THE JOURNAL</p>
+          <h2 class="lux-h2">مقالات ونصائح</h2>
+        </header>
+        <div class="dx-posts">
+          {articles.slice(0, 3).map((a, i) => (
+            <a class="dx-post reveal" href={articleUrl(a.slug)} style={`--i:${i}`}>
+              <img src={a.image} alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
+              <b>{a.title}</b>
+            </a>
+          ))}
+        </div>
+        <p class="dx-more"><a class="lux-more" href={JOURNAL_PATH}>كل المقالات</a></p>
+      </div>
+    </section>
+  )}
+
+  <section class="lux-section lux-close">
+    <div class="wrap dx-faq">
+      <header class="lux-head reveal">
+        <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>QUESTIONS</p>
+        <h2 class="lux-h2">{c.faqTitle}</h2>
+      </header>
+      {c.faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+      <p class="lux-mark" lang="en" aria-hidden="true">VICUNA</p>
+    </div>
+  </section>
+</div>
 
 <script>
-  const bar = document.querySelector<HTMLElement>("[data-filter]");
-  if (bar) {
-    bar.hidden = false;
-    const cards = [...document.querySelectorAll<HTMLElement>(".card[data-color]")];
-    const groups = [...document.querySelectorAll<HTMLElement>("[data-group]")];
-    // A colour whose belts are all sold out (removed by the site Worker) has no dot.
-    bar.querySelectorAll<HTMLButtonElement>(".dot").forEach((d) => (d.hidden = !cards.some((c) => c.dataset["color"] === d.dataset["color"])));
-    const status = document.getElementById("filter-status");
-    const unit = bar.dataset["unit"] ?? "";
-    let active: string | null = null;
-    bar.addEventListener("click", (event) => {
-      const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-color]");
-      if (!button) return;
-      const picked = button.dataset["color"] ?? "all";
-      active = picked === "all" || picked === active ? null : picked;
-      bar.querySelectorAll<HTMLButtonElement>(".dot").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["color"] === active)));
-      let shown = 0;
-      for (const card of cards) {
-        const show = (active === null || card.dataset["color"] === active) && !card.hasAttribute("data-sold-out");
-        card.hidden = !show;
-        if (show) shown += 1;
-      }
-      for (const group of groups) group.hidden = [...group.querySelectorAll<HTMLElement>(".card")].every((c) => c.hidden);
-      if (status) status.textContent = active === null ? "" : `${shown} ${unit}`;
+  // The design index scrolls to the design's panel on this page; the panel itself (or its link) opens the design.
+  document.querySelectorAll<HTMLAnchorElement>("[data-jump]").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      const target = document.getElementById(a.dataset["jump"] ?? "");
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     });
-  }
+  });
 </script>

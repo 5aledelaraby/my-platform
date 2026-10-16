@@ -1,6 +1,7 @@
 ---
-// The "signature pattern" design page (owner, 2026-10-16): dark and editorial. A film opens the page, then one large
-// showcase of the colours (swatches under the photo, arrows and swipe to change colour), then the belt on the move.
+// Every design page (owner, 2026-10-16: "all the designs like the signature pattern page"): dark and editorial. The
+// design's film (or, without one, an on-model photo) opens the page, then one large showcase of the colours (swatches
+// under the photo, arrows and swipe to change colour), then the belt on the move, the facts and the other designs.
 // Each colour is an <article class="card" data-product> and each swatch an <a class="swatch">, the markup the site
 // Worker and the cart already use to hide a sold-out colour (ADR 0013); the showcase script copes with that.
 import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
@@ -8,8 +9,10 @@ import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import Icon from "./ui/Icon.astro";
 import Sparkles from "./ui/Sparkles.astro";
-import { beltsUrl, coverOf, imageOf, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText } from "../store.ts";
+import { beltsUrl, coverOf, getProduct, hasHigherPrices, imageOf, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText, styles } from "../store.ts";
 import { looksOf } from "../lib/looks.ts";
+import { colourCount, designOf, stillSrc, stillSrcset } from "../lib/designs.ts";
+import type { Film, Still } from "../lib/designs.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -17,12 +20,14 @@ interface Props { lang: Lang; styleId: string }
 const { lang, styleId } = Astro.props;
 const ar = lang === "ar";
 const t = styleText(lang, styleId);
+const d = designOf(styleId);
 const list = productsOfStyle(styleId);
 const cur = ar ? "جنيه" : "EGP";
+const from = hasHigherPrices(styleId);
 const title = ar ? `حزام خصر ${t.name} | فيكونا` : `${t.name} waist belt | Vicuna`;
 const description = ar
-  ? `${t.headline}. ${list.length === 2 ? "لونان" : `${list.length} ألوان`} بسعر ${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
-  : `${t.headline}. ${list.length} colours at ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
+  ? `${t.headline}. ${colourCount(lang, list.length)} بسعر ${from ? "يبدأ من " : ""}${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
+  : `${t.headline}. ${colourCount(lang, list.length)} ${from ? "from" : "at"} ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
   { name: ar ? "أحزمة الخصر" : "Waist belts", href: beltsUrl(lang) },
@@ -35,24 +40,45 @@ const jsonLd = serializeJsonLd(
     { name: t.name, url: `${site.url}${beltsUrl(lang, styleId)}` },
   ]),
 );
-const facts = ar
-  ? [["الخامة", "جلد PU بنقشة بارزة"], ["الربط", "رباط رفيع يضبط على مقاس الخصر"], ["التوصيل", `لكل مصر خلال ${site.deliveryDays} أيام عمل، والدفع عند الاستلام`]]
-  : [["Material", "PU leather with a raised pattern"], ["Tie", "A thin tie that adjusts to your waist"], ["Delivery", `Across Egypt in ${site.deliveryDays} working days, cash on delivery`]];
-// On-model photos of the colours, for the "on the move" section.
-const looks = list.flatMap((p) => looksOf(p).map((look) => ({ p, look })));
+const facts = [
+  ...d.facts[lang],
+  ar ? ["التوصيل", `لكل مصر خلال ${site.deliveryDays} أيام عمل، والدفع عند الاستلام`] : ["Delivery", `Across Egypt in ${site.deliveryDays} working days, cash on delivery`],
+];
+// The lead visual: the film, or the first on-model photo of a colour (which then leaves the mosaic).
+const leadLook = d.lead.kind === "look" ? getProduct(d.lead.productId) : undefined;
+const leadPhoto = leadLook ? looksOf(leadLook)[0] : undefined;
+const leadFilm = d.lead.kind === "film" ? d.lead : undefined;
+// The mosaic: a film opens it, then the on-model photos and close-ups, and a second film closes it.
+type Tile = Film | Still | { kind: "look"; p: (typeof list)[number]; src: string; srcset: string };
+const looks: Tile[] = list.flatMap((p) => looksOf(p).filter((l) => l !== leadPhoto && l.src !== leadPhoto?.src).map((l) => ({ kind: "look" as const, p, ...l })));
+const tiles: Tile[] = [...d.films.slice(0, 1), ...looks, ...d.stills, ...d.films.slice(1)];
+const hasLooks = looks.length > 0;
 const pad = (n: number) => String(n).padStart(2, "0");
+const longName = t.name.length > 12;
+// The other designs, to move on to (in the store's order).
+const others = styles.filter((s) => s.id !== styleId).map((s) => {
+  const o = designOf(s.id);
+  const look = o.lead.kind === "look" ? getProduct(o.lead.productId) : undefined;
+  const photo = look ? looksOf(look)[0] : undefined;
+  const img = o.lead.kind === "film" ? { src: `${o.lead.src}.webp`, w: 704, h: 1280 } : photo ? { src: photo.src, w: 640, h: 800 } : { src: imageOf(coverOf(s.id)), w: 1200, h: 1200 };
+  return { id: s.id, name: styleText(lang, s.id).name, word: o.word, img };
+});
 ---
 
 <Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd} image={imageOf(coverOf(styleId))}>
   <div class="lux">
     <section class="lux-hero">
       <figure class="lux-hero-media">
-        <video data-motion src="/video/pattern-brown.mp4" poster="/video/pattern-brown.webp" muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
+        {leadFilm ? (
+          <video data-motion src={`${leadFilm.src}.mp4`} poster={`${leadFilm.src}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
+        ) : leadPhoto && leadLook ? (
+          <img src={leadPhoto.src} srcset={leadPhoto.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt={ar ? `${productName(lang, leadLook)} على الخصر` : `${productName(lang, leadLook)}, worn at the waist`} width="640" height="800" fetchpriority="high" decoding="async" />
+        ) : null}
       </figure>
       <div class="lux-hero-text">
         <Breadcrumbs items={crumbs} />
-        <p class="lux-kicker lux-in" lang="en" style="--d:0"><span class="lux-rule" aria-hidden="true"></span>VICUNA SIGNATURE</p>
-        <h1 class="lux-title">
+        <p class="lux-kicker lux-in" lang="en" style="--d:0"><span class="lux-rule" aria-hidden="true"></span>VICUNA {d.word}</p>
+        <h1 class={`lux-title${longName ? " is-long" : ""}`}>
           {ar ? (
             <>
               <span class="lux-line"><span class="lux-in" style="--d:1">حزام خصر</span></span>
@@ -67,7 +93,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
         </h1>
         <p class="lux-lead lux-in" style="--d:3">{t.intro}</p>
         <div class="lux-hero-foot lux-in" style="--d:4">
-          <p class="lux-price">{price(styleId)} <small>{cur}</small></p>
+          <p class="lux-price">{from && <small>{ar ? "من" : "from"}</small>} {price(styleId)} <small>{cur}</small></p>
           <a class="btn lux-btn" href="#colours">{ar ? "اختاري لونك" : "Choose your colour"} <Icon name="arrow" size={18} class="dir-icon" /></a>
         </div>
       </div>
@@ -77,7 +103,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
       <div class="wrap">
         <header class="lux-head reveal">
           <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>THE COLOURS</p>
-          <h2 class="lux-h2">{ar ? "لونان، ونقشة واحدة" : "Two colours, one pattern"}</h2>
+          <h2 class="lux-h2">{ar ? `${colourCount(lang, list.length)}، ${d.tail.ar}` : `${colourCount(lang, list.length)}, ${d.tail.en}`}</h2>
         </header>
         <div class="lux-stage" data-stage>
           {list.map((p, i) => (
@@ -101,7 +127,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
           ))}
           <button type="button" class="lux-nav prev" data-step="-1" aria-label={ar ? "اللون السابق" : "Previous colour"} hidden><Icon name="arrow" size={20} /></button>
           <button type="button" class="lux-nav next" data-step="1" aria-label={ar ? "اللون التالي" : "Next colour"} hidden><Icon name="arrow" size={20} /></button>
-          <div class="lux-swatches" aria-label={ar ? "الألوان" : "Colours"}>
+          <div class={`lux-swatches${list.length > 5 ? " many" : ""}`} aria-label={ar ? "الألوان" : "Colours"}>
             {list.map((p, i) => (
               <a class="swatch big" href={beltsUrl(lang, p.id)} style={`--c:${p.hex}`} aria-current={i === 0 ? "true" : undefined} aria-label={productName(lang, p)} title={shadeName(lang, p)}></a>
             ))}
@@ -111,37 +137,57 @@ const pad = (n: number) => String(n).padStart(2, "0");
       </div>
     </section>
 
-    <section class="lux-section lux-move">
-      <div class="wrap">
-        <header class="lux-head reveal">
-          <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>ON THE MOVE</p>
-          <h2 class="lux-h2">{ar ? "مع إطلالتك اليومية" : "With your everyday look"}</h2>
-        </header>
-        <div class="lux-mosaic">
-          <figure class="lux-tile lux-tile-film reveal">
-            <video data-motion src="/video/pattern-black.mp4" poster="/video/pattern-black.webp" muted loop playsinline preload="none" aria-hidden="true" width="704" height="1280"></video>
-            <figcaption>{ar ? "الأسود، مع فستان أبيض" : "Black, with a white dress"}</figcaption>
-          </figure>
-          {looks.map(({ p, look }, i) => (
-            <figure class="lux-tile reveal" style={`--i:${i + 1}`}>
-              <img src={look.src} srcset={look.srcset} sizes="(min-width: 960px) 30vw, 50vw" alt={ar ? `${productName(lang, p)} على الخصر` : `${productName(lang, p)}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
-              <figcaption><a href={beltsUrl(lang, p.id)}>{shadeName(lang, p)}</a></figcaption>
-            </figure>
-          ))}
-          <figure class="lux-tile lux-tile-film lux-tile-film-end reveal">
-            <video data-motion src="/video/pattern-abaya.mp4" poster="/video/pattern-abaya.webp" muted loop playsinline preload="none" aria-hidden="true" width="704" height="1280"></video>
-            <figcaption>{ar ? "البني، مع عباية سوداء" : "Brown, with a black abaya"}</figcaption>
-          </figure>
+    {tiles.length > 0 && (
+      <section class="lux-section lux-move">
+        <div class="wrap">
+          <header class="lux-head reveal">
+            <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>{hasLooks ? "ON THE MOVE" : "THE DETAILS"}</p>
+            <h2 class="lux-h2">{hasLooks ? (ar ? "مع إطلالتك اليومية" : "With your everyday look") : (ar ? "التفاصيل عن قرب" : "Up close")}</h2>
+          </header>
+          <div class="lux-mosaic">
+            {tiles.map((x, i) =>
+              x.kind === "film" ? (
+                <figure class="lux-tile lux-tile-film reveal" style={`--i:${i % 3}`}>
+                  <video data-motion src={`${x.src}.mp4`} poster={`${x.src}.webp`} muted loop playsinline preload="none" aria-hidden="true" width="704" height="1280"></video>
+                  {x.caption && <figcaption>{x.caption[lang]}</figcaption>}
+                </figure>
+              ) : x.kind === "look" ? (
+                <figure class="lux-tile reveal" style={`--i:${i % 3}`}>
+                  <img src={x.src} srcset={x.srcset} sizes="(min-width: 960px) 25vw, 50vw" alt={ar ? `${productName(lang, x.p)} على الخصر` : `${productName(lang, x.p)}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
+                  <figcaption><a href={beltsUrl(lang, x.p.id)}>{shadeName(lang, x.p)}</a></figcaption>
+                </figure>
+              ) : (
+                <figure class="lux-tile lux-tile-still reveal" style={`--i:${i % 3}; --ar:${x.w} / ${x.h}`}>
+                  <img src={stillSrc(x)} srcset={stillSrcset(x)} sizes="(min-width: 960px) 25vw, 50vw" alt={x.alt[lang]} width={x.w} height={x.h} loading="lazy" decoding="async" />
+                  <figcaption>{x.caption[lang]}</figcaption>
+                </figure>
+              ),
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <section class="lux-section lux-close">
       <div class="wrap">
         <dl class="lux-facts">
           {facts.map(([k, v], i) => <div class="reveal" style={`--i:${i}`}><dt>{k}</dt><dd>{v}</dd></div>)}
         </dl>
-        <p class="lux-mark" lang="en" aria-hidden="true">SIGNATURE</p>
+        <nav class="lux-others" aria-label={ar ? "تصميمات أخرى" : "Other designs"}>
+          <header class="lux-head reveal">
+            <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>MORE DESIGNS</p>
+            <h2 class="lux-h2">{ar ? "تصميمات تانية" : "More designs"}</h2>
+          </header>
+          <div class="lux-others-row">
+            {others.map((o, i) => (
+              <a class="lux-other reveal" href={beltsUrl(lang, o.id)} style={`--i:${i}`}>
+                <img src={o.img.src} alt="" width={o.img.w} height={o.img.h} loading="lazy" decoding="async" />
+                <span class="lux-other-text"><small lang="en">{o.word}</small><b>{o.name}</b></span>
+              </a>
+            ))}
+          </div>
+        </nav>
+        <p class="lux-mark" lang="en" aria-hidden="true">{d.word}</p>
       </div>
     </section>
   </div>
