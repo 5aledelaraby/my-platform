@@ -1308,3 +1308,39 @@ dialog.menu { border-radius: 26px; }
   .style-stage .sg-nav, .style-stage:has(.sg-slide + .sg-slide) .sg-nav { top: calc(62.5cqw - 22px); }
   .style-intro { padding: 0; }
 }
+
+/* ---------- product tiles (owner, 2026-10-16): one smooth tint of the belt's colour behind each belt — no white
+   box, grey ring and white again — and a small oval "add to bag" button with a bag picture. ---------- */
+.glow, .pdp-photo.glow, .sg-media.glow {
+  background: radial-gradient(130% 100% at 50% 42%, color-mix(in srgb, var(--tint, #efe9e1) 15%, #fdfcfa) 0%, color-mix(in srgb, var(--tint, #efe9e1) 9%, #f8f6f2) 100%);
+}
+:root[data-mode="dark"] .glow, :root[data-mode="dark"] .pdp-photo.glow {
+  background: radial-gradient(130% 100% at 50% 42%, color-mix(in srgb, var(--tint, #efe9e1) 16%, #f8f6f2) 0%, color-mix(in srgb, var(--tint, #efe9e1) 10%, #ece7df) 100%);
+}
+.quick-add, .card .quick-add {
+  inset-inline: auto; left: 50%; right: auto; bottom: 10px; translate: -50% 0;
+  display: inline-flex; align-items: center; gap: 6px; width: auto; min-height: 0; padding: 7px 14px 7px 16px;
+  border-radius: 999px; background: var(--ink); color: #fff; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+  font-size: 12.5px; font-weight: 600; line-height: 1.4; white-space: nowrap;
+}
+.quick-add:hover { background: #000; color: #fff; }
+.qa-icon { font-size: 14px; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+:root[data-mode="dark"] .quick-add { background: #f2ede4; color: #111; box-shadow: none; }
+:root[data-mode="dark"] .quick-add:hover { background: #fff; color: #000; }
+
+/* ---------- cart in dark mode: every panel and control readable ---------- */
+:root[data-mode="dark"] .cart-line { background: #1d1b19; }
+:root[data-mode="dark"] .cart-line img { background: #f2ede4; }
+:root[data-mode="dark"] .cart-qty button { background: #2a2724; color: #f2ede4; box-shadow: 0 0 0 1px rgb(255 255 255 / .14); }
+:root[data-mode="dark"] .cart-qty button:hover { background: #36322e; }
+:root[data-mode="dark"] #cart-totals { background: transparent; color: #e9e3d8; border-color: rgb(255 255 255 / .14); }
+:root[data-mode="dark"] .cart-head [data-close-cart] { color: #f2ede4; }
+:root[data-mode="dark"] #checkout label { color: #b3ac9f; }
+:root[data-mode="dark"] #checkout label.radio { background: #1d1b19; color: #f2ede4; }
+:root[data-mode="dark"] #checkout label.radio:has(:checked) { background: #26231f; box-shadow: inset 0 0 0 2px #f2ede4; }
+:root[data-mode="dark"] #checkout input:not([type="radio"]), :root[data-mode="dark"] #checkout select, :root[data-mode="dark"] #checkout textarea { background: #1d1b19; color: #f2ede4; }
+:root[data-mode="dark"] #checkout input:focus, :root[data-mode="dark"] #checkout select:focus, :root[data-mode="dark"] #checkout textarea:focus { border-color: #f2ede4; }
+:root[data-mode="dark"] #checkout label.radio { accent-color: #f2ede4; }
+:root[data-mode="dark"] .toast img { background: #f2ede4; }
+:root[data-mode="dark"] .toast-text b { color: #f2ede4; }
+.cart-qty button { color: var(--ink); font-family: var(--font-body); -webkit-appearance: none; appearance: none; }

@@ -21,7 +21,7 @@ const look = lookOf(product);
       <img src={thumbOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 1100px) 23vw, (min-width: 760px) 31vw, 46vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />
       {look && <img class="card-look" src={look.src} alt="" width="640" height="800" loading="lazy" decoding="async" />}
     </a>
-    <button type="button" class="quick-add" data-add={product.id} aria-label={ar ? `أضيفي ${name} للسلة` : `Add ${name} to cart`}>{ar ? "أضيفي للسلة" : "Add to cart"}</button>
+    <button type="button" class="quick-add" data-add={product.id} aria-label={ar ? `أضيفي ${name} للسلة` : `Add ${name} to cart`}>{ar ? "أضيفي للسلة" : "Add to bag"} <span class="qa-icon" aria-hidden="true">🛍️</span></button>
     <span class="card-out" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية" : "Sold out"}</span>
   </div>
   <div class="card-body">
