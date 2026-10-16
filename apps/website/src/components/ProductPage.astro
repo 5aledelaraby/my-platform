@@ -2,7 +2,7 @@
 import { breadcrumbJsonLd, productJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { beltsUrl, coverOf, imageOf, priceOfProduct, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, srcsetOf, priceOfProduct, productName, productsOfStyle, shadeName, styleText, styles } from "../store.ts";
 import { PIASTERS_PER_EGP, SHIPPING, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
@@ -84,7 +84,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   <div class="wrap product">
     <div class="pdp-media">
     <figure class="pdp-photo" style={`--tint:${product.hex}`} data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
-      <img src={imageOf(product)} alt={name} width="900" height="900" fetchpriority="high" />
+      <img src={imageOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 900px) 52vw, 100vw" alt={name} width="1200" height="1200" fetchpriority="high" />
       {nextP && prevP && (
         <>
           <a class="pdp-arrow prev" href={beltsUrl(lang, prevP.id)} aria-label={`${ar ? "اللون السابق" : "Previous colour"}: ${productName(lang, prevP)}`}><Icon name="arrow" size={18} /></a>

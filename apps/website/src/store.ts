@@ -102,6 +102,9 @@ export const priceOfProduct = (p: CatalogProduct): string => formatEgp(priceOf(p
 export const hasHigherPrices = (styleId: string): boolean => productsOfStyle(styleId).some((p) => priceOf(p) !== getStyle(styleId).price);
 export const imageOf = (p: CatalogProduct): string => `/img/products/${p.id}.webp`;
 export const thumbOf = (p: CatalogProduct): string => `/img/products/${p.id}-480.webp`;
+/** Every size of the product photo (square): 480, 800 and 1200 px wide. */
+export const srcsetOf = (p: CatalogProduct): string =>
+  `/img/products/${p.id}-480.webp 480w, /img/products/${p.id}-800.webp 800w, /img/products/${p.id}.webp 1200w`;
 /** First product of a style, used as its cover image. */
 export const coverOf = (styleId: string): CatalogProduct => {
   const first = products.find((p) => p.style === styleId);

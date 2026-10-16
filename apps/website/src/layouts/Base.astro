@@ -132,9 +132,19 @@ const announce = ar
         video.addEventListener("play", show);
         video.addEventListener("pause", show);
         video.after(button);
-        if (calm) video.pause();
-        else void video.play().catch(() => undefined);
         show();
+        if (calm) { video.pause(); return; }
+        // Films play only while they are on screen: a film further down the page is not downloaded until it is
+        // reached, and one scrolled past stops (the visitor's own pause is kept).
+        if (!("IntersectionObserver" in window)) { void video.play().catch(() => undefined); return; }
+        let userPaused = false;
+        button.addEventListener("click", () => { userPaused = video.paused; });
+        new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting && !userPaused) void video.play().catch(() => undefined);
+            else if (!e.isIntersecting && !video.paused) video.pause();
+          }
+        }, { threshold: 0.2 }).observe(video);
       });
       const bar = document.querySelector<HTMLElement>("[data-announce]");
       const barButton = document.querySelector<HTMLButtonElement>("[data-announce-toggle]");
