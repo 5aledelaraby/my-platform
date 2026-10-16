@@ -56,7 +56,9 @@
 
 - صفحات `/privacy/` و`/returns/` و`/terms/` (وبالإنجليزي): **تمت** بنفس المسارات، فمش محتاجة تحويل.
 - ملف كتالوج Meta/Google: القديم بينشر `/catalog/products.csv` وصوره `/catalog/img/`. لو كتالوج فيسبوك أو Merchant Center بيسحب من الرابط ده، هيقف بعد التحويل. لازم نتأكد ونبني بديل قبل التحويل.
-- قاعدة Rate limiting في Cloudflare على `POST /api/orders`، وإيقاف رابط `workers.dev` للـ API بعد ما الربط على الدومين يشتغل (لأن قواعد الحماية بتتطبق على الدومين بس).
-- فصل بيانات التجربة: الموقع التجريبي والإنتاج بيكتبوا دلوقتي في نفس قاعدة D1 (`vicuna-db`). الأفضل قاعدة منفصلة للتجربة، أو على الأقل مسح طلبات التجربة قبل التحويل.
-- `DEPLOY_ENV=production` في **Build variables** لـ `vicuna-site` وقت التحويل، وربط `vicuna-eg.com` و`vicuna-eg.com/api/*`.
-- وقتها كمان `workers_dev = false` و`preview_urls = false` في `apps/website/wrangler.toml`، علشان رابط `workers.dev` وروابط المعاينة ما يبقوش نسخة إنتاج قابلة للفهرسة.
+- (تم) Rate limiting في الكود: `ORDER_LIMIT` (5 طلبات في الدقيقة) و`PROMO_LIMIT` (20 في الدقيقة) في `apps/api/wrangler.toml`. ورابط `workers.dev` مقفول للـ API والموقع (`workers_dev = false`).
+- (تم) فصل بيانات التجربة: الـ staging ليه قاعدة لوحده (`vicuna-db-staging`، binding `DB_STAGING`)، والـ API بيختارها حسب الـ hostname، ومن غيرها بيرفض (503) بدل ما يكتب في `vicuna-db`. لسه مطلوب: مسح طلبات التجربة القديمة من `vicuna-db` وضبط المخزون الحقيقي قبل التحويل.
+- `DEPLOY_ENV=production` في **Build variables** لـ `vicuna-site` وقت التحويل.
+- الـ routes الجديدة (`vicuna-eg.com` للموقع، و`vicuna-eg.com/api/*` للـ API) **لازم تتكتب في `wrangler.toml`** مش في الـ dashboard بس: كل deploy من GitHub بيرجّع الـ routes للي مكتوب في الملف ويشيل أي route اتضاف من الـ dashboard.
+- `vicuna-eg.com` النهارده لسه بيشاور على الموقع القديم (GitHub Pages). ربطه بالـ Worker كـ custom domain محتاج يتشال الـ DNS record القديم الأول.
+- بعد التحويل الـ staging والإنتاج هيبقوا نفس الـ Worker ونفس البناء: أي نشر على `main` هيوصل للاتنين في نفس الوقت. الـ staging محمي من الفهرسة بـ `X-Robots-Tag: noindex` في `apps/website/public/_headers`. لو المطلوب إن الـ staging يفضل مكان تجربة قبل العام، لازم Worker منفصل للـ staging (قرار قبل التحويل).

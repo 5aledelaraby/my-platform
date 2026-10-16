@@ -1,5 +1,7 @@
 # ADR 0009: The homepage is a brand introduction; the belts store lives under /belts/
 
+> Update (2026-10-17): the store now lives under `/collections/vicuna-belts/` (styles at `/collections/vicuna-belts/<style>/`, products at `/collections/vicuna-belts/<product-id>/`). Read every `/belts/` below as that path; the decision itself is unchanged.
+
 Status: accepted. The product URL scheme `/belts/<product-id>/` was confirmed by the owner. The owner decided to keep the English version under `/en/` with the same structure and hreflang alternates.
 
 ## Context

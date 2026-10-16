@@ -10,7 +10,7 @@ The owner decided to create orders through an API instead of making WhatsApp the
 - All logic lives in `@platform/commerce` (validation, catalogue prices, totals, order building, order ids). The Worker only does HTTP, CORS and storage.
 - **The server is the price authority.** Client prices are ignored; unit prices come from `catalog.json`, totals from the shared pricing functions. Orders store a snapshot (names, unit prices, totals) in piasters.
 - Storage: Cloudflare D1, tables `orders` and `order_items` (migration `0001_orders.sql`). An `OrderRepository` interface has two implementations, D1 and in-memory (tests). That is the only abstraction added.
-- Abuse controls: exact-origin allow-list, JSON-only, 16 KB body limit, honeypot field, input sanitising (control and bidi characters), quantity limits. IP rate limiting is a Cloudflare rule, not code.
+- Abuse controls: exact-origin allow-list, JSON-only, 16 KB body limit, honeypot field, input sanitising (control and bidi characters), quantity limits. IP rate limiting was first planned as a Cloudflare rule; it is now in code (Workers Rate Limiting bindings `ORDER_LIMIT` and `PROMO_LIMIT` in `apps/api/wrangler.toml`, 429 with `Retry-After`).
 - Privacy: customer data is stored only in D1; responses omit phone and address; logs contain an error name only.
 - Order ids look like `V-MMDD-XXXXX` (same family as the legacy `V-MMDD-XXXX`, so GA4 purchases can still be matched to orders). Collisions are retried.
 - No read endpoints. Orders are read from the Cloudflare dashboard until `apps/admin` exists behind authentication. (Amended by ADR 0010: owner-only reads and status changes now exist on `admin.vicuna-eg.com`, behind Cloudflare Access.)

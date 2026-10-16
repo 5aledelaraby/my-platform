@@ -24,3 +24,7 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 /fonts/*
   Cache-Control: public, max-age=2592000
+
+# Staging is never indexed, whatever build it serves (production and staging may share this Worker after cutover).
+https://staging.vicuna-eg.com/*
+  X-Robots-Tag: noindex, nofollow

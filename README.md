@@ -18,7 +18,7 @@
 | `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
 | `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
 | `apps/api` (الطلبات، المخزون، أكواد الخصم، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1، ومعاه صفحة الإدارة على `admin.vicuna-eg.com` وإشعارات Telegram (`apps/api/README.md`) |
-| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (4 تصميمات و16 منتج) عربي/إنجليزي، المقالات `/journal/style-guides/`، السلة، صفحة الشكر، صفحات السياسات، شريط الكوكيز، وملف الكتالوج `/catalog/products.csv` لـ Meta وGoogle. Worker صغير بيخفي أي حزام مخزونه صفر (ADR 0013). منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) (`apps/website/README.md`) |
+| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (5 تصميمات و18 منتج) عربي/إنجليزي، المقالات `/journal/style-guides/`، السلة، صفحة الشكر، صفحات السياسات، شريط الكوكيز، وملف الكتالوج `/catalog/products.csv` لـ Meta وGoogle. Worker صغير بيخفي أي حزام مخزونه صفر (ADR 0013). منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) (`apps/website/README.md`) |
 | حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
 
 ## تشغيل المشروع (أول مرة)
@@ -51,11 +51,11 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 ## الخطوة التالية
 
 1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers، وصفحة الإدارة، والمخزون، وأكواد الخصم.
-2. مع أول نشر لأسماء المنتجات الجديدة (ADR 0012): تنفيذ `apps/api/migrations/0004_design_product_ids.sql` على D1 من الـ Console.
+2. (تم على `vicuna-db-staging`) الـ migrations من 0001 لـ 0004. على `vicuna-db` (الإنتاج) لازم يتأكد قبل التحويل إن الأربعة متسجلين في `d1_migrations`، وإلا تتنفذ الناقصة بالترتيب.
 3. اختبار الطلب كامل على `staging.vicuna-eg.com` (السلة ثم الـ API ثم D1 ثم صفحة الشكر).
 4. قبل تحويل الدومين: مسح طلبات التجربة. القائمة الكاملة في `MIGRATION.md`.
 5. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. قرار المالك: بداية نظيفة من غير أي تحويلات من روابط الموقع القديم. ملف الكتالوج على نفس الرابط القديم، فـ Meta وGoogle بيكمّلوا من غير تغيير.
-6. تفعيل Branch protection على `main` (يشترط نجاح الـ CI قبل الدمج).
+6. (تم) حماية `main`: Ruleset «Protect main» شغال، ويشترط نجاح `guards-and-tests` و`full`.
 
 ## قاعدة أمان
 
