@@ -36,6 +36,7 @@ const alt = altPath ? canonicalUrl(site, altPath) : undefined;
 const ogImage = new URL(image, site).toString();
 const arUrl = lang === "ar" ? canonical : alt;
 const enUrl = lang === "en" ? canonical : alt;
+const PAUSE_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5.5v13M16 5.5v13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>';
 const switchHref = altPath ?? (lang === "ar" ? "/en/" : "/");
 // Facts for the red announcement bar (all from the shared settings).
 const ar = lang === "ar";
@@ -81,7 +82,7 @@ const announce = ar
     <Consent lang={lang} />
     <div class="announce" data-announce>
       <p class="sr-only">{announce.join(" · ")}</p>
-      <button type="button" class="motion-toggle announce-toggle" data-announce-toggle data-label-pause={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"} data-label-play={ar ? "تشغيل الشريط المتحرك" : "Play the moving bar"} aria-label={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"}><span aria-hidden="true">❚❚</span></button>
+      <button type="button" class="motion-toggle announce-toggle" data-announce-toggle data-label-pause={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"} data-label-play={ar ? "تشغيل الشريط المتحرك" : "Play the moving bar"} aria-label={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"}><span class="mt-dot" set:html={PAUSE_SVG} /></button>
       <div class="marquee" aria-hidden="true">
         <div class="marquee-track">
           {[0, 1].map(() => announce.map((a) => <span>{a}<i>✦</i></span>))}
@@ -142,6 +143,9 @@ const announce = ar
       // Moving content (WCAG 2.2.2): videos marked data-motion and the announcement bar can be paused, and they do not
       // move at all when the visitor's device asks for reduced motion.
       const lang = document.documentElement.lang === "en" ? "en" : "ar";
+      // Small drawn icons (the ❚❚ and ▶ characters look different, and clumsy, on every phone).
+      const PAUSE_ICON = '<span class="mt-dot"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5.5v13M16 5.5v13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>';
+      const PLAY_ICON = '<span class="mt-dot"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5.2v13.6a.6.6 0 0 0 .9.5l10.4-6.8a.6.6 0 0 0 0-1L8.9 4.7a.6.6 0 0 0-.9.5z" fill="currentColor"/></svg></span>';
       const words = lang === "ar" ? { pause: "إيقاف الفيديو", play: "تشغيل الفيديو" } : { pause: "Pause video", play: "Play video" };
       document.querySelectorAll<HTMLVideoElement>("video[data-motion]").forEach((video) => {
         const button = document.createElement("button");
@@ -150,7 +154,7 @@ const announce = ar
         const show = () => {
           const paused = video.paused;
           button.setAttribute("aria-label", paused ? words.play : words.pause);
-          button.innerHTML = paused ? '<span aria-hidden="true">▶</span>' : '<span aria-hidden="true">❚❚</span>';
+          button.innerHTML = paused ? PLAY_ICON : PAUSE_ICON;
         };
         button.addEventListener("click", () => {
           if (video.paused) void video.play().catch(() => undefined);
@@ -193,7 +197,7 @@ const announce = ar
         barButton.addEventListener("click", () => {
           const paused = bar.classList.toggle("paused");
           barButton.setAttribute("aria-label", (paused ? barButton.dataset["labelPlay"] : barButton.dataset["labelPause"]) ?? "");
-          barButton.innerHTML = paused ? '<span aria-hidden="true">▶</span>' : '<span aria-hidden="true">❚❚</span>';
+          barButton.innerHTML = paused ? PLAY_ICON : PAUSE_ICON;
         });
       }
     </script>

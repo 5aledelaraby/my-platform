@@ -19,13 +19,13 @@ const ar = lang === "ar";
 const t = styleText(lang, styleId);
 const list = productsOfStyle(styleId);
 const cur = ar ? "جنيه" : "EGP";
-const title = ar ? `حزام ${t.name} | فيكونا` : `${t.name} belt | Vicuna`;
+const title = ar ? `حزام خصر ${t.name} | فيكونا` : `${t.name} waist belt | Vicuna`;
 const description = ar
   ? `${t.headline}. ${list.length === 2 ? "لونان" : `${list.length} ألوان`} بسعر ${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
   : `${t.headline}. ${list.length} colours at ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
-  { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
+  { name: ar ? "أحزمة الخصر" : "Waist belts", href: beltsUrl(lang) },
   { name: t.name },
 ];
 const jsonLd = serializeJsonLd(
@@ -53,8 +53,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
         <Breadcrumbs items={crumbs} />
         <p class="lux-kicker lux-in" lang="en" style="--d:0"><span class="lux-rule" aria-hidden="true"></span>VICUNA SIGNATURE</p>
         <h1 class="lux-title">
-          <span class="lux-line"><span class="lux-in" style="--d:1">حزام</span></span>
-          <span class="lux-line"><span class="lux-in" style="--d:2">{t.name}</span></span>
+          {ar ? (
+            <>
+              <span class="lux-line"><span class="lux-in" style="--d:1">حزام خصر</span></span>
+              <span class="lux-line"><span class="lux-in" style="--d:2">{t.name}</span></span>
+            </>
+          ) : (
+            <>
+              <span class="lux-line"><span class="lux-in" style="--d:1">{t.name}</span></span>
+              <span class="lux-line"><span class="lux-in lux-sub" style="--d:2">waist belt</span></span>
+            </>
+          )}
         </h1>
         <p class="lux-lead lux-in" style="--d:3">{t.intro}</p>
         <div class="lux-hero-foot lux-in" style="--d:4">
@@ -119,6 +128,10 @@ const pad = (n: number) => String(n).padStart(2, "0");
               <figcaption><a href={beltsUrl(lang, p.id)}>{shadeName(lang, p)}</a></figcaption>
             </figure>
           ))}
+          <figure class="lux-tile lux-tile-film lux-tile-film-end reveal">
+            <video data-motion src="/video/pattern-abaya.mp4" poster="/video/pattern-abaya.webp" muted loop playsinline preload="none" aria-hidden="true" width="704" height="1280"></video>
+            <figcaption>{ar ? "البني، مع عباية سوداء" : "Brown, with a black abaya"}</figcaption>
+          </figure>
         </div>
       </div>
     </section>

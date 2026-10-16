@@ -33,7 +33,7 @@ const icons: Record<string, string> = {
 };
 const top = [
   { href: home, label: ar ? "الرئيسية" : "Home", icon: "home", on: here(home) },
-  { href: beltsUrl(lang), label: ar ? "كل الأحزمة" : "All belts", icon: "bag", on: activeDesign === "all" },
+  { href: beltsUrl(lang), label: ar ? "كل أحزمة الخصر" : "All waist belts", icon: "bag", on: activeDesign === "all" },
   ...(ar ? [{ href: JOURNAL_PATH, label: "المقالات", icon: "pen", on: Astro.url.pathname.startsWith(JOURNAL_PATH) }] : []),
   { href: langPath(lang, "/about/"), label: ar ? "من نحن" : "About us", icon: "users", on: here(langPath(lang, "/about/")) },
   { href: langPath(lang, "/faq/"), label: ar ? "الأسئلة الشائعة" : "FAQ", icon: "help", on: here(langPath(lang, "/faq/")) },
@@ -63,7 +63,7 @@ const isGroup = (e: Link | Group): e is Group => "items" in e;
     </button>
     <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo /></a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
-      <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a>
+      <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "أحزمة الخصر" : "Waist belts"}</a>
       {ar && <a class="nav-pill" href={JOURNAL_PATH}>المقالات</a>}
       <a class="nav-pill" href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a>
     </nav>
@@ -77,7 +77,7 @@ const isGroup = (e: Link | Group): e is Group => "items" in e;
   </div>
   <nav class="design-bar" aria-label={ar ? "التصميمات" : "Designs"}>
     <div class="wrap design-row">
-      <a href={beltsUrl(lang)} aria-current={activeDesign === "all" ? "page" : undefined}>{ar ? "كل الأحزمة" : "All belts"}</a>
+      <a href={beltsUrl(lang)} aria-current={activeDesign === "all" ? "page" : undefined}>{ar ? "كل أحزمة الخصر" : "All waist belts"}</a>
       {styles.map((st) => (
         <a href={beltsUrl(lang, st.id)} aria-current={activeDesign === st.id ? "page" : undefined}>{styleText(lang, st.id).name}</a>
       ))}

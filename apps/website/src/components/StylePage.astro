@@ -43,7 +43,7 @@ const description = ar
   : `${t.headline}. ${list.length} colours ${from ? "from" : "at"} ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
 const crumbs = [
   { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
-  { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
+  { name: ar ? "أحزمة الخصر" : "Waist belts", href: beltsUrl(lang) },
   { name: t.name },
 ];
 const jsonLd = serializeJsonLd(
@@ -60,7 +60,7 @@ const jsonLd = serializeJsonLd(
     <div class="page-hero-box style-hero">
       <div>
         <Breadcrumbs items={crumbs} />
-        <h1 class="has-sparkles">{ar ? <>حزام <span class="accent">{t.name}</span></> : <><span class="accent">{t.name}</span> belts</>}<Sparkles variant="b" /></h1>
+        <h1 class="has-sparkles">{ar ? <>حزام وسط <span class="accent">{t.name}</span></> : <><span class="accent">{t.name}</span> waist belts</>}<Sparkles variant="b" /></h1>
         <p class="hero-sub">{t.headline}</p>
         <p class="lead">{t.intro}</p>
         <div class="hero-actions">
