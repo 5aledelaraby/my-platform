@@ -8,7 +8,7 @@ import type { Lang } from "../site.ts";
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
-// Solid glyphs (no circles), like the reference the owner chose.
+// Each network in its own colours, the way its app icon looks (owner, 2026-10-17).
 const socialIcon: Record<string, string> = {
   TikTok: '<path fill="currentColor" d="M16.6 2.5c.4 2.6 2 4.3 4.6 4.6v3.3c-1.7 0-3.3-.5-4.6-1.4v6.7a5.9 5.9 0 1 1-5.9-5.9l1 .1v3.4a2.6 2.6 0 1 0 1.7 2.4V2.5h3.2Z"/>',
   Instagram:
@@ -50,7 +50,7 @@ const socialIcon: Record<string, string> = {
 
   <div class="wrap footer-social">
     {site.social.map((s) => (
-      <a href={s.href} rel="noopener noreferrer" aria-label={s.label}><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" set:html={socialIcon[s.label] ?? ""} /></a>
+      <a class={`soc soc-${s.label.toLowerCase()}`} href={s.href} rel="noopener noreferrer" aria-label={s.label}><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" set:html={socialIcon[s.label] ?? ""} /></a>
     ))}
   </div>
 

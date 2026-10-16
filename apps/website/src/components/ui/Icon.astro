@@ -19,4 +19,4 @@ const art: Record<Props["name"], { box: number; body: string }> = {
 const a = art[name];
 ---
 
-<svg class={["icon", cls].filter(Boolean).join(" ")} viewBox={`0 0 ${a.box} ${a.box}`} width={size} height={size} aria-hidden="true" set:html={a.body} />
+<svg class={["icon", name === "whatsapp" && "icon-wa", cls].filter(Boolean).join(" ")} viewBox={`0 0 ${a.box} ${a.box}`} width={size} height={size} aria-hidden="true" set:html={a.body} />
