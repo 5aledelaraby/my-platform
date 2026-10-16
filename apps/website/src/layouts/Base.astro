@@ -92,6 +92,9 @@ const announce = ar
     </main>
     <Footer lang={lang} />
     <Cart lang={lang} />
+    <button type="button" class="to-top" data-to-top aria-label={ar ? "الرجوع لأعلى الصفحة" : "Back to top"}>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" /></svg>
+    </button>
     <script>
       // Header shadow once the page scrolls, and a gentle fade-up for sections as they come into view.
       const header = document.querySelector(".site-header");
@@ -168,6 +171,19 @@ const announce = ar
           }
         }, { threshold: 0.2 }).observe(video);
       });
+      // Back to top: a round button that appears once the visitor has scrolled down more than a screen.
+      const toTop = document.querySelector<HTMLButtonElement>("[data-to-top]");
+      if (toTop) {
+        const paint = () => toTop.classList.toggle("show", window.scrollY > innerHeight * 1.2);
+        addEventListener("scroll", paint, { passive: true });
+        paint();
+        toTop.addEventListener("click", (e) => {
+          scrollTo({ top: 0, behavior: calm ? "auto" : "smooth" });
+          // From the keyboard, continue from the top of the page too.
+          if ((e as MouseEvent).detail === 0) document.querySelector<HTMLElement>(".skip")?.focus({ preventScroll: true });
+        });
+      }
+
       const bar = document.querySelector<HTMLElement>("[data-announce]");
       const barButton = document.querySelector<HTMLButtonElement>("[data-announce-toggle]");
       if (bar && barButton) {
