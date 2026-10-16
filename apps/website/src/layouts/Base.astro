@@ -116,7 +116,7 @@ const announce = ar
 
         // Photos further down the page rise into view as they are reached (photos on the first screen show at
         // once). Photos that come into view together open one after another.
-        const media = [...document.querySelectorAll<HTMLElement>(".card-media, .pdp-look, .sg-media, .lux-tile, .detail-media, .style-film")]
+        const media = [...document.querySelectorAll<HTMLElement>(".card-media, .pdp-look, .sg-media, .lux-tile, .detail-media, .style-film, .sd-item")]
           .filter((el) => el.getBoundingClientRect().top > innerHeight);
         const rise = new IntersectionObserver(
           (entries) => {

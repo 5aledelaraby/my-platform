@@ -21,10 +21,23 @@ const from = hasHigherPrices(styleId);
 // A film for the designs that have one (owner, 2026-10-16); the others keep the row of product photos.
 const films: Record<string, string> = { "wide-tie": "/video/wide-tie-white", "thin-tie": "/video/thin-tie-camel" };
 const film = films[styleId];
-// A close-up of the croc print on the thin-tie page, under the colours (owner, 2026-10-16).
-const detail = styleId === "thin-tie"
-  ? { src: "/img/editorial/croc-detail", caption: ar ? "نقشة الكروكو عن قرب" : "The croc print, up close", alt: ar ? "حزام برباط رفيع بنقشة كروكو، صورة مقرّبة" : "A thin-tie belt in croc print, close up" }
-  : null;
+// Close-ups under the colours (owner, 2026-10-16): the croc print on the thin-tie page; on the lace page a photo of
+// the lace and its satin bow next to a short film of the lace. Photos only, not products for sale.
+type Detail = { kind: "img" | "film"; src: string; alt: string };
+const detailsByStyle: Record<string, { caption: string; items: Detail[] }> = {
+  "thin-tie": {
+    caption: ar ? "نقشة الكروكو عن قرب" : "The croc print, up close",
+    items: [{ kind: "img", src: "/img/editorial/croc-detail", alt: ar ? "حزام برباط رفيع بنقشة كروكو، صورة مقرّبة" : "A thin-tie belt in croc print, close up" }],
+  },
+  lace: {
+    caption: ar ? "الدانتيل عن قرب" : "The lace, up close",
+    items: [
+      { kind: "img", src: "/img/editorial/lace-bow", alt: ar ? "دانتيل الحزام وفيونكة الساتان، صورة مقرّبة" : "The belt's lace and satin bow, close up" },
+      { kind: "film", src: "/video/lace-detail", alt: "" },
+    ],
+  },
+};
+const details = detailsByStyle[styleId] ?? null;
 const description = ar
   ? `${t.headline}. ${list.length} لون بسعر ${from ? "يبدأ من " : ""}${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
   : `${t.headline}. ${list.length} colours ${from ? "from" : "at"} ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
@@ -90,11 +103,17 @@ const jsonLd = serializeJsonLd(
       {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </section>
-  {detail && (
+  {details && (
     <section class="wrap style-group">
-      <figure class="style-detail reveal">
-        <img src={`${detail.src}-1200.webp`} srcset={`${detail.src}-640.webp 640w, ${detail.src}-1200.webp 1200w`} sizes="(min-width: 960px) 50vw, 100vw" alt={detail.alt} width="1200" height="1200" loading="lazy" decoding="async" />
-        <figcaption>{detail.caption}</figcaption>
+      <figure class={details.items.length > 1 ? "style-detail pair" : "style-detail"}>
+        <div class="style-detail-media">
+          {details.items.map((d) => <div class="sd-item">{d.kind === "img" ? (
+            <img src={`${d.src}-1200.webp`} srcset={`${d.src}-640.webp 640w, ${d.src}-1200.webp 1200w`} sizes={details.items.length > 1 ? "(min-width: 760px) 40vw, 100vw" : "(min-width: 960px) 50vw, 100vw"} alt={d.alt} width="1200" height="1200" loading="lazy" decoding="async" />
+          ) : (
+            <video data-motion src={`${d.src}.mp4`} poster={`${d.src}.webp`} muted loop playsinline preload="none" aria-hidden="true" width="720" height="1264"></video>
+          )}</div>)}
+        </div>
+        <figcaption>{details.caption}</figcaption>
       </figure>
     </section>
   )}

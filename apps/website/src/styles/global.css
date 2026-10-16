@@ -1131,3 +1131,12 @@ h1.has-sparkles { width: fit-content; max-width: 100%; }
    text keep their portrait shape. */
 .article .cover { aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 50%; border: 0; border-radius: 0; box-shadow: none; }
 .prose img { aspect-ratio: 4 / 5; border-radius: 0; }
+
+/* Close-ups under a design's colours: one photo, or (lace) a photo and a short film side by side. */
+.style-detail-media { display: grid; gap: 12px; }
+.style-detail-media :is(img, video) { display: block; width: 100%; height: auto; background: #f6f4f1; }
+.style-detail.pair { max-width: 1040px; }
+.style-detail.pair .style-detail-media :is(img, video) { aspect-ratio: 4 / 5; height: 100%; object-fit: cover; }
+.sd-item { position: relative; overflow: hidden; }
+.style-detail.pair video { object-position: 50% 30%; }
+@media (min-width: 760px) { .style-detail.pair .style-detail-media { grid-template-columns: 1fr 1fr; } }
