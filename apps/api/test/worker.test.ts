@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import worker from "../src/worker.ts";
+import { STAGING_TAG } from "../src/notify.ts";
 import type { D1Like, D1Statement } from "../src/index.ts";
 
 const db: D1Like = {
@@ -64,4 +65,28 @@ describe("worker entry", () => {
     assert.equal(res.status, 503);
     assert.equal(touched, false);
   });
+
+  it("Telegram marks staging orders as tests, and only those", async () => {
+    const texts: string[] = [];
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async (_url: unknown, init?: { body?: string }) => {
+      texts.push(JSON.parse(init?.body ?? "{}").text);
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    try {
+      const env = { DB: db, DB_STAGING: db, STAGING_HOST: "staging.vicuna-eg.com", TELEGRAM_BOT_TOKEN: "t", TELEGRAM_CHAT_ID: "1", ALLOWED_ORIGINS: "https://vicuna-eg.com,https://staging.vicuna-eg.com" };
+      const pending: Promise<unknown>[] = [];
+      const ctx = { waitUntil: (w: Promise<unknown>) => { pending.push(w); } };
+      await worker.fetch(order("https://staging.vicuna-eg.com"), env, ctx);
+      const live = new Request(order("https://vicuna-eg.com").url.replace("staging.", ""), order("https://vicuna-eg.com"));
+      await worker.fetch(live, env, ctx);
+      await Promise.all(pending);
+      assert.equal(texts.length, 2);
+      assert.ok(texts[0]!.startsWith(STAGING_TAG));
+      assert.ok(!texts[1]!.includes(STAGING_TAG));
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  });
 });
+

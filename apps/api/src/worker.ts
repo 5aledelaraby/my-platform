@@ -3,7 +3,7 @@ import { SHIPPING, lookupProduct } from "@platform/commerce";
 import { accessVerifier } from "./access.ts";
 import { createAdminHandler } from "./admin.ts";
 import { createHandler } from "./handler.ts";
-import { formatOrderMessage, formatStatusMessage, telegramSender } from "./notify.ts";
+import { STAGING_TAG, formatOrderMessage, formatStatusMessage, tagged, telegramSender } from "./notify.ts";
 import { d1Repository } from "./repository.ts";
 import type { D1Like } from "./repository.ts";
 
@@ -58,7 +58,9 @@ export default {
     // eslint-disable-next-line no-console
     const reportError = (name: string) => console.error("order_error", name);
     // Telegram is on only when both values are set in the dashboard.
-    const send = token && chatId ? telegramSender(token, chatId) : null;
+    const live = token && chatId ? telegramSender(token, chatId) : null;
+    // Orders placed on staging are marked as tests in Telegram.
+    const send = live && onStaging ? tagged(live, STAGING_TAG) : live;
     const waitUntil = ctx ? { waitUntil: (work: Promise<unknown>) => ctx.waitUntil(work) } : {};
     const emails = (env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
     const missingSettings = [

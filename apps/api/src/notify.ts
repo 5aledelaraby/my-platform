@@ -80,3 +80,12 @@ export function telegramNotifier(token: string, chatId: string, fetchImpl: typeo
   const send = telegramSender(token, chatId, fetchImpl);
   return (order) => send(formatOrderMessage(order));
 }
+
+/** First line of every Telegram message about a staging (test) order, so it is never taken for a real one. */
+export const STAGING_TAG = "🧪 تجربة من موقع الـ staging، مش طلب حقيقي";
+
+/** Puts the staging tag above every message this sender sends. */
+export function tagged(send: MessageSender, tag: string): MessageSender {
+  return (text) => send(`${tag}\n\n${text}`);
+}
+
