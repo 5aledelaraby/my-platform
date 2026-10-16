@@ -4,12 +4,15 @@
 import type { CatalogProduct } from "@platform/commerce";
 
 export const LOOK_COUNTS: Readonly<Record<string, number>> = {
+  "lace-white": 1,
   "pattern-black": 1,
   "pattern-brown": 3,
+  "ruffle-brown": 1,
   "ruffle-red": 1,
   "thin-tie-camel": 1,
   "thin-tie-croc-pink": 1,
   "thin-tie-green": 1,
+  "thin-tie-orange": 1,
   "thin-tie-red": 1,
   "thin-tie-rose": 1,
   "thin-tie-royal-blue": 1,

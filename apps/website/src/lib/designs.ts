@@ -1,6 +1,6 @@
 // The media and words of every design (style) page and of its panel on the belts collection (owner, 2026-10-16):
-// every design gets the "signature pattern" layout. The design's lead visual is its film when it has one, otherwise
-// one of its on-model photos. The rest (more films, close-ups) goes into the "on the move" mosaic with the looks.
+// every design gets the "signature pattern" layout. The lead visual always shows the belt worn (owner, 2026-10-17):
+// an on-model film or photo; close-up films and photos go lower down. The rest (more films, close-ups) goes into the "on the move" mosaic with the looks.
 import type { Lang } from "../site.ts";
 import { getProduct, productName } from "../store.ts";
 import { looksOf } from "./looks.ts";
@@ -40,12 +40,9 @@ export const designs: Readonly<Record<string, Design>> = {
   },
   lace: {
     word: "LACE",
-    lead: { kind: "film", src: "/video/lace-detail" },
-    films: [],
-    stills: [
-      // One close-up only (owner, 2026-10-17: the four lace photos looked like the same shot).
-      still("/img/editorial/lace-ivory-1", [640, 1200], 1200, 1500, { ar: "حزام وسط دانتيل أبيض بفيونكة ساتان", en: "A white lace waist belt with a satin bow" }, { ar: "الدانتيل وفيونكة الساتان", en: "Lace and a satin bow" }),
-    ],
+    lead: { kind: "look", productId: "lace-white" },
+    films: [{ kind: "film", src: "/video/lace-detail", caption: { ar: "الدانتيل وفيونكة الساتان عن قرب", en: "The lace and its satin bow, up close" } }],
+    stills: [],
     specs: { ar: [], en: [] },
   },
   "wide-tie": {
