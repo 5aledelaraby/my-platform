@@ -7,13 +7,23 @@ import { describe, it } from "node:test";
 const TOP_LEVEL_KEYS = ["name", "main", "compatibility_date", "routes", "workers_dev", "preview_urls", "keep_vars"];
 
 function topLevelViolations(toml: string): string[] {
-  const lines = toml.split("\n");
-  const firstTable = lines.findIndex((l) => /^\s*\[/.test(l));
-  if (firstTable < 0) return [];
-  return lines
-    .slice(firstTable)
-    .filter((l) => TOP_LEVEL_KEYS.some((k) => new RegExp(`^\\s*${k}\\s*=`).test(l)))
-    .map((l) => l.trim());
+  const out: string[] = [];
+  let seenTable = false;
+  // Inside an array of tables ([[ratelimits]] and its sub-tables) "name" is that entry's own key, not the Worker's.
+  let arrayTable: string | null = null;
+  for (const line of toml.split("\n")) {
+    const header = /^\s*(\[\[?)\s*([^\]]+?)\s*\]/.exec(line);
+    if (header) {
+      seenTable = true;
+      const name = header[2]!;
+      arrayTable = header[1] === "[[" ? name : arrayTable && name.startsWith(`${arrayTable}.`) ? arrayTable : null;
+      continue;
+    }
+    if (!seenTable) continue;
+    const key = TOP_LEVEL_KEYS.find((k) => new RegExp(`^\\s*${k}\\s*=`).test(line));
+    if (key && !(key === "name" && arrayTable)) out.push(line.trim());
+  }
+  return out;
 }
 
 describe("wrangler.toml", () => {
@@ -24,6 +34,12 @@ describe("wrangler.toml", () => {
       assert.match(toml, /^routes\s*=\s*\[[^\]]*staging\.vicuna-eg\.com/m);
     });
   }
+
+  it("an entry's own name inside an array of tables is not a mistake", () => {
+    const ok = 'name = "x"\n[[ratelimits]]\nname = "ORDER_LIMIT"\n  [ratelimits.simple]\n  limit = 5\n';
+    assert.deepEqual(topLevelViolations(ok), []);
+    assert.deepEqual(topLevelViolations('name = "x"\n[vars]\nname = "y"\n'), ['name = "y"']);
+  });
 
   it("the check catches the original mistake", () => {
     const broken = 'name = "x"\n[assets]\ndirectory = "./dist"\nroutes = [{ pattern = "a.example", custom_domain = true }]\n';

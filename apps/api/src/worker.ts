@@ -23,6 +23,14 @@ interface Env {
   ADMIN_EMAILS?: string;
   /** Hostname that serves the admin only, e.g. "admin.vicuna-eg.com" (wrangler.toml [vars]). */
   ADMIN_HOST?: string;
+  /** Workers Rate Limiting bindings (wrangler.toml [[ratelimits]]): orders and promo-code checks per visitor. */
+  ORDER_LIMIT?: RateLimiter;
+  PROMO_LIMIT?: RateLimiter;
+}
+
+/** The slice of the Workers rate limiting binding this app uses. */
+interface RateLimiter {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
 }
 
 /** The slice of the Workers ExecutionContext this app uses. */
@@ -65,6 +73,10 @@ export default {
       repository,
       admin,
       ...(env.ADMIN_HOST?.trim() ? { adminHost: env.ADMIN_HOST.trim().toLowerCase() } : {}),
+      allow: async (kind, key) => {
+        const limiter = kind === "order" ? env.ORDER_LIMIT : env.PROMO_LIMIT;
+        return limiter ? (await limiter.limit({ key: `${kind}:${key}` })).success : true;
+      },
       // A missing variable means "no browser origin is allowed" (fail closed), not a crash.
       allowedOrigins: (env.ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean),
       now,

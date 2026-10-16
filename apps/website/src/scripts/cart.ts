@@ -495,7 +495,7 @@ async function submit(event: SubmitEvent): Promise<void> {
       if (form?.querySelector("[aria-invalid]")) focusFirstInvalid();
       else if (promoProblem) promoInput?.focus();
     } else {
-      statusEl.textContent = res.status === 503 ? T.busy : T.fail;
+      statusEl.textContent = res.status === 503 || res.status === 429 ? T.busy : T.fail;
     }
   } catch {
     statusEl.textContent = T.fail;

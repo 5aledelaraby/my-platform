@@ -345,3 +345,45 @@ describe("d1Repository", () => {
     assert.deepEqual(reported, ["Error:CHECK"]);
   });
 });
+
+describe("rate limits", () => {
+  // A fake limiter: each visitor may do `max` of each kind.
+  const limiter = (max: number) => {
+    const used = new Map<string, number>();
+    return async (kind: string, key: string) => {
+      const k = `${kind}:${key}`;
+      used.set(k, (used.get(k) ?? 0) + 1);
+      return used.get(k)! <= max;
+    };
+  };
+  const from = (ip: string, req: Request) => {
+    const headers = new Headers(req.headers);
+    headers.set("CF-Connecting-IP", ip);
+    return new Request(req, { headers });
+  };
+
+  it("stops a visitor after the order limit, without storing or taking stock", async () => {
+    const { handler, repository } = setup({ allow: limiter(2) });
+    assert.equal((await handler(from("1.1.1.1", post(body())))).status, 201);
+    assert.equal((await handler(from("1.1.1.1", post(body())))).status, 201);
+    const third = await handler(from("1.1.1.1", post(body())));
+    assert.equal(third.status, 429);
+    assert.equal(third.headers.get("Retry-After"), "60");
+    assert.equal(repository.orders.size, 2);
+    // Another visitor is not affected.
+    assert.equal((await handler(from("2.2.2.2", post(body())))).status, 201);
+  });
+
+  it("limits promo checks per visitor", async () => {
+    const { handler } = setup({ allow: limiter(1) });
+    const check = () => from("3.3.3.3", new Request("https://vicuna-eg.com/api/promo?code=NOPE", { headers: { Origin: ORIGIN } }));
+    assert.equal((await handler(check())).status, 422);
+    assert.equal((await handler(check())).status, 429);
+  });
+
+  it("a failing limiter lets the request through (the stock CHECK still protects the shop)", async () => {
+    const { handler } = setup({ allow: () => Promise.reject(new Error("down")) });
+    assert.equal((await handler(from("4.4.4.4", post(body())))).status, 201);
+  });
+});
+

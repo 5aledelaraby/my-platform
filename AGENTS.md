@@ -80,6 +80,7 @@ pnpm check:boundaries            # architecture rules
 ## Security rules
 
 - **Never ask for, accept, print, or commit tokens, passwords or API keys.** Secrets (Telegram, Cloudflare Access) live only as Cloudflare secrets. The project does not use the Meta Conversions API. Tracking IDs (GA4, Pixel ID) are public and may live in config.
+- Orders and promo-code checks are rate-limited per visitor (Workers Rate Limiting: `ORDER_LIMIT` 5/min, `PROMO_LIMIT` 20/min in `apps/api/wrangler.toml`), because every order takes stock.
 - `pnpm check:secrets` must pass. If a secret ever lands in git history, tell the owner to rotate it; deleting the commit is not enough.
 - Never add `--no-verify`, never disable a CI check to get green.
 

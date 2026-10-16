@@ -28,6 +28,12 @@ export interface HandlerDeps {
    * the store, so a script on a store page cannot use the owner's Access session.
    */
   adminHost?: string;
+  /**
+   * Per-visitor rate limits (Workers Rate Limiting). Returns false when this visitor has used up the limit for
+   * `kind`. Without it (tests, local dev) nothing is limited. Orders take stock, so floods of fake orders must not
+   * be able to empty the shop; promo checks are limited so codes cannot be guessed one after another.
+   */
+  allow?: (kind: "order" | "promo", key: string) => Promise<boolean>;
 }
 
 const ID_ATTEMPTS = 5;
@@ -73,6 +79,9 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
     }
 
     const path = url.pathname.replace(/^\/api(?=\/|$)/, "").replace(/\/+$/, "") || "/";
+    // Cloudflare sets CF-Connecting-IP to the visitor's address; it cannot be set by the visitor.
+    const visitor = request.headers.get("CF-Connecting-IP") ?? "unknown";
+    const limited = async (kind: "order" | "promo") => (deps.allow ? !(await deps.allow(kind, visitor).catch(() => true)) : false);
     const origin = request.headers.get("Origin");
     const originAllowed = origin !== null && deps.allowedOrigins.includes(origin);
     const cors: Record<string, string> = originAllowed
@@ -106,6 +115,7 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
     if (path === "/promo") {
       if (request.method !== "GET") return json(405, { error: "method_not_allowed" }, { Allow: "GET" });
       const headers = { ...cors, "Cache-Control": "no-store" };
+      if (await limited("promo")) return json(429, { error: "too_many_requests" }, { ...headers, "Retry-After": "60" });
       const code = normalizePromoCode(url.searchParams.get("code"));
       if (!code) return json(422, { error: "invalid_promo" }, headers);
       try {
@@ -128,6 +138,7 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
     if (request.method !== "POST") return json(405, { error: "method_not_allowed" }, { Allow: "POST, OPTIONS" });
 
     if (!originAllowed) return json(403, { error: "forbidden_origin" });
+    if (await limited("order")) return json(429, { error: "too_many_requests" }, { ...cors, "Retry-After": "60" });
     // The media type itself must be application/json (parameters such as charset are fine); a header that merely
     // contains the words, e.g. "text/plain; x=application/json", is refused.
     const mediaType = (request.headers.get("Content-Type") ?? "").split(";")[0]!.trim().toLowerCase();

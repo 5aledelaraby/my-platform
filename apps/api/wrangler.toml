@@ -28,3 +28,22 @@ database_name = "vicuna-db"
 # D1 database id (an identifier, not a secret). Created in the Cloudflare dashboard.
 database_id = "626197fa-3c59-48b3-944f-e2a2dd3978a0"
 migrations_dir = "migrations"
+
+# Rate limits per visitor (Workers Rate Limiting, counted per Cloudflare location). Orders take stock, so a flood
+# of fake orders must not empty the shop: 5 orders a minute per address is far above what a real customer needs.
+# Promo checks: 20 a minute, so codes cannot be guessed one after another. namespace_id is an account-unique number.
+[[ratelimits]]
+name = "ORDER_LIMIT"
+namespace_id = "2101"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
+[[ratelimits]]
+name = "PROMO_LIMIT"
+namespace_id = "2102"
+
+  [ratelimits.simple]
+  limit = 20
+  period = 60
