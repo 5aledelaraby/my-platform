@@ -11,10 +11,6 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
 
-// Design, craft and service in one short line (the owner asked for one sentence, in smaller type).
-const valuesLine = ar
-  ? "تصميم بسيط، وتنفيذ متقن نراجع فيه كل تفصيلة، وفريق يرد على أسئلتكِ بنفسه."
-  : "Simple design, careful execution checked detail by detail, and a team that answers you itself.";
 
 interface Section { title: string; text: string; href: string; external?: boolean }
 const sections: Section[] = [
@@ -33,8 +29,8 @@ const sections: Section[] = [
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
-    <h1>{ar ? "تصميمات بسيطة، تُصنع بعناية" : "Simple designs, made with care"}</h1>
-    <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا، ونهتم بالتفاصيل الصغيرة." : "Vicuna is an Egyptian trading and design brand. We design and make by hand, and we care about the small details."}</p>
+    <h1>{ar ? "تصميمات بسيطة" : "Simple designs"}</h1>
+    <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا." : "Vicuna is an Egyptian trading and design brand. We design and make by hand."}</p>
     <div class="hero-actions">
       <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي الأحزمة" : "Shop the belts"}</a>
       <a class="btn btn-white" href={beltsUrl(lang, "pattern")}>{ar ? "حزام بنقشة مميزة" : "The signature pattern belt"}</a>
@@ -47,10 +43,9 @@ const sections: Section[] = [
     <h2>{ar ? "من نحن" : "About us"}</h2>
     <p>
       {ar
-        ? "فيكونا ديزاينز علامة مصرية مقرها القاهرة، نعمل في التصميم بأشكاله المختلفة: من المنتجات والإكسسوارات المصنوعة يدويًا، إلى تصميم المواقع الإلكترونية وبنائها. نؤمن بأن العمل الجيد يبدأ من فكرة واضحة وتنفيذ متقن، ونهتم بالتفاصيل في كل ما نقدمه."
-        : "Vicuna Designs is an Egyptian brand based in Cairo. We work across design: from handmade products and accessories to designing and building websites. We believe good work starts with a clear idea and careful execution, and we care about the details in everything we make."}
+        ? "فيكونا ديزاينز علامة مصرية مقرها القاهرة، نعمل في التصميم بأشكاله المختلفة: من المنتجات والإكسسوارات المصنوعة يدويًا، إلى تصميم المواقع الإلكترونية وبنائها."
+        : "Vicuna Designs is an Egyptian brand based in Cairo. We work across design: from handmade products and accessories to designing and building websites."}
     </p>
-    <p class="intro-values-line">{valuesLine}</p>
     <p><a class="textlink" href={langPath(lang, "/about/")}>{ar ? "اعرفي المزيد عنّا" : "More about us"}</a></p>
   </div>
 </section>

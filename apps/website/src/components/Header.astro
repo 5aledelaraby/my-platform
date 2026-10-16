@@ -1,6 +1,6 @@
 ---
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
-import { beltsUrl, styleText, styles } from "../store.ts";
+import { BELTS_PATH, beltsUrl, getProduct, styleText, styles } from "../store.ts";
 import Icon from "./ui/Icon.astro";
 import Logo from "./ui/Logo.astro";
 import { JOURNAL_PATH, langPath } from "../site.ts";
@@ -10,6 +10,11 @@ interface Props { lang: Lang; altHref: string }
 const { lang, altHref } = Astro.props;
 const ar = lang === "ar";
 const home = langPath(lang, "/");
+// The design bar under the header: every design one tap away on every page. The current design (or the design of the
+// product on screen) is marked.
+const path = Astro.url.pathname.replace(/^\/en(?=\/)/, "");
+const slug = path.startsWith(BELTS_PATH) ? path.slice(BELTS_PATH.length).replace(/\/$/, "") : null;
+const activeDesign = slug === null ? null : slug === "" ? "all" : (getProduct(slug)?.style ?? slug);
 ---
 
 <header class="site-header">
@@ -31,6 +36,14 @@ const home = langPath(lang, "/");
       </button>
     </div>
   </div>
+  <nav class="design-bar" aria-label={ar ? "التصميمات" : "Designs"}>
+    <div class="wrap design-row">
+      <a href={beltsUrl(lang)} aria-current={activeDesign === "all" ? "page" : undefined}>{ar ? "كل الأحزمة" : "All belts"}</a>
+      {styles.map((st) => (
+        <a href={beltsUrl(lang, st.id)} aria-current={activeDesign === st.id ? "page" : undefined}>{styleText(lang, st.id).name}</a>
+      ))}
+    </div>
+  </nav>
 </header>
 
 <dialog id="menu" class="menu" aria-label={ar ? "القائمة" : "Menu"}>
@@ -45,7 +58,7 @@ const home = langPath(lang, "/");
       <li><a href={beltsUrl(lang)}>{ar ? "الأحزمة" : "Belts"}</a></li>
       {ar && <li><a href={JOURNAL_PATH}>المقالات</a></li>}
     </ul>
-    <p class="menu-label">{ar ? "الموديلات" : "Styles"}</p>
+    <p class="menu-label">{ar ? "التصميمات" : "Designs"}</p>
     <ul class="menu-list sub">
       {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
     </ul>
@@ -62,6 +75,13 @@ const home = langPath(lang, "/");
 </dialog>
 
 <script>
+  // On narrow screens the design bar scrolls sideways: bring the current design into view (without moving the page).
+  const row = document.querySelector<HTMLElement>(".design-row");
+  const here = row?.querySelector<HTMLElement>('[aria-current="page"]');
+  if (row && here && row.scrollWidth > row.clientWidth) {
+    const r = row.getBoundingClientRect(), h = here.getBoundingClientRect();
+    row.scrollLeft += h.left + h.width / 2 - (r.left + r.width / 2);
+  }
   const menu = document.getElementById("menu") as HTMLDialogElement | null;
   const openBtn = document.querySelector<HTMLButtonElement>("[data-open-menu]");
   openBtn?.addEventListener("click", () => {

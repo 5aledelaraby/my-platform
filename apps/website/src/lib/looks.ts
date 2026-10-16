@@ -9,10 +9,12 @@ export const LOOK_IDS: ReadonlySet<string> = new Set([
   "thin-tie-croc-pink",
   "thin-tie-green",
   "thin-tie-red",
+  "thin-tie-rose",
   "thin-tie-royal-blue",
   "thin-tie-sky-blue",
   "wide-tie-burgundy",
   "wide-tie-green",
+  "wide-tie-mustard",
 ]);
 
 export const LOOK_SIZES = [640, 1200] as const;
