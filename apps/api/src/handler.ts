@@ -128,7 +128,10 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
     if (request.method !== "POST") return json(405, { error: "method_not_allowed" }, { Allow: "POST, OPTIONS" });
 
     if (!originAllowed) return json(403, { error: "forbidden_origin" });
-    if (!(request.headers.get("Content-Type") ?? "").toLowerCase().includes("application/json")) {
+    // The media type itself must be application/json (parameters such as charset are fine); a header that merely
+    // contains the words, e.g. "text/plain; x=application/json", is refused.
+    const mediaType = (request.headers.get("Content-Type") ?? "").split(";")[0]!.trim().toLowerCase();
+    if (mediaType !== "application/json") {
       return json(415, { error: "unsupported_media_type" }, cors);
     }
     const declared = Number(request.headers.get("Content-Length") ?? "0");

@@ -139,6 +139,8 @@ describe("POST /orders", () => {
   it("rejects a wrong content type, invalid JSON and oversized bodies", async () => {
     const { handler } = setup();
     assert.equal((await handler(post(body(), { "Content-Type": "text/plain" }))).status, 415);
+    assert.equal((await handler(post(body(), { "Content-Type": "text/plain; x=application/json" }))).status, 415);
+    assert.equal((await handler(post(body(), { "Content-Type": "application/json; charset=utf-8" }))).status, 201);
     assert.equal((await handler(post("{not json"))).status, 400);
     assert.equal((await handler(post("x".repeat(MAX_BODY_BYTES + 1)))).status, 413);
   });

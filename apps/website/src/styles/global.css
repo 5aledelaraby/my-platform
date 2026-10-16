@@ -1438,3 +1438,14 @@ dialog.menu { border-radius: 26px; }
 @media (prefers-reduced-motion: no-preference) { .price::after { animation: twinkle 3.6s ease-in-out infinite; } }
 .footer-mail { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
 .footer-mail a { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Dark mode, remaining light panels found in the launch audit (policy pages, thank-you page, tie steps, tables,
+   chips, contact cards). */
+:root[data-mode="dark"] :is(.thanks, .policy-summary, .policy-nav .textlink, .prose table, .fact-chips li, .area-card, .soft-card, .tie-card, .perk, .style-tile, .contact-card, .post, .faq details, .card) { background: #181716; color: #e9e3d8; box-shadow: 0 0 0 1px var(--line); }
+:root[data-mode="dark"] .card, :root[data-mode="dark"] .card:hover { background: none; box-shadow: none; }
+:root[data-mode="dark"] .tie-num { background: #2a2724; color: #f2ede4; }
+:root[data-mode="dark"] :is(.thanks h1, .thanks .order-id, .policy-summary b:first-child) { color: #f2ede4; }
+:root[data-mode="dark"] .textlink { color: #f2ede4; text-decoration-color: #6b645b; }
+:root[data-mode="dark"] .prose th, :root[data-mode="dark"] .prose td { border-color: rgb(255 255 255 / .12); }
+:root[data-mode="dark"] .policy-toc { border-color: rgb(255 255 255 / .14); }
+:root[data-mode="dark"] .fly { background: #f2ede4; }
