@@ -23,6 +23,8 @@ const idx = siblings.findIndex((s) => s.id === product.id);
 const nextP = siblings.length > 1 ? siblings[(idx + 1) % siblings.length]! : null;
 const prevP = siblings.length > 1 ? siblings[(idx - 1 + siblings.length) % siblings.length]! : null;
 const looks = looksOf(product);
+// Croc belts also show a close-up of the print (owner, 2026-10-16).
+const detail = product.id.includes("-croc-") ? "/img/editorial/croc-detail" : null;
 const related = styles.filter((x) => x.id !== product.style).slice(0, 4).map((x) => coverOf(x.id));
 const info = ar
   ? [
@@ -118,13 +120,18 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       </ul>
       <p class="pdp-intro muted">{st.intro}</p>
     </div>
-    {looks.length > 0 && (
+    {(looks.length > 0 || detail) && (
       <div class="pdp-looks">
         {looks.map((look) => (
           <figure class="pdp-look reveal">
             <img src={look.src} srcset={look.srcset} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? `${name} على الخصر` : `${name}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
           </figure>
         ))}
+        {detail && (
+          <figure class="pdp-look pdp-detail reveal">
+            <img src={`${detail}-1200.webp`} srcset={`${detail}-640.webp 640w, ${detail}-1200.webp 1200w`} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? "نقشة الكروكو عن قرب" : "The croc print, up close"} width="1200" height="1200" loading="lazy" decoding="async" />
+          </figure>
+        )}
       </div>
     )}
   </div>

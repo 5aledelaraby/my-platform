@@ -20,6 +20,10 @@ const from = hasHigherPrices(styleId);
 // A film for the designs that have one (owner, 2026-10-16); the others keep the row of product photos.
 const films: Record<string, string> = { "wide-tie": "/video/wide-tie-white", "thin-tie": "/video/thin-tie-camel" };
 const film = films[styleId];
+// A close-up of the croc print on the thin-tie page, under the colours (owner, 2026-10-16).
+const detail = styleId === "thin-tie"
+  ? { src: "/img/editorial/croc-detail", caption: ar ? "نقشة الكروكو عن قرب" : "The croc print, up close", alt: ar ? "حزام برباط رفيع بنقشة كروكو، صورة مقرّبة" : "A thin-tie belt in croc print, close up" }
+  : null;
 const description = ar
   ? `${t.headline}. ${list.length} لون بسعر ${from ? "يبدأ من " : ""}${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
   : `${t.headline}. ${list.length} colours ${from ? "from" : "at"} ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
@@ -73,4 +77,12 @@ const jsonLd = serializeJsonLd(
       {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </section>
+  {detail && (
+    <section class="wrap style-group">
+      <figure class="style-detail reveal">
+        <img src={`${detail.src}-1200.webp`} srcset={`${detail.src}-640.webp 640w, ${detail.src}-1200.webp 1200w`} sizes="(min-width: 960px) 50vw, 100vw" alt={detail.alt} width="1200" height="1200" loading="lazy" decoding="async" />
+        <figcaption>{detail.caption}</figcaption>
+      </figure>
+    </section>
+  )}
 </Base>

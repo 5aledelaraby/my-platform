@@ -1047,3 +1047,7 @@ main:has(> .lux:last-child) + .site-footer { margin-top: 0; border-top: 1px soli
   .lux-tile-film { grid-row: span 2; aspect-ratio: auto; min-height: 100%; }
   .lux-tile:not(.lux-tile-film) { aspect-ratio: 4 / 5; }
 }
+.style-detail { display: grid; gap: 12px; max-width: 720px; margin: 0 auto; }
+.style-detail img { width: 100%; height: auto; background: #f6f4f1; }
+.style-detail figcaption { text-align: center; font-family: var(--font-display); font-size: 18px; color: var(--muted); }
+.pdp-detail img { aspect-ratio: 1; }
