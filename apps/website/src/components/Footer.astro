@@ -23,6 +23,10 @@ const socialIcon: Record<string, string> = {
     <div class="footer-brand">
       <a class="brand" href={langPath(lang, "/")} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo light /></a>
       <p>{ar ? "فيكونا علامة مصرية، نصنع منتجاتنا بأيدينا ونوصّلها إلى جميع محافظات مصر." : "Vicuna is an Egyptian brand. We make our products by hand and deliver them across Egypt."}</p>
+      <ul class="footer-mail">
+        <li>{ar ? "استفسارات وتجار الجملة:" : "Questions and wholesale:"} <a href={`mailto:${site.email}`}><bdi dir="ltr">{site.email}</bdi></a></li>
+        <li>{ar ? "الطلبات والإرجاع:" : "Orders and returns:"} <a href={`mailto:${site.supportEmail}`}><bdi dir="ltr">{site.supportEmail}</bdi></a></li>
+      </ul>
     </div>
     <div>
       <h3 class="footer-h">{ar ? "أحزمة الخصر" : "Waist belts"}</h3>

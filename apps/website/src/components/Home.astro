@@ -4,7 +4,7 @@
 import ContactCards from "./ContactCards.astro";
 import Icon from "./ui/Icon.astro";
 import Sparkles from "./ui/Sparkles.astro";
-import { langPath } from "../site.ts";
+import { langPath, site } from "../site.ts";
 import { beltsUrl } from "../store.ts";
 import type { Lang } from "../site.ts";
 
@@ -30,8 +30,8 @@ const sections: Section[] = [
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
-    <h1 class="has-sparkles">{ar ? "تصميمات بسيطة" : "Simple designs"}<Sparkles variant="b" /></h1>
-    <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا." : "Vicuna is an Egyptian trading and design brand. We design and make by hand."}</p>
+    <h1 class="has-sparkles">{ar ? "حزام الوسط اللي يفرق في كل لبسة" : "The waist belt that makes every outfit"}<Sparkles variant="b" /></h1>
+    <p class="lead">{ar ? "فيكونا علامة تجارية مميزة في تصنيع الجلود، وخدمات بناء المواقع والسوشيال ميديا." : "Vicuna is a distinctive brand in leather making, website building and social media services."}</p>
     <div class="hero-actions">
       <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي أحزمة الخصر" : "Shop waist belts"}</a>
       <a class="btn btn-white" href={beltsUrl(lang, "pattern")}>{ar ? "حزام خصر بنقشة مميزة" : "The signature pattern waist belt"}</a>
@@ -64,6 +64,13 @@ const sections: Section[] = [
         </li>
       ))}
     </ul>
+  </div>
+</section>
+
+<section class="wrap intro-split text-only reveal wholesale">
+  <div class="intro-copy">
+    <h2>{ar ? "لتجار الجملة" : "For wholesale buyers"}</h2>
+    <p>{ar ? "لطلبات الجملة والكميات، تواصلوا معنا على الإيميل:" : "For wholesale and bulk orders, contact us by email:"} <a class="textlink" href={`mailto:${site.email}`}><bdi dir="ltr">{site.email}</bdi></a></p>
   </div>
 </section>
 

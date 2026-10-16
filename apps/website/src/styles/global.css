@@ -1436,3 +1436,5 @@ dialog.menu { border-radius: 26px; }
 .price { position: relative; }
 .price::after { content: "✦"; position: absolute; inset-inline-end: -16px; top: -4px; font-size: 11px; color: #d4b77c; opacity: .85; }
 @media (prefers-reduced-motion: no-preference) { .price::after { animation: twinkle 3.6s ease-in-out infinite; } }
+.footer-mail { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
+.footer-mail a { text-decoration: underline; text-underline-offset: 4px; }
