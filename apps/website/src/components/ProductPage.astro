@@ -140,7 +140,10 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
     </div>
     <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={priceOf(product)}>
       <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
-      <h1 data-pdp-name>{name}</h1>
+      <div class="pdp-title-row">
+        <h1 data-pdp-name>{name}</h1>
+        <button type="button" class="fav-btn pdp-fav" data-fav={product.id} data-fav-name={name} aria-pressed="false" aria-label={ar ? `إضافة ${name} للمفضلة` : `Add ${name} to favourites`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 20.3s-7.3-4.4-9.2-8.9C1.5 8.3 3.4 4.8 6.9 4.8c2 0 3.5 1.1 5.1 2.9 1.6-1.8 3.1-2.9 5.1-2.9 3.5 0 5.4 3.5 4.1 6.6-1.9 4.5-9.2 8.9-9.2 8.9z" /></svg></button>
+      </div>
       <div class="price"><span data-pdp-price>{priceOfProduct(product)}</span> <small>{cur}</small></div>
       <p class="soldout" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية حاليًا. كلمينا على واتساب نبلغك أول ما يتوفر." : "Sold out for now. Message us on WhatsApp and we will tell you when it is back."}</p>
       <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b data-pdp-shade>{shadeName(lang, product)}</b></p>
@@ -268,6 +271,8 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       set(".crumbs [aria-current='page']", c.name);
       const wa = q<HTMLAnchorElement>("[data-pdp-wa]");
       if (wa) wa.href = c.wa;
+      const fav = q<HTMLButtonElement>(".pdp-fav");
+      if (fav) { fav.dataset["fav"] = c.id; fav.dataset["favName"] = c.name; dispatchEvent(new Event("vicuna:fav-refresh")); }
       const add = q<HTMLButtonElement>(".pdp-actions [data-add]");
       if (add) add.dataset["add"] = c.id;
       const out = q<HTMLElement>(".pdp-info [data-soldout-for]");

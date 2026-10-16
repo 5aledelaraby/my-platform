@@ -14,7 +14,7 @@ const description = ar
   : "Vicuna Designs is an Egyptian brand based in Cairo working across design, from handmade products to designing and building websites.";
 const work = ar
   ? [
-      { t: "المنتجات والإكسسوارات", d: "نصمّم ونصنع بأيدينا. أول ما بدأنا به: الأحزمة.", href: beltsUrl(lang) },
+      { t: "المنتجات والإكسسوارات", d: "نصمّم ونصنع بأيدينا. أول ما بدأنا به: أحزمة الخصر.", href: beltsUrl(lang) },
       { t: "تصميم المواقع وبناؤها", d: "نصمّم المواقع الإلكترونية ونبنيها: سريعة وواضحة وسهلة الاستخدام." },
     ]
   : [
@@ -41,7 +41,7 @@ const work = ar
         <li>
           <h3>{w.t}</h3>
           <p class="muted">{w.d}</p>
-          {w.href && <a class="textlink" href={w.href}>{ar ? "تصفحي الأحزمة" : "See the belts"}</a>}
+          {w.href && <a class="textlink" href={w.href}>{ar ? "تصفحي أحزمة الخصر" : "See the waist belts"}</a>}
         </li>
       ))}
     </ul>

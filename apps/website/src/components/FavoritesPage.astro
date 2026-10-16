@@ -1,0 +1,33 @@
+---
+// The favourites page (owner, 2026-10-16): every belt is in the page, and the favourites script shows only the ones
+// saved on this device. Not indexed, not in the sitemap.
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import ProductCard from "./ProductCard.astro";
+import Sparkles from "./ui/Sparkles.astro";
+import { beltsUrl, products } from "../store.ts";
+import { langPath } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const title = ar ? "المفضلة | فيكونا" : "Favourites | Vicuna";
+const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") }, { name: ar ? "المفضلة" : "Favourites" }];
+---
+
+<Base title={title} description={title} lang={lang} altPath={ar ? "/en/favorites/" : "/favorites/"} noindex>
+  <Breadcrumbs items={crumbs} />
+  <section class="wrap style-group favorites">
+    <div class="group-head">
+      <h1 class="has-sparkles">{ar ? "المفضلة" : "Favourites"}<Sparkles variant="b" /></h1>
+    </div>
+    <div class="fav-empty" data-fav-empty>
+      <p>{ar ? "لسه مفيش أحزمة في المفضلة. دوسي على القلب على أي حزام وسط عشان تحفظيه هنا." : "No favourites yet. Tap the heart on any waist belt to keep it here."}</p>
+      <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي أحزمة الخصر" : "Shop waist belts"}</a>
+    </div>
+    <div class="grid" data-fav-grid>
+      {products.map((p, i) => <div class="fav-item" data-product={p.id} hidden><ProductCard product={p} lang={lang} index={i} /></div>)}
+    </div>
+  </section>
+</Base>

@@ -2,6 +2,13 @@
   "_comment": "Migrated from the legacy site (src/data/products.ts). Prices are integer piasters. Product id is permanent (ADR 0004).",
   "styles": [
     {
+      "id": "pattern",
+      "name": "بنقشة مميزة",
+      "price": 70000,
+      "headline": "حزام عريض بنقشة مميزة من جلد PU",
+      "intro": "حزام عريض من جلد PU بنقشة بارزة، يُربط برباط رفيع يضبط على مقاس الخصر."
+    },
+    {
       "id": "lace",
       "name": "دانتيل",
       "price": 30000,
@@ -28,13 +35,6 @@
       "price": 20000,
       "headline": "حزام كشكشة من جلد PU",
       "intro": "حزام بكشكشة من الأعلى والأسفل ورباط يُربط في المنتصف."
-    },
-    {
-      "id": "pattern",
-      "name": "بنقشة مميزة",
-      "price": 70000,
-      "headline": "حزام عريض بنقشة مميزة من جلد PU",
-      "intro": "حزام عريض من جلد PU بنقشة بارزة، يُربط برباط رفيع يضبط على مقاس الخصر."
     }
   ],
   "colors": [
@@ -90,6 +90,22 @@
     }
   ],
   "products": [
+    {
+      "id": "pattern-brown",
+      "name": "بنقشة مميزة بني",
+      "style": "pattern",
+      "color": "brown",
+      "hex": "#8A5A3B",
+      "texture": "pattern"
+    },
+    {
+      "id": "pattern-black",
+      "name": "بنقشة مميزة أسود",
+      "style": "pattern",
+      "color": "black",
+      "hex": "#1C1C1C",
+      "texture": "pattern"
+    },
     {
       "id": "lace-white",
       "name": "دانتيل أبيض",
@@ -219,22 +235,6 @@
       "color": "brown",
       "hex": "#9A5236",
       "texture": "ruffle"
-    },
-    {
-      "id": "pattern-brown",
-      "name": "بنقشة مميزة بني",
-      "style": "pattern",
-      "color": "brown",
-      "hex": "#8A5A3B",
-      "texture": "pattern"
-    },
-    {
-      "id": "pattern-black",
-      "name": "بنقشة مميزة أسود",
-      "style": "pattern",
-      "color": "black",
-      "hex": "#1C1C1C",
-      "texture": "pattern"
     }
   ]
 }

@@ -1344,3 +1344,95 @@ dialog.menu { border-radius: 26px; }
 :root[data-mode="dark"] .toast img { background: #f2ede4; }
 :root[data-mode="dark"] .toast-text b { color: #f2ede4; }
 .cart-qty button { color: var(--ink); font-family: var(--font-body); -webkit-appearance: none; appearance: none; }
+
+/* ---------- final touch (owner, 2026-10-16) ----------
+   Leaf green for the rings of the round photos and colour dots and a hairline round every belt tile, a distinctive
+   shining bag in the header, a quick light/dark button, favourites hearts, and gentle shine on the main buttons and
+   tiles. Every moving shine stops under reduced motion. */
+:root { --leaf: #2f8f68; --leaf-deep: #1f6e4f; --leaf-soft: rgb(47 143 104 / .22); --leaf-line: rgb(47 143 104 / .16); }
+:root[data-mode="dark"] { --leaf: #57b98e; --leaf-deep: #3e9a72; --leaf-soft: rgb(87 185 142 / .3); --leaf-line: rgb(87 185 142 / .2); }
+
+/* header end: quick mode, favourites, bag */
+.header-end { display: flex; align-items: center; gap: 8px; }
+.mode-btn, .fav-link { position: relative; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 999px; background: transparent; color: var(--ink); cursor: pointer; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .1); text-decoration: none; transition: background .2s, transform .2s; }
+.mode-btn:hover, .fav-link:hover { background: rgb(0 0 0 / .05); }
+.mode-btn:active, .fav-link:active { transform: scale(.92); }
+.mode-btn svg { width: 17px; height: 17px; }
+.mode-btn .mode-moon, :root[data-mode="dark"] .mode-btn .mode-sun { display: none; }
+.mode-btn .mode-sun, :root[data-mode="dark"] .mode-btn .mode-moon { display: grid; }
+:root[data-mode="dark"] .mode-btn .mode-moon { color: #d4b77c; }
+.fav-link svg { width: 19px; height: 19px; }
+:root[data-mode="dark"] :is(.mode-btn, .fav-link) { color: #f2ede4; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22); }
+:root[data-mode="dark"] :is(.mode-btn, .fav-link):hover { background: rgb(255 255 255 / .08); }
+.fav-count { top: -5px; inset-inline-end: -5px; min-width: 18px; height: 18px; font-size: 10.5px; background: #d1435b; color: #fff; }
+@media (max-width: 420px) {
+  .header-end { gap: 5px; }
+  .header-bar .lang-switch { min-width: 32px; height: 32px; padding-inline: 6px; }
+  .mode-btn, .fav-link { width: 32px; height: 32px; }
+  .header-bar .logo-mark { width: 38px; height: auto; }
+  .header-bar .logo-en { font-size: 19px; }
+}
+
+/* the bag: same bag picture as the card buttons, on a shining leaf-green circle */
+.bag-shine, :root[data-mode="dark"] .bag-shine { background: linear-gradient(140deg, #3aa57a, var(--leaf-deep)); color: #fff; box-shadow: 0 6px 16px -8px rgb(31 110 79 / .8), inset 0 1px 0 rgb(255 255 255 / .25); }
+.bag-emoji { font-size: 21px; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; filter: drop-shadow(0 1px 1px rgb(0 0 0 / .2)); }
+.bag-shine::after { display: block; content: ""; position: absolute; inset-block: 0; left: -60%; width: 45%; background: linear-gradient(100deg, transparent, rgb(255 255 255 / .55), transparent); transform: skewX(-18deg); animation: shine-sweep 5.5s ease-in-out infinite 1.2s; }
+.count-badge:not(.fav-count) { background: #d4b77c; color: #111; border-color: #fff; }
+:root[data-mode="dark"] .count-badge { border-color: #0f0e0d; }
+@keyframes shine-sweep { 0%, 70% { left: -60%; } 100% { left: 130%; } }
+
+/* favourites hearts */
+.fav-btn { position: absolute; z-index: 3; top: 10px; inset-inline-end: 10px; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 999px; background: rgb(255 255 255 / .88); color: #3a3a3a; cursor: pointer; box-shadow: 0 0 0 1px var(--leaf-line), 0 4px 12px -6px rgb(0 0 0 / .25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: transform .25s var(--ease-soft), color .2s; }
+.fav-btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+.fav-btn:hover { transform: scale(1.08); }
+.fav-btn[aria-pressed="true"] { color: #d1435b; }
+.fav-btn[aria-pressed="true"] svg { fill: currentColor; }
+.fav-btn.pop svg { animation: heart-pop .5s var(--ease-bounce); }
+@keyframes heart-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.pdp-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.pdp-title-row h1 { flex: 1; }
+.pdp-fav { position: static; flex: none; width: 44px; height: 44px; margin-top: 4px; }
+.favorites .group-head h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
+.fav-empty { display: grid; justify-items: start; gap: 16px; padding: 28px 0 10px; color: var(--muted); }
+.fav-empty[hidden] { display: none; }
+
+/* leaf-green rings: the round design photos and the colour dots */
+.story-ring { background: conic-gradient(from 210deg, #9fd9bd, var(--leaf), #cfeee0, var(--leaf-deep), #9fd9bd); padding: 2px; }
+.story[aria-current="page"] .story-ring { background: var(--leaf); padding: 3px; }
+:root[data-mode="dark"] .story-ring > span { border-color: #0f0e0d; }
+@media (prefers-reduced-motion: no-preference) {
+  .story-ring { animation: ring-turn 9s linear infinite; }
+  .story-ring > span { animation: ring-turn 9s linear infinite reverse; }
+}
+@keyframes ring-turn { to { rotate: 360deg; } }
+.swatch { box-shadow: inset 0 0 0 3px var(--white, #fff), inset 0 0 0 4px var(--leaf-soft); }
+.swatch[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--leaf), inset 0 0 0 4px var(--white, #fff); }
+:root[data-mode="dark"] .swatch { box-shadow: inset 0 0 0 3px #0f0e0d, inset 0 0 0 4px var(--leaf-soft); }
+:root[data-mode="dark"] .swatch[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--leaf), inset 0 0 0 4px #0f0e0d; }
+.dot { box-shadow: 0 0 0 1.5px var(--leaf-soft); }
+:root[data-mode="dark"] .dot { border-color: #0f0e0d; }
+.dot[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--white, #fff), 0 0 0 4px var(--leaf); }
+
+/* a hairline of leaf green round every belt tile, and a soft light that passes over it */
+.card-media, .pdp-photo, .sg-media, .sg-shot, .pdp-look { box-shadow: inset 0 0 0 1px var(--leaf-line); }
+.card-media::after, .pdp-photo::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit; background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / .55) 50%, transparent 65%); background-size: 250% 100%; background-position: 130% 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover .card-media::after { animation: tile-shine 1.1s var(--ease-soft); }
+  .media-rise.in.card-media::after { animation: tile-shine 1.4s var(--ease-soft) .5s both; }
+  .pdp-photo::after { animation: tile-shine 1.6s var(--ease-soft) .8s both; }
+}
+@keyframes tile-shine { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+
+/* the main buttons catch the light: a soft sweep on hover, and a slow one on the add-to-cart button */
+.btn { position: relative; overflow: hidden; isolation: isolate; }
+.btn::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .28) 50%, transparent 70%); background-size: 250% 100%; background-position: 130% 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .btn:hover::after { animation: tile-shine .9s var(--ease-soft); }
+  .pdp-actions .btn-berry::after { animation: tile-shine 1.4s var(--ease-soft) 1.5s infinite; animation-duration: 6s; }
+}
+:root[data-mode="dark"] .btn::after { background-image: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .6) 50%, transparent 70%); }
+
+/* small gold glints on the price of the product page */
+.price { position: relative; }
+.price::after { content: "✦"; position: absolute; inset-inline-end: -16px; top: -4px; font-size: 11px; color: #d4b77c; opacity: .85; }
+@media (prefers-reduced-motion: no-preference) { .price::after { animation: twinkle 3.6s ease-in-out infinite; } }

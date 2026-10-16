@@ -25,9 +25,9 @@ const socialIcon: Record<string, string> = {
       <p>{ar ? "فيكونا علامة مصرية، نصنع منتجاتنا بأيدينا ونوصّلها إلى جميع محافظات مصر." : "Vicuna is an Egyptian brand. We make our products by hand and deliver them across Egypt."}</p>
     </div>
     <div>
-      <h3 class="footer-h">{ar ? "الأحزمة" : "Belts"}</h3>
+      <h3 class="footer-h">{ar ? "أحزمة الخصر" : "Waist belts"}</h3>
       <ul>
-        <li><a href={beltsUrl(lang)}>{ar ? "كل الأحزمة" : "All belts"}</a></li>
+        <li><a href={beltsUrl(lang)}>{ar ? "كل أحزمة الخصر" : "All waist belts"}</a></li>
         {styles.map((s) => <li><a href={beltsUrl(lang, s.id)}>{styleText(lang, s.id).name}</a></li>)}
         {ar && <li><a href={JOURNAL_PATH}>المقالات</a></li>}
       </ul>
