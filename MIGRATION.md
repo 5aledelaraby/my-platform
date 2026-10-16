@@ -62,7 +62,7 @@
 - الـ routes الجديدة (`vicuna-eg.com` للموقع، و`vicuna-eg.com/api/*` للـ API) **لازم تتكتب في `wrangler.toml`** مش في الـ dashboard بس: كل deploy من GitHub بيرجّع الـ routes للي مكتوب في الملف ويشيل أي route اتضاف من الـ dashboard.
 - `vicuna-eg.com` النهارده لسه بيشاور على الموقع القديم (GitHub Pages). ربطه بالـ Worker كـ custom domain محتاج يتشال الـ DNS record القديم الأول.
 - (قرار المالك 2026-10-17) الـ staging والإنتاج Workers منفصلين:
-  - `vicuna-site` = `staging.vicuna-eg.com`، بيتبني من فرع `staging` بـ `DEPLOY_ENV=staging`، أمر النشر `npx wrangler deploy --env=""`.
-  - `vicuna-site-production` = `vicuna-eg.com`، بيتبني من `main` بـ `DEPLOY_ENV=production`، أمر النشر `npx wrangler deploy --env production`.
-  - في الـ dashboard: مشروع Workers Builds بتاع `vicuna-site` يتغير الفرع بتاعه من `main` لـ `staging`. ومشروع جديد لـ `vicuna-site-production` (نفس الريبو، Root `apps/website`) **يتعمل وقت التحويل بس**، بعد ما يتشال DNS الموقع القديم، لأن أول deploy ليه بيربط `vicuna-eg.com`.
+  - `vicuna-site` = `staging.vicuna-eg.com`، بيتبني من فرع `staging` بـ `DEPLOY_ENV=staging`، أمر النشر `pnpm --filter @platform/api exec wrangler deploy --config ../website/wrangler.toml --env=""`.
+  - `vicuna-site-production` = `vicuna-eg.com`، بيتبني من `main` بـ `DEPLOY_ENV=production`، أمر النشر `pnpm --filter @platform/api exec wrangler deploy --config ../website/wrangler.toml --env production`.
+  - (تم 2026-10-17) مشروع Workers Builds بتاع `vicuna-site` بقى فرعه `staging` وأمر النشره زي اللي فوق. ومشروع جديد لـ `vicuna-site-production` (نفس الريبو، Root `/`، Build command `pnpm --filter @platform/website build`، ومتغير `DEPLOY_ENV=production`) **يتعمل وقت التحويل بس**، بعد ما يتشال DNS الموقع القديم، لأن أول deploy ليه بيربط `vicuna-eg.com`.
   - الـ API (`vicuna-api`) واحد للاتنين وبيتنشر من `main`، وبيختار القاعدة حسب الـ hostname.

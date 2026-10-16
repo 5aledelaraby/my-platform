@@ -6,9 +6,9 @@ main = "src/worker.ts"
 compatibility_date = "2026-10-01"
 # Two Workers from this one file (owner, 2026-10-17: edits are tried on staging before they go public):
 #   vicuna-site             = staging.vicuna-eg.com, built from the `staging` branch with DEPLOY_ENV=staging
-#                             (`npx wrangler deploy`)
+#                             (deploy: `pnpm --filter @platform/api exec wrangler deploy --config ../website/wrangler.toml --env=""`)
 #   vicuna-site-production  = vicuna-eg.com, built from `main` with DEPLOY_ENV=production
-#                             (`npx wrangler deploy --env production`, see [env.production] at the end)
+#                             (same command with `--env production`, see [env.production] at the end)
 # Top-level key: must stay above the first [table], or TOML attaches it to that table and wrangler ignores it.
 routes = [{ pattern = "staging.vicuna-eg.com", custom_domain = true }]
 # No workers.dev address and no preview links: they would be extra, indexable copies of the site.
