@@ -1,13 +1,14 @@
 ---
 // Vicuna logo (owner's new mark, 2026-10-10): the navy V with the vicuña and a gold stripe, beside the wordmark.
 // The mark is a transparent PNG cut from the owner's file; replace it with an SVG when the designer sends one.
-interface Props { size?: number }
-const { size = 40 } = Astro.props;
+interface Props { size?: number; light?: boolean }
+const { size = 40, light = false } = Astro.props;
+const mark = light ? "vicuna-mark-light" : "vicuna-mark";
 const w = Math.round((size * 268) / 242);
 ---
 
 <span class="logo">
-  <img class="logo-mark" src="/brand/vicuna-mark-96.png" srcset="/brand/vicuna-mark-96.png 1x, /brand/vicuna-mark-192.png 2x" width={w} height={size} alt="" decoding="async" />
+  <img class="logo-mark" src={`/brand/${mark}-96.png`} srcset={`/brand/${mark}-96.png 1x, /brand/${mark}-192.png 2x`} width={w} height={size} alt="" decoding="async" />
   <span class="logo-word" lang="en">
     <span class="logo-en">VICUNA</span>
     <span class="logo-sub">DESIGNS</span>

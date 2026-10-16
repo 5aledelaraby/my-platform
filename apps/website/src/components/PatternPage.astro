@@ -1,0 +1,94 @@
+---
+// The "signature pattern" design page (owner, 2026-10-16): a dark, editorial page with the films and on-model photos,
+// then the two colours. Same data and product cards as every style page (sold-out cards are removed by the site Worker).
+import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import ProductCard from "./ProductCard.astro";
+import Icon from "./ui/Icon.astro";
+import { beltsUrl, coverOf, imageOf, price, productsOfStyle, styleText } from "../store.ts";
+import { langPath, site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang; styleId: string }
+const { lang, styleId } = Astro.props;
+const ar = lang === "ar";
+const t = styleText(lang, styleId);
+const list = productsOfStyle(styleId);
+const cur = ar ? "جنيه" : "EGP";
+const title = ar ? `حزام ${t.name} | فيكونا` : `${t.name} belt | Vicuna`;
+const description = ar
+  ? `${t.headline}. لونان، بسعر ${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
+  : `${t.headline}. Two colours at ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
+const crumbs = [
+  { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
+  { name: ar ? "الأحزمة" : "Belts", href: beltsUrl(lang) },
+  { name: t.name },
+];
+const jsonLd = serializeJsonLd(
+  breadcrumbJsonLd([
+    { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
+    { name: crumbs[1]!.name, url: `${site.url}${crumbs[1]!.href}` },
+    { name: t.name, url: `${site.url}${beltsUrl(lang, styleId)}` },
+  ]),
+);
+const facts = ar
+  ? [["الخامة", "جلد PU بنقشة بارزة"], ["الربط", "رباط رفيع يضبط على مقاس الخصر"], ["التوصيل", `لكل مصر خلال ${site.deliveryDays} أيام عمل`]]
+  : [["Material", "PU leather with a raised pattern"], ["Tie", "A thin tie that adjusts to your waist"], ["Delivery", `Across Egypt in ${site.deliveryDays} working days`]];
+const films = [
+  { src: "/video/pattern-black.mp4", poster: "/video/pattern-black.webp", caption: ar ? "الأسود" : "Black" },
+  { src: "/video/pattern-city.mp4", poster: "/video/pattern-city.webp", caption: ar ? "البني" : "Brown" },
+];
+---
+
+<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd} image={imageOf(coverOf(styleId))}>
+  <div class="lux">
+    <section class="lux-hero">
+      <figure class="lux-hero-media">
+        <video data-motion src="/video/pattern-abaya.mp4" poster="/video/pattern-abaya.webp" muted loop playsinline preload="metadata" aria-hidden="true" width="540" height="982"></video>
+      </figure>
+      <div class="lux-hero-text">
+        <Breadcrumbs items={crumbs} />
+        <p class="lux-kicker" lang="en">VICUNA · SIGNATURE</p>
+        <h1>{ar ? <>حزام<br />{t.name}</> : <>The {t.name}<br />belt</>}</h1>
+        <p class="lux-lead">{t.intro}</p>
+        <p class="lux-price">{price(styleId)} <small>{cur}</small></p>
+        <a class="btn lux-btn" href="#colours">{ar ? "اختاري لونك" : "Choose your colour"} <Icon name="arrow" size={18} class="dir-icon" /></a>
+      </div>
+    </section>
+
+    <section class="lux-section" id="colours">
+      <div class="wrap">
+        <p class="lux-kicker" lang="en">THE COLOURS</p>
+        <h2 class="lux-h2">{ar ? "لونان، ونقشة واحدة" : "Two colours, one pattern"}</h2>
+        <div class="grid lux-grid">
+          {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
+        </div>
+      </div>
+    </section>
+
+    <section class="lux-section lux-films">
+      <div class="wrap">
+        <p class="lux-kicker" lang="en">ON THE MOVE</p>
+        <h2 class="lux-h2">{ar ? "مع إطلالتك اليومية" : "With your everyday look"}</h2>
+        <div class="lux-film-row">
+          {films.map((f) => (
+            <figure class="lux-film reveal">
+              <video data-motion src={f.src} poster={f.poster} muted loop playsinline preload="none" aria-hidden="true" width="540" height="982"></video>
+              <figcaption>{f.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="lux-section">
+      <div class="wrap">
+        <dl class="lux-facts">
+          {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+      </div>
+    </section>
+  </div>
+
+</Base>

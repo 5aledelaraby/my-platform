@@ -3,6 +3,8 @@
 import type { CatalogProduct } from "@platform/commerce";
 
 export const LOOK_IDS: ReadonlySet<string> = new Set([
+  "pattern-black",
+  "pattern-brown",
   "ruffle-red",
   "thin-tie-croc-pink",
   "thin-tie-green",

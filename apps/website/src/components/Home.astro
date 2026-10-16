@@ -3,7 +3,7 @@
 // photos. It never shows the product grid or cart UI (ADR 0009); the belts are one of the sections.
 import ContactCards from "./ContactCards.astro";
 import Icon from "./ui/Icon.astro";
-import { langPath, site } from "../site.ts";
+import { langPath } from "../site.ts";
 import { beltsUrl } from "../store.ts";
 import type { Lang } from "../site.ts";
 
@@ -37,13 +37,12 @@ const sections: Section[] = [
     <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا، ونهتم بالتفاصيل الصغيرة." : "Vicuna is an Egyptian trading and design brand. We design and make by hand, and we care about the small details."}</p>
     <div class="hero-actions">
       <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي الأحزمة" : "Shop the belts"}</a>
-      <a class="btn btn-white" href={`https://wa.me/${site.whatsappInternational}`} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "تواصلي على واتساب" : "Chat on WhatsApp"}</a>
+      <a class="btn btn-white" href={beltsUrl(lang, "pattern")}>{ar ? "حزام بنقشة مميزة" : "The signature pattern belt"}</a>
     </div>
   </div>
 </section>
 
-<section class="wrap intro-split reveal">
-  <figure class="intro-photo"><img src="/img/editorial/model-seated-640.webp" srcset="/img/editorial/model-seated-640.webp 640w, /img/editorial/model-seated-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="" width="640" height="800" loading="lazy" decoding="async" /></figure>
+<section class="wrap intro-split text-only reveal">
   <div class="intro-copy">
     <h2>{ar ? "من نحن" : "About us"}</h2>
     <p>
@@ -56,8 +55,7 @@ const sections: Section[] = [
   </div>
 </section>
 
-<section class="wrap intro-split flip reveal">
-  <figure class="intro-photo"><img src="/img/editorial/model-blazer-640.webp" srcset="/img/editorial/model-blazer-640.webp 640w, /img/editorial/model-blazer-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="" width="640" height="800" loading="lazy" decoding="async" /></figure>
+<section class="wrap intro-split text-only reveal">
   <div class="intro-copy">
     <h2>{ar ? "أقسامنا" : "Our sections"}</h2>
     <ul class="section-links">
