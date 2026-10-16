@@ -1449,3 +1449,24 @@ dialog.menu { border-radius: 26px; }
 :root[data-mode="dark"] .prose th, :root[data-mode="dark"] .prose td { border-color: rgb(255 255 255 / .12); }
 :root[data-mode="dark"] .policy-toc { border-color: rgb(255 255 255 / .14); }
 :root[data-mode="dark"] .fly { background: #f2ede4; }
+
+/* ---------- checkout (owner, 2026-10-16): shorter and easier with the phone keyboard. Smaller gaps, the note
+   and the promo code folded away, shipping and payment side by side, and the confirm button always in reach. */
+#checkout { gap: 10px; padding-bottom: 4px; }
+#checkout > label, #checkout .co-more > label { gap: 3px; font-size: 12.5px; }
+#checkout input:not([type="radio"]), #checkout select, #checkout textarea { padding: 10px 12px; font-size: 16px; }
+#checkout textarea { min-height: 0; resize: vertical; }
+#checkout small.err:empty { display: none; }
+#checkout fieldset { grid-template-columns: 1fr 1fr; gap: 6px; }
+#checkout legend { grid-column: 1 / -1; float: none; margin-bottom: 2px; font-size: 13px; }
+#checkout label.radio { padding: 9px 10px; font-size: 13px; line-height: 1.35; }
+.co-more { border-radius: var(--r-sm); }
+.co-more > summary { display: inline-flex; align-items: center; min-height: 36px; padding: 4px 2px; color: var(--ink); font-size: 13.5px; font-weight: 600; cursor: pointer; list-style: none; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--leaf-soft, rgb(0 0 0 / .2)); }
+.co-more > summary::-webkit-details-marker { display: none; }
+.co-more[open] > summary { margin-bottom: 6px; }
+.promo-box.co-more { display: block; }
+.promo-box.co-more .promo-row { display: flex; gap: 8px; }
+.co-submit { position: sticky; bottom: calc(-20px - env(safe-area-inset-bottom, 0px)); z-index: 2; margin: 4px -20px 0; padding: 10px 20px calc(12px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to bottom, rgb(255 255 255 / 0), #fff 22%); }
+.co-submit #checkout-submit { width: 100%; min-height: 52px; }
+:root[data-mode="dark"] .co-submit { background: linear-gradient(to bottom, rgb(20 19 18 / 0), #141312 22%); }
+:root[data-mode="dark"] .co-more > summary { color: #f2ede4; }

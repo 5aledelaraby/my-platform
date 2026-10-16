@@ -286,7 +286,16 @@ function currentTotals(): ReturnType<typeof calculateTotals> {
   return amount > 0 ? calculateTotals(cartLines(), shippingMethod(), SHIPPING, amount) : base;
 }
 
+// The phone keyboard covers half the screen: keep the field being typed in visible above it.
+form?.addEventListener("focusin", (e) => {
+  const el = e.target as HTMLElement;
+  if (!el.matches("input:not([type=radio]), select, textarea") || matchMedia("(pointer: fine)").matches) return;
+  setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 280);
+});
+
 function renderPromo(t: ReturnType<typeof calculateTotals>): void {
+  const box = document.querySelector<HTMLDetailsElement>("[data-promo-box]");
+  if (box && promo) box.open = true;
   if (!promoMsg || !promoBtn || !promoInput) return;
   if (!promo) {
     promoBtn.textContent = T.promoApply;
@@ -384,7 +393,9 @@ function goToCheckout(): void {
   step = "checkout";
   track({ type: "begin_checkout", value: currentTotals().total, items: lines.map((l) => ({ id: l.id, quantity: l.quantity, price: lookupProduct(l.id)?.unitPrice })) });
   render();
-  form?.querySelector<HTMLInputElement>('[name="customer.name"]')?.focus();
+  // On a phone, do not pop the keyboard up straight away: show the form from its top and let the customer tap.
+  if (matchMedia("(pointer: fine)").matches) form?.querySelector<HTMLInputElement>('[name="customer.name"]')?.focus();
+  else form?.scrollIntoView({ block: "start" });
 }
 
 function fieldError(name: string, code: string | undefined): void {
@@ -397,7 +408,9 @@ function fieldError(name: string, code: string | undefined): void {
 
 /** After a failed submit, take the keyboard and screen reader to the first field that needs fixing. */
 function focusFirstInvalid(): void {
-  form?.querySelector<HTMLElement>("[aria-invalid]")?.focus();
+  const first = form?.querySelector<HTMLElement>("[aria-invalid]");
+  first?.closest("details")?.setAttribute("open", "");
+  first?.focus();
 }
 
 const FIELDS = ["customer.name", "customer.phone", "customer.governorate", "customer.address", "customer.notes"] as const;

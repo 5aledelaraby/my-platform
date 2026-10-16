@@ -25,11 +25,11 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
   </div>
   <form id="checkout" hidden novalidate>
     <label>{ar ? "الاسم" : "Name"}
-      <input name="customer.name" autocomplete="name" maxlength="80" required />
+      <input name="customer.name" autocomplete="name" enterkeyhint="next" maxlength="80" required />
       <small data-error-for="customer.name" class="err"></small>
     </label>
     <label>{ar ? "رقم الموبايل" : "Mobile number"}
-      <input name="customer.phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required />
+      <input name="customer.phone" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="next" dir="ltr" required />
       <small data-error-for="customer.phone" class="err"></small>
     </label>
     <label>{ar ? "المحافظة" : "Governorate"}
@@ -40,12 +40,15 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
       <small data-error-for="customer.governorate" class="err"></small>
     </label>
     <label>{ar ? "العنوان بالتفصيل" : "Full address"}
-      <textarea name="customer.address" rows="2" maxlength="300" autocomplete="street-address" required></textarea>
+      <textarea name="customer.address" rows="2" maxlength="300" autocomplete="street-address" enterkeyhint="done" required></textarea>
       <small data-error-for="customer.address" class="err"></small>
     </label>
-    <label>{ar ? "ملاحظات (اختياري)" : "Notes (optional)"}
-      <textarea name="customer.notes" rows="2" maxlength="300"></textarea>
-    </label>
+    <details class="co-more">
+      <summary>{ar ? "+ إضافة ملاحظة للطلب" : "+ Add a note"}</summary>
+      <label>{ar ? "ملاحظات (اختياري)" : "Notes (optional)"}
+        <textarea name="customer.notes" rows="2" maxlength="300" enterkeyhint="done"></textarea>
+      </label>
+    </details>
     <fieldset>
       <legend>{ar ? "الشحن" : "Shipping"}</legend>
       <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}{ar ? "، " : ", "}{ar ? `مجاني من ${formatEgp(SHIPPING.freeOver)}` : `free from ${formatEgp(SHIPPING.freeOver)}`})</label>
@@ -56,17 +59,20 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
       <label class="radio"><input type="radio" name="paymentMethod" value="cod" checked /> {ar ? "الدفع عند الاستلام" : "Cash on delivery"}</label>
       <label class="radio"><input type="radio" name="paymentMethod" value="instapay" /> InstaPay</label>
     </fieldset>
-    <div class="promo-box">
-      <label for="promo-input">{ar ? "كود الخصم (اختياري)" : "Promo code (optional)"}</label>
+    <details class="co-more promo-box" data-promo-box>
+      <summary>{ar ? "عندك كود خصم؟" : "Have a promo code?"}</summary>
+      <label for="promo-input" class="sr-only">{ar ? "كود الخصم" : "Promo code"}</label>
       <div class="promo-row">
         <input id="promo-input" type="text" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" dir="ltr" />
         <button type="button" class="btn small" data-apply-promo>{ar ? "تطبيق" : "Apply"}</button>
       </div>
       <p id="promo-msg" class="muted" role="status"></p>
-    </div>
+    </details>
     <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
     <p id="checkout-status" class="err" role="status"></p>
-    <button id="checkout-submit" type="submit" class="btn">{ar ? "تأكيد الطلب" : "Place order"}</button>
+    <div class="co-submit">
+      <button id="checkout-submit" type="submit" class="btn">{ar ? "تأكيد الطلب" : "Place order"}</button>
+    </div>
     <p class="checkout-consent muted">
       {ar ? "بالضغط على «تأكيد الطلب» توافقين على " : "By pressing \u201cPlace order\u201d you agree to the "}
       <a href={policyPath(lang, "terms")}>{ar ? "الشروط والأحكام" : "terms"}</a>
