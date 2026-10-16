@@ -140,13 +140,19 @@ const announce = ar
         for (const el of media) { el.classList.add("media-rise"); rise.observe(el); }
       }
 
-      // Moving content (WCAG 2.2.2): videos marked data-motion and the announcement bar can be paused, and they do not
-      // move at all when the visitor's device asks for reduced motion.
+      // Moving content (WCAG 2.2.2): videos marked data-motion and the announcement bar can be paused. The bar does not
+      // move when the visitor's device asks for reduced motion; the films play (owner's choice) with a pause button.
       const lang = document.documentElement.lang === "en" ? "en" : "ar";
       // Small drawn icons (the ❚❚ and ▶ characters look different, and clumsy, on every phone).
       const PAUSE_ICON = '<span class="mt-dot"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5.5v13M16 5.5v13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>';
       const PLAY_ICON = '<span class="mt-dot"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5.2v13.6a.6.6 0 0 0 .9.5l10.4-6.8a.6.6 0 0 0 0-1L8.9 4.7a.6.6 0 0 0-.9.5z" fill="currentColor"/></svg></span>';
       const words = lang === "ar" ? { pause: "إيقاف الفيديو", play: "تشغيل الفيديو" } : { pause: "Pause video", play: "Play video" };
+      const blocked = new Set<HTMLVideoElement>();
+      const retry = (e: Event) => {
+        if ((e.target as Element | null)?.closest?.(".film-toggle")) return; // that button plays or pauses its own film
+        blocked.forEach((v) => void v.play().then(() => blocked.delete(v), () => undefined));
+      };
+      for (const type of ["touchstart", "pointerdown", "keydown"]) addEventListener(type, retry, { passive: true });
       document.querySelectorAll<HTMLVideoElement>("video[data-motion]").forEach((video) => {
         const button = document.createElement("button");
         button.type = "button";
@@ -164,16 +170,18 @@ const announce = ar
         video.addEventListener("pause", show);
         video.after(button);
         show();
-        if (calm) { video.pause(); return; }
+        // The films always play by themselves (owner, 2026-10-16), also when the device asks for reduced motion;
+        // each one keeps its pause button. When the phone blocks autoplay (iPhone Low Power Mode), the first touch
+        // anywhere on the page starts the films on screen.
         // Films play only while they are on screen: a film further down the page is not downloaded until it is
         // reached, and one scrolled past stops (the visitor's own pause is kept).
         if (!("IntersectionObserver" in window)) { void video.play().catch(() => undefined); return; }
         let userPaused = false;
-        button.addEventListener("click", () => { userPaused = video.paused; });
+        button.addEventListener("click", () => { userPaused = video.paused; blocked.delete(video); });
         new IntersectionObserver((entries) => {
           for (const e of entries) {
-            if (e.isIntersecting && !userPaused) void video.play().catch(() => undefined);
-            else if (!e.isIntersecting && !video.paused) video.pause();
+            if (e.isIntersecting && !userPaused) { blocked.add(video); void video.play().then(() => blocked.delete(video), () => undefined); }
+            else if (!e.isIntersecting) { blocked.delete(video); if (!video.paused) video.pause(); }
           }
         }, { threshold: 0.2 }).observe(video);
       });

@@ -1,7 +1,7 @@
 ---
 // Every design page (owner, 2026-10-16: "all the designs like the signature pattern page"): dark and editorial. The
 // design's film (or, without one, an on-model photo) opens the page, then one large showcase of the colours (swatches
-// under the photo, arrows and swipe to change colour), then the belt on the move, the facts and the other designs.
+// under the photo, arrows and swipe to change colour), then the belt on the move and the other designs.
 // Each colour is an <article class="card" data-product> and each swatch an <a class="swatch">, the markup the site
 // Worker and the cart already use to hide a sold-out colour (ADR 0013); the showcase script copes with that.
 import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
@@ -11,7 +11,7 @@ import Icon from "./ui/Icon.astro";
 import Sparkles from "./ui/Sparkles.astro";
 import { beltsUrl, coverOf, getProduct, hasHigherPrices, imageOf, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText, styles } from "../store.ts";
 import { looksOf } from "../lib/looks.ts";
-import { colourCount, designOf, stillSrc, stillSrcset } from "../lib/designs.ts";
+import { colourCount, colourHeading, designOf, stillSrc, stillSrcset } from "../lib/designs.ts";
 import type { Film, Still } from "../lib/designs.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
@@ -40,10 +40,11 @@ const jsonLd = serializeJsonLd(
     { name: t.name, url: `${site.url}${beltsUrl(lang, styleId)}` },
   ]),
 );
-const facts = [
-  ...d.facts[lang],
-  ar ? ["التوصيل", `لكل مصر خلال ${site.deliveryDays} أيام عمل، والدفع عند الاستلام`] : ["Delivery", `Across Egypt in ${site.deliveryDays} working days, cash on delivery`],
-];
+// Said once and small: the size (when the owner gave it) and, under the buttons, delivery and returns.
+const specs = d.specs[lang];
+const terms = ar
+  ? `توصيل خلال ${site.deliveryDays} أيام عمل · استرجاع خلال ${site.returnDays} يومًا · الدفع عند الاستلام`
+  : `Delivery in ${site.deliveryDays} working days · ${site.returnDays}-day returns · Cash on delivery`;
 // The lead visual: the film, or the first on-model photo of a colour (which then leaves the mosaic).
 const leadLook = d.lead.kind === "look" ? getProduct(d.lead.productId) : undefined;
 const leadPhoto = leadLook ? looksOf(leadLook)[0] : undefined;
@@ -92,6 +93,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
           )}
         </h1>
         <p class="lux-lead lux-in" style="--d:3">{t.intro}</p>
+        {specs.length > 0 && <ul class="lux-specs lux-in" style="--d:3">{specs.map((x) => <li>{x}</li>)}</ul>}
         <div class="lux-hero-foot lux-in" style="--d:4">
           <p class="lux-price">{from && <small>{ar ? "من" : "from"}</small>} {price(styleId)} <small>{cur}</small></p>
           <a class="btn lux-btn" href="#colours">{ar ? "اختاري لونك" : "Choose your colour"} <Icon name="arrow" size={18} class="dir-icon" /></a>
@@ -103,7 +105,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
       <div class="wrap">
         <header class="lux-head reveal">
           <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>THE COLOURS</p>
-          <h2 class="lux-h2">{ar ? `${colourCount(lang, list.length)}، ${d.tail.ar}` : `${colourCount(lang, list.length)}, ${d.tail.en}`}</h2>
+          <h2 class="lux-h2">{colourHeading(lang, list.length)}</h2>
         </header>
         <div class="lux-stage" data-stage>
           {list.map((p, i) => (
@@ -122,6 +124,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
                   <button type="button" class="btn lux-btn" data-add={p.id}><Icon name="bag" size={18} /> {ar ? "أضيفي للسلة" : "Add to cart"}</button>
                   <a class="lux-more" href={beltsUrl(lang, p.id)}>{ar ? "تفاصيل هذا اللون" : "This colour in detail"}</a>
                 </div>
+                <p class="lux-terms">{terms}</p>
               </div>
             </article>
           ))}
@@ -170,9 +173,6 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
 
     <section class="lux-section lux-close">
       <div class="wrap">
-        <dl class="lux-facts">
-          {facts.map(([k, v], i) => <div class="reveal" style={`--i:${i}`}><dt>{k}</dt><dd>{v}</dd></div>)}
-        </dl>
         <nav class="lux-others" aria-label={ar ? "تصميمات أخرى" : "Other designs"}>
           <header class="lux-head reveal">
             <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>MORE DESIGNS</p>

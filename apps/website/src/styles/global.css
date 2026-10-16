@@ -1563,3 +1563,9 @@ dialog.menu { border-radius: 26px; }
 .dx-faq details:first-of-type { border-top: 1px solid var(--lux-line); }
 .dx-faq summary { padding: 20px 0; font-size: 17px; font-weight: 600; color: #fff; cursor: pointer; }
 .dx-faq details p { padding-bottom: 20px; color: rgb(255 255 255 / .74); line-height: 1.9; }
+/* size and fit, said once and small; delivery and returns in a light line under the buttons */
+.lux-specs { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: rgb(255 255 255 / .62); }
+.lux-specs li { display: inline-flex; align-items: center; gap: 8px; }
+.lux-specs li::before { content: ""; width: 5px; height: 5px; border-radius: 999px; background: var(--gold); opacity: .8; }
+.lux-terms { margin-top: 10px; font-size: 12.5px; line-height: 1.8; color: rgb(255 255 255 / .5); }
+.lux-close > .wrap > .lux-others:first-child { margin-top: 0; }

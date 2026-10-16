@@ -18,9 +18,8 @@ export interface Design {
   films: readonly Film[];
   /** Close-up photos for the mosaic. */
   stills: readonly Still[];
-  /** The colours heading, after the count: "لونان، <tail>". */
-  tail: Words;
-  facts: Record<Lang, readonly (readonly [string, string])[]>;
+  /** Size and fit, as the owner gave them (2026-10-16); empty when not given. Shown small, said once. */
+  specs: Record<Lang, readonly string[]>;
 }
 
 const still = (src: string, sizes: readonly number[], w: number, h: number, alt: Words, caption: Words): Still =>
@@ -35,11 +34,7 @@ export const designs: Readonly<Record<string, Design>> = {
       { kind: "film", src: "/video/pattern-abaya", caption: { ar: "البني، مع عباية سوداء", en: "Brown, with a black abaya" } },
     ],
     stills: [],
-    tail: { ar: "ونقشة واحدة", en: "one pattern" },
-    facts: {
-      ar: [["الخامة", "جلد PU بنقشة بارزة"], ["الربط", "رباط رفيع يضبط على مقاس الخصر"]],
-      en: [["Material", "PU leather with a raised pattern"], ["Tie", "A thin tie that adjusts to your waist"]],
-    },
+    specs: { ar: [], en: [] },
   },
   lace: {
     word: "LACE",
@@ -51,22 +46,14 @@ export const designs: Readonly<Record<string, Design>> = {
       still("/img/editorial/lace-ivory-2", [640, 1200], 1200, 1500, { ar: "فيونكة ساتان على دانتيل أبيض", en: "A satin bow on white lace" }, { ar: "تفاصيل الدانتيل", en: "Lace details" }),
       still("/img/editorial/lace-light", [640, 1200], 1200, 1200, { ar: "دانتيل الحزام في الضوء", en: "The belt's lace in the light" }, { ar: "الدانتيل في الضوء", en: "Lace in the light" }),
     ],
-    tail: { ar: "ودانتيل مطرّز", en: "embroidered lace" },
-    facts: {
-      ar: [["الخامة", "دانتيل مطرّز على بطانة من جلد PU"], ["الربط", "رباط رفيع"]],
-      en: [["Material", "Embroidered lace on a PU leather lining"], ["Tie", "A thin tie"]],
-    },
+    specs: { ar: [], en: [] },
   },
   "wide-tie": {
     word: "WIDE TIE",
     lead: { kind: "film", src: "/video/wide-tie-white" },
-    films: [],
+    films: [{ kind: "film", src: "/video/belt-detail", caption: { ar: "الرباط العريض عن قرب", en: "The wide tie, up close" } }],
     stills: [],
-    tail: { ar: "ورباط عريض", en: "one wide tie" },
-    facts: {
-      ar: [["الخامة", "جلد PU بليكرا ناعم"], ["الربط", "رباط عريض يلتف حول الخصر: فيونكة أو عقدة أو جدلة"]],
-      en: [["Material", "Soft stretch PU leather"], ["Tie", "Wide ties that wrap the waist: a bow, a knot or a twist"]],
-    },
+    specs: { ar: ["العرض 14 سم", "الطول 140 سم"], en: ["14 cm wide", "140 cm long"] },
   },
   "thin-tie": {
     word: "THIN TIE",
@@ -75,22 +62,14 @@ export const designs: Readonly<Record<string, Design>> = {
     stills: [
       still("/img/editorial/croc-detail", [640, 1200], 1200, 1200, { ar: "حزام وسط برباط رفيع بنقشة كروكو، صورة مقرّبة", en: "A thin-tie waist belt in croc print, close up" }, { ar: "نقشة الكروكو عن قرب", en: "The croc print, up close" }),
     ],
-    tail: { ar: "سادة أو كروكو", en: "plain or croc" },
-    facts: {
-      ar: [["الخامة", "جلد PU، سادة أو بنقشة كروكو"], ["الربط", "رباط رفيع يضبط على مقاس الخصر"]],
-      en: [["Material", "PU leather, plain or croc print"], ["Tie", "A thin tie that adjusts to your waist"]],
-    },
+    specs: { ar: ["العرض 10 سم", "طول البطن 90 سم"], en: ["10 cm wide", "90 cm around the waist"] },
   },
   ruffle: {
     word: "RUFFLE",
     lead: { kind: "look", productId: "ruffle-red" },
     films: [],
     stills: [],
-    tail: { ar: "وكشكشة من الجهتين", en: "ruffled on both edges" },
-    facts: {
-      ar: [["الخامة", "جلد PU بكشكشة من الأعلى والأسفل"], ["الربط", "رباط يُربط في المنتصف"]],
-      en: [["Material", "PU leather, ruffled above and below"], ["Tie", "A tie in the middle"]],
-    },
+    specs: { ar: ["بداخله أستك يضبط المقاس على الخصر بالتحديد"], en: ["Elastic inside for an exact fit at the waist"] },
   },
 };
 
@@ -101,6 +80,11 @@ export function designOf(styleId: string): Design {
 }
 
 const EN_COUNTS = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
+/** "لونان" / "Two colours" (a single colour: "اللون" / "The colour"). */
+export function colourHeading(lang: Lang, n: number): string {
+  return n === 1 ? (lang === "ar" ? "اللون" : "The colour") : colourCount(lang, n);
+}
+
 /** "لونان" / "Two colours". */
 export function colourCount(lang: Lang, n: number): string {
   if (lang === "en") return `${EN_COUNTS[n] ?? n} colour${n === 1 ? "" : "s"}`;

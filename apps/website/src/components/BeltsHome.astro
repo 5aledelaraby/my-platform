@@ -43,7 +43,8 @@ const customWa = `${wa}?text=${encodeURIComponent(ar ? "أهلاً فيكونا�
       <span class="lux-line"><span class="lux-in" style="--d:1">{ar ? "أحزمة خصر نسائية" : "Women's waist belts"}</span></span>
       <span class="lux-line"><span class="lux-in" style="--d:2">{ar ? "اختاري تصميمك" : "Choose your design"}</span></span>
     </h1>
-    <p class="lux-lead lux-in" style="--d:3">{c.lead}</p>
+    <p class="lux-lead lux-in" style="--d:3">{ar ? "من جلد PU، بخمسة تصميمات وألوان كثيرة، للفستان والبلوزة والجاكيت." : "In PU leather, in five designs and many colours, for dresses, blouses and jackets."}</p>
+    <p class="lux-terms lux-in" style="--d:3">{ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل · استرجاع خلال ${site.returnDays} يومًا` : `Delivery across Egypt in ${site.deliveryDays} working days · ${site.returnDays}-day returns`}</p>
     <nav class="dx-index lux-in" style="--d:4" aria-label={ar ? "التصميمات" : "Designs"}>
       {panels.map((p) => <a href={beltsUrl(lang, p.id)} data-jump={`d-${p.id}`}><span dir="ltr">{pad(p.i + 1)}</span> {p.t.name}</a>)}
     </nav>
