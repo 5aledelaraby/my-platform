@@ -7,6 +7,7 @@ import { PIASTERS_PER_EGP, SHIPPING, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
+import Sparkles from "./ui/Sparkles.astro";
 import { langPath, site } from "../site.ts";
 import { looksOf } from "../lib/looks.ts";
 import type { Lang } from "../site.ts";
@@ -92,6 +93,7 @@ const colourData = siblings.map((p) => {
     price: priceOfProduct(p),
     priceRaw: priceOf(p),
     image: imageOf(p),
+    hex: p.hex,
     srcset: srcsetOf(p),
     title: ar ? `${n} | حزام خصر نسائي | فيكونا` : `${n} | Women's waist belt | Vicuna`,
     wa: waFor(p),
@@ -111,7 +113,8 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   <Breadcrumbs items={crumbs} />
   <div class="wrap product">
     <div class="pdp-media">
-    <figure class="pdp-photo" style={`--tint:${product.hex}`} data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
+    <figure class="pdp-photo glow" style={`--tint:${product.hex}`} data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
+      <Sparkles />
       <img data-pdp-img src={imageOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 900px) 52vw, 100vw" alt={name} width="1200" height="1200" fetchpriority="high" />
       {nextP && prevP && (
         <>
@@ -192,7 +195,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   interface Look { src: string; srcset: string }
   interface Colour {
     id: string; url: string; alt: string; name: string; shade: string; price: string; priceRaw: number;
-    image: string; srcset: string; title: string; wa: string; looks: Look[]; lookAlt: string; detail: string | null;
+    image: string; hex: string; srcset: string; title: string; wa: string; looks: Look[]; lookAlt: string; detail: string | null;
   }
 
   const raw = document.getElementById("pdp-colours")?.textContent;
@@ -239,6 +242,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
         if (current !== id) return; // another colour was picked meanwhile
         if (!calm) { fig.style.setProperty("--dir", String(dir * (rtl ? -1 : 1))); fig.classList.remove("swapping"); void fig.offsetWidth; fig.classList.add("swapping"); }
         img.srcset = c.srcset; img.src = c.image; img.alt = c.name;
+        fig.style.setProperty("--tint", c.hex);
       }
       const set = (sel: string, text: string) => { const n = q<HTMLElement>(sel); if (n) n.textContent = text; };
       set("[data-pdp-name]", c.name);

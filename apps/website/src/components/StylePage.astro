@@ -5,6 +5,7 @@ import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
 import Stories from "./Stories.astro";
 import Icon from "./ui/Icon.astro";
+import Sparkles from "./ui/Sparkles.astro";
 import { beltsUrl, coverOf, imageOf, hasHigherPrices, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
@@ -46,7 +47,7 @@ const jsonLd = serializeJsonLd(
     <div class="page-hero-box style-hero">
       <div>
         <Breadcrumbs items={crumbs} />
-        <h1>{ar ? <>حزام <span class="accent">{t.name}</span></> : <><span class="accent">{t.name}</span> belts</>}</h1>
+        <h1 class="has-sparkles">{ar ? <>حزام <span class="accent">{t.name}</span></> : <><span class="accent">{t.name}</span> belts</>}<Sparkles variant="b" /></h1>
         <p class="hero-sub">{t.headline}</p>
         <p class="lead">{t.intro}</p>
         <div class="hero-actions">
@@ -63,7 +64,7 @@ const jsonLd = serializeJsonLd(
           <div class="sg-track" data-track>
             {list.map((p, i) => (
               <article class="card sg-slide" data-color={p.color} data-product={p.id}>
-                <a class="sg-media" href={beltsUrl(lang, p.id)}>
+                <a class="sg-media glow" href={beltsUrl(lang, p.id)} style={`--tint:${p.hex}`}>
                   <img src={imageOf(p)} srcset={srcsetOf(p)} sizes="(min-width: 960px) 40vw, 88vw" alt={productName(lang, p)} width="1200" height="1200" loading={i === 0 ? "eager" : "lazy"} decoding="async" />
                 </a>
                 <p class="sg-cap"><span>{shadeName(lang, p)}</span> <b>{priceOfProduct(p)} <small>{cur}</small></b></p>

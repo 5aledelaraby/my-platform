@@ -1,5 +1,6 @@
 ---
 import Icon from "./ui/Icon.astro";
+import Sparkles from "./ui/Sparkles.astro";
 import ProductCard from "./ProductCard.astro";
 import Stories from "./Stories.astro";
 import { homeCopy } from "../home-copy.ts";
@@ -34,7 +35,7 @@ const tie = ar
     </figure>
     <div class="bh-text">
       <p class="bh-kicker" lang="en">VICUNA · BELTS</p>
-      <h1>{c.h1}</h1>
+      <h1 class="has-sparkles">{c.h1}<Sparkles variant="b" /></h1>
       <p class="lead">{c.lead}</p>
       <div class="hero-actions">
         <a class="btn" href="#all">{c.cta}</a>

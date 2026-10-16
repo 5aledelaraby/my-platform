@@ -3,6 +3,7 @@
 // photos. It never shows the product grid or cart UI (ADR 0009); the belts are one of the sections.
 import ContactCards from "./ContactCards.astro";
 import Icon from "./ui/Icon.astro";
+import Sparkles from "./ui/Sparkles.astro";
 import { langPath } from "../site.ts";
 import { beltsUrl } from "../store.ts";
 import type { Lang } from "../site.ts";
@@ -29,7 +30,7 @@ const sections: Section[] = [
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
-    <h1>{ar ? "تصميمات بسيطة" : "Simple designs"}</h1>
+    <h1 class="has-sparkles">{ar ? "تصميمات بسيطة" : "Simple designs"}<Sparkles variant="b" /></h1>
     <p class="lead">{ar ? "فيكونا علامة مصرية للتجارة العامة والتصميمات. نصمّم ونصنع بأيدينا." : "Vicuna is an Egyptian trading and design brand. We design and make by hand."}</p>
     <div class="hero-actions">
       <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي الأحزمة" : "Shop the belts"}</a>

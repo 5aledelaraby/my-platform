@@ -16,7 +16,7 @@ const look = lookOf(product);
 ---
 
 <article class="card reveal" data-color={product.color} data-product={product.id} style={`--i:${index % 2}`}>
-  <div class={look ? "card-media has-look" : "card-media"}>
+  <div class={look ? "card-media glow has-look" : "card-media glow"} style={`--tint:${product.hex}`}>
     <a href={href} aria-label={name}>
       <img src={thumbOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 1100px) 23vw, (min-width: 760px) 31vw, 46vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />
       {look && <img class="card-look" src={look.src} alt="" width="640" height="800" loading="lazy" decoding="async" />}

@@ -7,6 +7,7 @@ import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import Icon from "./ui/Icon.astro";
+import Sparkles from "./ui/Sparkles.astro";
 import { beltsUrl, coverOf, imageOf, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText } from "../store.ts";
 import { looksOf } from "../lib/looks.ts";
 import { langPath, site } from "../site.ts";
@@ -72,7 +73,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
         <div class="lux-stage" data-stage>
           {list.map((p, i) => (
             <article class="card lux-slide" data-color={p.color} data-product={p.id} data-slide aria-label={productName(lang, p)}>
-              <a class="lux-slide-media" href={beltsUrl(lang, p.id)} tabindex="-1" aria-hidden="true">
+              <a class="lux-slide-media glow" href={beltsUrl(lang, p.id)} tabindex="-1" aria-hidden="true" style={`--tint:${p.hex}`}>
+                <Sparkles />
                 <img src={imageOf(p)} srcset={srcsetOf(p)} sizes="(min-width: 960px) 56vw, 100vw" alt="" width="1200" height="1200" loading={i === 0 ? "eager" : "lazy"} decoding="async" />
               </a>
               <div class="lux-slide-info">

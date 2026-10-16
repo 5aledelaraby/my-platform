@@ -1080,3 +1080,27 @@ main:has(> .lux:last-child) + .site-footer { margin-top: 0; border-top: 1px soli
   .pdp-photo.swapping img { animation: pdp-swap .5s var(--ease-soft); }
 }
 @keyframes pdp-swap { from { opacity: .2; transform: translateX(calc(var(--dir, 1) * -8%)); } to { opacity: 1; transform: none; } }
+
+/* ---------- sparkles and the colour glow (owner, 2026-10-16) ---------- */
+.sparkles { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.spk { position: absolute; display: block; color: var(--spark, #c9a96b); animation: twinkle 3.6s ease-in-out infinite; }
+.spk1 { width: 16px; height: 16px; animation-delay: 0s; }
+.spk2 { width: 10px; height: 10px; animation-delay: -1.2s; }
+.spk3 { width: 13px; height: 13px; animation-delay: -2.4s; }
+.sparkles-a .spk1 { top: 9%; inset-inline-start: 8%; }
+.sparkles-a .spk2 { top: 5%; inset-inline-end: 22%; }
+.sparkles-a .spk3 { bottom: 16%; inset-inline-end: 7%; }
+.sparkles-b .spk1 { top: -6px; inset-inline-end: 4%; }
+.sparkles-b .spk2 { top: 40%; inset-inline-start: -14px; }
+.sparkles-b .spk3 { bottom: -4px; inset-inline-start: 30%; }
+@media (prefers-reduced-motion: reduce) { .spk { animation: none; opacity: .75; } }
+.has-sparkles { position: relative; }
+
+/* every product photo sits on a soft light of the belt's own colour (--tint = the colour on the product) */
+.glow { background: radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--tint, #f5f4f1) 24%, #fff) 0%, color-mix(in srgb, var(--tint, #f5f4f1) 9%, #fff) 46%, #fff 76%); }
+.glow img { mix-blend-mode: multiply; }
+.card-media.glow .card-look { mix-blend-mode: normal; }
+.pdp-photo.glow { background: radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--tint, #f5f4f1) 24%, #fff) 0%, color-mix(in srgb, var(--tint, #f5f4f1) 9%, #fff) 46%, #fff 76%); transition: background .6s var(--ease-soft); }
+.lux-slide-media.glow { background: radial-gradient(circle at 50% 44%, color-mix(in srgb, var(--tint) 30%, #fff) 0%, color-mix(in srgb, var(--tint) 10%, #f4f1ec) 50%, #ece8e1 82%); }
+h1.has-sparkles { width: fit-content; max-width: 100%; }
+.intro-text h1.has-sparkles { margin-inline: auto; }
