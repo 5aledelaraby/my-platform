@@ -70,6 +70,9 @@ const announce = ar
     <link rel="preload" href={lang === "ar" ? "/fonts/cairo-arabic-400-normal.woff2" : "/fonts/cairo-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={lang === "ar" ? "/fonts/el-messiri-arabic-700-normal.woff2" : "/fonts/el-messiri-latin-700-normal.woff2"} as="font" type="font/woff2" crossorigin />
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+    {/* Browsers that support it fetch a page in the background as soon as a finger or the mouse rests on its link,
+        so opening it feels instant. Prefetch only (no prerender): no page runs before it is really opened. */}
+    <script type="speculationrules" set:html={JSON.stringify({ prefetch: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/api/*" } }] }, eagerness: "moderate" }] })} />
   </head>
   <body>
     <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>

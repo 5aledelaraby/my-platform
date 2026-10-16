@@ -5,7 +5,7 @@ import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
 import Stories from "./Stories.astro";
 import Icon from "./ui/Icon.astro";
-import { beltsUrl, coverOf, imageOf, hasHigherPrices, price, productsOfStyle, styleText, thumbOf } from "../store.ts";
+import { beltsUrl, coverOf, imageOf, hasHigherPrices, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText } from "../store.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -59,8 +59,20 @@ const jsonLd = serializeJsonLd(
           <video data-motion src={`${film}.mp4`} poster={`${film}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
         </figure>
       ) : (
-        <div class="style-collage" aria-hidden="true">
-          {list.slice(0, 3).map((p) => <span><img src={thumbOf(p)} alt="" width="480" height="480" decoding="async" /></span>)}
+        <div class="style-gallery" data-gallery aria-roledescription={ar ? "صور الألوان" : "colour photos"}>
+          <div class="sg-track" data-track>
+            {list.map((p, i) => (
+              <article class="card sg-slide" data-color={p.color} data-product={p.id}>
+                <a class="sg-media" href={beltsUrl(lang, p.id)}>
+                  <img src={imageOf(p)} srcset={srcsetOf(p)} sizes="(min-width: 960px) 40vw, 88vw" alt={productName(lang, p)} width="1200" height="1200" loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+                </a>
+                <p class="sg-cap"><span>{shadeName(lang, p)}</span> <b>{priceOfProduct(p)} <small>{cur}</small></b></p>
+              </article>
+            ))}
+          </div>
+          <button type="button" class="sg-nav prev" data-step="-1" aria-label={ar ? "اللون السابق" : "Previous colour"} hidden><Icon name="arrow" size={20} /></button>
+          <button type="button" class="sg-nav next" data-step="1" aria-label={ar ? "اللون التالي" : "Next colour"} hidden><Icon name="arrow" size={20} /></button>
+          <div class="sg-dots" data-dots aria-hidden="true"></div>
         </div>
       )}
     </div>
@@ -86,3 +98,41 @@ const jsonLd = serializeJsonLd(
     </section>
   )}
 </Base>
+
+<script>
+  // The design's colours as one large photo: swipe sideways (native scrolling, snapping to each photo), or use the
+  // arrows. Sold-out colours are removed by the site Worker or hidden by the cart and simply drop out.
+  const gallery = document.querySelector<HTMLElement>("[data-gallery]");
+  const track = gallery?.querySelector<HTMLElement>("[data-track]");
+  if (gallery && track) {
+    const slides = () => [...track.querySelectorAll<HTMLElement>(".sg-slide")].filter((s) => !s.hidden);
+    const dots = gallery.querySelector<HTMLElement>("[data-dots]");
+    let index = 0;
+    const paint = () => {
+      const list = slides();
+      gallery.querySelectorAll<HTMLButtonElement>(".sg-nav").forEach((b) => (b.hidden = list.length < 2));
+      if (dots) dots.innerHTML = list.length > 1 ? list.map((_, i) => `<span${i === index ? ' class="on"' : ""}></span>`).join("") : "";
+    };
+    const go = (i: number) => {
+      const list = slides();
+      if (!list.length) return;
+      index = (i + list.length) % list.length;
+      list[index]!.scrollIntoView({ inline: "center", block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      paint();
+    };
+    gallery.addEventListener("click", (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>(".sg-nav");
+      if (b) go(index + Number(b.dataset["step"]));
+    });
+    // Keep the dots in step with a finger swipe.
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const i = slides().indexOf(e.target as HTMLElement);
+        if (i >= 0 && i !== index) { index = i; paint(); }
+      }
+    }, { root: track, threshold: 0.6 });
+    slides().forEach((s) => io.observe(s));
+    paint();
+  }
+</script>

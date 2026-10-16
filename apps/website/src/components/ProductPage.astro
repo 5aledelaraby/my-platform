@@ -75,6 +75,32 @@ const jsonLd = serializeJsonLd([
     { name, url },
   ]),
 ]);
+const waFor = (p: CatalogProduct) => {
+  const n = productName(lang, p);
+  const text = ar ? `أهلاً فيكونا، عايزة أطلب: ${n} (${p.id})` : `Hello Vicuna, I would like to order: ${n} (${p.id})`;
+  return `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(text)}`;
+};
+// Every colour of this design, so the page can change colour in place (no page load); the URL still changes.
+const colourData = siblings.map((p) => {
+  const n = productName(lang, p);
+  return {
+    id: p.id,
+    url: beltsUrl(lang, p.id),
+    alt: beltsUrl(ar ? "en" : "ar", p.id),
+    name: n,
+    shade: shadeName(lang, p),
+    price: priceOfProduct(p),
+    priceRaw: priceOf(p),
+    image: imageOf(p),
+    srcset: srcsetOf(p),
+    title: ar ? `${n} | حزام خصر نسائي | فيكونا` : `${n} | Women's waist belt | Vicuna`,
+    wa: waFor(p),
+    looks: looksOf(p),
+    lookAlt: ar ? `${n} على الخصر` : `${n}, worn at the waist`,
+    detail: p.id.includes("-croc-") ? "/img/editorial/croc-detail" : null,
+  };
+});
+const colourJson = JSON.stringify(colourData).replace(/</g, "\\u003c");
 const orderText = ar
   ? `أهلاً فيكونا، عايزة أطلب: ${name} (${product.id})`
   : `Hello Vicuna, I would like to order: ${name} (${product.id})`;
@@ -86,7 +112,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   <div class="wrap product">
     <div class="pdp-media">
     <figure class="pdp-photo" style={`--tint:${product.hex}`} data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
-      <img src={imageOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 900px) 52vw, 100vw" alt={name} width="1200" height="1200" fetchpriority="high" />
+      <img data-pdp-img src={imageOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 900px) 52vw, 100vw" alt={name} width="1200" height="1200" fetchpriority="high" />
       {nextP && prevP && (
         <>
           <a class="pdp-arrow prev" href={beltsUrl(lang, prevP.id)} aria-label={`${ar ? "اللون السابق" : "Previous colour"}: ${productName(lang, prevP)}`}><Icon name="arrow" size={18} /></a>
@@ -100,10 +126,10 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
     </div>
     <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={priceOf(product)}>
       <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
-      <h1>{name}</h1>
-      <div class="price">{priceOfProduct(product)} <small>{cur}</small></div>
+      <h1 data-pdp-name>{name}</h1>
+      <div class="price"><span data-pdp-price>{priceOfProduct(product)}</span> <small>{cur}</small></div>
       <p class="soldout" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية حاليًا. كلمينا على واتساب نبلغك أول ما يتوفر." : "Sold out for now. Message us on WhatsApp and we will tell you when it is back."}</p>
-      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b>{shadeName(lang, product)}</b></p>
+      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b data-pdp-shade>{shadeName(lang, product)}</b></p>
       <div class="pdp-swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
         {siblings.map((sib) => (
           <a class="swatch big" href={beltsUrl(lang, sib.id)} style={`--c:${sib.hex}`} title={productName(lang, sib)} aria-label={productName(lang, sib)} aria-current={sib.id === product.id ? "true" : undefined}></a>
@@ -111,7 +137,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       </div>
       <div class="pdp-actions">
         <button type="button" class="btn btn-berry btn-block" data-add={product.id}><Icon name="bag" size={20} /> {ar ? "أضيفي للسلة" : "Add to cart"}</button>
-        <a class="btn btn-white btn-block" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "أو اطلبي على واتساب" : "Or order on WhatsApp"}</a>
+        <a class="btn btn-white btn-block" data-pdp-wa href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "أو اطلبي على واتساب" : "Or order on WhatsApp"}</a>
       </div>
       <ul class="pdp-perks">
         <li><Icon name="plane" size={26} /> {ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}</li>
@@ -120,8 +146,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       </ul>
       <p class="pdp-intro muted">{st.intro}</p>
     </div>
-    {(looks.length > 0 || detail) && (
-      <div class="pdp-looks">
+    <div class="pdp-looks" data-pdp-looks hidden={looks.length === 0 && !detail}>
         {looks.map((look) => (
           <figure class="pdp-look reveal">
             <img src={look.src} srcset={look.srcset} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? `${name} على الخصر` : `${name}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
@@ -132,8 +157,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
             <img src={`${detail}-1200.webp`} srcset={`${detail}-640.webp 640w, ${detail}-1200.webp 1200w`} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? "نقشة الكروكو عن قرب" : "The croc print, up close"} width="1200" height="1200" loading="lazy" decoding="async" />
           </figure>
         )}
-      </div>
-    )}
+    </div>
   </div>
   <section class="wrap">
     <div class="spec-card reveal">
@@ -149,6 +173,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       {related.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </section>
+  <script type="application/json" id="pdp-colours" set:html={colourJson} />
 </Base>
 
 <script>
@@ -158,15 +183,127 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
 </script>
 
 <script>
-  // Swipe the photo to move to the next or previous colour. A gentle nudge on the first product page of a visit
-  // shows that the photo can be swiped. "Next" follows the reading direction (right-to-left in Arabic).
-  const fig = document.querySelector<HTMLElement>("[data-swipe-next]");
-  if (fig) {
+  // Changing colour stays on the page: the arrows, the swatches and a swipe on the photo swap the photo, name,
+  // price, buttons and on-model photos in place, and the address bar moves to that colour's own page (which also
+  // works on its own, for sharing and search engines). Colours removed by the site Worker or hidden by the cart
+  // (sold out) are skipped. Without this script every link still opens the colour's page as before.
+  import { track } from "../scripts/tracking.ts";
+
+  interface Look { src: string; srcset: string }
+  interface Colour {
+    id: string; url: string; alt: string; name: string; shade: string; price: string; priceRaw: number;
+    image: string; srcset: string; title: string; wa: string; looks: Look[]; lookAlt: string; detail: string | null;
+  }
+
+  const raw = document.getElementById("pdp-colours")?.textContent;
+  const fig = document.querySelector<HTMLElement>(".pdp-photo");
+  const info = document.querySelector<HTMLElement>("[data-view-item]");
+  if (raw && fig && info) {
+    const colours: Colour[] = JSON.parse(raw);
+    const byId = new Map(colours.map((c) => [c.id, c]));
     const rtl = document.documentElement.dir === "rtl";
-    const go = (forward: boolean) => {
-      const url = forward ? fig.dataset["swipeNext"] : fig.dataset["swipePrev"];
-      if (url) location.assign(url);
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ar = document.documentElement.lang !== "en";
+    const q = <T extends Element>(sel: string) => document.querySelector<T>(sel);
+    const swatches = () => [...document.querySelectorAll<HTMLAnchorElement>(".pdp-swatches a.swatch")];
+    const idOf = (href: string) => new URL(href, location.href).pathname.replace(/\/$/, "").split("/").pop() ?? "";
+    // The colours still on offer, in catalogue order: the swatches the Worker and the cart left visible.
+    const available = () => swatches().filter((a) => !a.hidden).map((a) => byId.get(idOf(a.href))).filter((c): c is Colour => !!c);
+    let current = info.dataset["viewItem"] ?? "";
+
+    const escape = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]!);
+    const renderLooks = (c: Colour) => {
+      const box = q<HTMLElement>("[data-pdp-looks]");
+      if (!box) return;
+      const figs = c.looks.map((l) => `<figure class="pdp-look"><img src="${l.src}" srcset="${l.srcset}" sizes="(min-width: 900px) 52vw, 100vw" alt="${escape(c.lookAlt)}" width="640" height="800" loading="lazy" decoding="async"></figure>`);
+      if (c.detail) figs.push(`<figure class="pdp-look pdp-detail"><img src="${c.detail}-1200.webp" srcset="${c.detail}-640.webp 640w, ${c.detail}-1200.webp 1200w" sizes="(min-width: 900px) 52vw, 100vw" alt="${ar ? "نقشة الكروكو عن قرب" : "The croc print, up close"}" width="1200" height="1200" loading="lazy" decoding="async"></figure>`);
+      box.innerHTML = figs.join("");
+      box.hidden = figs.length === 0;
     };
+
+    const show = async (id: string, dir: 1 | -1, push: boolean) => {
+      const c = byId.get(id);
+      if (!c || id === current) return;
+      current = id;
+      const list = available();
+      const i = list.findIndex((x) => x.id === id);
+      const next = list.length > 1 ? list[(i + 1) % list.length]! : null;
+      const prev = list.length > 1 ? list[(i - 1 + list.length) % list.length]! : null;
+
+      // Photo: load the new one first, then swap, so the old photo never blinks to empty.
+      const img = q<HTMLImageElement>("[data-pdp-img]");
+      if (img) {
+        const pre = new Image();
+        pre.sizes = img.sizes; pre.srcset = c.srcset; pre.src = c.image;
+        await pre.decode().catch(() => undefined);
+        if (current !== id) return; // another colour was picked meanwhile
+        if (!calm) { fig.style.setProperty("--dir", String(dir * (rtl ? -1 : 1))); fig.classList.remove("swapping"); void fig.offsetWidth; fig.classList.add("swapping"); }
+        img.srcset = c.srcset; img.src = c.image; img.alt = c.name;
+      }
+      const set = (sel: string, text: string) => { const n = q<HTMLElement>(sel); if (n) n.textContent = text; };
+      set("[data-pdp-name]", c.name);
+      set("[data-pdp-price]", c.price);
+      set("[data-pdp-shade]", c.shade);
+      set(".crumbs [aria-current='page']", c.name);
+      const wa = q<HTMLAnchorElement>("[data-pdp-wa]");
+      if (wa) wa.href = c.wa;
+      const add = q<HTMLButtonElement>(".pdp-actions [data-add]");
+      if (add) add.dataset["add"] = c.id;
+      const out = q<HTMLElement>(".pdp-info [data-soldout-for]");
+      if (out) { out.dataset["soldoutFor"] = c.id; out.hidden = true; }
+      for (const a of swatches()) {
+        if (idOf(a.href) === c.id) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      }
+      const arrow = (cls: string, to: Colour | null, label: string) => {
+        const a = q<HTMLAnchorElement>(`.pdp-arrow.${cls}`);
+        if (!a) return;
+        a.hidden = !to;
+        if (to) { a.href = to.url; a.setAttribute("aria-label", `${label}: ${to.name}`); }
+      };
+      arrow("next", next, ar ? "اللون التالي" : "Next colour");
+      arrow("prev", prev, ar ? "اللون السابق" : "Previous colour");
+      const count = q<HTMLElement>(".pdp-count");
+      if (count) { count.textContent = `${i + 1} / ${list.length}`; count.hidden = list.length < 2; }
+      renderLooks(c);
+      info.dataset["viewItem"] = c.id; info.dataset["viewName"] = c.name; info.dataset["viewPrice"] = String(c.priceRaw);
+      document.title = c.title;
+      for (const l of document.querySelectorAll<HTMLAnchorElement>(".lang-switch, .menu-lang")) l.href = c.alt;
+      if (push) history.pushState({ pdp: c.id }, "", c.url);
+      track({ type: "view_item", item: { id: c.id, name: c.name, price: c.priceRaw } });
+      // Warm the neighbours' photos so the next change is instant too.
+      for (const n of [next, prev]) if (n) { const w = new Image(); w.sizes = img?.sizes ?? ""; w.srcset = n.srcset; w.src = n.image; }
+    };
+    const step = (n: 1 | -1) => {
+      const list = available();
+      const i = list.findIndex((x) => x.id === current);
+      const to = list[(i + n + list.length) % list.length];
+      if (to) void show(to.id, n, true);
+    };
+
+    history.replaceState({ pdp: current }, "");
+    document.addEventListener("click", (e) => {
+      const me = e as MouseEvent;
+      if (me.button !== 0 || me.metaKey || me.ctrlKey || me.shiftKey || me.altKey) return;
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>(".pdp-arrow, .pdp-swatches a.swatch");
+      if (!a) return;
+      const id = idOf(a.href);
+      if (!byId.has(id)) return;
+      e.preventDefault();
+      if (a.classList.contains("pdp-arrow")) step(a.classList.contains("next") ? 1 : -1);
+      else {
+        const list = available();
+        void show(id, list.findIndex((x) => x.id === id) >= list.findIndex((x) => x.id === current) ? 1 : -1, true);
+      }
+    });
+    addEventListener("popstate", (e) => {
+      const id = (e.state as { pdp?: string } | null)?.pdp ?? idOf(location.href);
+      if (byId.has(id)) void show(id, -1, false);
+      else location.reload();
+    });
+
+    // Swipe the photo: against the reading direction = next colour. A gentle nudge on the first product page of a
+    // visit shows that the photo can be swiped.
     let x0 = 0, y0 = 0, active = false;
     fig.addEventListener("touchstart", (e) => { const t = e.touches[0]!; x0 = t.clientX; y0 = t.clientY; active = true; }, { passive: true });
     fig.addEventListener("touchend", (e) => {
@@ -175,13 +312,10 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       const t = e.changedTouches[0]!;
       const dx = t.clientX - x0, dy = t.clientY - y0;
       if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-      const towardStart = rtl ? dx > 0 : dx < 0; // finger moved against the reading direction = next
-      fig.classList.add(towardStart ? "leaving-next" : "leaving-prev");
-      go(towardStart);
+      step((rtl ? dx > 0 : dx < 0) ? 1 : -1);
     }, { passive: true });
-    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let seen = false;
     try { seen = sessionStorage.getItem("vicuna-swipe-hint") === "1"; sessionStorage.setItem("vicuna-swipe-hint", "1"); } catch { /* ignore */ }
-    if (!calm && !seen) setTimeout(() => fig.classList.add("nudge"), 700);
+    if (!calm && !seen && available().length > 1) setTimeout(() => fig.classList.add("nudge"), 700);
   }
 </script>
