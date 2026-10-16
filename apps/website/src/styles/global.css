@@ -641,8 +641,6 @@ dialog.cart::backdrop { background: rgb(22 22 22 / .35); backdrop-filter: blur(2
 .pdp-media { min-width: 0; }
 .pdp-photo { border-radius: 2px; box-shadow: 0 0 0 1px var(--line); background: #fff; }
 .intro-cover { position: relative; }
-.film-sound { position: absolute; bottom: 14px; inset-inline-start: 14px; z-index: 2; min-height: 36px; padding: 0 14px; border: 0; border-radius: 2px; background: rgb(0 0 0 / .6); color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
-.film-sound:hover { background: #000; }
 .intro-values-line { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; line-height: 1.9; }
 /* Policy links (owner, 2026-10-10): small and quiet, but always present and readable. */
 .fine-print { margin-top: 28px; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.8; }
@@ -1199,7 +1197,7 @@ dialog.menu::backdrop { background: rgb(10 14 28 / .38); backdrop-filter: blur(1
 /* ---------- soft corners (owner, 2026-10-16): no sharp square edges anywhere; buttons, photos, cards and
    fields are gently rounded, small labels are pills. ---------- */
 :root { --r-sm: 12px; --r-md: 18px; --r-lg: 24px; }
-.btn, .btn-berry, .quick-add, .lux-btn, .film-sound, .cart-qty button { border-radius: var(--r-sm); }
+.btn, .btn-berry, .quick-add, .lux-btn, .cart-qty button { border-radius: var(--r-sm); }
 .tag, .price-pill, .count-chip, .pill, .soldout { border-radius: 999px; }
 .card-media, .pdp-photo, .pdp-look, .pdp-look img, .sg-media, .style-film, .style-film video, .sd-item, .lux-slide-media, .lux-tile, .lux-tile img, .lux-tile video,
 .post, .post img, .article .cover, .prose img, .intro-cover, .bh-media, .detail-media, .style-collage span, .card-look { border-radius: var(--r-md); }

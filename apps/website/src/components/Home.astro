@@ -19,8 +19,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
 
 <section class="intro-hero bw-hero">
   <figure class="intro-cover">
-    <video id="home-film" data-motion src="/video/pattern-brown.mp4" poster="/video/pattern-brown.webp" muted loop playsinline preload="metadata" width="704" height="1280"></video>
-    <button type="button" class="film-sound" data-film-sound aria-pressed="false">{ar ? "تشغيل الصوت" : "Sound on"}</button>
+    <video data-motion src="/video/pattern-brown.mp4" poster="/video/pattern-brown.webp" muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
@@ -64,19 +63,3 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
     </p>
   </div>
 </section>
-
-<script>
-  // Browsers only autoplay muted video; the visitor turns the sound on with this button.
-  const film = document.getElementById("home-film") as HTMLVideoElement | null;
-  const sound = document.querySelector<HTMLButtonElement>("[data-film-sound]");
-  if (film && sound) {
-    const on = document.documentElement.lang === "ar" ? "إيقاف الصوت" : "Sound off";
-    const off = sound.textContent ?? "";
-    sound.addEventListener("click", () => {
-      film.muted = !film.muted;
-      if (!film.muted) void film.play();
-      sound.setAttribute("aria-pressed", String(!film.muted));
-      sound.textContent = film.muted ? off : on;
-    });
-  }
-</script>
