@@ -3,10 +3,10 @@ title: "الحزام للجسم الممتلئ: إزاي تختاريه وتلب
 slug: "belt-for-curvy-women"
 description: "دليل بسيط لاختيار حزام الوسط للجسم الممتلئ: العرض المناسب، مكان الربط، الألوان، والخامة المريحة. أحزمة فيكونا بتلبس لحد 90 كيلو وفيها ليكرا طرية."
 datePublished: "2026-10-05"
-image: "/img/products/wide-tie-mustard.webp"
-imageWidth: 900
-imageHeight: 900
-imageAlt: "حزام فيكونا برباط عريض بلون الخردل"
+image: "/img/looks/wide-tie-burgundy-1200.webp"
+imageWidth: 1200
+imageHeight: 1500
+imageAlt: "حزام عنابي عريض برباط عريض متربط فيونكة على الوسط فوق قميص وبنطلون فاتح"
 products:
   - wide-tie-burgundy
   - wide-tie-mustard

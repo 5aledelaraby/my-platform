@@ -26,7 +26,7 @@ interface Props {
   theme?: "belts" | "neutral";
 }
 
-const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/hero-1200.webp", theme = "belts" } = Astro.props;
+const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/looks/wide-tie-mustard-1200.webp", theme = "belts" } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();

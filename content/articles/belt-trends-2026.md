@@ -3,10 +3,10 @@ title: "ترند الأحزمة 2026: العريض والفيونكة والمع
 slug: "belt-trends-2026"
 description: "أحزمة الخصر من أهم إكسسوارات 2026. اعرفي أبرز الترندات: الحزام العريض، الفيونكة، الألوان الترابية والعنابي، المعدني الدهبي والفضي، والنقشات، وإزاي تلبسيها."
 datePublished: "2026-10-05"
-image: "/img/products/wide-tie-burgundy.webp"
-imageWidth: 900
-imageHeight: 900
-imageAlt: "حزام عنابي عريض برباط عريض على خلفية بيضا"
+image: "/img/looks/ruffle-red-1200.webp"
+imageWidth: 1200
+imageHeight: 1500
+imageAlt: "حزام كشكشة أحمر على الوسط فوق قميص أبيض وجينز"
 products:
   - wide-tie-burgundy
   - wide-tie-green

@@ -3,10 +3,10 @@ title: "إزاي تربطي حزام الوسط بالربط: 5 طرق سهلة 
 slug: "how-to-tie-wrap-belt"
 description: "5 طرق لربط حزام الوسط: الفيونكة الكلاسيك، الفيونكة على جنب، العقدة بطرف نازل، اللفة المزدوجة، والعقدة المخفية. خطوات بسيطة ونصايح عشان الحزام يفضل ثابت."
 datePublished: "2026-10-05"
-image: "/img/products/wide-tie-burgundy.webp"
-imageWidth: 900
-imageHeight: 900
-imageAlt: "حزام عنابي برباط عريض على خلفية فاتحة"
+image: "/img/looks/wide-tie-green-1200.webp"
+imageWidth: 1200
+imageHeight: 1500
+imageAlt: "حزام أخضر عريض متربط عقدة وطرفه الطويل نازل فوق فستان أبيض"
 products:
   - wide-tie-white
 ---
@@ -56,7 +56,7 @@ products:
 
 الحزام هيبان كأنه قطعة واحدة ملفوفة على الوسط. لوك هادي ومودرن.
 
-![حزام دانتيل أسود مربوط فيونكة صغيرة على الوسط](/img/mood-lace.webp)
+![حزام وردي برباط رفيع متربط فيونكة صغيرة على الوسط](/img/looks/thin-tie-rose-1200.webp)
 
 ## نصايح عشان الحزام يفضل ثابت
 

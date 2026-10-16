@@ -3,10 +3,10 @@ title: "حزام مع العباية: 6 طرق شيك للمحجبات من غي
 slug: "belt-with-abaya"
 description: "إزاي تلبسي حزام مع العباية المفتوحة والمقفولة والكيمونو؟ 6 طرق سهلة للمحجبات، وإزاي تختاري لون الحزام وعرضه، مع صور حقيقية من زبونات فيكونا."
 datePublished: "2026-10-05"
-image: "/img/products/lace-white.webp"
-imageWidth: 900
-imageHeight: 900
-imageAlt: "حزام فيكونا دانتيل أبيض"
+image: "/img/looks/pattern-brown-2-1200.webp"
+imageWidth: 1200
+imageHeight: 1500
+imageAlt: "حزام بنقشة مميزة على عباية زيتي واسعة"
 products:
   - thin-tie-camel
 ---

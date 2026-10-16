@@ -9,7 +9,6 @@ export interface HomeCopy {
   lead: string;
   cta: string;
   ctaWhatsapp: string;
-  heroAlt: string;
   trust: readonly string[];
   stylesEyebrow: string;
   stylesTitle: string;
@@ -35,7 +34,6 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     lead: "من جلد PU، بخمسة تصميمات وألوان كثيرة، للفستان والبلوزة والجاكيت. توصيل لكل محافظات مصر.",
     cta: "تسوّقي الأحزمة",
     ctaWhatsapp: "تحدّثي إلينا على واتساب",
-    heroAlt: "ثلاثة أحزمة خصر من فيكونا على مجسّمات عرض: بني بعقدة، وأبيض بفيونكة، وأسود بكشكشة",
     trust: [`توصيل خلال ${d} أيام عمل`, `استرجاع خلال ${r} يومًا`, "الدفع عند الاستلام أو InstaPay", `مقاس يناسب حتى ${kg} كجم`],
     stylesEyebrow: "المجموعات",
     stylesTitle: "كل الأحزمة",
@@ -61,7 +59,6 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     lead: "In PU leather, in five designs and many colours, for dresses, blouses and jackets. Delivery to every governorate in Egypt.",
     cta: "Shop the belts",
     ctaWhatsapp: "Chat on WhatsApp",
-    heroAlt: "Three Vicuna waist belts on display mannequins: brown with a knot, white with a bow, black with ruffles",
     trust: [`Delivery in ${d} working days`, `${r}-day returns`, "Cash on delivery or InstaPay", `Fits up to ${kg} kg`],
     stylesEyebrow: "Collections",
     stylesTitle: "All belts",
