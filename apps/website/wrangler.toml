@@ -4,8 +4,12 @@ name = "vicuna-site"
 # belts using the live stock (ADR 0013).
 main = "src/worker.ts"
 compatibility_date = "2026-10-01"
+# Two Workers from this one file (owner, 2026-10-17: edits are tried on staging before they go public):
+#   vicuna-site             = staging.vicuna-eg.com, built from the `staging` branch with DEPLOY_ENV=staging
+#                             (`npx wrangler deploy`)
+#   vicuna-site-production  = vicuna-eg.com, built from `main` with DEPLOY_ENV=production
+#                             (`npx wrangler deploy --env production`, see [env.production] at the end)
 # Top-level key: must stay above the first [table], or TOML attaches it to that table and wrangler ignores it.
-# Staging domain. Production (vicuna-eg.com) is added at cutover.
 routes = [{ pattern = "staging.vicuna-eg.com", custom_domain = true }]
 # No workers.dev address and no preview links: they would be extra, indexable copies of the site.
 workers_dev = false
@@ -20,5 +24,17 @@ run_worker_first = ["/collections/vicuna-belts/*", "/en/collections/vicuna-belts
 
 # The order API Worker, called directly (not over the internet) for GET /api/stock.
 [[services]]
+binding = "API"
+service = "vicuna-api"
+
+# The public site. Its Workers Builds project deploys `main` only, so nothing reaches vicuna-eg.com before the owner
+# says "publish to the public". Routes, workers_dev and bindings are written again here: an environment does not
+# inherit them. The assets and the Worker code are the same as staging's; only the build (DEPLOY_ENV) differs.
+[env.production]
+routes = [{ pattern = "vicuna-eg.com", custom_domain = true }]
+workers_dev = false
+preview_urls = false
+
+[[env.production.services]]
 binding = "API"
 service = "vicuna-api"
