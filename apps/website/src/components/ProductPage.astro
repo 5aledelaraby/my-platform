@@ -8,7 +8,7 @@ import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
 import { langPath, site } from "../site.ts";
-import { lookOf } from "../lib/looks.ts";
+import { looksOf } from "../lib/looks.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang; product: CatalogProduct }
@@ -22,7 +22,7 @@ const siblings = productsOfStyle(product.style);
 const idx = siblings.findIndex((s) => s.id === product.id);
 const nextP = siblings.length > 1 ? siblings[(idx + 1) % siblings.length]! : null;
 const prevP = siblings.length > 1 ? siblings[(idx - 1 + siblings.length) % siblings.length]! : null;
-const look = lookOf(product);
+const looks = looksOf(product);
 const related = styles.filter((x) => x.id !== product.style).slice(0, 4).map((x) => coverOf(x.id));
 const info = ar
   ? [
@@ -118,10 +118,14 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       </ul>
       <p class="pdp-intro muted">{st.intro}</p>
     </div>
-    {look && (
-      <figure class="pdp-look reveal">
-        <img src={look.src} srcset={look.srcset} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? `${name} على الخصر` : `${name}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
-      </figure>
+    {looks.length > 0 && (
+      <div class="pdp-looks">
+        {looks.map((look) => (
+          <figure class="pdp-look reveal">
+            <img src={look.src} srcset={look.srcset} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? `${name} على الخصر` : `${name}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
+          </figure>
+        ))}
+      </div>
     )}
   </div>
   <section class="wrap">

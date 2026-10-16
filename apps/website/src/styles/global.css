@@ -817,7 +817,7 @@ body { line-height: 1.8; }
   .product { grid-template-columns: 1.15fr 1fr; grid-template-areas: "media info" "look info"; gap: 24px 56px; }
   .pdp-media { grid-area: media; }
   .pdp-info { grid-area: info; align-self: start; }
-  .pdp-look { grid-area: look; }
+  .pdp-looks { grid-area: look; }
 }
 
 /* how to tie, why us, FAQ: thin lines instead of boxes */
@@ -1039,3 +1039,11 @@ main:has(> .lux:last-child) + .site-footer { margin-top: 0; border-top: 1px soli
 @media (min-width: 960px) { .style-film { max-width: 440px; aspect-ratio: 3 / 4; } }
 @media (prefers-reduced-motion: no-preference) { .style-film video { animation: lux-settle 2.6s var(--ease-soft) both; } }
 .style-collage:has(> span:only-child) { grid-template-columns: minmax(0, 280px); justify-content: center; }
+.pdp-looks { display: grid; gap: 12px; }
+@media (min-width: 900px) { .pdp-looks { gap: 24px; } }
+/* pattern page mosaic: the film tall on one side, the on-model photos two by two */
+@media (min-width: 900px) {
+  .lux-mosaic { grid-template-columns: 1.1fr 1fr 1fr; grid-auto-rows: auto; }
+  .lux-tile-film { grid-row: span 2; aspect-ratio: auto; min-height: 100%; }
+  .lux-tile:not(.lux-tile-film) { aspect-ratio: 4 / 5; }
+}

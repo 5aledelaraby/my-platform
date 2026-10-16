@@ -8,7 +8,7 @@ import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import Icon from "./ui/Icon.astro";
 import { beltsUrl, coverOf, imageOf, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText } from "../store.ts";
-import { lookOf } from "../lib/looks.ts";
+import { looksOf } from "../lib/looks.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -38,7 +38,7 @@ const facts = ar
   ? [["الخامة", "جلد PU بنقشة بارزة"], ["الربط", "رباط رفيع يضبط على مقاس الخصر"], ["التوصيل", `لكل مصر خلال ${site.deliveryDays} أيام عمل، والدفع عند الاستلام`]]
   : [["Material", "PU leather with a raised pattern"], ["Tie", "A thin tie that adjusts to your waist"], ["Delivery", `Across Egypt in ${site.deliveryDays} working days, cash on delivery`]];
 // On-model photos of the colours, for the "on the move" section.
-const looks = list.map((p) => ({ p, look: lookOf(p) })).filter((x) => x.look !== null);
+const looks = list.flatMap((p) => looksOf(p).map((look) => ({ p, look })));
 const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
@@ -113,7 +113,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
           </figure>
           {looks.map(({ p, look }, i) => (
             <figure class="lux-tile reveal" style={`--i:${i + 1}`}>
-              <img src={look!.src} srcset={look!.srcset} sizes="(min-width: 960px) 30vw, 50vw" alt={ar ? `${productName(lang, p)} على الخصر` : `${productName(lang, p)}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
+              <img src={look.src} srcset={look.srcset} sizes="(min-width: 960px) 30vw, 50vw" alt={ar ? `${productName(lang, p)} على الخصر` : `${productName(lang, p)}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
               <figcaption><a href={beltsUrl(lang, p.id)}>{shadeName(lang, p)}</a></figcaption>
             </figure>
           ))}
