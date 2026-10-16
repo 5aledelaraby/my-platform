@@ -1,4 +1,4 @@
-Copyright 2009 The Cairo Project Authors (https://github.com/Gue3bara/Cairo)
+Copyright © 2017 IBM Corp. with Reserved Font Name "Plex" (IBM Plex Sans Arabic)
 El Messiri and Marcellus (Astigmatic) are distributed under the same SIL Open Font License 1.1.
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.

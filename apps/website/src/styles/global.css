@@ -17,8 +17,8 @@
   --soft: var(--cream);
   --line: rgb(0 0 0 / .08);
   --max: 1280px;
-  --font-body: "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "El Messiri", "Cairo", serif;
+  --font-body: "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "El Messiri", "IBM Plex Sans Arabic", serif;
   --font-latin: "Marcellus", Georgia, serif;
   --ease-soft: cubic-bezier(.22, 1, .36, 1);
   --ease-bounce: cubic-bezier(.34, 1.56, .64, 1);
@@ -1148,3 +1148,96 @@ h1.has-sparkles { width: fit-content; max-width: 100%; }
 .to-top:focus-visible { outline: 2px solid #c9a96b; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .to-top, .to-top.show { transition: none; transform: none; } }
 @media print { .to-top { display: none; } }
+
+/* ---------- menu (owner, 2026-10-16): a floating navy panel over a blurred page, every link a tile with a small
+   icon, the designs and policies as groups that open, light/dark and language switches at the bottom. ---------- */
+dialog.menu {
+  --m-bg: #101a36; --m-tile: rgb(255 255 255 / .045); --m-line: rgb(255 255 255 / .09); --m-text: #eef0f6; --m-dim: #9aa3bd; --m-gold: #d4b77c;
+  width: min(360px, calc(100vw - 20px)); height: calc(100dvh - 20px); max-height: none; margin: 10px; margin-inline-end: auto;
+  border: 1px solid var(--m-line); border-radius: 26px; padding: 0; overflow: hidden;
+  background: radial-gradient(120% 60% at 100% 0%, rgb(212 183 124 / .14), transparent 60%), linear-gradient(180deg, #14204a 0%, var(--m-bg) 55%, #0b1229 100%);
+  color: var(--m-text); box-shadow: 0 30px 80px -20px rgb(0 0 0 / .6);
+}
+dialog.menu::backdrop { background: rgb(10 14 28 / .38); backdrop-filter: blur(14px) saturate(1.1); -webkit-backdrop-filter: blur(14px) saturate(1.1); }
+.menu-inner { display: flex; flex-direction: column; height: 100%; min-height: 0; padding: 0; overflow: hidden; }
+.menu-head { display: flex; align-items: center; justify-content: space-between; margin: 0; padding: 16px 16px 14px; border-bottom: 1px solid var(--m-line); }
+.menu-head .logo-en, .menu-head .logo-sub { color: var(--m-text); }
+.menu-close { display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid rgb(255 255 255 / .28); border-radius: 14px; background: rgb(255 255 255 / .12); color: #fff; cursor: pointer; transition: background .2s, transform .2s; }
+.menu-close:hover { background: rgb(255 255 255 / .2); }
+.menu-close:active { transform: scale(.94); }
+.menu-close:focus-visible { outline: 2px solid var(--m-gold); outline-offset: 2px; }
+.menu-nav { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 12px; }
+.menu-tiles, .tile-sub { list-style: none; margin: 0; padding: 0; }
+.menu-tiles { display: grid; gap: 6px; }
+.tile { position: relative; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 7px 10px; border-radius: 16px; color: var(--m-text); font-family: var(--font-body); font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer; list-style: none; transition: background .2s; }
+.tile::-webkit-details-marker { display: none; }
+.tile:hover { background: var(--m-tile); }
+.tile:focus-visible { outline: 2px solid var(--m-gold); outline-offset: 1px; border-radius: 16px; }
+.tile-icon { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px; background: rgb(255 255 255 / .07); border: 1px solid var(--m-line); color: #c9cfe0; }
+.tile-label { flex: 1; }
+.tile-chev { display: grid; color: var(--m-dim); transition: transform .3s var(--ease-soft); }
+.tile-group[open] > .tile .tile-chev { transform: rotate(180deg); }
+.tile[aria-current] { background: linear-gradient(90deg, rgb(212 183 124 / .2), rgb(212 183 124 / .08)); color: #fff; }
+[dir="rtl"] .tile[aria-current] { background: linear-gradient(270deg, rgb(212 183 124 / .2), rgb(212 183 124 / .08)); }
+.tile[aria-current] .tile-icon { color: var(--m-gold); border-color: rgb(212 183 124 / .35); background: rgb(212 183 124 / .12); }
+.tile[aria-current]::before { content: ""; position: absolute; inset-inline-start: -2px; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--m-gold); }
+.tile-sub { display: grid; gap: 2px; margin: 4px 0 6px; padding-inline-start: 60px; }
+.tile-sub a { display: block; padding: 8px 10px; border-radius: 10px; color: var(--m-dim); font-size: 14px; font-weight: 500; text-decoration: none; }
+.tile-sub a:hover { color: #fff; background: var(--m-tile); }
+.tile-sub a[aria-current] { color: var(--m-gold); }
+.menu-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 12px calc(14px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--m-line); background: rgb(0 0 0 / .18); }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--m-line); border-radius: 16px; background: rgb(255 255 255 / .04); }
+.seg > * { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 40px; padding: 0 6px; border: 0; border-radius: 12px; background: none; color: var(--m-dim); font: inherit; font-size: 13.5px; font-weight: 600; text-decoration: none; cursor: pointer; }
+.seg > * svg { width: 17px; height: 17px; }
+.seg > [aria-pressed="true"], .seg > .seg-on { background: rgb(255 255 255 / .1); color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .08); }
+.seg > [aria-pressed="true"] svg { color: var(--m-gold); }
+.seg > .menu-lang { margin: 0; padding: 0 6px; box-shadow: none; font-weight: 600; }
+.seg > *:focus-visible { outline: 2px solid var(--m-gold); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { dialog.menu[open] { animation: none; } }
+
+/* ---------- dark mode (owner, 2026-10-16): chosen in the menu. Same layout and type, inverted to a warm black;
+   product photos keep their light tinted ground so the belts' colours stay true. ---------- */
+.logo-mark-dark { display: none; }
+:root[data-mode="dark"] {
+  color-scheme: dark;
+  --ink: #f2ede4; --berry: #f2ede4; --berry-dark: #ffffff; --muted: #aaa398; --line: rgb(255 255 255 / .1);
+  --petal: #1d1b19; --rose: #4a453f; --peach: #161514; --cream: #1a1917; --soft: #1a1917; --photo: #efebe4; --white: #0f0e0d;
+}
+:root[data-mode="dark"] body { background: #0f0e0d; color: #e9e3d8; }
+:root[data-mode="dark"] .logo-mark:has(+ .logo-mark-dark) { display: none; }
+:root[data-mode="dark"] .logo-mark-dark { display: block; }
+:root[data-mode="dark"] .logo-en, :root[data-mode="dark"] .logo-sub { color: #f2ede4; }
+:root[data-mode="dark"] .site-header { background: rgb(15 14 13 / .9); border-bottom: 1px solid var(--line); }
+:root[data-mode="dark"] .design-bar { background: transparent; border-color: var(--line); }
+:root[data-mode="dark"] .design-bar a { color: #a9a296; }
+:root[data-mode="dark"] .design-bar a[aria-current] { color: #fff; }
+:root[data-mode="dark"] .lang-switch, :root[data-mode="dark"] .nav-pill { background: transparent; color: #f2ede4; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .25); }
+:root[data-mode="dark"] .icon-btn { color: #f2ede4; }
+:root[data-mode="dark"] .bag-shine { background: #f2ede4; color: #111; }
+:root[data-mode="dark"] .btn, :root[data-mode="dark"] .btn-berry { background: #f2ede4; color: #111; }
+:root[data-mode="dark"] .btn:hover { background: #fff; color: #000; }
+:root[data-mode="dark"] .btn-white, :root[data-mode="dark"] .btn.ghost, :root[data-mode="dark"] .btn-outline { background: transparent; color: #f2ede4; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .35); }
+:root[data-mode="dark"] .btn-white:hover, :root[data-mode="dark"] .btn.ghost:hover { background: rgb(255 255 255 / .08); color: #fff; }
+:root[data-mode="dark"] .muted, :root[data-mode="dark"] .lead, :root[data-mode="dark"] .lede, :root[data-mode="dark"] .hero-sub { color: #b3ac9f; }
+:root[data-mode="dark"] :is(.page-hero-box, .bh-hero, .intro-text, .intro-split, .intro-contact) { background: #151413; }
+:root[data-mode="dark"] :is(.card-media, .pdp-photo, .sg-media, .pdp-look, .style-detail-media img) { background-color: #efebe4; }
+:root[data-mode="dark"] .glow { background: radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--tint, #efebe4) 26%, #fff) 0%, color-mix(in srgb, var(--tint, #efebe4) 12%, #f1ede6) 50%, #e6e0d5 80%); }
+:root[data-mode="dark"] .pdp-photo.glow { background: radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--tint, #efebe4) 26%, #fff) 0%, color-mix(in srgb, var(--tint, #efebe4) 12%, #f1ede6) 50%, #e6e0d5 80%); }
+:root[data-mode="dark"] :is(.pdp-arrow, .sg-nav) { background: rgb(255 255 255 / .92); color: #161616; }
+:root[data-mode="dark"] .pdp-count { color: #6f6a6b; }
+:root[data-mode="dark"] :is(.tag, .price-pill, .count-chip) { background: transparent; color: #d8d1c4; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .2); }
+:root[data-mode="dark"] .quick-add { background: rgb(15 14 13 / .82); color: #f2ede4; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .15); }
+:root[data-mode="dark"] .quick-add:hover { background: #f2ede4; color: #111; }
+:root[data-mode="dark"] :is(.spec-card, .faq details, .tie-card, .soft-card, .perk, .style-tile, .post, .filter, .toast, .consent, .contact-card, .policy, .form-card) { background: #181716; color: #e9e3d8; box-shadow: 0 0 0 1px var(--line); }
+:root[data-mode="dark"] .filter { background: transparent; box-shadow: none; }
+:root[data-mode="dark"] .filter .pill { background: transparent; color: #f2ede4; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .3); }
+:root[data-mode="dark"] .wear-chips li { background: #1d1b19; color: #f2ede4; }
+:root[data-mode="dark"] .wear-chips li:hover { background: #26231f; }
+:root[data-mode="dark"] .wear-title { color: #aaa398; }
+:root[data-mode="dark"] :is(input, select, textarea) { background: #181716; color: #f2ede4; border-color: rgb(255 255 255 / .2); }
+:root[data-mode="dark"] dialog.cart { background: #141312; color: #e9e3d8; }
+:root[data-mode="dark"] .site-footer { border-top: 1px solid var(--line); }
+:root[data-mode="dark"] .to-top { background: #f2ede4; color: #111; box-shadow: 0 0 0 1.5px rgb(0 0 0 / .4); }
+:root[data-mode="dark"] ::selection { background: #4a453f; color: #fff; }
+:root[data-mode="dark"] .announce { background: #000; }
+:root[data-mode="dark"] .skip { background: #181716; }

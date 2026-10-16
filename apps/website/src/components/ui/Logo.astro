@@ -9,6 +9,8 @@ const w = Math.round((size * 268) / 242);
 
 <span class="logo">
   <img class="logo-mark" src={`/brand/${mark}-96.png`} srcset={`/brand/${mark}-96.png 1x, /brand/${mark}-192.png 2x`} width={w} height={size} alt="" decoding="async" />
+  {/* In dark mode the light mark takes over; it loads only when shown (lazy, hidden otherwise). */}
+  {!light && <img class="logo-mark logo-mark-dark" src="/brand/vicuna-mark-light-96.png" srcset="/brand/vicuna-mark-light-96.png 1x, /brand/vicuna-mark-light-192.png 2x" width={w} height={size} alt="" loading="lazy" decoding="async" />}
   <span class="logo-word" lang="en">
     <span class="logo-en">VICUNA</span>
     <span class="logo-sub">DESIGNS</span>

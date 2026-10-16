@@ -65,9 +65,11 @@ const announce = ar
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
+    {/* Light or dark, as chosen in the menu on this device; applied before the page paints so it never flashes. */}
+    <script is:inline>try{if(localStorage.getItem("vicuna-mode")==="dark"){document.documentElement.dataset.mode="dark";}}catch(e){}</script>
     <meta name="theme-color" content={theme === "neutral" ? "#f4f1ec" : "#ffffff"} />
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
-    <link rel="preload" href={lang === "ar" ? "/fonts/cairo-arabic-400-normal.woff2" : "/fonts/cairo-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={lang === "ar" ? "/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2" : "/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={lang === "ar" ? "/fonts/el-messiri-arabic-700-normal.woff2" : "/fonts/el-messiri-latin-700-normal.woff2"} as="font" type="font/woff2" crossorigin />
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
     {/* Browsers that support it fetch a page in the background as soon as a finger or the mouse rests on its link,
