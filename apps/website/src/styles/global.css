@@ -1276,3 +1276,35 @@ dialog.menu { border-radius: 26px; }
   .lux-tile-film-end { grid-column: 4; grid-row: 1 / span 2; }
   .lux-tile:not(.lux-tile-film) { aspect-ratio: 4 / 5; }
 }
+
+/* ---------- design pages (owner, 2026-10-16): photos first. One large photo that moves sideways (on-model
+   photos, then the film and close-ups), then the title, then the belts. ---------- */
+.style-top { display: grid; gap: 22px; max-width: 1400px; margin: 0 auto; padding: 0 0 8px; }
+.style-stage.style-gallery { max-width: none; width: 100%; }
+.style-stage .sg-photo { position: relative; }
+.style-stage .sg-slide { padding-inline: 12px; }
+.sg-shot { position: relative; display: block; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--r-md); background: #ebe7e0; text-decoration: none; color: #fff; }
+.sg-shot img, .sg-shot video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; transition: transform 1.2s var(--ease-soft); }
+.sg-shot:hover img { transform: scale(1.03); }
+.sg-over { position: absolute; inset-inline: 0; bottom: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 64px 20px 18px; background: linear-gradient(transparent, rgb(0 0 0 / .55)); color: #fff; font-size: 15px; }
+.sg-over span { font-family: var(--font-display); font-size: 21px; font-weight: 700; }
+.sg-over small { font-size: 12px; opacity: .85; }
+.style-stage .film-toggle { bottom: auto; top: 14px; }
+.style-stage .sg-nav { top: calc(62.5cqw - 22px); }
+.style-stage .sg-dots { margin-top: 14px; }
+.style-intro { padding: 4px var(--gutter) 0; }
+.style-intro .crumbs .wrap { padding: 0; }
+.style-intro h1 { margin-top: 6px; }
+.style-intro .hero-sub { margin-top: 8px; font-weight: 700; }
+.style-intro .lead { margin-top: 8px; color: var(--muted); max-width: 36em; }
+.style-intro .hero-actions { margin-top: 18px; }
+@media (min-width: 760px) {
+  .style-stage .sg-track:has(> .sg-slide + .sg-slide) .sg-slide { flex-basis: 50%; padding-inline: 6px; }
+  .style-stage:has(.sg-slide + .sg-slide) .sg-nav { top: calc(31.25cqw - 22px); }
+}
+@media (min-width: 960px) {
+  .style-top { grid-template-columns: 1.25fr 1fr; align-items: center; gap: 48px; padding: 18px var(--gutter) 8px; }
+  .style-stage .sg-track .sg-slide, .style-stage .sg-track:has(> .sg-slide + .sg-slide) .sg-slide { flex-basis: 100%; padding: 0; }
+  .style-stage .sg-nav, .style-stage:has(.sg-slide + .sg-slide) .sg-nav { top: calc(62.5cqw - 22px); }
+  .style-intro { padding: 0; }
+}
