@@ -1,5 +1,5 @@
 // On-model photos ("looks"): the belt worn with an outfit. Not every product has one, so the list is explicit:
-// product id -> how many photos it has. The first is /img/looks/<id>-<size>.webp, the next ones <id>-2-<size>.webp,
+// product id -> how many photos it has. The first is /img/looks/<id>-<size>.webp (sizes 640, 800 and 1200), the next ones <id>-2-<size>.webp,
 // <id>-3-<size>.webp... A test checks that every listed photo exists in both sizes and that no file is left unlisted.
 import type { CatalogProduct } from "@platform/commerce";
 
@@ -23,7 +23,7 @@ export const LOOK_COUNTS: Readonly<Record<string, number>> = {
 };
 
 export const LOOK_IDS: ReadonlySet<string> = new Set(Object.keys(LOOK_COUNTS));
-export const LOOK_SIZES = [640, 1200] as const;
+export const LOOK_SIZES = [640, 800, 1200] as const;
 
 export interface Look { src: string; srcset: string }
 

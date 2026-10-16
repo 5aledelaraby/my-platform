@@ -22,11 +22,14 @@ interface Props {
   noindex?: boolean;
   /** Social preview image, site-relative. Defaults to the brand photo. */
   image?: string;
+  /** The poster of the film that opens the page. It is fetched first and at high priority: a poster is otherwise
+      found late and fetched at low priority, and it is the largest thing on the first screen. */
+  lcpImage?: string;
   /** "belts": the red belts look. "neutral": calm colours for pages that are not about the belts (home, contact, policies). */
   theme?: "belts" | "neutral";
 }
 
-const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/looks/wide-tie-mustard-1200.webp", theme = "belts" } = Astro.props;
+const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/looks/wide-tie-mustard-1200.webp", theme = "belts", lcpImage } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
@@ -70,6 +73,7 @@ const announce = ar
     <script is:inline>try{if(localStorage.getItem("vicuna-mode")==="dark"){document.documentElement.dataset.mode="dark";}}catch(e){}</script>
     <meta name="theme-color" content={theme === "neutral" ? "#f4f1ec" : "#ffffff"} />
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
+    {lcpImage && <link rel="preload" href={lcpImage} as="image" type="image/webp" fetchpriority="high" />}
     <link rel="preload" href={lang === "ar" ? "/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2" : "/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={lang === "ar" ? "/fonts/el-messiri-arabic-700-normal.woff2" : "/fonts/el-messiri-latin-700-normal.woff2"} as="font" type="font/woff2" crossorigin />
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
@@ -153,6 +157,20 @@ const announce = ar
         blocked.forEach((v) => void v.play().then(() => blocked.delete(v), () => undefined));
       };
       for (const type of ["touchstart", "pointerdown", "keydown"]) addEventListener(type, retry, { passive: true });
+      // Posters of films further down the page (data-poster) load only as the visitor nears them, so they do not
+      // compete with the first screen.
+      const later = document.querySelectorAll<HTMLVideoElement>("video[data-poster]");
+      const showPoster = (v: HTMLVideoElement) => { v.poster = v.dataset["poster"] ?? ""; };
+      if ("IntersectionObserver" in window) {
+        const near = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            showPoster(e.target as HTMLVideoElement);
+            near.unobserve(e.target);
+          }
+        }, { rootMargin: "800px 0px" });
+        later.forEach((v) => near.observe(v));
+      } else later.forEach(showPoster);
       document.querySelectorAll<HTMLVideoElement>("video[data-motion]").forEach((video) => {
         const button = document.createElement("button");
         button.type = "button";

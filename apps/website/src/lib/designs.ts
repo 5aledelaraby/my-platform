@@ -94,10 +94,25 @@ export function colourCount(lang: Lang, n: number): string {
 export const stillSrcset = (s: Still): string => s.sizes.map((w) => `${s.src}-${w}.webp ${w}w`).join(", ");
 export const stillSrc = (s: Still): string => `${s.src}-${s.sizes[s.sizes.length - 1]}.webp`;
 
+/** The film that opens the home page. */
+export const HOME_FILM = "/video/pattern-brown";
+
+/** The poster of a design's lead film (the first thing a page with that film shows), or undefined for a photo lead. */
+export function leadPoster(styleId: string): string | undefined {
+  const d = designOf(styleId);
+  return d.lead.kind === "film" ? `${d.lead.src}.webp` : undefined;
+}
+
+/** Widths of a lead film's poster: <film>-360.webp and <film>-540.webp for small tiles, <film>.webp (704) in full. */
+export const POSTER_SIZES = [360, 540] as const;
+/** The srcset of a lead film's poster, so small tiles fetch a small file. */
+export const posterSrcset = (film: string): string =>
+  [...POSTER_SIZES.map((w) => `${film}-${w}.webp ${w}w`), `${film}.webp 704w`].join(", ");
+
 /** The lead visual of a design as plain data: its film, or else the on-model photo (4:5) to show instead. */
 export function leadOf(styleId: string, lang: Lang): { film?: string; img: { src: string; srcset?: string; w: number; h: number; alt: string } } {
   const d = designOf(styleId);
-  if (d.lead.kind === "film") return { film: d.lead.src, img: { src: `${d.lead.src}.webp`, w: 704, h: 1280, alt: "" } };
+  if (d.lead.kind === "film") return { film: d.lead.src, img: { src: `${d.lead.src}.webp`, srcset: posterSrcset(d.lead.src), w: 704, h: 1280, alt: "" } };
   const p = getProduct(d.lead.productId);
   const look = p ? looksOf(p)[0] : undefined;
   if (!p || !look) throw new Error(`Design ${styleId}: no on-model photo for ${d.lead.productId}`);

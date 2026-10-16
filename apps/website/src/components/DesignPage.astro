@@ -11,7 +11,7 @@ import Icon from "./ui/Icon.astro";
 import Sparkles from "./ui/Sparkles.astro";
 import { beltsUrl, coverOf, getProduct, hasHigherPrices, imageOf, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText, styles } from "../store.ts";
 import { looksOf } from "../lib/looks.ts";
-import { colourCount, colourHeading, designOf, stillSrc, stillSrcset } from "../lib/designs.ts";
+import { colourCount, colourHeading, designOf, leadOf, stillSrc, stillSrcset } from "../lib/designs.ts";
 import type { Film, Still } from "../lib/designs.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
@@ -56,17 +56,11 @@ const tiles: Tile[] = [...d.films.slice(0, 1), ...looks, ...d.stills, ...d.films
 const hasLooks = looks.length > 0;
 const pad = (n: number) => String(n).padStart(2, "0");
 const longName = t.name.length > 12;
-// The other designs, to move on to (in the store's order).
-const others = styles.filter((s) => s.id !== styleId).map((s) => {
-  const o = designOf(s.id);
-  const look = o.lead.kind === "look" ? getProduct(o.lead.productId) : undefined;
-  const photo = look ? looksOf(look)[0] : undefined;
-  const img = o.lead.kind === "film" ? { src: `${o.lead.src}.webp`, w: 704, h: 1280 } : photo ? { src: photo.src, w: 640, h: 800 } : { src: imageOf(coverOf(s.id)), w: 1200, h: 1200 };
-  return { id: s.id, name: styleText(lang, s.id).name, word: o.word, img };
-});
+// The other designs, to move on to (in the store's order), each with its lead visual (small files for the tiles).
+const others = styles.filter((s) => s.id !== styleId).map((s) => ({ id: s.id, name: styleText(lang, s.id).name, word: designOf(s.id).word, img: leadOf(s.id, lang).img }));
 ---
 
-<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd} image={imageOf(coverOf(styleId))}>
+<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd} image={imageOf(coverOf(styleId))} lcpImage={leadFilm ? `${leadFilm.src}.webp` : undefined}>
   <div class="lux">
     <section class="lux-hero">
       <figure class="lux-hero-media">
@@ -112,7 +106,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
             <article class="card lux-slide" data-color={p.color} data-product={p.id} data-slide aria-label={productName(lang, p)}>
               <a class="lux-slide-media glow" href={beltsUrl(lang, p.id)} tabindex="-1" aria-hidden="true" style={`--tint:${p.hex}`}>
                 <Sparkles />
-                <img src={imageOf(p)} srcset={srcsetOf(p)} sizes="(min-width: 960px) 56vw, 100vw" alt="" width="1200" height="1200" loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+                <img src={imageOf(p)} srcset={srcsetOf(p)} sizes="(min-width: 960px) 56vw, 100vw" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
               </a>
               <div class="lux-slide-info">
                 <p class="lux-count" dir="ltr" data-count>{pad(i + 1)} / {pad(list.length)}</p>
@@ -151,7 +145,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
             {tiles.map((x, i) =>
               x.kind === "film" ? (
                 <figure class="lux-tile lux-tile-film reveal" style={`--i:${i % 3}`}>
-                  <video data-motion src={`${x.src}.mp4`} poster={`${x.src}.webp`} muted loop playsinline preload="none" aria-hidden="true" width="704" height="1280"></video>
+                  <video data-motion src={`${x.src}.mp4`} data-poster={`${x.src}.webp`} muted loop playsinline preload="none" aria-hidden="true" width="704" height="1280"></video>
                   {x.caption && <figcaption>{x.caption[lang]}</figcaption>}
                 </figure>
               ) : x.kind === "look" ? (
@@ -181,7 +175,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
           <div class="lux-others-row">
             {others.map((o, i) => (
               <a class="lux-other reveal" href={beltsUrl(lang, o.id)} style={`--i:${i}`}>
-                <img src={o.img.src} alt="" width={o.img.w} height={o.img.h} loading="lazy" decoding="async" />
+                <img src={o.img.src} srcset={o.img.srcset} sizes="(min-width: 900px) 25vw, 44vw" alt="" width={o.img.w} height={o.img.h} loading="lazy" decoding="async" />
                 <span class="lux-other-text"><small lang="en">{o.word}</small><b>{o.name}</b></span>
               </a>
             ))}

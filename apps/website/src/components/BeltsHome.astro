@@ -42,9 +42,9 @@ const line2 = words(ar ? "اختاري تصميمك" : "Choose your design", lin
       <article class="wl-panel reveal" id={`d-${p.id}`}>
         <figure class="wl-media">
           {p.lead.film ? (
-            <video data-motion src={`${p.lead.film}.mp4`} poster={p.lead.img.src} muted loop playsinline preload={p.i === 0 ? "metadata" : "none"} aria-hidden="true" width={p.lead.img.w} height={p.lead.img.h}></video>
+            <video data-motion src={`${p.lead.film}.mp4`} poster={p.i === 0 ? p.lead.img.src : undefined} data-poster={p.i === 0 ? undefined : p.lead.img.src} muted loop playsinline preload={p.i === 0 ? "metadata" : "none"} aria-hidden="true" width={p.lead.img.w} height={p.lead.img.h}></video>
           ) : (
-            <img src={p.lead.img.src} srcset={p.lead.img.srcset} sizes="(min-width: 900px) 46vw, 100vw" alt={p.lead.img.alt} width={p.lead.img.w} height={p.lead.img.h} loading={p.i === 0 ? "eager" : "lazy"} decoding="async" />
+            <img src={p.lead.img.src} srcset={p.lead.img.srcset} sizes="(min-width: 900px) 46vw, 100vw" alt={p.lead.img.alt} width={p.lead.img.w} height={p.lead.img.h} loading={p.i === 0 ? "eager" : "lazy"} fetchpriority={p.i === 0 ? "high" : undefined} decoding="async" />
           )}
           <a class="wl-hit" href={beltsUrl(lang, p.id)} tabindex="-1" aria-hidden="true"></a>
         </figure>

@@ -1021,7 +1021,7 @@ main:has(> .lux:last-child) + .site-footer { margin-top: 0; border-top: 1px soli
 .design-bar { border-top: 1px solid var(--line); }
 .design-row { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .design-row::-webkit-scrollbar { display: none; }
-.design-row a { position: relative; flex: none; padding: 11px 12px; font-size: 13.5px; font-weight: 700; color: var(--muted); text-decoration: none; white-space: nowrap; transition: color .25s; }
+.design-row a { position: relative; flex: none; padding: 11px 12px; font-size: 13.5px; font-weight: 700; color: var(--muted); color: color-mix(in srgb, var(--muted) 85%, var(--ink)); text-decoration: none; white-space: nowrap; transition: color .25s; }
 .design-row a::after { content: ""; position: absolute; inset-inline: 12px; bottom: 0; height: 2px; background: var(--ink); transform: scaleX(0); transition: transform .35s var(--ease-soft); }
 .design-row a:hover { color: var(--ink); }
 .design-row a[aria-current="page"] { color: var(--ink); }

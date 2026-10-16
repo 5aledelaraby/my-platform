@@ -3,12 +3,13 @@ import Base from "../../layouts/Base.astro";
 import Home from "../../components/Home.astro";
 import { serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../../site.ts";
+import { HOME_FILM } from "../../lib/designs.ts";
 
 const title = "Vicuna | The waist belt that makes every outfit";
 const description = "Vicuna is a distinctive brand in leather making, website building and social media services. Waist belts that make every outfit, delivered across Egypt.";
 const jsonLd = serializeJsonLd(websiteJsonLd({ name: site.nameEn, url: `${site.url}/en/`, language: "en" }));
 ---
 
-<Base title={title} description={description} lang="en" altPath="/" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp">
+<Base title={title} description={description} lang="en" altPath="/" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp" lcpImage={`${HOME_FILM}.webp`}>
   <Home lang="en" />
 </Base>

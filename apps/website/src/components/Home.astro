@@ -4,7 +4,7 @@
 // them alike.
 import Icon from "./ui/Icon.astro";
 import SpiralArrow from "./ui/SpiralArrow.astro";
-import { leadOf } from "../lib/designs.ts";
+import { HOME_FILM, leadOf } from "../lib/designs.ts";
 import { langPath, site } from "../site.ts";
 import { beltsUrl, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
@@ -19,7 +19,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
 
 <section class="intro-hero bw-hero">
   <figure class="intro-cover">
-    <video data-motion src="/video/pattern-brown.mp4" poster="/video/pattern-brown.webp" muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
+    <video data-motion src={`${HOME_FILM}.mp4`} poster={`${HOME_FILM}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
@@ -49,7 +49,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
 <section class="wrap bw-lines reveal">
   <div>
     <h2>{ar ? "من نحن" : "About us"}</h2>
-    <p>{ar ? "علامة مصرية من القاهرة، بنصمم منتجات يدوية ومواقع إلكترونية." : "An Egyptian brand from Cairo: handmade products and websites."} <a class="textlink" href={langPath(lang, "/about/")}>{ar ? "اعرفي أكتر" : "More"}</a></p>
+    <p>{ar ? "علامة مصرية من القاهرة، بنصمم منتجات يدوية ومواقع إلكترونية." : "An Egyptian brand from Cairo: handmade products and websites."} <a class="textlink" href={langPath(lang, "/about/")}>{ar ? "اعرفي أكتر" : "More about us"}</a></p>
   </div>
   <div>
     <h2>{ar ? "لتجار الجملة" : "Wholesale"}</h2>

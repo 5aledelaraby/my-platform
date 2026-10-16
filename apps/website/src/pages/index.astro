@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Home from "../components/Home.astro";
 import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../site.ts";
+import { HOME_FILM } from "../lib/designs.ts";
 
 const title = "فيكونا | حزام الوسط اللي يفرق في كل لبسة";
 const description = "فيكونا علامة تجارية مميزة في تصنيع الجلود، وخدمات بناء المواقع والسوشيال ميديا. أحزمة وسط وخصر تفرق في كل لبسة، وتوصيل لكل مصر.";
@@ -21,6 +22,6 @@ const jsonLd = serializeJsonLd([
 ]);
 ---
 
-<Base title={title} description={description} lang="ar" altPath="/en/" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp">
+<Base title={title} description={description} lang="ar" altPath="/en/" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp" lcpImage={`${HOME_FILM}.webp`}>
   <Home lang="ar" />
 </Base>
