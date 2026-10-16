@@ -1682,3 +1682,5 @@ span.shine, a.shine { padding-block: .14em; margin-block: -.14em; }
   :is(.btn, .wl-cta, .bw-head-link):hover { animation-play-state: paused; }
 }
 @keyframes cta-breathe { 0%, 72%, 100% { scale: 1; } 82% { scale: 1.06; } 91% { scale: .98; } }
+/* a mosaic of one photo: one centred tile, not half a grid */
+.lux-mosaic.single { columns: 1; max-width: 520px; margin-inline: auto; }

@@ -147,7 +147,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
             <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>{hasLooks ? "ON THE MOVE" : "THE DETAILS"}</p>
             <h2 class="lux-h2">{hasLooks ? (ar ? "مع إطلالتك اليومية" : "With your everyday look") : (ar ? "التفاصيل عن قرب" : "Up close")}</h2>
           </header>
-          <div class="lux-mosaic">
+          <div class={`lux-mosaic${tiles.length === 1 ? " single" : ""}`}>
             {tiles.map((x, i) =>
               x.kind === "film" ? (
                 <figure class="lux-tile lux-tile-film reveal" style={`--i:${i % 3}`}>

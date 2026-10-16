@@ -43,10 +43,8 @@ export const designs: Readonly<Record<string, Design>> = {
     lead: { kind: "film", src: "/video/lace-detail" },
     films: [],
     stills: [
-      still("/img/editorial/lace-ivory-1", [640, 1200], 1200, 1500, { ar: "حزام وسط دانتيل أبيض بفيونكة ساتان", en: "A white lace waist belt with a satin bow" }, { ar: "الدانتيل الأبيض", en: "White lace" }),
-      still("/img/editorial/lace-bow", [640, 1200], 1200, 1200, { ar: "دانتيل الحزام وفيونكة الساتان، صورة مقرّبة", en: "The belt's lace and satin bow, close up" }, { ar: "فيونكة الساتان", en: "The satin bow" }),
-      still("/img/editorial/lace-ivory-2", [640, 1200], 1200, 1500, { ar: "فيونكة ساتان على دانتيل أبيض", en: "A satin bow on white lace" }, { ar: "تفاصيل الدانتيل", en: "Lace details" }),
-      still("/img/editorial/lace-light", [640, 1200], 1200, 1200, { ar: "دانتيل الحزام في الضوء", en: "The belt's lace in the light" }, { ar: "الدانتيل في الضوء", en: "Lace in the light" }),
+      // One close-up only (owner, 2026-10-17: the four lace photos looked like the same shot).
+      still("/img/editorial/lace-ivory-1", [640, 1200], 1200, 1500, { ar: "حزام وسط دانتيل أبيض بفيونكة ساتان", en: "A white lace waist belt with a satin bow" }, { ar: "الدانتيل وفيونكة الساتان", en: "Lace and a satin bow" }),
     ],
     specs: { ar: [], en: [] },
   },
