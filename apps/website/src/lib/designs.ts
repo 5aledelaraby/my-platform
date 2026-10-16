@@ -2,6 +2,8 @@
 // every design gets the "signature pattern" layout. The design's lead visual is its film when it has one, otherwise
 // one of its on-model photos. The rest (more films, close-ups) goes into the "on the move" mosaic with the looks.
 import type { Lang } from "../site.ts";
+import { getProduct, productName } from "../store.ts";
+import { looksOf } from "./looks.ts";
 
 type Words = Record<Lang, string>;
 
@@ -96,3 +98,14 @@ export function colourCount(lang: Lang, n: number): string {
 /** The images of a still at every size, for srcset. */
 export const stillSrcset = (s: Still): string => s.sizes.map((w) => `${s.src}-${w}.webp ${w}w`).join(", ");
 export const stillSrc = (s: Still): string => `${s.src}-${s.sizes[s.sizes.length - 1]}.webp`;
+
+/** The lead visual of a design as plain data: its film, or else the on-model photo (4:5) to show instead. */
+export function leadOf(styleId: string, lang: Lang): { film?: string; img: { src: string; srcset?: string; w: number; h: number; alt: string } } {
+  const d = designOf(styleId);
+  if (d.lead.kind === "film") return { film: d.lead.src, img: { src: `${d.lead.src}.webp`, w: 704, h: 1280, alt: "" } };
+  const p = getProduct(d.lead.productId);
+  const look = p ? looksOf(p)[0] : undefined;
+  if (!p || !look) throw new Error(`Design ${styleId}: no on-model photo for ${d.lead.productId}`);
+  const name = productName(lang, p);
+  return { img: { src: look.src, srcset: look.srcset, w: 640, h: 800, alt: lang === "ar" ? `${name} على الخصر` : `${name}, worn at the waist` } };
+}

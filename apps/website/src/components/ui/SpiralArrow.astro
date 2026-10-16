@@ -1,0 +1,11 @@
+---
+// A hand-drawn thread with one loop that ends in an arrow (owner, 2026-10-16), drawn in when its parent comes into
+// view (.reveal.in). It points toward the end of the line, so it is mirrored on Arabic pages.
+interface Props { class?: string }
+const { class: extra } = Astro.props;
+---
+
+<svg class={`spiral${extra ? ` ${extra}` : ""}`} viewBox="0 0 112 36" width="74" height="24" aria-hidden="true" focusable="false">
+  <path pathLength="1" d="M2 25C16 26 28 24 38 17C46 11 44 3 37 4C29 6 32 19 45 22C61 26 82 22 104 17" />
+  <path pathLength="1" class="spiral-head" d="M95 10.5L105 17L96 23.5" />
+</svg>

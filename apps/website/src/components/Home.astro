@@ -1,84 +1,68 @@
 ---
-// The home page (vicuna-eg.com): a calm introduction to Vicuna, not a belts page. Images are editorial
-// photos. It never shows the product grid or cart UI (ADR 0009); the belts are one of the sections.
-import ContactCards from "./ContactCards.astro";
+// The home page (vicuna-eg.com): a calm introduction to Vicuna, black on white and few words (owner, 2026-10-16).
+// It never shows the product grid or cart UI (ADR 0009): the designs appear as plain links to their pages, all of
+// them alike.
 import Icon from "./ui/Icon.astro";
-import Sparkles from "./ui/Sparkles.astro";
+import SpiralArrow from "./ui/SpiralArrow.astro";
+import { leadOf } from "../lib/designs.ts";
 import { langPath, site } from "../site.ts";
-import { beltsUrl } from "../store.ts";
+import { beltsUrl, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
-
-
-interface Section { title: string; text: string; href: string; external?: boolean }
-const sections: Section[] = [
-  {
-    title: ar ? "أحزمة الخصر" : "Waist belts",
-    text: ar ? "تصميمات من جلد PU والدانتيل بألوان كثيرة." : "Designs in PU leather and lace, in many colours.",
-    href: beltsUrl(lang),
-  },
-];
+const designs = styles.map((s) => ({ id: s.id, name: styleText(lang, s.id).name, img: leadOf(s.id, lang).img }));
+const title = (ar ? "حزام الوسط اللي يفرق في كل لبسة" : "The waist belt that makes every outfit").split(" ");
+const wa = `https://wa.me/${site.whatsappInternational}`;
 ---
 
-<section class="intro-hero">
+<section class="intro-hero bw-hero">
   <figure class="intro-cover">
     <video id="home-film" data-motion src="/video/pattern-brown.mp4" poster="/video/pattern-brown.webp" muted loop playsinline preload="metadata" width="704" height="1280"></video>
     <button type="button" class="film-sound" data-film-sound aria-pressed="false">{ar ? "تشغيل الصوت" : "Sound on"}</button>
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
-    <h1 class="has-sparkles">{ar ? "حزام الوسط اللي يفرق في كل لبسة" : "The waist belt that makes every outfit"}<Sparkles variant="b" /></h1>
-    <p class="lead">{ar ? "فيكونا علامة تجارية مميزة في تصنيع الجلود، وخدمات بناء المواقع والسوشيال ميديا." : "Vicuna is a distinctive brand in leather making, website building and social media services."}</p>
-    <div class="hero-actions">
+    <h1 class="wl-title bw-title">{title.map((w, i) => <span class="wl-word" style={`--w:${i}`}>{w} </span>)}</h1>
+    <p class="lead wl-word" style={`--w:${title.length + 1}`}>{ar ? "فيكونا علامة تجارية مميزة في تصنيع الجلود، وخدمات بناء المواقع والسوشيال ميديا." : "Vicuna is a distinctive brand in leather making, website building and social media services."}</p>
+    <div class="hero-actions wl-word" style={`--w:${title.length + 2}`}>
       <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي أحزمة الخصر" : "Shop waist belts"}</a>
-      <a class="btn btn-white" href={beltsUrl(lang, "pattern")}>{ar ? "حزام خصر بنقشة مميزة" : "The signature pattern waist belt"}</a>
     </div>
   </div>
 </section>
 
-<section class="wrap intro-split text-only reveal">
-  <div class="intro-copy">
+<section class="wrap bw-designs reveal">
+  <div class="bw-head">
+    <h2>{ar ? "أحزمة الخصر" : "Waist belts"}</h2>
+    <a class="wl-cta" href={beltsUrl(lang)}>{ar ? "شوفيها كلها" : "See them all"} <SpiralArrow /></a>
+  </div>
+  <div class="bw-row">
+    {designs.map((d) => (
+      <a class="bw-tile" href={beltsUrl(lang, d.id)}>
+        <img src={d.img.src} srcset={d.img.srcset} sizes="(min-width: 900px) 18vw, 42vw" alt="" width={d.img.w} height={d.img.h} loading="lazy" decoding="async" />
+        <span>{d.name}</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<section class="wrap bw-lines reveal">
+  <div>
     <h2>{ar ? "من نحن" : "About us"}</h2>
-    <p>
-      {ar
-        ? "فيكونا ديزاينز علامة مصرية مقرها القاهرة، نعمل في التصميم بأشكاله المختلفة: من المنتجات والإكسسوارات المصنوعة يدويًا، إلى تصميم المواقع الإلكترونية وبنائها."
-        : "Vicuna Designs is an Egyptian brand based in Cairo. We work across design: from handmade products and accessories to designing and building websites."}
+    <p>{ar ? "علامة مصرية من القاهرة، بنصمم منتجات يدوية ومواقع إلكترونية." : "An Egyptian brand from Cairo: handmade products and websites."} <a class="textlink" href={langPath(lang, "/about/")}>{ar ? "اعرفي أكتر" : "More"}</a></p>
+  </div>
+  <div>
+    <h2>{ar ? "لتجار الجملة" : "Wholesale"}</h2>
+    <p><a class="textlink" href={`mailto:${site.email}`}><bdi dir="ltr">{site.email}</bdi></a></p>
+  </div>
+  <div>
+    <h2>{ar ? "تواصلي معنا" : "Contact us"}</h2>
+    <p class="bw-contact">
+      <a class="btn" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "واتساب" : "WhatsApp"}</a>
+      <a class="textlink" href={langPath(lang, "/contact/")}>{ar ? "كل طرق التواصل" : "All the ways to reach us"}</a>
     </p>
-    <p><a class="textlink" href={langPath(lang, "/about/")}>{ar ? "اعرفي المزيد عنّا" : "More about us"}</a></p>
   </div>
-</section>
-
-<section class="wrap intro-split text-only reveal">
-  <div class="intro-copy">
-    <h2>{ar ? "أقسامنا" : "Our sections"}</h2>
-    <ul class="section-links">
-      {sections.map((s) => (
-        <li>
-          <a href={s.href} rel={s.external ? "noopener noreferrer" : undefined}>
-            <span><b>{s.title}</b><span class="muted">{s.text}</span></span>
-            <Icon name="arrow" size={18} class="dir-icon" />
-          </a>
-        </li>
-      ))}
-    </ul>
-  </div>
-</section>
-
-<section class="wrap intro-split text-only reveal wholesale">
-  <div class="intro-copy">
-    <h2>{ar ? "لتجار الجملة" : "For wholesale buyers"}</h2>
-    <p>{ar ? "لطلبات الجملة والكميات، تواصلوا معنا على الإيميل:" : "For wholesale and bulk orders, contact us by email:"} <a class="textlink" href={`mailto:${site.email}`}><bdi dir="ltr">{site.email}</bdi></a></p>
-  </div>
-</section>
-
-<section class="wrap intro-contact reveal">
-  <h2>{ar ? "تواصلي مع فريقنا" : "Contact our team"}</h2>
-  <p class="muted">{ar ? "عندكِ سؤال؟ نحن هنا لمساعدتكِ." : "Have a question? We are here to help."}</p>
-  <ContactCards lang={lang} compact />
-  <p><a class="textlink" href={langPath(lang, "/contact/")}>{ar ? "كل طرق التواصل" : "All the ways to reach us"}</a></p>
 </section>
 
 <script>
