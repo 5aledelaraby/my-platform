@@ -9,7 +9,7 @@ const SITE = "https://vicuna-eg.com";
 const PLANNED_PREFIXES = [];
 const JS_BUDGET_BYTES = 90 * 1024;
 // Pages that must stay out of search results and the sitemap even in production.
-const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/", "/404.html"]);
+const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/", "/favorites/", "/en/favorites/", "/404.html"]);
 
 const errors = [];
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
@@ -59,7 +59,7 @@ for (const file of pages) {
   const robots = /<meta name="robots" content="([^"]*)"/.exec(html)?.[1];
   if (!robots) fail(name, "missing robots meta");
   else if (NOINDEX_PAGES.has(url)) {
-    if (robots !== "noindex,nofollow") fail(name, "thank-you page must be noindex,nofollow");
+    if (robots !== "noindex,nofollow") fail(name, "thank-you and favourites pages must be noindex,nofollow");
   } else if (robots !== robotsDirective(env)) fail(name, `${env} page must be ${robotsDirective(env)}, got ${robots}`);
 
   const h1s = html.match(/<h1[\s>]/g)?.length ?? 0;
