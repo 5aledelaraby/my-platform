@@ -1684,3 +1684,33 @@ span.shine, a.shine { padding-block: .14em; margin-block: -.14em; }
 @keyframes cta-breathe { 0%, 72%, 100% { scale: 1; } 82% { scale: 1.06; } 91% { scale: .98; } }
 /* a mosaic of one photo: one centred tile, not half a grid */
 .lux-mosaic.single { columns: 1; max-width: 520px; margin-inline: auto; }
+
+/* ---------- add to bag: a glassy pill in the colours of the 🛍️ bag, with light sweeping across (owner, 2026-10-17) ---------- */
+:root { --bag-glass: linear-gradient(115deg, rgb(214 26 112 / .93) 0%, rgb(236 62 137 / .9) 55%, rgb(245 158 32 / .92) 100%); }
+.bag-cta, .lux .btn.bag-cta, .btn.btn-berry.bag-cta, :root[data-mode="dark"] .btn.bag-cta {
+  border-radius: 999px; background: var(--bag-glass); color: #fff; font-weight: 800; letter-spacing: .01em;
+  text-shadow: 0 0 12px rgb(255 255 255 / .6), 0 1px 2px rgb(110 0 50 / .5);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), inset 0 0 0 1px rgb(255 255 255 / .28), 0 10px 26px -10px rgb(214 26 112 / .75);
+  backdrop-filter: blur(10px) saturate(1.4); -webkit-backdrop-filter: blur(10px) saturate(1.4);
+}
+.bag-cta:hover, .lux .btn.bag-cta:hover, .btn.btn-berry.bag-cta:hover { background: var(--bag-glass); color: #fff; filter: brightness(1.07) saturate(1.1); }
+.bag-cta[disabled], .lux .btn.bag-cta[disabled] { background: rgb(120 120 120 / .45); text-shadow: none; box-shadow: none; filter: none; }
+.quick-add.bag-cta { overflow: hidden; isolation: isolate; }
+.bag-cta::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(110deg, transparent 32%, rgb(255 255 255 / .6) 50%, transparent 68%); background-size: 250% 100%; background-position: 130% 0; }
+:root[data-mode="dark"] .btn.bag-cta::after { background-image: linear-gradient(110deg, transparent 32%, rgb(255 255 255 / .6) 50%, transparent 68%); }
+
+/* the header bag: the same glass and colours instead of green, light sweeping across */
+.bag-shine, :root[data-mode="dark"] .bag-shine { background: var(--bag-glass); box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), inset 0 0 0 1px rgb(255 255 255 / .3), 0 8px 18px -8px rgb(214 26 112 / .75); backdrop-filter: blur(10px) saturate(1.4); -webkit-backdrop-filter: blur(10px) saturate(1.4); }
+.bag-shine::after { background: linear-gradient(100deg, transparent, rgb(255 255 255 / .7), transparent); }
+
+/* WhatsApp buttons: WhatsApp green instead of black */
+.btn:has(.icon-wa), .btn.btn-wa, :root[data-mode="dark"] .btn:has(.icon-wa), :root[data-mode="dark"] .btn.btn-wa { background: linear-gradient(135deg, #25d366 0%, #1aab57 55%, #128c7e 100%); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), 0 10px 24px -12px rgb(18 140 126 / .8); text-shadow: 0 1px 2px rgb(0 60 40 / .35); }
+.btn:has(.icon-wa):hover, .btn.btn-wa:hover { background: linear-gradient(135deg, #2ee073 0%, #1db75d 55%, #139a8a 100%); color: #fff; }
+.btn:has(.icon-wa) .icon-wa, .btn.btn-wa .icon-wa { padding: 0; background: none; }
+
+/* every main button catches the light now and then; add to bag more often */
+@media (prefers-reduced-motion: no-preference) {
+  .btn::after { animation: btn-sweep 7s ease-in-out 2.5s infinite; }
+  .bag-cta::after, .btn:has(.icon-wa)::after, .btn.btn-wa::after { animation: btn-sweep 3.8s ease-in-out 1s infinite; }
+}
+@keyframes btn-sweep { 0%, 58% { background-position: 130% 0; } 100% { background-position: -30% 0; } }

@@ -121,7 +121,7 @@ const others = styles.filter((s) => s.id !== styleId).map((s) => {
                 <p class="lux-slide-price">{priceOfProduct(p)} <small>{cur}</small></p>
                 <span class="lux-out" data-soldout-for={p.id} hidden>{ar ? "نفدت الكمية حاليًا" : "Sold out for now"}</span>
                 <div class="lux-actions">
-                  <button type="button" class="btn lux-btn" data-add={p.id}><Icon name="bag" size={18} /> {ar ? "أضيفي للسلة" : "Add to cart"}</button>
+                  <button type="button" class="btn lux-btn bag-cta" data-add={p.id}>{ar ? "أضيفي للسلة 🛍️" : "Add to bag 🛍️"}</button>
                   <a class="lux-more" href={beltsUrl(lang, p.id)}>{ar ? "تفاصيل هذا اللون" : "This colour in detail"}</a>
                 </div>
                 <p class="lux-terms">{terms}</p>
