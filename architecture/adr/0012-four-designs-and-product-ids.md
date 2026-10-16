@@ -17,3 +17,9 @@ The catalogue had six styles (lace, wide-bow, thin-tie, croc, snake, ruffle) and
 
 - Product images and look photos are renamed to the new ids.
 - Carts saved in a browser with an old id drop that line (unknown products are ignored), which is acceptable before launch.
+
+## Update 2026-10-16: a fifth design
+
+The owner added "بنقشة مميزة" (`pattern`, ids `pattern-<colour>`), a wide belt with a raised pattern and a thin tie,
+at 700 EGP. At his request it is sold on the site only: `NOT_IN_FEED` in `apps/website/src/lib/feed.ts` keeps it out of
+the Meta and Google catalogue feed.

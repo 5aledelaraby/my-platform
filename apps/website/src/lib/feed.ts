@@ -11,6 +11,9 @@ export const FEED_HEADER = [
   "brand", "google_product_category", "fb_product_category", "product_type", "item_group_id", "color", "material", "gender", "age_group",
 ] as const;
 
+/** Designs kept off the ad catalogue and sold on the site only (owner, 2026-10-16: "Signature pattern"). */
+export const NOT_IN_FEED: ReadonlySet<string> = new Set(["pattern"]);
+
 const cell = (v: string | number) => `"${String(v).replace(/"/g, '""').replace(/\s+/g, " ").trim()}"`;
 
 export interface FeedOptions {
@@ -22,7 +25,7 @@ export interface FeedOptions {
 export function buildFeedCsv(o: FeedOptions): string {
   const styles = new Map(catalog.styles.map((s) => [s.id, s]));
   const colours = new Map(catalog.colors.map((c) => [c.id, c.name]));
-  const rows = catalog.products.map((p) => {
+  const rows = catalog.products.filter((p) => !NOT_IN_FEED.has(p.style)).map((p) => {
     const st = styles.get(p.style);
     if (!st) throw new Error(`Unknown style ${p.style}`);
     // "رباط رفيع كروكو أسود" -> "حزام عريض برباط رفيع كروكو أسود"; "دانتيل أسود" -> "حزام دانتيل أسود"

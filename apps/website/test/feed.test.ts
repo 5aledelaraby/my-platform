@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { describe, it } from "node:test";
 import { catalog, lookupProduct } from "@platform/commerce";
-import { FEED_HEADER, FEED_PATH, buildFeedCsv, feedWithStock } from "../src/lib/feed.ts";
+import { FEED_HEADER, FEED_PATH, NOT_IN_FEED, buildFeedCsv, feedWithStock } from "../src/lib/feed.ts";
 import worker from "../src/worker.ts";
 
 const csv = buildFeedCsv({
@@ -20,7 +20,7 @@ describe("catalog feed", () => {
   it("keeps the old feed's columns, one row per product, ids = catalogue ids (= Pixel content_ids)", () => {
     assert.equal(csv.split("\n")[0], FEED_HEADER.join(","));
     assert.equal(FEED_HEADER.length, 18);
-    assert.deepEqual(rows.map((r) => r[0]), catalog.products.map((p) => p.id));
+    assert.deepEqual(rows.map((r) => r[0]), catalog.products.filter((p) => !NOT_IN_FEED.has(p.style)).map((p) => p.id));
     for (const r of rows) assert.equal(r.length, FEED_HEADER.length, r[0]);
   });
 
@@ -44,6 +44,11 @@ describe("catalog feed", () => {
         assert.ok(existsSync(file), `missing ${link}`);
       }
     }
+  });
+
+  it("leaves the site-only designs out of the ad catalogue", () => {
+    assert.ok(catalog.products.some((p) => p.style === "pattern"), "the pattern belts are in the store");
+    assert.equal(rows.some((r) => lookupProduct(r[0]!)?.style === "pattern"), false);
   });
 
   it("drops only the sold-out rows", () => {

@@ -54,7 +54,7 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     trust: [`توصيل خلال ${d} أيام عمل`, `استرجاع خلال ${r} يومًا`, "الدفع عند الاستلام أو InstaPay", `مقاس يناسب حتى ${kg} كجم`],
     stylesEyebrow: "المجموعات",
     stylesTitle: "ستة تصاميم، لكل منها شخصيتها",
-    stylesLead: "أربعة تصميمات: عريض برباط عريض، عريض برباط رفيع، كشكشة، ودانتيل. اختاري التصميم ثم اللون.",
+    stylesLead: "خمسة تصميمات: عريض برباط عريض، عريض برباط رفيع، كشكشة، دانتيل، وبنقشة مميزة. اختاري التصميم ثم اللون.",
     whyEyebrow: "لماذا فيكونا",
     whyTitle: "تفاصيل صغيرة تصنع الفرق",
     why: [
@@ -101,7 +101,7 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     trust: [`Delivery in ${d} working days`, `${r}-day returns`, "Cash on delivery or InstaPay", `Fits up to ${kg} kg`],
     stylesEyebrow: "Collections",
     stylesTitle: "Six designs, each with its own character",
-    stylesLead: "Four designs: wide tie, thin tie, ruffle and lace. Choose a design, then a colour.",
+    stylesLead: "Five designs: wide tie, thin tie, ruffle, lace and signature pattern. Choose a design, then a colour.",
     whyEyebrow: "Why Vicuna",
     whyTitle: "Small details that make the difference",
     why: [

@@ -28,6 +28,13 @@
       "price": 20000,
       "headline": "حزام كشكشة من جلد PU",
       "intro": "حزام بكشكشة من الأعلى والأسفل ورباط يُربط في المنتصف."
+    },
+    {
+      "id": "pattern",
+      "name": "بنقشة مميزة",
+      "price": 70000,
+      "headline": "حزام عريض بنقشة مميزة من جلد PU",
+      "intro": "حزام عريض من جلد PU بنقشة بارزة، يُربط برباط رفيع يضبط على مقاس الخصر."
     }
   ],
   "colors": [
@@ -212,6 +219,22 @@
       "color": "brown",
       "hex": "#9A5236",
       "texture": "ruffle"
+    },
+    {
+      "id": "pattern-brown",
+      "name": "بنقشة مميزة بني",
+      "style": "pattern",
+      "color": "brown",
+      "hex": "#8A5A3B",
+      "texture": "pattern"
+    },
+    {
+      "id": "pattern-black",
+      "name": "بنقشة مميزة أسود",
+      "style": "pattern",
+      "color": "black",
+      "hex": "#1C1C1C",
+      "texture": "pattern"
     }
   ]
 }

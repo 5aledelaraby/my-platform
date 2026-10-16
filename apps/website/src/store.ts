@@ -25,6 +25,11 @@ const styleEn: Record<string, { name: string; headline: string; intro: string }>
     headline: "Ruffle PU leather belt",
     intro: "A belt with ruffles above and below and a tie in the middle.",
   },
+  pattern: {
+    name: "Signature Pattern",
+    headline: "Wide waist belt with a signature pattern",
+    intro: "A wide PU leather belt with a raised pattern and a thin tie that adjusts to your waist.",
+  },
 };
 
 // English product names are built from the id words.

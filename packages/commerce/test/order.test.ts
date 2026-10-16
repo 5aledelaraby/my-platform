@@ -22,10 +22,10 @@ const validBody = () => ({
 });
 
 describe("catalogue", () => {
-  it("has 16 products with unique ids, each priced by a known style", () => {
+  it("has 18 products with unique ids, each priced by a known style", () => {
     // 22 sold-out belts were removed on 2026-10-16 (owner).
-    assert.equal(catalog.products.length, 16);
-    assert.equal(new Set(catalog.products.map((p) => p.id)).size, 16);
+    assert.equal(catalog.products.length, 18);
+    assert.equal(new Set(catalog.products.map((p) => p.id)).size, 18);
     for (const p of catalog.products) {
       const priced = lookupProduct(p.id);
       assert.ok(priced, p.id);
