@@ -71,7 +71,7 @@ export function buildFeedCsv(o: FeedOptions): string {
  * sold-out rows here too.
  */
 export const LOCAL_FEED_PATH = "/catalog/local-inventory.csv";
-export const STORE_CODE = "VICUNA-NASR-CITY";
+export const STORE_CODE = "01706577143159247027";
 export const LOCAL_FEED_HEADER = ["id", "store_code", "availability", "price", "pickup_method", "pickup_sla"] as const;
 
 export function buildLocalInventoryCsv(): string {
