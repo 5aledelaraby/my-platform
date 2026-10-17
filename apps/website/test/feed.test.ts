@@ -19,9 +19,13 @@ const col = (name: (typeof FEED_HEADER)[number]) => FEED_HEADER.indexOf(name);
 describe("catalog feed", () => {
   it("keeps the old feed's columns, one row per product, ids = catalogue ids (= Pixel content_ids)", () => {
     assert.equal(csv.split("\n")[0], FEED_HEADER.join(","));
-    assert.equal(FEED_HEADER.length, 18);
+    assert.equal(FEED_HEADER.length, 19);
     assert.deepEqual(rows.map((r) => r[0]), catalog.products.filter((p) => !NOT_IN_FEED.has(p.style)).map((p) => p.id));
     for (const r of rows) assert.equal(r.length, FEED_HEADER.length, r[0]);
+  });
+
+  it("says the belts have no GTIN or MPN (own make)", () => {
+    for (const r of rows) assert.equal(r[col("identifier_exists")], "no", r[0]);
   });
 
   it("uses the real prices (croc and snake at their own price) and in stock by default", () => {

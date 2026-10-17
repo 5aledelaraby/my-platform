@@ -9,7 +9,14 @@ export const FEED_PATH = "/catalog/products.csv";
 export const FEED_HEADER = [
   "id", "title", "description", "availability", "condition", "price", "link", "image_link", "additional_image_link",
   "brand", "google_product_category", "fb_product_category", "product_type", "item_group_id", "color", "material", "gender", "age_group",
+  "identifier_exists",
 ] as const;
+
+/**
+ * Vicuna makes its own belts, which carry no GTIN (barcode) or MPN (owner, 2026-10-17), so the feed says so
+ * ("identifier_exists = no"), as Google Merchant Center asks for products without manufacturer identifiers.
+ */
+const IDENTIFIER_EXISTS = "no";
 
 /** Designs kept off the ad catalogue and sold on the site only (owner, 2026-10-16: "Signature pattern"). */
 export const NOT_IN_FEED: ReadonlySet<string> = new Set(["pattern"]);
@@ -49,6 +56,7 @@ export function buildFeedCsv(o: FeedOptions): string {
       "جلد PU",
       "female",
       "adult",
+      IDENTIFIER_EXISTS,
     ]
       .map(cell)
       .join(",");
