@@ -1,5 +1,5 @@
-// The site Worker (ADR 0013). Static files are served by Cloudflare's asset handling; this code runs first only for
-// the belts pages, the catalog feed and the sitemap (wrangler.toml `run_worker_first`). It asks the order API for the
+// The site Worker (ADR 0013). Static files are served by Cloudflare's asset handling; this code runs first for the
+// pages (wrangler.toml `run_worker_first`), the catalog feed and the sitemap. For the belts pages it asks the order API for the
 // live stock and hides sold-out belts (lib/availability.ts, lib/feed.ts): a sold-out product page redirects to its
 // design, and the belt leaves every list, the feed and the sitemap until it is restocked. Everything else passes through.
 // If the API cannot be reached, pages are served as built: the cart and the API still refuse a sold-out product,
@@ -40,6 +40,31 @@ async function soldOutIds(env: Env, pageUrl: URL): Promise<string[] | null> {
   }
 }
 
+/** The encodings this Worker compresses pages with, best first. */
+const ENCODINGS = ["br", "gzip"] as const;
+
+/**
+ * A page leaves the Worker already compressed and marked `no-transform` (owner, 2026-10-17, trying it on staging):
+ * Cloudflare then adds no script of its own to the page (its "JavaScript Detections" bot check, which cannot be
+ * turned off from the dashboard on this plan and costs the phone ~1.5 s of work on a first visit). Because
+ * `no-transform` also stops Cloudflare from compressing, the Worker compresses the page itself (Brotli or gzip,
+ * as the browser accepts). Anything that is not an HTML page is returned untouched.
+ */
+export function untransformed(res: Response, request: Request): Response {
+  if (!res.body || !(res.headers.get("Content-Type") ?? "").includes("text/html")) return res;
+  const out = new Headers(res.headers);
+  const cache = out.get("Cache-Control") ?? "public, max-age=0, must-revalidate";
+  if (!/\bno-transform\b/.test(cache)) out.set("Cache-Control", `${cache}, no-transform`);
+  const cf = (request as Request & { cf?: { clientAcceptEncoding?: string } }).cf;
+  const accepted = (cf?.clientAcceptEncoding ?? request.headers.get("Accept-Encoding") ?? "").toLowerCase();
+  const encoding = ENCODINGS.find((e) => new RegExp(`(^|[\\s,])${e}($|[\\s,;])`).test(accepted));
+  out.delete("Content-Length");
+  out.delete("Content-Encoding");
+  if (encoding) out.set("Content-Encoding", encoding); // the Workers runtime compresses the body to match
+  out.append("Vary", "Accept-Encoding");
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: out });
+}
+
 /** The asset, never as "304 not modified": a stored copy may show an older stock state. */
 function freshAsset(request: Request, env: Env): Promise<Response> {
   const headers = new Headers(request.headers);
@@ -62,11 +87,11 @@ export default {
     const isFeed = url.pathname === FEED_PATH;
     const isSitemap = url.pathname === "/sitemap.xml";
     const isBelts = BELTS_PREFIX.test(url.pathname);
-    if (request.method !== "GET" || !(isFeed || isSitemap || isBelts)) return env.ASSETS.fetch(request);
+    if (request.method !== "GET" || !(isFeed || isSitemap || isBelts)) return untransformed(await env.ASSETS.fetch(request), request);
 
     const page = productFromPath(url.pathname);
     const [file, soldOut] = await Promise.all([freshAsset(request, env), soldOutIds(env, url)]);
-    if (!soldOut || file.status !== 200) return file;
+    if (!soldOut || file.status !== 200) return untransformed(file, request);
 
     if (page && soldOut.includes(page.product.id)) {
       return new Response(null, { status: 302, headers: { Location: designPath(page.product, page.en), "Cache-Control": "no-store" } });
@@ -76,6 +101,6 @@ export default {
     if (!(file.headers.get("Content-Type") ?? "").includes("text/html")) return file;
     let html = hideSoldOut(await file.text(), soldOut);
     if (page) html = skipSoldOutSiblings(html, page.product, page.en, soldOut);
-    return rewritten(file, html);
+    return untransformed(rewritten(file, html), request);
   },
 };

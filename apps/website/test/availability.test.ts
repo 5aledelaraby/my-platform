@@ -108,7 +108,7 @@ describe("site Worker", () => {
     assert.equal(res.status, 200);
     assert.match(await res.text(), /ruffle-brown/);
     assert.equal(res.headers.get("ETag"), null);
-    assert.equal(res.headers.get("Cache-Control"), "no-cache");
+    assert.equal(res.headers.get("Cache-Control"), "no-cache, no-transform");
   });
 
   it("the belts page loses the sold-out cards", async () => {
@@ -132,5 +132,22 @@ describe("site Worker", () => {
     });
     assert.equal(seen, "/about/");
     assert.equal(await res.text(), "about");
+  });
+
+  it("pages leave compressed and marked no-transform; other files are untouched", async () => {
+    const html = (ae: string) => worker.fetch(new Request("https://staging.vicuna-eg.com/about/", { headers: { "Accept-Encoding": ae } }), {
+      ASSETS: { fetch: async () => new Response("<p>about</p>", { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=0, must-revalidate" } }) },
+    });
+    const br = await html("gzip, deflate, br, zstd");
+    assert.equal(br.headers.get("Cache-Control"), "public, max-age=0, must-revalidate, no-transform");
+    assert.equal(br.headers.get("Content-Encoding"), "br");
+    assert.match(br.headers.get("Vary") ?? "", /Accept-Encoding/);
+    assert.equal((await html("gzip")).headers.get("Content-Encoding"), "gzip");
+    assert.equal((await html("identity")).headers.get("Content-Encoding"), null);
+    const css = await worker.fetch(new Request("https://staging.vicuna-eg.com/favicon-48.png"), {
+      ASSETS: { fetch: async () => new Response("png", { headers: { "Content-Type": "image/png" } }) },
+    });
+    assert.equal(css.headers.get("Cache-Control"), null);
+    assert.equal(css.headers.get("Content-Encoding"), null);
   });
 });
