@@ -25,9 +25,6 @@ export const shippingAr: PolicyDoc = {
 <p>نوصّل إلى جميع محافظات مصر خلال ${site.deliveryDays} أيام عمل من تأكيد الطلب. موعد الشحن السريع نتفق عليه معكِ عند تأكيد الطلب. المقاسات الخاصة تُصنع حسب الطلب وقد تحتاج وقتًا أطول، ونخبركِ بالمدة قبل أن نبدأ.</p>
 <p>إذا لم يصلكِ الطلب في الموعد الذي اتفقنا عليه، أو خلال ${site.lateDeliveryDays} يومًا إذا لم نحدد موعدًا، فمن حقكِ إلغاؤه واسترداد كل ما دفعتِه، ونتحمل نحن كل مصاريف الشحن والإرجاع.</p>
 
-<h2>الاستلام من مقرنا</h2>
-<p>يمكنكِ أيضًا استلام طلبكِ بنفسكِ من مقر الشركة: ${site.addressAr}، بعد الاتفاق معنا على الموعد عبر واتساب.</p>
-
 <h2>طرق الدفع</h2>
 <ul>
 <li><b>الدفع عند الاستلام:</b> تدفعين للمندوب عند استلام الطلب.</li>
@@ -63,9 +60,6 @@ export const shippingEn: PolicyDoc = {
 <h2>Delivery time</h2>
 <p>We deliver to every governorate in Egypt within ${site.deliveryDays} working days of confirming the order. The express delivery date is agreed with you when we confirm the order. Custom sizes are made to order and may take longer; we tell you how long before we start.</p>
 <p>If your order does not arrive on the agreed date, or within ${site.lateDeliveryDays} days when no date was agreed, you may cancel it and get back everything you paid, and we cover all shipping and return costs.</p>
-
-<h2>Pickup from our office</h2>
-<p>You can also collect your order yourself from our office at ${site.addressEn}, at a time we agree with you on WhatsApp.</p>
 
 <h2>Payment</h2>
 <ul>
