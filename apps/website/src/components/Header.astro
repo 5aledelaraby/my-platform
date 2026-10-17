@@ -135,10 +135,12 @@ const isGroup = (e: Link | Group): e is Group => "items" in e;
   // On narrow screens the design bar scrolls sideways: bring the current design into view (without moving the page).
   const row = document.querySelector<HTMLElement>(".design-row");
   const here = row?.querySelector<HTMLElement>('[aria-current="page"]');
-  if (row && here && row.scrollWidth > row.clientWidth) {
+  // Measured in the next frame, once the page is laid out, so loading does not force an extra layout.
+  if (row && here) requestAnimationFrame(() => {
+    if (row.scrollWidth <= row.clientWidth) return;
     const r = row.getBoundingClientRect(), h = here.getBoundingClientRect();
     row.scrollLeft += h.left + h.width / 2 - (r.left + r.width / 2);
-  }
+  });
   const menu = document.getElementById("menu") as HTMLDialogElement | null;
   const openBtn = document.querySelector<HTMLButtonElement>("[data-open-menu]");
   openBtn?.addEventListener("click", () => {

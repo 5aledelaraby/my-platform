@@ -125,9 +125,10 @@ const announce = ar
         items.forEach((el) => io.observe(el));
 
         // Photos further down the page rise into view as they are reached (photos on the first screen show at
-        // once). Photos that come into view together open one after another.
-        const media = [...document.querySelectorAll<HTMLElement>(".card-media, .pdp-look, .sg-media, .lux-tile, .detail-media, .style-film, .sd-item")]
-          .filter((el) => el.getBoundingClientRect().top > innerHeight);
+        // once). Photos that come into view together open one after another. Where each photo sits is read from an
+        // IntersectionObserver, not measured here, so the page is not laid out twice while it loads (PageSpeed
+        // "forced reflow").
+        const media = document.querySelectorAll<HTMLElement>(".card-media, .pdp-look, .sg-media, .lux-tile, .detail-media, .style-film, .sd-item");
         const rise = new IntersectionObserver(
           (entries) => {
             let n = 0;
@@ -141,7 +142,16 @@ const announce = ar
           },
           { rootMargin: "0px 0px -8% 0px" },
         );
-        for (const el of media) { el.classList.add("media-rise"); rise.observe(el); }
+        const below = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            below.unobserve(e.target);
+            const el = e.target as HTMLElement;
+            if (e.boundingClientRect.top <= innerHeight) continue; // on the first screen, or above it: shown as is
+            el.classList.add("media-rise");
+            rise.observe(el);
+          }
+        });
+        media.forEach((el) => below.observe(el));
       }
 
       // Moving content (WCAG 2.2.2): videos marked data-motion and the announcement bar can be paused. The bar does not

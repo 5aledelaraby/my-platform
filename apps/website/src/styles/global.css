@@ -1574,9 +1574,11 @@ dialog.menu { border-radius: 26px; }
 span.wl-word { display: inline-block; margin-inline-end: .26em; }
 span.wl-word:last-child { margin-inline-end: 0; }
 @media (prefers-reduced-motion: no-preference) {
-  .wl-word { animation: wl-in 1s var(--ease-soft) both; animation-delay: calc(.12s + var(--w, 0) * .11s); }
+  .wl-word { animation: wl-in .7s var(--ease-soft) both; animation-delay: calc(.05s + var(--w, 0) * .07s); }
 }
-@keyframes wl-in { from { opacity: 0; transform: translateY(.45em); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+/* Opacity and movement only (PageSpeed, owner 2026-10-18): the phone animates these off the main thread, and the
+   title is fully in place a little sooner, so the first screen settles faster. */
+@keyframes wl-in { from { opacity: 0; transform: translateY(.45em); } to { opacity: 1; transform: none; } }
 .wl-title { display: grid; gap: 4px; font-family: var(--font-display); color: var(--ink); line-height: 1.12; }
 .wl-small { font-size: clamp(1.05rem, 3.4vw, 1.4rem); font-weight: 500; color: var(--muted); }
 .wl-big { font-size: clamp(2.7rem, 11.5vw, 5.4rem); font-weight: 700; }
@@ -1670,7 +1672,7 @@ span.shine, a.shine { padding-block: .14em; margin-block: -.14em; }
 .bw-head-link { display: inline-block; text-decoration: none; }
 @media (prefers-reduced-motion: no-preference) {
   .shine { animation: shine 5s ease-in-out 1.4s infinite; }
-  .wl-word.shine { animation: wl-in 1s var(--ease-soft) both, shine 5s ease-in-out infinite; animation-delay: calc(.12s + var(--w, 0) * .11s), calc(1.5s + var(--w, 0) * .1s); }
+  .wl-word.shine { animation: wl-in .7s var(--ease-soft) both, shine 5s ease-in-out infinite; animation-delay: calc(.05s + var(--w, 0) * .07s), calc(1.5s + var(--w, 0) * .1s); }
 }
 @keyframes shine { 0% { background-position: 100% 0; } 55%, 100% { background-position: 0 0; } }
 
