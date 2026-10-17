@@ -6,7 +6,7 @@
   "description": "The Vicuna storefront. Astro (static) pages; the cart is a small vanilla TypeScript script.",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/check-dist.mjs",
+    "build": "astro build && node scripts/fingerprint.mjs && node scripts/check-dist.mjs",
     "preview": "astro preview",
     "typecheck": "astro-check"
   },

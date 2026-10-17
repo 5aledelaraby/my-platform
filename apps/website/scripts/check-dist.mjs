@@ -130,6 +130,13 @@ if (production && existsSync(join(DIST, "sitemap.xml"))) {
 const jsBytes = files.filter((f) => f.endsWith(".js")).reduce((n, f) => n + statSync(f).size, 0);
 if (jsBytes > JS_BUDGET_BYTES) fail("dist", `JavaScript ${jsBytes} bytes exceeds budget ${JS_BUDGET_BYTES}`);
 
+// Every versioned asset a page links to (scripts/fingerprint.mjs) must be in the build.
+for (const file of pages) {
+  for (const m of readFileSync(file, "utf8").matchAll(/\/v\/[0-9a-f]+\/(?:img|video|brand)\/[A-Za-z0-9._/-]+/g)) {
+    if (!existsSync(join(DIST, m[0]))) fail(urlOf(file), `missing versioned asset ${m[0]}`);
+  }
+}
+
 if (errors.length) {
   console.error(`check-dist failed (${errors.length}):\n- ${errors.join("\n- ")}`);
   process.exit(1);

@@ -14,8 +14,13 @@
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Photos, films, fonts and the logo keep their names when they are replaced, so they are cached for a while (not
-# forever): pages load faster from one to the next, and a new photo shows up within the hour.
+# Photos, films and the logo as the pages link them (scripts/fingerprint.mjs): the address carries a hash of the
+# file, so a replaced file gets a new address and these can be cached for a year.
+/v/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The same files at their plain address (cart script, og:image, outside links) keep their names when they are
+# replaced, so they are cached for a while (not forever), and a new photo shows up there within the hour.
 /img/*
   Cache-Control: public, max-age=3600, stale-while-revalidate=604800
 /video/*
