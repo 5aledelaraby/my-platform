@@ -63,3 +63,10 @@ namespace_id = "2102"
   [ratelimits.simple]
   limit = 20
   period = 60
+
+# Scheduled jobs (src/scheduled.ts, owner-approved 2026-10-17), both reported to the owner's Telegram chat:
+#   "0 1 * * *"  every day at 01:00 UTC (03:00-04:00 Cairo): a JSON backup of the live database
+#   "0 * * * *"  every hour: checks the home page, the belts page and /api/health; a message only when one fails
+# Keep these strings equal to DAILY_BACKUP_CRON and HOURLY_WATCH_CRON in src/worker.ts.
+[triggers]
+crons = ["0 1 * * *", "0 * * * *"]

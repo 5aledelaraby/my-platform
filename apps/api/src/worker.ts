@@ -4,6 +4,7 @@ import { accessVerifier } from "./access.ts";
 import { createAdminHandler } from "./admin.ts";
 import { createHandler } from "./handler.ts";
 import { metaPurchaseReporter } from "./meta.ts";
+import { SITE_CHECKS, alertMessage, backupFileName, backupJson, failedChecks, telegramDocumentSender } from "./scheduled.ts";
 import { STAGING_TAG, formatOrderMessage, formatStatusMessage, tagged, telegramSender } from "./notify.ts";
 import { d1Repository } from "./repository.ts";
 import type { D1Like } from "./repository.ts";
@@ -49,7 +50,32 @@ interface Ctx {
   waitUntil(work: Promise<unknown>): void;
 }
 
+/** Cron schedules (wrangler.toml [triggers]); scheduled.ts has the jobs. */
+export const DAILY_BACKUP_CRON = "0 1 * * *";
+export const HOURLY_WATCH_CRON = "0 * * * *";
+
 export default {
+  /** Cron Triggers: the daily backup and the hourly site watch, both reported to the owner's Telegram chat. */
+  async scheduled(event: { cron: string; scheduledTime: number }, env: Env): Promise<void> {
+    const token = env.TELEGRAM_BOT_TOKEN?.trim();
+    const chatId = env.TELEGRAM_CHAT_ID?.trim();
+    // eslint-disable-next-line no-console
+    const report = (name: string) => console.error("scheduled_error", name);
+    if (!token || !chatId) return report("telegram_not_configured");
+    const now = new Date(event.scheduledTime);
+    try {
+      if (event.cron === DAILY_BACKUP_CRON) {
+        const send = telegramDocumentSender(token, chatId);
+        await send(backupFileName(now), await backupJson(env.DB, now), `💾 نسخة احتياطية من قاعدة بيانات فيكونا (${now.toISOString().slice(0, 10)})`);
+      } else if (event.cron === HOURLY_WATCH_CRON) {
+        const failed = await failedChecks(SITE_CHECKS);
+        if (failed.length > 0) await telegramSender(token, chatId)(alertMessage(failed));
+      }
+    } catch (error) {
+      report(error instanceof Error ? error.message : "unknown");
+    }
+  },
+
   fetch(request: Request, env: Env, ctx?: Ctx): Promise<Response> {
     const token = env.TELEGRAM_BOT_TOKEN?.trim();
     const chatId = env.TELEGRAM_CHAT_ID?.trim();

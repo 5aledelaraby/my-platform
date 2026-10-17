@@ -48,7 +48,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li><b>${andAr(tagCompanies("ar"))} (فقط إذا وافقتِ على الكوكيز):</b> تستلم بيانات التحليل والإعلانات الموضحة أعلاه وتستخدمها وفق سياساتها، وقد تنقلها إلى خارج مصر.</li>
 <li><b>خدمات نتواصل من خلالها،</b> ولكل منها سياسة خصوصية خاصة بها:
 <ul>
-<li>Telegram: نستلم عليه رسالة بكل طلب جديد وكل تغيير في حالته، فيها رقم الطلب وبياناتكِ والمنتجات والإجمالي.</li>
+<li>Telegram: نستلم عليه رسالة بكل طلب جديد وكل تغيير في حالته، فيها رقم الطلب وبياناتكِ والمنتجات والإجمالي، ونسخة احتياطية يومية من سجل الطلبات لا يطّلع عليها غيرنا، حتى لا تضيع الطلبات إذا تعطلت قاعدة البيانات. ونحتفظ بهذه النسخ للمدة نفسها المذكورة في القسم 6.</li>
 <li>WhatsApp: للتواصل معكِ بشأن الطلب.</li>
 <li>Gmail من Google: تصل إليه الرسائل المرسلة إلى بريد فيكونا.</li>
 </ul></li>
@@ -130,7 +130,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li><b>${andEn(tagCompanies("en"))} (only if you accept cookies):</b> receive the analytics and advertising data described above and use it under their own policies; they may transfer it outside Egypt.</li>
 <li><b>Services we communicate through,</b> each with its own privacy policy:
 <ul>
-<li>Telegram: we receive a message for every new order and every status change, with the order number, your details, the items and the total.</li>
+<li>Telegram: we receive a message for every new order and every status change, with the order number, your details, the items and the total, and a daily backup of the order records that only we can see, so orders are not lost if the database fails. We keep these backups for the same period as in section 6.</li>
 <li>WhatsApp: to talk to you about your order.</li>
 <li>Gmail by Google: messages sent to Vicuna's email addresses arrive there.</li>
 </ul></li>
