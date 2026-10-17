@@ -1,6 +1,8 @@
 import { LIMITS, buildOrder, generateOrderId, normalizePromoCode, promoProblem, publicStock, stockShortages, validateOrderRequest } from "@platform/commerce";
 import type { Order, PriceLookup, PromoCode, PromoProblem, ShippingConfig } from "@platform/commerce";
 import { BASE_HEADERS, MAX_BODY_BYTES, errorLabel, isRecord, json, readBodyLimited } from "./http.ts";
+import { cookieValue } from "./meta.ts";
+import type { BrowserSignal, PurchaseReporter } from "./meta.ts";
 import type { Notifier } from "./notify.ts";
 import type { OrderRepository } from "./repository.ts";
 
@@ -19,6 +21,12 @@ export interface HandlerDeps {
   reportError?: (name: string) => void;
   /** Tells the owner about a stored order (e.g. Telegram). Optional; its failure never fails the order. */
   notify?: Notifier;
+  /**
+   * Sends the order's Purchase event to Meta from the server (Conversions API, see meta.ts), owner-approved on
+   * 2026-10-17. Called only when the order says the visitor accepted cookies (`consent: true`). Its failure never
+   * fails the order.
+   */
+  reportPurchase?: PurchaseReporter;
   /** Keeps background work alive after the response (Workers `ctx.waitUntil`). */
   waitUntil?: (work: Promise<unknown>) => void;
   /** Handles the admin (see admin.ts). Without it, admin paths are a plain 404. */
@@ -56,6 +64,26 @@ function publicOrder(order: Order) {
     ...(order.promoCode ? { promoCode: order.promoCode } : {}),
     totals: order.totals,
   };
+}
+
+/** The visitor's browser as the order request shows it (IP, user agent, Meta cookies, the page it came from). */
+function browserSignal(request: Request, origin: string | null): BrowserSignal {
+  const h = request.headers;
+  const cookies = h.get("Cookie");
+  const referer = h.get("Referer");
+  const signal: BrowserSignal = {};
+  const ip = h.get("CF-Connecting-IP");
+  const userAgent = h.get("User-Agent");
+  const fbp = cookieValue(cookies, "_fbp");
+  const fbc = cookieValue(cookies, "_fbc");
+  if (ip) signal.ip = ip;
+  if (userAgent) signal.userAgent = userAgent.slice(0, 500);
+  if (fbp) signal.fbp = fbp;
+  if (fbc) signal.fbc = fbc;
+  // The page on this site the order came from; never another site's address.
+  if (origin && referer?.startsWith(`${origin}/`)) signal.sourceUrl = referer.split("#")[0]!.slice(0, 500);
+  else if (origin) signal.sourceUrl = `${origin}/`;
+  return signal;
 }
 
 /**
@@ -190,6 +218,11 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
           if (deps.notify) {
             const sent = deps.notify(order).catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
             if (deps.waitUntil) deps.waitUntil(sent);
+          }
+          // Only for a visitor who accepted cookies, like the Pixel in the browser.
+          if (deps.reportPurchase && isRecord(body) && body["consent"] === true) {
+            const reported = deps.reportPurchase(order, browserSignal(request, origin)).catch((error: unknown) => deps.reportError?.(`purchase_report_failed:${errorLabel(error)}`));
+            if (deps.waitUntil) deps.waitUntil(reported);
           }
           return json(201, { order: publicOrder(order) }, cors);
         }

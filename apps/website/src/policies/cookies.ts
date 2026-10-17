@@ -2,7 +2,7 @@
 // comes from tags.ts, so a tag without an ID is not listed). Strictly necessary items load always; analytics and
 // ad tags (site.ts `tracking`) load only after "Accept" in the cookie banner (Consent.astro), as required by the
 // Personal Data Protection Law 151/2020. Any new tag needs this page, privacy.ts and site.policiesUpdated updated first.
-import { site } from "../site.ts";
+import { site, tracking } from "../site.ts";
 import { contactHtml, policyPath } from "./shared.ts";
 import { activeTags, andAr, andEn, tagCompanies } from "./tags.ts";
 import type { PolicyDoc } from "./shared.ts";
@@ -39,7 +39,7 @@ ${li("__cf_bm, cf_clearance", "Cloudflare", "protect the website from attacks an
 <ul>
 ${tagItemsEn()}
 </ul>
-<p>If you press "Reject", none of these load and nothing about your visit is sent to them. Refusing does not affect your purchase. If you accepted earlier and then reject, we stop loading these tools and delete their cookies from our website. Cookies these companies keep on their own websites (for example when you are logged in to Facebook) are managed in your account with them.</p>
+<p>If you press "Reject", none of these load and nothing about your visit is sent to them${tracking.meta ? ", and our server does not send your purchase to Meta either" : ""}. Refusing does not affect your purchase. If you accepted earlier and then reject, we stop loading these tools and delete their cookies from our website. Cookies these companies keep on their own websites (for example when you are logged in to Facebook) are managed in your account with them.</p>
 
 <h2>4. How to change your choice</h2>
 <ul>
@@ -83,7 +83,7 @@ ${li('<bdi dir="ltr">__cf_bm</bdi>، <bdi dir="ltr">cf_clearance</bdi>', "Cloudf
 <ul>
 ${tagItemsAr()}
 </ul>
-<p>إذا ضغطتِ «رفض» لا يعمل أي منها، ولا يؤثر ذلك على شرائكِ. وإذا كنتِ وافقتِ من قبل ثم رفضتِ، نتوقف عن تحميل هذه الأدوات ونحذف كوكيزها من موقعنا. أما ما تحفظه هذه الشركات على مواقعها (مثلًا إذا كنتِ مسجلة الدخول في Facebook) فتديرينه من حسابكِ لديها.</p>
+<p>إذا ضغطتِ «رفض» لا يعمل أي منها${tracking.meta ? "، ولا يرسل خادمنا عملية الشراء إلى Meta" : ""}، ولا يؤثر ذلك على شرائكِ. وإذا كنتِ وافقتِ من قبل ثم رفضتِ، نتوقف عن تحميل هذه الأدوات ونحذف كوكيزها من موقعنا. أما ما تحفظه هذه الشركات على مواقعها (مثلًا إذا كنتِ مسجلة الدخول في Facebook) فتديرينه من حسابكِ لديها.</p>
 
 <h2>4. كيف تغيّرين اختياركِ</h2>
 <ul>

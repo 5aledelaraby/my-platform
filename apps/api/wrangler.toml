@@ -25,6 +25,10 @@ ALLOWED_ORIGINS = "https://vicuna-eg.com,https://www.vicuna-eg.com,https://stagi
 ADMIN_HOST = "admin.vicuna-eg.com"
 # Requests on this hostname use DB_STAGING (fail closed: without that binding they get 503, never the live DB).
 STAGING_HOST = "staging.vicuna-eg.com"
+# Meta dataset (Pixel) id for the Conversions API (src/meta.ts): public, the same id as the site's Pixel. The access
+# token is a Secret named META_TOKEN (dashboard). Orders on staging reach Meta only as test events, when the
+# dashboard variable META_TEST_EVENT_CODE holds the code from Events Manager > Test events.
+META_PIXEL_ID = "2311877842998870"
 
 [[d1_databases]]
 binding = "DB"

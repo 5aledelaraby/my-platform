@@ -4,7 +4,7 @@ import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeE
 import type { CartLine, ShippingMethod } from "@platform/commerce";
 import { getProduct, productName, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
-import { track } from "./tracking.ts";
+import { consent, track } from "./tracking.ts";
 
 interface Line { id: string; quantity: number }
 
@@ -462,6 +462,8 @@ async function submit(event: SubmitEvent): Promise<void> {
     // Only a code that applies right now (the minimum may no longer be reached after the cart changed).
     ...(promo && currentTotals().discount > 0 ? { promoCode: promo.code } : {}),
     website: val("website"),
+    // The order's Purchase event also goes to Meta from the server, only for a visitor who accepted cookies.
+    ...(consent() === "granted" ? { consent: true } : {}),
   };
   submitBtn.disabled = true;
   submitBtn.textContent = T.sending;

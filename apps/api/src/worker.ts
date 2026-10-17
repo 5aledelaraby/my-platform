@@ -3,6 +3,7 @@ import { SHIPPING, lookupProduct } from "@platform/commerce";
 import { accessVerifier } from "./access.ts";
 import { createAdminHandler } from "./admin.ts";
 import { createHandler } from "./handler.ts";
+import { metaPurchaseReporter } from "./meta.ts";
 import { STAGING_TAG, formatOrderMessage, formatStatusMessage, tagged, telegramSender } from "./notify.ts";
 import { d1Repository } from "./repository.ts";
 import type { D1Like } from "./repository.ts";
@@ -27,6 +28,12 @@ interface Env {
   ADMIN_EMAILS?: string;
   /** Hostname that serves the admin only, e.g. "admin.vicuna-eg.com" (wrangler.toml [vars]). */
   ADMIN_HOST?: string;
+  /** Meta dataset (Pixel) id for the Conversions API (wrangler.toml [vars]; public, the same id the site's Pixel uses). */
+  META_PIXEL_ID?: string;
+  /** Secret (dashboard): the Conversions API access token from Events Manager. Without it nothing is sent to Meta. */
+  META_TOKEN?: string;
+  /** Optional (dashboard): Events Manager test code. Orders on staging go to Meta only with it, as test events. */
+  META_TEST_EVENT_CODE?: string;
   /** Workers Rate Limiting bindings (wrangler.toml [[ratelimits]]): orders and promo-code checks per visitor. */
   ORDER_LIMIT?: RateLimiter;
   PROMO_LIMIT?: RateLimiter;
@@ -61,6 +68,11 @@ export default {
     const live = token && chatId ? telegramSender(token, chatId) : null;
     // Orders placed on staging are marked as tests in Telegram.
     const send = live && onStaging ? tagged(live, STAGING_TAG) : live;
+    // Meta Conversions API (meta.ts): live orders count for the ads; staging orders are sent only as test events.
+    const pixelId = env.META_PIXEL_ID?.trim();
+    const capiToken = env.META_TOKEN?.trim();
+    const testCode = env.META_TEST_EVENT_CODE?.trim();
+    const reportPurchase = pixelId && capiToken && (!onStaging || testCode) ? metaPurchaseReporter(pixelId, capiToken, onStaging ? testCode : undefined) : null;
     const waitUntil = ctx ? { waitUntil: (work: Promise<unknown>) => ctx.waitUntil(work) } : {};
     const emails = (env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
     const missingSettings = [
@@ -96,6 +108,7 @@ export default {
       // Error label only. Never log request bodies: they contain customers' personal details.
       reportError,
       ...(send ? { notify: (order) => send(formatOrderMessage(order)) } : {}),
+      ...(reportPurchase ? { reportPurchase } : {}),
       ...waitUntil,
     });
     return handler(request);

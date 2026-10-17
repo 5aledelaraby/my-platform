@@ -59,4 +59,4 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 ## قاعدة أمان
 
-لا تعطي أي AI أو أي شخص: كلمات سر، أو tokens، أو مفاتيح API. الأسرار (Telegram وCloudflare Access) بتتحط في Cloudflare Secrets بس. المشروع مش بيستخدم Meta Conversions API، والتتبع كله من المتصفح بعد موافقة الزائرة على الكوكيز.
+لا تعطي أي AI أو أي شخص: كلمات سر، أو tokens، أو مفاتيح API. الأسرار (Telegram وCloudflare Access ومفتاح Meta Conversions API باسم `META_TOKEN`) بتتحط في Cloudflare Secrets بس. التتبع بيشتغل بعد موافقة الزائرة على الكوكيز بس، ومع الموافقة دي الـ API بيبعت حدث الشراء لـ Meta من السيرفر كمان (الموبايل مشفّر، من غير الاسم والعنوان).

@@ -3,8 +3,9 @@
 // and the right to complain to the Personal Data Protection Center. It must describe what the site really does:
 // orders go to the order API (Cloudflare Worker + D1), a Telegram message reaches the owner, the cart lives in the
 // browser, and analytics/ad tags (site.ts `tracking`; only those with an ID, see tags.ts) load only after cookie consent.
+// With that consent the order API also sends the Purchase event to Meta (Conversions API, apps/api/src/meta.ts).
 // Change this page in the same commit as any change to that.
-import { site } from "../site.ts";
+import { site, tracking } from "../site.ts";
 import { contactHtml, ltr, policyPath } from "./shared.ts";
 import { adPlatforms, andAr, andEn, tagCompanies, tagTools } from "./tags.ts";
 import type { PolicyDoc } from "./shared.ts";
@@ -26,7 +27,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li><b>الدفع:</b> عند الدفع بـ InstaPay يصلنا ما يظهر في إيصال التحويل، مثل اسم المحوِّل والمبلغ. وعند ردّ مبلغ، نحتاج رقم InstaPay أو المحفظة الذي تختارينه. لا نطلب ولا نحفظ أرقام بطاقات بنكية.</li>
 <li><b>الطلبات الخاصة:</b> مقاساتكِ عند طلب مقاس خاص أو حزام مفصّل.</li>
 <li><b>بيانات تقنية:</b> عنوان IP ونوع المتصفح والجهاز، تسجلها خدمة الاستضافة تلقائيًا لتشغيل الموقع وحمايته، مثل تحديد عدد الطلبات المسموح به من الجهاز نفسه.</li>
-<li><b>بيانات التحليل والإعلانات (فقط إذا وافقتِ على الكوكيز):</b> الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وبدء الطلب، ورقم الطلب وقيمته والمنتجات فيه، ونوع الجهاز والمتصفح، والموقع التقريبي، ومعرّفات الكوكيز. تجمعها ${andAr(tagTools("ar"))}. لا نرسل لها اسمكِ أو رقمكِ أو عنوانكِ.</li>
+<li><b>بيانات التحليل والإعلانات (فقط إذا وافقتِ على الكوكيز):</b> الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وبدء الطلب، ورقم الطلب وقيمته والمنتجات فيه، ونوع الجهاز والمتصفح، والموقع التقريبي، ومعرّفات الكوكيز. تجمعها ${andAr(tagTools("ar"))}. ${tracking.meta ? "وعند تأكيد الطلب نرسل حدث الشراء نفسه إلى Meta من خادمنا أيضًا: رقم الطلب وقيمته والمنتجات، وعنوان IP ونوع المتصفح، ومعرّفات كوكيز Meta، ورقم موبايلكِ مشفّرًا (SHA-256) بطريقة لا تسمح باسترجاع الرقم، ليعرف Meta الإعلان الذي وصلتِ منه. لا نرسل لها اسمكِ أو عنوانكِ، ولا رقمكِ إلا مشفّرًا لـ Meta كما سبق." : "لا نرسل لها اسمكِ أو رقمكِ أو عنوانكِ."}</li>
 <li><b>على جهازكِ:</b> محتوى السلة يُحفظ في متصفحكِ (localStorage) حتى لا يضيع عند غلق الصفحة، ولا يصلنا إلا عند إرسال الطلب. ورقم آخر طلب وإجماليه وطريقة دفعه والأحزمة فيه (دون اسمكِ أو رقمكِ أو عنوانكِ) تُحفظ مؤقتًا في المتصفح لعرضها في صفحة الشكر، وتُحذف عند غلق تبويب المتصفح.</li>
 </ul>
 
@@ -108,7 +109,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li><b>Payment:</b> with InstaPay we see what the transfer receipt shows, such as the sender's name and the amount. To send a refund we need the InstaPay or wallet number you choose. We never ask for or keep card numbers.</li>
 <li><b>Special orders:</b> your measurements for a custom size or a made-to-measure belt.</li>
 <li><b>Technical data:</b> IP address, browser and device type, logged automatically by our hosting provider to run and protect the website, for example to limit how many orders one device can send.</li>
-<li><b>Analytics and advertising data (only if you accept cookies):</b> pages and products you view, items you add to the cart, starting checkout, the order number, value and products, device and browser type, approximate location and cookie identifiers. Collected by ${andEn(tagTools("en"))}. We do not send them your name, number or address.</li>
+<li><b>Analytics and advertising data (only if you accept cookies):</b> pages and products you view, items you add to the cart, starting checkout, the order number, value and products, device and browser type, approximate location and cookie identifiers. Collected by ${andEn(tagTools("en"))}. ${tracking.meta ? "When you place an order, our server also sends the same purchase event to Meta: the order number, value and products, the IP address and browser type, Meta's cookie identifiers, and your mobile number hashed (SHA-256) so that the number cannot be recovered, to let Meta know which ad you came from. We do not send them your name or address, and your number only hashed, to Meta, as described." : "We do not send them your name, number or address."}</li>
 <li><b>On your device:</b> your cart is kept in your browser (localStorage) so it is not lost when you close the page; it reaches us only when you send the order. Your last order's number, total, payment method and the belts in it (not your name, number or address) are kept briefly in the browser for the thank-you page and are deleted when you close the browser tab.</li>
 </ul>
 

@@ -6,5 +6,7 @@ export { MAX_BODY_BYTES, createHandler } from "./handler.ts";
 export type { HandlerDeps } from "./handler.ts";
 export { formatOrderMessage, formatStatusMessage, telegramNotifier, telegramSender } from "./notify.ts";
 export type { MessageSender, Notifier, StatusNotifier } from "./notify.ts";
+export { GRAPH_VERSION, cookieValue, metaPhone, metaPurchaseReporter, purchaseEvent, sha256Hex } from "./meta.ts";
+export type { BrowserSignal, PurchaseReporter } from "./meta.ts";
 export { d1Repository, memoryRepository } from "./repository.ts";
 export type { D1Like, D1Result, D1Statement, InsertResult, NewPromo, OrderRepository, OrderSummary, StatusResult, StoredOrder, StoredPromo } from "./repository.ts";
