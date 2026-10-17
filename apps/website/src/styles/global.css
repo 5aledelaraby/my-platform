@@ -1608,13 +1608,14 @@ span.wl-word:last-child { margin-inline-end: 0; }
 .wl-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 2px; color: var(--ink); font-size: 14.5px; font-weight: 700; text-decoration: none; }
 .spiral { flex: none; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: translate .4s var(--ease-soft); }
 [dir="rtl"] .spiral { transform: scaleX(-1); }
-.spiral path { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .wl-cta:hover .spiral { translate: 5px 0; }
 [dir="rtl"] .wl-cta:hover .spiral { translate: -5px 0; }
 @media (prefers-reduced-motion: no-preference) {
-  .reveal-ready .reveal:not(.in) .spiral path { stroke-dashoffset: 1; }
-  .reveal-ready .reveal.in .spiral path { transition: stroke-dashoffset 1.3s var(--ease-soft) .35s; }
-  .reveal-ready .reveal.in .spiral .spiral-head { transition-delay: 1.4s; transition-duration: .4s; }
+  /* The arrow slides in and fades in (opacity and translate, animated by the compositor; PageSpeed 2026-10-18). */
+  .reveal-ready .reveal:not(.in) .spiral { opacity: 0; translate: -14px 0; }
+  .reveal-ready[dir="rtl"] .reveal:not(.in) .spiral { translate: 14px 0; }
+  .reveal-ready .reveal.in .spiral { transition: opacity .8s var(--ease-soft) .35s, translate 1s var(--ease-soft) .35s; }
+  .reveal-ready .reveal.in .wl-cta:hover .spiral { transition: translate .4s var(--ease-soft); }
 }
 /* the rest of the collection page */
 .wl-h2 { margin-bottom: 20px; font-family: var(--font-display); font-size: clamp(1.6rem, 4.6vw, 2.3rem); font-weight: 700; color: var(--ink); }
