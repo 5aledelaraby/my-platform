@@ -3,7 +3,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { BACKUP_TABLES, alertMessage, backupFileName, backupJson, failedChecks, telegramDocumentSender } from "../src/scheduled.ts";
+import { ALERT_EVERY_MS, BACKUP_TABLES, RECOVERED_MESSAGE, WATCH_STATE_KEY, alertMessage, backupFileName, backupJson, backupKey, failedChecks, telegramDocumentSender, watch } from "../src/scheduled.ts";
+import type { BucketLike } from "../src/scheduled.ts";
 import worker, { DAILY_BACKUP_CRON, HOURLY_WATCH_CRON } from "../src/worker.ts";
 import type { D1Like } from "../src/repository.ts";
 
@@ -49,6 +50,47 @@ describe("hourly watch", () => {
     const all = (() => Promise.resolve(new Response("ok"))) as unknown as typeof fetch;
     assert.deepEqual(await failedChecks(checks, all), []);
     assert.match(alertMessage(["b (503)"]), /الموقع فيه مشكلة[\s\S]*- b \(503\)/);
+  });
+});
+
+const memoryBucket = () => {
+  const files = new Map<string, string>();
+  const bucket: BucketLike = {
+    put: async (k, v) => void files.set(k, v),
+    get: async (k) => (files.has(k) ? { text: async () => files.get(k)! } : null),
+    delete: async (k) => void files.delete(k),
+  };
+  return { bucket, files };
+};
+
+describe("site watch messages", () => {
+  it("alerts once, then at most every 24 hours, and says when the site is back", async () => {
+    const { bucket, files } = memoryBucket();
+    const sent: string[] = [];
+    const send = async (t: string) => void sent.push(t);
+    const t0 = new Date("2026-10-18T10:00:00Z");
+    const at = (ms: number) => new Date(t0.getTime() + ms);
+    assert.equal(await watch([], bucket, send, t0), "quiet");
+    assert.equal(await watch(["a (503)"], bucket, send, t0), "alert");
+    assert.ok(files.has(WATCH_STATE_KEY));
+    assert.equal(await watch(["a (503)"], bucket, send, at(3600_000)), "quiet");
+    assert.equal(await watch(["a (503)"], bucket, send, at(ALERT_EVERY_MS - 1)), "quiet");
+    assert.equal(await watch(["a (503)"], bucket, send, at(ALERT_EVERY_MS)), "alert");
+    assert.equal(await watch([], bucket, send, at(ALERT_EVERY_MS + 3600_000)), "recovered");
+    assert.equal(await watch([], bucket, send, at(ALERT_EVERY_MS + 7200_000)), "quiet");
+    assert.equal(sent.length, 3);
+    assert.equal(sent[2], RECOVERED_MESSAGE);
+    assert.ok(!files.has(WATCH_STATE_KEY));
+  });
+
+  it("keeps each day's backup under its own name", () => {
+    assert.equal(backupKey(new Date("2026-10-18T01:00:00Z")), "backups/vicuna-backup-2026-10-18.json");
+  });
+
+  it("the daily job stores the backup in the bucket even without Telegram", async () => {
+    const { bucket, files } = memoryBucket();
+    await worker.scheduled({ cron: DAILY_BACKUP_CRON, scheduledTime: Date.parse("2026-10-18T01:00:00Z") }, { DB: fakeDb({ orders: [{ id: "V-1" }] }), BACKUPS: bucket });
+    assert.match(files.get("backups/vicuna-backup-2026-10-18.json")!, /"V-1"/);
   });
 });
 

@@ -4,7 +4,8 @@ import { accessVerifier } from "./access.ts";
 import { createAdminHandler } from "./admin.ts";
 import { createHandler } from "./handler.ts";
 import { metaPurchaseReporter } from "./meta.ts";
-import { SITE_CHECKS, alertMessage, backupFileName, backupJson, failedChecks, telegramDocumentSender } from "./scheduled.ts";
+import { SITE_CHECKS, backupFileName, backupJson, backupKey, failedChecks, telegramDocumentSender, watch } from "./scheduled.ts";
+import type { BucketLike } from "./scheduled.ts";
 import { STAGING_TAG, formatOrderMessage, formatStatusMessage, tagged, telegramSender } from "./notify.ts";
 import { d1Repository } from "./repository.ts";
 import type { D1Like } from "./repository.ts";
@@ -35,6 +36,8 @@ interface Env {
   META_TOKEN?: string;
   /** Optional (dashboard): Events Manager test code. Orders on staging go to Meta only with it, as test events. */
   META_TEST_EVENT_CODE?: string;
+  /** Private R2 bucket `vicuna-backups` (wrangler.toml [[r2_buckets]]): daily backups and the site watch's state. */
+  BACKUPS?: BucketLike;
   /** Workers Rate Limiting bindings (wrangler.toml [[ratelimits]]): orders and promo-code checks per visitor. */
   ORDER_LIMIT?: RateLimiter;
   PROMO_LIMIT?: RateLimiter;
@@ -61,18 +64,23 @@ export default {
     const chatId = env.TELEGRAM_CHAT_ID?.trim();
     // eslint-disable-next-line no-console
     const report = (name: string) => console.error("scheduled_error", name);
-    if (!token || !chatId) return report("telegram_not_configured");
     const now = new Date(event.scheduledTime);
-    try {
-      if (event.cron === DAILY_BACKUP_CRON) {
-        const send = telegramDocumentSender(token, chatId);
-        await send(backupFileName(now), await backupJson(env.DB, now), `💾 نسخة احتياطية من قاعدة بيانات فيكونا (${now.toISOString().slice(0, 10)})`);
-      } else if (event.cron === HOURLY_WATCH_CRON) {
-        const failed = await failedChecks(SITE_CHECKS);
-        if (failed.length > 0) await telegramSender(token, chatId)(alertMessage(failed));
+    const label = (error: unknown) => (error instanceof Error ? error.message : "unknown");
+    if (event.cron === DAILY_BACKUP_CRON) {
+      const backup = await backupJson(env.DB, now);
+      // The bucket copy and the Telegram copy are independent: one failing never stops the other.
+      if (env.BACKUPS) await env.BACKUPS.put(backupKey(now), backup, { httpMetadata: { contentType: "application/json" } }).catch((e: unknown) => report(`backup_r2:${label(e)}`));
+      else report("backup_r2:not_configured");
+      if (token && chatId) {
+        await telegramDocumentSender(token, chatId)(backupFileName(now), backup, `💾 نسخة احتياطية من قاعدة بيانات فيكونا (${now.toISOString().slice(0, 10)})`).catch((e: unknown) => report(`backup_telegram:${label(e)}`));
+      } else report("backup_telegram:not_configured");
+    } else if (event.cron === HOURLY_WATCH_CRON) {
+      if (!token || !chatId || !env.BACKUPS) return report("watch:not_configured");
+      try {
+        await watch(await failedChecks(SITE_CHECKS), env.BACKUPS, telegramSender(token, chatId), now);
+      } catch (error) {
+        report(`watch:${label(error)}`);
       }
-    } catch (error) {
-      report(error instanceof Error ? error.message : "unknown");
     }
   },
 
