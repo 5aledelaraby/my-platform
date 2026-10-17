@@ -66,6 +66,23 @@ describe("normalizeEgyptianMobile", () => {
 });
 
 describe("validateOrderRequest", () => {
+  it("pickup needs no governorate or address and ignores any sent", () => {
+    const body = { ...validBody(), shippingMethod: "pickup", customer: { name: "منى أحمد", phone: "01012345678" } };
+    const r = validateOrderRequest(body, lookupProduct);
+    assert.ok(r.ok, JSON.stringify(!r.ok && r.errors));
+    if (r.ok) {
+      assert.equal(r.value.shippingMethod, "pickup");
+      assert.deepEqual(r.value.customer, { name: "منى أحمد", phone: "01012345678", governorate: "", address: "" });
+      const order = buildOrder(r.value, lookupProduct, SHIPPING, { id: "V-1017-AAAAA", now: new Date("2026-10-17T00:00:00Z") });
+      assert.equal(order.totals.shipping, 0);
+    }
+    const sent = validateOrderRequest({ ...validBody(), shippingMethod: "pickup" }, lookupProduct);
+    assert.ok(sent.ok && sent.value.customer.address === "" && sent.value.customer.governorate === "");
+    // Delivery still needs both.
+    const delivery = validateOrderRequest({ ...validBody(), customer: { name: "منى أحمد", phone: "01012345678" } }, lookupProduct);
+    assert.ok(!delivery.ok && delivery.errors["customer.address"] === "required" && delivery.errors["customer.governorate"] === "required");
+  });
+
   it("accepts a valid order and applies defaults", () => {
     const body: Record<string, unknown> = validBody();
     delete body["shippingMethod"];

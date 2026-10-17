@@ -216,8 +216,14 @@ export interface D1Like {
 
 const INSERT_ORDER = `INSERT INTO orders (
   id, created_at, status, customer_name, customer_phone, governorate, address, notes,
-  shipping_method, payment_method, item_count, subtotal, discount, net, shipping, total, version, updated_at, promo_code
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`;
+  shipping_method, payment_method, item_count, subtotal, discount, net, shipping, total, version, updated_at, promo_code, pickup
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`;
+
+// The orders table's shipping_method CHECK predates pickup (migration 0005): a pickup order is stored as
+// shipping_method 'standard' with pickup = 1, and read back as "pickup".
+const dbShipping = (m: ShippingMethod): string => (m === "pickup" ? "standard" : m);
+const appShipping = (method: string, pickup: number | null | undefined): ShippingMethod =>
+  pickup === 1 ? "pickup" : (method as ShippingMethod);
 
 // One use of the order's promo code, in the same batch. Past the limit, CHECK promo_not_overused fails the order.
 const USE_PROMO = `UPDATE promo_codes SET used = used + 1 WHERE code = ?`;
@@ -276,6 +282,7 @@ interface OrderRow {
   version: number;
   updated_at: string | null;
   promo_code: string | null;
+  pickup?: number | null;
 }
 
 interface PromoRow {
@@ -321,9 +328,9 @@ export function d1Repository(db: D1Like): OrderRepository {
             order.id, order.createdAt, order.status,
             order.customer.name, order.customer.phone, order.customer.governorate, order.customer.address,
             order.customer.notes ?? null,
-            order.shippingMethod, order.paymentMethod,
+            dbShipping(order.shippingMethod), order.paymentMethod,
             t.itemCount, t.subtotal, t.discount, t.net, t.shipping, t.total,
-            order.createdAt, order.promoCode ?? null,
+            order.createdAt, order.promoCode ?? null, order.shippingMethod === "pickup" ? 1 : 0,
           ),
         ...order.items.map((i) =>
           db.prepare(INSERT_ITEM).bind(order.id, i.productId, i.name, i.unitPrice, i.quantity, i.lineTotal, i.productId),
@@ -386,6 +393,7 @@ WHERE oi.stock_taken = 1 AND o.status IN ('new', 'confirmed') GROUP BY oi.produc
           db.prepare("SELECT stock_taken FROM order_items LIMIT 0"),
           db.prepare("SELECT product_id, quantity, updated_at FROM inventory LIMIT 0"),
           db.prepare("SELECT promo_code FROM orders LIMIT 0"),
+          db.prepare("SELECT pickup FROM orders LIMIT 0"),
           db.prepare("SELECT code, amount, min_subtotal, max_uses, used, expires_at, active, created_at FROM promo_codes LIMIT 0"),
         ]);
         return true;
@@ -396,7 +404,7 @@ WHERE oi.stock_taken = 1 AND o.status IN ('new', 'confirmed') GROUP BY oi.produc
 
     async listOrders({ status, limit }) {
       const sql = `SELECT id, created_at, status, customer_name, customer_phone, governorate, item_count, total,
-shipping_method, payment_method, version FROM orders ${status ? "WHERE status = ?" : ""} ORDER BY created_at DESC LIMIT ?`;
+shipping_method, payment_method, version, pickup FROM orders ${status ? "WHERE status = ?" : ""} ORDER BY created_at DESC LIMIT ?`;
       const stmt = status ? db.prepare(sql).bind(status, limit) : db.prepare(sql).bind(limit);
       const { results = [] } = await stmt.all<OrderRow>();
       return results.map((r) => ({
@@ -408,7 +416,7 @@ shipping_method, payment_method, version FROM orders ${status ? "WHERE status = 
         governorate: r.governorate,
         itemCount: r.item_count,
         total: r.total,
-        shippingMethod: r.shipping_method as ShippingMethod,
+        shippingMethod: appShipping(r.shipping_method, r.pickup),
         paymentMethod: r.payment_method as PaymentMethod,
         version: r.version,
       }));
@@ -440,7 +448,7 @@ shipping_method, payment_method, version FROM orders ${status ? "WHERE status = 
           ...(row.notes ? { notes: row.notes } : {}),
         },
         items,
-        shippingMethod: row.shipping_method as ShippingMethod,
+        shippingMethod: appShipping(row.shipping_method, row.pickup),
         paymentMethod: row.payment_method as PaymentMethod,
         ...(row.promo_code ? { promoCode: row.promo_code } : {}),
         totals: {

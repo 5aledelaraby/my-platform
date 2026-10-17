@@ -32,6 +32,7 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
       <input name="customer.phone" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="next" dir="ltr" required />
       <small data-error-for="customer.phone" class="err"></small>
     </label>
+    <div data-delivery-only>
     <label>{ar ? "المحافظة" : "Governorate"}
       <select name="customer.governorate" required>
         <option value="">{ar ? "اختاري" : "Choose"}</option>
@@ -43,6 +44,7 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
       <textarea name="customer.address" rows="2" maxlength="300" autocomplete="street-address" enterkeyhint="done" required></textarea>
       <small data-error-for="customer.address" class="err"></small>
     </label>
+    </div>
     <details class="co-more">
       <summary>{ar ? "+ إضافة ملاحظة للطلب" : "+ Add a note"}</summary>
       <label>{ar ? "ملاحظات (اختياري)" : "Notes (optional)"}
@@ -53,6 +55,8 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
       <legend>{ar ? "الشحن" : "Shipping"}</legend>
       <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}{ar ? "، " : ", "}{ar ? `مجاني من ${formatEgp(SHIPPING.freeOver)}` : `free from ${formatEgp(SHIPPING.freeOver)}`})</label>
       <label class="radio"><input type="radio" name="shippingMethod" value="express" /> {ar ? "سريع" : "Express"} ({formatEgp(SHIPPING.express)} {cur})</label>
+      <label class="radio"><input type="radio" name="shippingMethod" value="pickup" /> {ar ? "استلام من مقرنا في مدينة نصر (مجاني)" : "Pick up from us in Nasr City (free)"}</label>
+      <small class="muted" data-pickup-only hidden>{ar ? "هنكلمك نتفق على المكان والميعاد، وتدفعي عند الاستلام." : "We will call you to agree the place and time, and you pay on pickup."}</small>
     </fieldset>
     <fieldset>
       <legend>{ar ? "الدفع" : "Payment"}</legend>

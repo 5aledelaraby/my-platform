@@ -6,7 +6,7 @@
 // so nothing can be ordered that is not in stock.
 import { catalog } from "@platform/commerce";
 import { designPath, hideSoldOut, isSoldOut, productFromPath, sitemapWithoutSoldOut, skipSoldOutSiblings } from "./lib/availability.ts";
-import { FEED_PATH, feedWithStock } from "./lib/feed.ts";
+import { FEED_PATH, LOCAL_FEED_PATH, feedWithStock } from "./lib/feed.ts";
 
 /** The slice of a Workers service binding / assets binding this code uses. */
 interface Fetcher {
@@ -84,7 +84,7 @@ function rewritten(res: Response, body: string): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    const isFeed = url.pathname === FEED_PATH;
+    const isFeed = url.pathname === FEED_PATH || url.pathname === LOCAL_FEED_PATH;
     const isSitemap = url.pathname === "/sitemap.xml";
     const isBelts = BELTS_PREFIX.test(url.pathname);
     if (request.method !== "GET" || !(isFeed || isSitemap || isBelts)) return untransformed(await env.ASSETS.fetch(request), request);

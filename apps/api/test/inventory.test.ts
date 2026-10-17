@@ -235,7 +235,25 @@ describe("schema check and status guard", () => {
     db.migrate("0002_inventory.sql");
     assert.equal((await health()).status, 503, "0003 (promo codes) still missing");
     db.migrate("0003_promo_codes.sql");
+    db.migrate("0004_design_product_ids.sql");
+    assert.equal((await health()).status, 503, "0005 (pickup) still missing");
+    db.migrate("0005_pickup.sql");
     assert.equal((await health()).status, 200);
+  });
+
+  it("stores a pickup order as standard + pickup = 1 and reads it back as pickup, with no shipping fee", async () => {
+    const db = sqliteD1();
+    const repo = d1Repository(db);
+    const order = { ...makeOrder([{ id: "thin-tie-red", quantity: 1 }]), id: "V-1017-PICKU", shippingMethod: "pickup" as const };
+    order.customer = { ...order.customer, governorate: "", address: "" };
+    assert.equal(await repo.insert(order), "ok");
+    const row = db.sqlite.prepare("SELECT shipping_method, pickup, address FROM orders WHERE id = ?").get(order.id) as Record<string, unknown>;
+    assert.deepEqual({ ...row }, { shipping_method: "standard", pickup: 1, address: "" });
+    assert.equal((await repo.getOrder(order.id))?.shippingMethod, "pickup");
+    assert.equal((await repo.listOrders({ limit: 10 }))[0]?.shippingMethod, "pickup");
+    const old = makeOrder([{ id: "thin-tie-red", quantity: 1 }]);
+    await repo.insert(old);
+    assert.equal((await repo.getOrder(old.id))?.shippingMethod, old.shippingMethod, "delivery orders unchanged");
   });
 
   it("a status change based on the wrong current status changes nothing and returns no stock", async () => {

@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { describe, it } from "node:test";
 import { catalog, lookupProduct } from "@platform/commerce";
-import { FEED_HEADER, FEED_PATH, NOT_IN_FEED, buildFeedCsv, feedWithStock } from "../src/lib/feed.ts";
+import { FEED_HEADER, FEED_PATH, LOCAL_FEED_HEADER, LOCAL_FEED_PATH, NOT_IN_FEED, STORE_CODE, buildFeedCsv, buildLocalInventoryCsv, feedWithStock } from "../src/lib/feed.ts";
 import worker from "../src/worker.ts";
 
 const csv = buildFeedCsv({
@@ -73,5 +73,23 @@ describe("catalog feed", () => {
     assert.equal(after.some((r) => r[0] === "lace-white"), false);
     assert.equal(after.find((r) => r[0] === "ruffle-red")?.[col("availability")], "in stock");
     assert.equal(res.headers.get("ETag"), null);
+  });
+
+  it("local inventory: the same belts and prices, for pickup at the store, sold-out rows dropped by the Worker", async () => {
+    const local = buildLocalInventoryCsv();
+    const lrows = local.trim().split("\n").slice(1).map(parse);
+    assert.equal(local.split("\n")[0], LOCAL_FEED_HEADER.join(","));
+    assert.deepEqual(lrows.map((r) => r[0]), rows.map((r) => r[0]));
+    for (const r of lrows) {
+      assert.equal(r[1], STORE_CODE);
+      assert.equal(r[2], "in_stock");
+      assert.equal(r[3], rows.find((m) => m[0] === r[0])?.[col("price")]);
+      assert.equal(r[4], "reserve");
+    }
+    const res = await worker.fetch(new Request(`https://vicuna-eg.com${LOCAL_FEED_PATH}`), {
+      ASSETS: { fetch: async () => new Response(local, { headers: { "Content-Type": "text/csv" } }) },
+      API: { fetch: async () => Response.json({ stock: { "lace-white": 0 } }) },
+    });
+    assert.equal((await res.text()).includes('"lace-white"'), false);
   });
 });

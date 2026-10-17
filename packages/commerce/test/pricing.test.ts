@@ -30,6 +30,10 @@ describe("shipping", () => {
   it("always charges express", () => {
     assert.equal(shippingCost(egp(5000), "express", shipping), egp(120));
   });
+
+  it("never charges pickup from Vicuna", () => {
+    assert.equal(shippingCost(egp(100), "pickup", shipping), 0);
+  });
 });
 
 describe("calculateTotals", () => {

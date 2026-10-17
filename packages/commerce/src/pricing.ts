@@ -6,7 +6,8 @@ export interface CartLine {
   quantity: number;
 }
 
-export type ShippingMethod = "standard" | "express";
+/** "pickup": the customer collects the order from Vicuna in Nasr City (owner, 2026-10-17); no shipping fee, no address. */
+export type ShippingMethod = "standard" | "express" | "pickup";
 
 export interface ShippingConfig {
   standard: Piasters;
@@ -38,6 +39,7 @@ function expandUnits(lines: readonly CartLine[]): Piasters[] {
 }
 
 export function shippingCost(net: Piasters, method: ShippingMethod, config: ShippingConfig): Piasters {
+  if (method === "pickup") return 0;
   if (method === "express") return config.express;
   return net >= config.freeOver ? 0 : config.standard;
 }

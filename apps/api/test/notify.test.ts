@@ -60,6 +60,12 @@ describe("formatOrderMessage", () => {
     const long = { ...order, customer: { ...order.customer, address: "ع".repeat(5000) } };
     assert.ok(formatOrderMessage(long).length <= 4000);
   });
+
+  it("a pickup order says so instead of the address", () => {
+    const pickup = formatOrderMessage({ ...order, shippingMethod: "pickup", customer: { ...order.customer, governorate: "", address: "" } });
+    assert.ok(pickup.includes("استلام من المقر"));
+    assert.ok(!pickup.includes("العنوان:") && !pickup.includes("المحافظة:"));
+  });
 });
 
 describe("formatStatusMessage", () => {

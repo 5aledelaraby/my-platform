@@ -113,7 +113,7 @@ export const ADMIN_JS = `
   var STATUS = { "new": "جديد", confirmed: "اتأكد", shipped: "اتشحن", delivered: "اتسلم", cancelled: "ملغي" };
   var ACTION = { confirmed: "تأكيد الطلب", shipped: "اتشحن", delivered: "اتسلم", cancelled: "إلغاء الطلب" };
   var PAY = { cod: "الدفع عند الاستلام", instapay: "InstaPay" };
-  var SHIP = { standard: "عادي", express: "سريع" };
+  var SHIP = { standard: "عادي", express: "سريع", pickup: "استلام من المقر" };
 
   function el(tag, cls, text) {
     var e = document.createElement(tag);
@@ -193,7 +193,7 @@ export const ADMIN_JS = `
     var head = el("div", "row");
     head.append(el("span", "id", o.id), el("span", "badge " + o.status, STATUS[o.status] || o.status));
     var who = el("div", "row");
-    who.append(el("b", null, o.customerName), el("span", "muted", o.governorate));
+    who.append(el("b", null, o.customerName), el("span", "muted", o.shippingMethod === "pickup" ? "استلام من المقر" : o.governorate));
     var meta = el("div", "row");
     meta.append(el("span", "muted", when(o.createdAt)), el("b", null, money(o.total) + " · " + o.itemCount + " حزام"));
     var more = el("button", "ghost", "التفاصيل");
@@ -223,7 +223,7 @@ export const ADMIN_JS = `
     wa.rel = "noopener noreferrer";
     wa.target = "_blank";
     links.append(tel, wa);
-    box.append(links, el("div", null, "العنوان: " + c.governorate + "، " + c.address));
+    box.append(links, el("div", null, order.shippingMethod === "pickup" ? "استلام من المقر: اتفق معاها على المكان والميعاد" : "العنوان: " + c.governorate + "، " + c.address));
     if (c.notes) box.append(el("div", null, "ملاحظات: " + c.notes));
     order.items.forEach(function (i) {
       box.append(el("div", null, "- " + i.name + " (" + i.productId + ") × " + i.quantity + " = " + money(i.lineTotal)));

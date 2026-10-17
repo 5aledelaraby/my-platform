@@ -8,7 +8,7 @@ export const SHIPPING: ShippingConfig = {
   freeOver: egp(1500),
 };
 
-export const SHIPPING_METHODS = ["standard", "express"] as const;
+export const SHIPPING_METHODS = ["standard", "express", "pickup"] as const;
 
 /** "cod" = cash on delivery. "instapay" = customer transfers manually and sends the receipt; nothing is charged online. */
 export const PAYMENT_METHODS = ["cod", "instapay"] as const;

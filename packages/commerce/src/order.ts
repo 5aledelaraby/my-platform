@@ -185,8 +185,10 @@ export function validateOrderRequest(input: unknown, lookup: PriceLookup): Valid
   const c = isRecord(customerRaw) ? customerRaw : {};
   if (!isRecord(customerRaw)) errors["customer"] = "required" satisfies ErrorCode;
 
+  // Pickup orders are collected from Vicuna: no governorate or address is needed (any sent is ignored).
+  const pickup = input["shippingMethod"] === "pickup";
   const name = text(c, "name", "customer.name", errors, LIMITS.name);
-  const address = text(c, "address", "customer.address", errors, LIMITS.address);
+  const address = pickup ? "" : text(c, "address", "customer.address", errors, LIMITS.address);
   const notes = text(c, "notes", "customer.notes", errors, { ...LIMITS.notes, optional: true });
 
   let phone: string | undefined;
@@ -198,9 +200,11 @@ export function validateOrderRequest(input: unknown, lookup: PriceLookup): Valid
     if (!phone) errors["customer.phone"] = "invalid_phone" satisfies ErrorCode;
   }
 
-  let governorate: string | undefined;
+  let governorate: string | undefined = pickup ? "" : undefined;
   const govRaw = c["governorate"];
-  if (govRaw === undefined || govRaw === null || govRaw === "") errors["customer.governorate"] = "required" satisfies ErrorCode;
+  if (pickup) {
+    // nothing to check
+  } else if (govRaw === undefined || govRaw === null || govRaw === "") errors["customer.governorate"] = "required" satisfies ErrorCode;
   else if (typeof govRaw !== "string") errors["customer.governorate"] = "invalid_type" satisfies ErrorCode;
   else {
     governorate = resolveGovernorate(govRaw) ?? undefined;
@@ -221,7 +225,7 @@ export function validateOrderRequest(input: unknown, lookup: PriceLookup): Valid
     if (!promoCode) errors["promoCode"] = "invalid_promo" satisfies ErrorCode;
   }
 
-  if (Object.keys(errors).length > 0 || !name || !address || !phone || !governorate) return { ok: false, errors };
+  if (Object.keys(errors).length > 0 || !name || address === undefined || !phone || governorate === undefined) return { ok: false, errors };
 
   return {
     ok: true,

@@ -8,7 +8,7 @@ export type StatusNotifier = (order: Order, from: OrderStatus, to: OrderStatus) 
 /** Sends one plain-text message to the owner's chat. */
 export type MessageSender = (text: string) => Promise<void>;
 
-const SHIPPING_AR = { standard: "عادي", express: "سريع" } as const;
+const SHIPPING_AR = { standard: "عادي", express: "سريع", pickup: "استلام من المقر" } as const;
 const PAYMENT_AR = { cod: "الدفع عند الاستلام", instapay: "InstaPay (تحويل يدوي)" } as const;
 /** Same words as the admin page. */
 const STATUS_AR: Record<OrderStatus, string> = { new: "جديد", confirmed: "اتأكد", shipped: "اتشحن", delivered: "اتسلم", cancelled: "ملغي" };
@@ -29,8 +29,9 @@ export function formatOrderMessage(order: Order): string {
     `الاسم: ${c.name}`,
     `الموبايل: ${c.phone}`,
     `واتساب: https://wa.me/2${c.phone}`,
-    `المحافظة: ${c.governorate}`,
-    `العنوان: ${c.address}`,
+    ...(order.shippingMethod === "pickup"
+      ? ["📍 استلام من المقر: كلّمها واتفقوا على المكان والميعاد"]
+      : [`المحافظة: ${c.governorate}`, `العنوان: ${c.address}`]),
     ...(c.notes ? [`ملاحظات: ${c.notes}`] : []),
     "",
     ...order.items.map((i) => `- ${i.name} (${i.productId}) × ${i.quantity} = ${formatEgp(i.lineTotal)} ج`),

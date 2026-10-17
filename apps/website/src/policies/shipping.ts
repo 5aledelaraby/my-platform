@@ -17,6 +17,7 @@ export const shippingAr: PolicyDoc = {
 <tr><td>شحن عادي إلى أي محافظة</td><td>${fees.standard} جنيه</td></tr>
 <tr><td>شحن عادي لطلب قيمته ${fees.freeOver} جنيه أو أكثر بعد الخصم</td><td>مجاني</td></tr>
 <tr><td>شحن سريع</td><td>${fees.express} جنيه</td></tr>
+<tr><td>استلام من مقرنا في مدينة نصر (نتفق معكِ على المكان والموعد)</td><td>مجاني</td></tr>
 </tbody>
 </table>
 <p>تظهر مصاريف الشحن والإجمالي في السلة قبل إرسال الطلب، ولا نضيف على هذا الإجمالي أي رسوم عند الاستلام.</p>
@@ -27,7 +28,7 @@ export const shippingAr: PolicyDoc = {
 
 <h2>طرق الدفع</h2>
 <ul>
-<li><b>الدفع عند الاستلام:</b> تدفعين للمندوب عند استلام الطلب.</li>
+<li><b>الدفع عند الاستلام:</b> تدفعين للمندوب عند استلام الطلب، أو عندنا إذا استلمتِه من مقرنا.</li>
 <li><b>InstaPay:</b> تحوّلين الإجمالي إلى ${ltr(site.instapay)}، وترسلين صورة التحويل مع رقم الطلب على واتساب.</li>
 </ul>
 <p>لا نطلب ولا نحفظ أي أرقام بطاقات أو حسابات بنكية.</p>
@@ -53,6 +54,7 @@ export const shippingEn: PolicyDoc = {
 <tr><td>Standard, to any governorate</td><td>EGP ${fees.standard}</td></tr>
 <tr><td>Standard, orders of EGP ${fees.freeOver} or more after discount</td><td>Free</td></tr>
 <tr><td>Express</td><td>EGP ${fees.express}</td></tr>
+<tr><td>Pickup from us in Nasr City (we agree the place and time with you)</td><td>Free</td></tr>
 </tbody>
 </table>
 <p>The cart shows the shipping fee and the total before you send the order, and we add no fees to that total on delivery.</p>
@@ -63,7 +65,7 @@ export const shippingEn: PolicyDoc = {
 
 <h2>Payment</h2>
 <ul>
-<li><b>Cash on delivery:</b> you pay the courier when the order arrives.</li>
+<li><b>Cash on delivery:</b> you pay the courier when the order arrives, or us if you pick it up.</li>
 <li><b>InstaPay:</b> transfer the total to ${site.instapay} and send the receipt with your order number on WhatsApp.</li>
 </ul>
 <p>We never ask for or keep card or bank account numbers.</p>

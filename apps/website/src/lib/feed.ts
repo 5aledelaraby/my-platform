@@ -64,6 +64,23 @@ export function buildFeedCsv(o: FeedOptions): string {
   return [FEED_HEADER.join(","), ...rows].join("\n") + "\n";
 }
 
+/**
+ * Local inventory for Google Merchant Center (free local listings, owner 2026-10-17): the same belts and the same
+ * single stock as the website, offered for pickup at Vicuna in Nasr City. `store_code` must equal the store code set on
+ * the Google Business Profile (Edit profile > Store code). The id stays the first column so feedWithStock() drops the
+ * sold-out rows here too.
+ */
+export const LOCAL_FEED_PATH = "/catalog/local-inventory.csv";
+export const STORE_CODE = "VICUNA-NASR-CITY";
+export const LOCAL_FEED_HEADER = ["id", "store_code", "availability", "price", "pickup_method", "pickup_sla"] as const;
+
+export function buildLocalInventoryCsv(): string {
+  const rows = catalog.products
+    .filter((p) => !NOT_IN_FEED.has(p.style))
+    .map((p) => [p.id, STORE_CODE, "in_stock", `${(priceOf(p) / PIASTERS_PER_EGP).toFixed(2)} EGP`, "reserve", "multi-day"].map(cell).join(","));
+  return [LOCAL_FEED_HEADER.join(","), ...rows].join("\n") + "\n";
+}
+
 /** Drops the rows of sold-out products (tracked at zero), so Meta and Google stop showing them until restocked. */
 export function feedWithStock(csv: string, isSoldOut: (id: string) => boolean): string {
   return csv

@@ -112,8 +112,18 @@ const cartLines = (): CartLine[] =>
     const p = lookupProduct(l.id);
     return p ? [{ unitPrice: p.unitPrice, quantity: l.quantity }] : [];
   });
-const shippingMethod = (): ShippingMethod =>
-  (form?.querySelector<HTMLInputElement>('input[name="shippingMethod"]:checked')?.value === "express" ? "express" : "standard");
+const shippingMethod = (): ShippingMethod => {
+  const v = form?.querySelector<HTMLInputElement>('input[name="shippingMethod"]:checked')?.value;
+  return v === "express" || v === "pickup" ? v : "standard";
+};
+
+/** Pickup needs no governorate or address: hide those fields (and their errors) and show the pickup note. */
+function syncPickup(): void {
+  const pickup = shippingMethod() === "pickup";
+  form?.querySelectorAll<HTMLElement>("[data-delivery-only]").forEach((e) => (e.hidden = pickup));
+  form?.querySelectorAll<HTMLElement>("[data-pickup-only]").forEach((e) => (e.hidden = !pickup));
+  if (pickup) ["customer.governorate", "customer.address"].forEach((f) => fieldError(f, undefined));
+}
 
 function el(tag: string, cls?: string, text?: string): HTMLElement {
   const e = document.createElement(tag);
@@ -421,6 +431,7 @@ function clientErrors(): Record<string, string> {
   if (val("customer.name").length < LIMITS.name.min) e["customer.name"] = val("customer.name") ? "too_short" : "required";
   if (!val("customer.phone")) e["customer.phone"] = "required";
   else if (!normalizeEgyptianMobile(val("customer.phone"))) e["customer.phone"] = "invalid_phone";
+  if (shippingMethod() === "pickup") return e;
   if (!val("customer.governorate")) e["customer.governorate"] = "invalid_governorate";
   if (val("customer.address").length < LIMITS.address.min) e["customer.address"] = val("customer.address") ? "too_short" : "required";
   return e;
@@ -453,11 +464,11 @@ async function submit(event: SubmitEvent): Promise<void> {
     customer: {
       name: val("customer.name"),
       phone: val("customer.phone"),
-      governorate: val("customer.governorate"),
-      address: val("customer.address"),
+      // Pickup orders carry no governorate or address.
+      ...(shippingMethod() === "pickup" ? {} : { governorate: val("customer.governorate"), address: val("customer.address") }),
       ...(notes ? { notes } : {}),
     },
-    shippingMethod: radio("shippingMethod") || "standard",
+    shippingMethod: shippingMethod(),
     paymentMethod: radio("paymentMethod") || "cod",
     // Only a code that applies right now (the minimum may no longer be reached after the cart changed).
     ...(promo && currentTotals().discount > 0 ? { promoCode: promo.code } : {}),
@@ -611,7 +622,15 @@ promoInput?.addEventListener("keydown", (e) => {
   }
 });
 form?.addEventListener("change", (e) => {
-  if ((e.target as HTMLInputElement).name === "shippingMethod") render();
+  if ((e.target as HTMLInputElement).name === "shippingMethod") {
+    syncPickup();
+    render();
+  }
+});
+// The browser may restore the chosen radio when the page comes back from history.
+window.addEventListener("pageshow", () => {
+  syncPickup();
+  render();
 });
 window.addEventListener("storage", (e) => {
   if (e.key === KEY) {
