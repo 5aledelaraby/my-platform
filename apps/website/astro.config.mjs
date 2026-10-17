@@ -5,7 +5,9 @@ export default defineConfig({
   site: "https://vicuna-eg.com",
   output: "static",
   trailingSlash: "always",
-  build: { format: "directory" },
+  // The stylesheet is written into each page (owner, 2026-10-18, PageSpeed "render-blocking requests"): the first
+  // paint no longer waits for a separate CSS file; it costs a few KB per page, compressed.
+  build: { format: "directory", inlineStylesheets: "always" },
   i18n: {
     locales: ["ar", "en"],
     defaultLocale: "ar",

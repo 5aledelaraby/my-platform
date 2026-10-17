@@ -23,7 +23,7 @@ export const LOOK_COUNTS: Readonly<Record<string, number>> = {
 };
 
 export const LOOK_IDS: ReadonlySet<string> = new Set(Object.keys(LOOK_COUNTS));
-export const LOOK_SIZES = [640, 800, 1200] as const;
+export const LOOK_SIZES = [400, 640, 800, 1200] as const;
 
 export interface Look { src: string; srcset: string }
 
