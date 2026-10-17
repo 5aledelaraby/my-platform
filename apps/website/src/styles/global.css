@@ -1664,22 +1664,30 @@ span.wl-word:last-child { margin-inline-end: 0; }
 .soc-snapchat { background: #fffc00; }
 .soc-snapchat svg path { fill: #fff; stroke: #000; stroke-width: 1.4; stroke-linejoin: round; }
 
-/* ---------- shining titles: a soft light sweeps across the letters ---------- */
-:root { --shine: #b4ada2; }
-:root[data-mode="dark"] { --shine: #f3dfae; }
-.shine { background-image: linear-gradient(110deg, var(--ink) 0 40%, var(--shine) 50%, var(--ink) 60% 100%); background-size: 260% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
-span.shine, a.shine { padding-block: .14em; margin-block: -.14em; }
+/* ---------- neon titles (owner, 2026-10-18, in place of the light sweep that PageSpeed flagged) ---------- */
+/* The words are written in deep leaf green with a soft leaf-green neon glow. The glow is a copy of the words
+   (::after, from data-neon, hidden from screen readers) whose opacity slowly pulses: opacity is animated by the
+   phone's compositor, so the glow costs no main-thread work and PageSpeed does not flag it. */
+:root { --neon-ink: var(--leaf-deep); --neon: 61 220 151; }
+:root[data-mode="dark"] { --neon-ink: #7fe0b4; --neon: 90 240 170; }
+.shine { position: relative; color: var(--neon-ink); text-shadow: 0 0 1px rgb(var(--neon) / .45); }
+a.shine { display: inline-block; text-decoration: none; }
+.shine::after {
+  content: attr(data-neon);
+  content: attr(data-neon) / "";
+  position: absolute; inset: 0; pointer-events: none; white-space: pre;
+  color: transparent; text-shadow: 0 0 6px rgb(var(--neon) / .7), 0 0 16px rgb(var(--neon) / .45), 0 0 30px rgb(var(--neon) / .25);
+  opacity: .55;
+}
 .bw-head-link { display: inline-block; text-decoration: none; }
 @media (prefers-reduced-motion: no-preference) {
-  .shine { animation: shine 5s ease-in-out 1.4s infinite; }
-  .wl-word.shine { animation: wl-in .7s var(--ease-soft) both, shine 5s ease-in-out infinite; animation-delay: calc(.05s + var(--w, 0) * .07s), calc(1.5s + var(--w, 0) * .1s); }
+  .shine::after { will-change: opacity; animation: neon-pulse 3.2s ease-in-out 1.4s infinite; }
 }
-@keyframes shine { 0% { background-position: 100% 0; } 55%, 100% { background-position: 0 0; } }
+@keyframes neon-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 
 /* ---------- buttons that invite a tap: a gentle grow-and-settle every few seconds ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .btn:not([disabled]):not(.btn-white):not(.ghost), .lux .btn.lux-btn, .wl-cta, .bw-head-link { animation: cta-breathe 3.6s ease-in-out 1.2s infinite; }
-  .bw-head-link.shine { animation: cta-breathe 3.6s ease-in-out 1.2s infinite, shine 5s ease-in-out 1.4s infinite; }
   .wl-cta { animation-delay: 1.8s; }
   :is(.btn, .wl-cta, .bw-head-link):hover { animation-play-state: paused; }
 }
