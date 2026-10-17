@@ -11,7 +11,6 @@ interface Line { id: string; quantity: number }
 const KEY = "vicuna-cart-v1";
 const ORDER_KEY = "vicuna-last-order";
 const API_URL = (import.meta.env.PUBLIC_API_URL as string | undefined) ?? "/api/orders";
-const STOCK_URL = API_URL.replace(/\/orders\/?$/, "/stock");
 const PROMO_URL = API_URL.replace(/\/orders\/?$/, "/promo");
 const lang: Lang = document.documentElement.lang === "en" ? "en" : "ar";
 
@@ -76,7 +75,10 @@ function load(): Line[] {
   }
 }
 let lines: Line[] = load();
-/** Tracked products only (from GET /api/stock). Unknown until loaded; the API enforces stock either way. */
+/**
+ * Tracked products only. The page does not ask for the stock when it loads (owner, 2026-10-18): the site Worker already
+ * hides sold-out belts, and if a belt sells out meanwhile, the order API refuses it and its reply fills this in.
+ */
 let stock: Map<string, number> | undefined;
 
 function save(): void {
@@ -586,19 +588,6 @@ function applyStock(next: Map<string, number>): void {
   render();
 }
 
-function loadStock(): void {
-  fetch(STOCK_URL, { headers: { Accept: "application/json" } })
-    .then((res) => (res.ok ? (res.json() as Promise<{ stock?: Record<string, unknown> }>) : null))
-    .then((data) => {
-      if (!data?.stock || typeof data.stock !== "object") return;
-      const next = new Map<string, number>();
-      for (const [id, q] of Object.entries(data.stock)) if (typeof q === "number" && Number.isInteger(q) && q >= 0) next.set(id, q);
-      applyStock(next);
-    })
-    .catch(() => {
-      /* stock unknown: the page stays as built, and the API still refuses what is not in stock */
-    });
-}
 
 document.addEventListener("click", (e) => {
   const target = (e.target as HTMLElement).closest<HTMLElement>("[data-add], [data-open-cart], [data-close-cart], [data-checkout], [data-close-toast]");
@@ -639,4 +628,3 @@ window.addEventListener("storage", (e) => {
   }
 });
 render();
-loadStock();
