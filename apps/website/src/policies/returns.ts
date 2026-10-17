@@ -52,7 +52,7 @@ export const returnsAr: PolicyDoc = {
 </ul>
 
 <h2>كيف تطلبين الإرجاع أو الاستبدال؟</h2>
-<p>بدون استمارات: أرسلي لنا على واتساب رقم الطلب، وهل تريدين الإرجاع أم الاستبدال، ونرتب معكِ موعد الاستلام.</p>
+<p>بدون استمارات: أرسلي لنا على واتساب رقم الطلب، وهل تريدين الإرجاع أم الاستبدال، ونرتب معكِ موعد الاستلام. ويمكنكِ أيضًا تسليم المنتج بنفسكِ في مقرنا: ${site.addressAr}، بعد الاتفاق على الموعد.</p>
 ${contactHtml("ar", "السلام عليكم، أريد إرجاع أو استبدال طلب", site.supportEmail)}
 
 <h2>إذا لم نصل إلى حل</h2>
@@ -103,7 +103,7 @@ export const returnsEn: PolicyDoc = {
 </ul>
 
 <h2>How to return or exchange</h2>
-<p>No forms: send us your order number on WhatsApp and say whether you want a return or an exchange, and we arrange the pickup with you.</p>
+<p>No forms: send us your order number on WhatsApp and say whether you want a return or an exchange, and we arrange the pickup with you. You can also hand the item in yourself at our office, ${site.addressEn}, at a time we agree.</p>
 ${contactHtml("en", "Hello, I would like to return or exchange an order", site.supportEmail)}
 
 <h2>If we cannot solve it</h2>

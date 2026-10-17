@@ -26,6 +26,7 @@ const description = ar
       <address>
         <b>{ar ? site.legalNameAr : site.legalNameEn}</b> ({ar ? site.legalFormAr : site.legalFormEn})<br />
         {ar ? site.addressAr : site.addressEn}<br />
+        {ar ? "استلام الطلبات وتسليم المرتجعات في المقر بموعد مسبق عبر واتساب." : "Order pickup and returns at our office, by appointment on WhatsApp."}<br />
         {ar ? "سجل تجاري رقم " : "Commercial register no. "}<bdi dir="ltr">{site.commercialRegister}</bdi>
         {site.taxNumber && <>{ar ? "، رقم التسجيل الضريبي " : ", tax registration no. "}<bdi dir="ltr">{site.taxNumber}</bdi></>}
       </address>
