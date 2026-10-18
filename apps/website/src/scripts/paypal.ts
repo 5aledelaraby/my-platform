@@ -113,17 +113,19 @@ export async function startPaypal(orderId: string, total: number, lang: Lang): P
             msg.textContent = t.declined;
             return actions.restart();
           }
-          msg.textContent = t.failed;
+          msg.textContent = `${t.failed} (${status} ${String(result["error"] ?? "")})`;
         },
         onCancel() {
           msg.textContent = t.cancelled;
         },
-        onError() {
-          if (paidEl.hidden) msg.textContent = t.failed;
+        onError(error) {
+          // A short reason after the message, so a failure can be traced (no personal data in it).
+          const reason = error instanceof Error ? error.message : String(error);
+          if (paidEl.hidden) msg.textContent = `${t.failed} (${reason.slice(0, 80)})`;
         },
       })
       .render("#paypal-buttons");
-  } catch {
-    msg.textContent = t.failed;
+  } catch (error) {
+    msg.textContent = `${t.failed} (${error instanceof Error ? error.message.slice(0, 80) : "load"})`;
   }
 }
