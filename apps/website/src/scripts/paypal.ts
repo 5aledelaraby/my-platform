@@ -113,7 +113,7 @@ export async function startPaypal(orderId: string, total: number, lang: Lang): P
             msg.textContent = t.declined;
             return actions.restart();
           }
-          msg.textContent = `${t.failed} (${status} ${String(result["error"] ?? "")})`;
+          msg.textContent = `${t.failed} (${status} ${String(result["detail"] ?? result["error"] ?? "")})`;
         },
         onCancel() {
           msg.textContent = t.cancelled;

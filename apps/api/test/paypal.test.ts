@@ -238,6 +238,21 @@ describe("PayPal payment", () => {
     assert.deepEqual(payments.map((p) => p.state), ["paid"]);
   });
 
+  it("tells why PayPal refused a capture, with PayPal's label only", async () => {
+    const repo = memoryRepository();
+    await repo.setUsdRate(RATE, NOW.toISOString());
+    const { handler, paypal } = app(repo);
+    const { id } = await placeOrder(handler);
+    const { id: ppId } = (await (await handler(post("/paypal/orders", { orderId: id }))).json()) as { id: string };
+    paypal.approve(ppId);
+    paypal.api.captureOrder = () => Promise.reject(new Error("paypal_http_422_PAYEE_ACCOUNT_RESTRICTED"));
+    const res = await handler(post("/paypal/capture", { orderId: id, paypalOrderId: ppId }));
+    assert.equal(res.status, 502);
+    assert.deepEqual(await res.json(), { error: "paypal_error", detail: "paypal_http_422_PAYEE_ACCOUNT_RESTRICTED" });
+    paypal.api.captureOrder = () => Promise.reject(new Error("D1_ERROR: something with 01012345678"));
+    assert.deepEqual(await (await handler(post("/paypal/capture", { orderId: id, paypalOrderId: ppId }))).json(), { error: "paypal_error" });
+  });
+
   it("answers 503 when PayPal is not set up", async () => {
     const { handler } = app(memoryRepository(), false);
     const { id } = await placeOrder(handler);

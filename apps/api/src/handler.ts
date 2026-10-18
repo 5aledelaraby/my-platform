@@ -197,7 +197,9 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
       // paypal.ts errors are fixed labels (status and PayPal's issue name), safe to log; any other message is not.
       const label = error instanceof Error && /^paypal_[a-z0-9_A-Z]{1,60}$/.test(error.message) ? error.message : errorLabel(error);
       deps.reportError?.(`paypal_failed:${label}`);
-      return json(502, { error: "paypal_error" }, cors);
+      // PayPal's own labels (HTTP status and issue name, e.g. "paypal_http_422_PAYEE_ACCOUNT_RESTRICTED") carry no
+      // secret and no customer data, and tell the owner why PayPal refused; anything else stays hidden.
+      return json(502, { error: "paypal_error", ...(label.startsWith("paypal_") ? { detail: label } : {}) }, cors);
     }
   }
 
