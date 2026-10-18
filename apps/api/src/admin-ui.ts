@@ -19,6 +19,7 @@ export const ADMIN_HTML = `<!doctype html>
     <button type="button" role="tab" data-tab="orders" aria-selected="true">الطلبات</button>
     <button type="button" role="tab" data-tab="stock" aria-selected="false">المخزون</button>
     <button type="button" role="tab" data-tab="promos" aria-selected="false">أكواد الخصم</button>
+    <button type="button" role="tab" data-tab="paypal" aria-selected="false">PayPal</button>
   </nav>
 </header>
 <main>
@@ -57,6 +58,16 @@ export const ADMIN_HTML = `<!doctype html>
     </form>
     <p id="promos-msg" class="msg" role="status"></p>
     <div id="promos-list"></div>
+  </section>
+  <section id="paypal-view" hidden>
+    <form id="rate-form" class="card promo-form" novalidate>
+      <h2>سعر الدولار للدفع بـ PayPal</h2>
+      <p class="hint">PayPal مش بيقبل الجنيه، فالعميلة بتدفع بالدولار. إجمالي الطلب بيتقسم على السعر ده (وبيتقرّب لأعلى سنت). رسوم PayPal عليك، فممكن تحط السعر أقل شوية من سعر البنك عشان تغطيها. لو السعر فاضي، اختيار PayPal مش بيظهر في الموقع.</p>
+      <label>كام جنيه = 1 دولار<input name="rate" type="number" inputmode="decimal" min="10" max="1000" step="0.01" dir="ltr" required></label>
+      <p id="rate-example" class="muted"></p>
+      <button type="submit" class="btn">حفظ السعر</button>
+      <p id="rate-msg" class="msg" role="status"></p>
+    </form>
   </section>
 </main>
 <script src="/app.js"></script>
@@ -103,6 +114,7 @@ button { font: inherit; cursor: pointer; color: var(--ink); }
 .promo-form label { display: grid; gap: 4px; font-size: .9rem; color: var(--muted); }
 .code { font-weight: 800; direction: ltr; letter-spacing: .04em; }
 .off { opacity: .55; }
+.badge.paid { background: #dcfce7; } .badge.unpaid { background: #fff2cc; }
 [hidden] { display: none !important; }
 `;
 
@@ -112,7 +124,7 @@ export const ADMIN_JS = `
   var API = "/api";
   var STATUS = { "new": "جديد", confirmed: "اتأكد", shipped: "اتشحن", delivered: "اتسلم", cancelled: "ملغي" };
   var ACTION = { confirmed: "تأكيد الطلب", shipped: "اتشحن", delivered: "اتسلم", cancelled: "إلغاء الطلب" };
-  var PAY = { cod: "الدفع عند الاستلام", instapay: "InstaPay" };
+  var PAY = { cod: "الدفع عند الاستلام", instapay: "InstaPay", paypal: "PayPal" };
   var SHIP = { standard: "عادي", express: "سريع", pickup: "استلام من المقر" };
 
   function el(tag, cls, text) {
@@ -120,6 +132,9 @@ export const ADMIN_JS = `
     if (cls) e.className = cls;
     if (text !== undefined && text !== null) e.textContent = String(text);
     return e;
+  }
+  function usd(c) {
+    return "$" + (Number(c) / 100).toFixed(2);
   }
   function money(p) {
     var v = Number(p) / 100;
@@ -169,6 +184,7 @@ export const ADMIN_JS = `
     if (code === "invalid_quantity") return "الكمية لازم تكون رقم صحيح من 0 أو أكثر، أو فاضية.";
     if (code === "promo_exists") return "الكود ده اتعمل قبل كده. اختار اسم تاني (الأكواد القديمة مش بتتمسح).";
     if (code === "validation_failed") return "راجع الخانات المعلّمة.";
+    if (code === "invalid_rate") return "السعر لازم يكون بين 10 و 1000 جنيه.";
     return "حصل خطأ، جرب تاني. (" + code + ")";
   }
 
@@ -192,6 +208,7 @@ export const ADMIN_JS = `
     card.dataset.id = o.id;
     var head = el("div", "row");
     head.append(el("span", "id", o.id), el("span", "badge " + o.status, STATUS[o.status] || o.status));
+    if (o.paymentMethod === "paypal") head.append(el("span", "badge " + (o.paid ? "paid" : "unpaid"), o.paid ? "PayPal: اتدفع ✓" : "PayPal: لسه ما اتدفعش"));
     var who = el("div", "row");
     who.append(el("b", null, o.customerName), el("span", "muted", o.shippingMethod === "pickup" ? "استلام من المقر" : o.governorate));
     var meta = el("div", "row");
@@ -232,6 +249,12 @@ export const ADMIN_JS = `
     box.append(el("div", "muted", "الأحزمة " + money(t.subtotal) + (t.discount ? " · خصم " + money(t.discount) + (order.promoCode ? " (كود " + order.promoCode + ")" : "") : "") +
       " · شحن " + (SHIP[order.shippingMethod] || order.shippingMethod) + " " + (t.shipping ? money(t.shipping) : "مجاني")));
     box.append(el("b", null, "الإجمالي " + money(t.total) + " · " + (PAY[order.paymentMethod] || order.paymentMethod)));
+    if (order.paypal) {
+      var pp = order.paypal;
+      box.append(el("div", pp.paidAt ? null : "muted", pp.paidAt
+        ? "اتدفع بـ PayPal " + usd(pp.usdCents) + " · " + when(pp.paidAt) + " · رقم العملية " + pp.captureId
+        : "لسه ما اتدفعش بـ PayPal" + (pp.usdCents ? " (آخر مبلغ اتعرض: " + usd(pp.usdCents) + ")" : "")));
+    }
     var actions = el("div", "actions");
     var msg = el("p", "msg");
     msg.setAttribute("role", "status");
@@ -239,7 +262,8 @@ export const ADMIN_JS = `
       var b = el("button", to === "cancelled" ? "danger" : "btn", ACTION[to] || to);
       b.type = "button";
       b.addEventListener("click", function () {
-        if (to === "cancelled" && !window.confirm("إلغاء الطلب " + order.id + "؟ الكميات هترجع للمخزون.")) return;
+        var refund = order.paypal && order.paypal.paidAt ? " الطلب ده مدفوع بـ PayPal: رجّع الفلوس من حساب PayPal بنفسك." : "";
+        if (to === "cancelled" && !window.confirm("إلغاء الطلب " + order.id + "؟ الكميات هترجع للمخزون." + refund)) return;
         actions.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
         call("POST", "/orders/" + encodeURIComponent(order.id) + "/status", { to: to, version: order.version })
           .then(function () { loadOrders(); })
@@ -432,6 +456,36 @@ export const ADMIN_JS = `
     }).then(function () { button.disabled = false; });
   });
 
+  // ---------------- PayPal dollar rate
+  var rateForm = document.getElementById("rate-form");
+  var rateMsg = document.getElementById("rate-msg");
+  var rateExample = document.getElementById("rate-example");
+  var rateLoaded = false;
+
+  function showExample() {
+    var r = Number(rateForm.elements.rate.value);
+    rateExample.textContent = r >= 10 ? "مثال: طلب 1000 جنيه = " + usd(Math.ceil(100000 * 100 / Math.round(r * 100))) : "";
+  }
+  function loadRate() {
+    rateLoaded = true;
+    call("GET", "/settings").then(function (data) {
+      rateForm.elements.rate.value = data.usdRate ? String(data.usdRate / 100) : "";
+      rateMsg.textContent = data.usdRate ? "" : "مفيش سعر لسه، فـ PayPal مش ظاهر في الموقع.";
+      showExample();
+    }).catch(function (err) { rateMsg.textContent = explain(err); });
+  }
+  rateForm.elements.rate.addEventListener("input", showExample);
+  rateForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var r = Math.round(Number(rateForm.elements.rate.value) * 100);
+    if (!(r >= 1000 && r <= 100000)) { rateMsg.textContent = explain({ message: "invalid_rate" }); return; }
+    var button = rateForm.querySelector("button[type=submit]");
+    button.disabled = true;
+    call("PUT", "/settings", { usdRate: r }).then(function () {
+      rateMsg.textContent = "اتحفظ ✓ (الموقع بياخد السعر الجديد خلال دقيقة)";
+    }).catch(function (err) { rateMsg.textContent = explain(err); }).then(function () { button.disabled = false; });
+  });
+
   // ---------------- tabs
   document.querySelectorAll("[data-tab]").forEach(function (tab) {
     tab.addEventListener("click", function () {
@@ -440,6 +494,8 @@ export const ADMIN_JS = `
       document.getElementById("orders-view").hidden = name !== "orders";
       document.getElementById("stock-view").hidden = name !== "stock";
       document.getElementById("promos-view").hidden = name !== "promos";
+      document.getElementById("paypal-view").hidden = name !== "paypal";
+      if (name === "paypal" && !rateLoaded) loadRate();
       if (name === "stock" && !stockLoaded) loadStock();
       if (name === "promos" && !promosLoaded) loadPromos();
     });

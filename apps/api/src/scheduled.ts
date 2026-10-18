@@ -23,7 +23,7 @@ export const WATCH_STATE_KEY = "watch/last-alert.json";
 export const ALERT_EVERY_MS = 24 * 60 * 60 * 1000;
 
 /** The tables a backup holds, in restore order. */
-export const BACKUP_TABLES = ["orders", "order_items", "inventory", "promo_codes"] as const;
+export const BACKUP_TABLES = ["orders", "order_items", "inventory", "promo_codes", "settings"] as const;
 
 /** Every row of every backup table, as one JSON document. */
 export async function backupJson(db: D1Like, now: Date): Promise<string> {

@@ -29,6 +29,9 @@ STAGING_HOST = "staging.vicuna-eg.com"
 # token is a Secret named META_TOKEN (dashboard). Orders on staging reach Meta only as test events, when the
 # dashboard variable META_TEST_EVENT_CODE holds the code from Events Manager > Test events.
 META_PIXEL_ID = "2311877842998870"
+# PayPal (ADR 0014): set in the dashboard, not here. Live site: PAYPAL_CLIENT_ID (Text) + PAYPAL_CLIENT_SECRET
+# (Secret). Staging: PAYPAL_SANDBOX_CLIENT_ID (Text) + PAYPAL_SANDBOX_CLIENT_SECRET (Secret), sandbox only.
+# The dollar rate is set in the admin.
 
 [[d1_databases]]
 binding = "DB"
@@ -59,6 +62,15 @@ namespace_id = "2101"
 [[ratelimits]]
 name = "PROMO_LIMIT"
 namespace_id = "2102"
+
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+# PayPal steps (ADR 0014): opening PayPal and confirming a payment, 20 a minute per visitor.
+[[ratelimits]]
+name = "PAYMENT_LIMIT"
+namespace_id = "2103"
 
   [ratelimits.simple]
   limit = 20

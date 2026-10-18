@@ -22,11 +22,27 @@ export type StatusResult = "ok" | "stale" | "not_found";
 /** "stale": the stored quantity is no longer the one the owner saw (an order took units meanwhile). */
 export type StockResult = { ok: true } | { ok: false; current: number | null };
 
+/** A PayPal order's payment (ADR 0014). Every field is null until that step happens. */
+export interface PaypalState {
+  /** The PayPal order made when the customer last opened PayPal. */
+  orderId: string | null;
+  /** Its amount in US cents. */
+  usdCents: number | null;
+  /** Set together with paidAt, once PayPal confirms the money was taken. */
+  captureId: string | null;
+  paidAt: string | null;
+}
+
+/** "already": the order was paid before. "not_found": no unpaid PayPal order with that id and PayPal order. */
+export type PaidResult = "ok" | "already" | "not_found";
+
 /** An order as stored, with the fields the admin page needs to change it safely. */
 export interface StoredOrder extends Order {
   /** Incremented on every status change; a change must name the version it was based on. */
   version: number;
   updatedAt: string | null;
+  /** Present only when paymentMethod is "paypal". */
+  paypal?: PaypalState;
 }
 
 export interface OrderSummary {
@@ -40,6 +56,8 @@ export interface OrderSummary {
   total: number;
   shippingMethod: ShippingMethod;
   paymentMethod: PaymentMethod;
+  /** True once the order is paid online (PayPal). */
+  paid: boolean;
   version: number;
 }
 
@@ -76,6 +94,16 @@ export interface OrderRepository {
   createPromo(promo: NewPromo, now: string): Promise<"ok" | "exists">;
   /** false when there is no such code. */
   setPromoActive(code: string, active: boolean): Promise<boolean>;
+  /** Piasters per US dollar for PayPal orders, set by the owner (ADR 0014); null until set. */
+  usdRate(): Promise<number | null>;
+  setUsdRate(rate: number, now: string): Promise<void>;
+  /**
+   * Records the PayPal order made for an unpaid, not cancelled PayPal order (replacing an earlier one the customer
+   * did not pay). false when there is no such order.
+   */
+  setPaypalOrder(id: string, paypalOrderId: string, usdCents: number): Promise<boolean>;
+  /** Marks the order paid, only if `paypalOrderId` is the PayPal order recorded for it. */
+  markPaid(id: string, paypalOrderId: string, captureId: string, now: string): Promise<PaidResult>;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -83,6 +111,7 @@ export interface OrderRepository {
 
 interface MemoryState {
   orders: Map<string, StoredOrder>;
+  settings: Map<string, string>;
   promos: Map<string, StoredPromo>;
   inventory: Map<string, number>;
   /** order id -> product ids whose units were taken from stock. */
@@ -92,6 +121,7 @@ interface MemoryState {
 export function memoryRepository(initialStock: Record<string, number> = {}): OrderRepository & MemoryState {
   const state: MemoryState = {
     orders: new Map(),
+    settings: new Map(),
     promos: new Map(),
     inventory: new Map(Object.entries(initialStock)),
     taken: new Map(),
@@ -107,6 +137,7 @@ export function memoryRepository(initialStock: Record<string, number> = {}): Ord
     total: o.totals.total,
     shippingMethod: o.shippingMethod,
     paymentMethod: o.paymentMethod,
+    paid: !!o.paypal?.paidAt,
     version: o.version,
   });
   return {
@@ -129,7 +160,12 @@ export function memoryRepository(initialStock: Record<string, number> = {}): Ord
         }
       }
       state.taken.set(order.id, taken);
-      state.orders.set(order.id, { ...structuredClone(order), version: 0, updatedAt: order.createdAt });
+      state.orders.set(order.id, {
+        ...structuredClone(order),
+        version: 0,
+        updatedAt: order.createdAt,
+        ...(order.paymentMethod === "paypal" ? { paypal: { orderId: null, usdCents: null, captureId: null, paidAt: null } } : {}),
+      });
       return Promise.resolve("ok");
     },
     stock: () => Promise.resolve(new Map(state.inventory)),
@@ -191,8 +227,32 @@ export function memoryRepository(initialStock: Record<string, number> = {}): Ord
       p.active = active;
       return Promise.resolve(true);
     },
+    usdRate() {
+      const v = state.settings.get(USD_RATE_KEY);
+      return Promise.resolve(v === undefined ? null : Number(v));
+    },
+    setUsdRate(rate) {
+      state.settings.set(USD_RATE_KEY, String(rate));
+      return Promise.resolve();
+    },
+    setPaypalOrder(id, paypalOrderId, usdCents) {
+      const o = state.orders.get(id);
+      if (!o?.paypal || o.paypal.paidAt || o.status === "cancelled") return Promise.resolve(false);
+      o.paypal = { ...o.paypal, orderId: paypalOrderId, usdCents };
+      return Promise.resolve(true);
+    },
+    markPaid(id, paypalOrderId, captureId, now) {
+      const o = state.orders.get(id);
+      if (!o?.paypal || o.paypal.orderId !== paypalOrderId) return Promise.resolve("not_found");
+      if (o.paypal.paidAt) return Promise.resolve("already");
+      o.paypal = { ...o.paypal, captureId, paidAt: now };
+      return Promise.resolve("ok");
+    },
   };
 }
+
+/** The settings row holding piasters per US dollar. */
+const USD_RATE_KEY = "usd_rate";
 
 // ---------------------------------------------------------------------------------------------
 // Cloudflare D1
@@ -216,14 +276,19 @@ export interface D1Like {
 
 const INSERT_ORDER = `INSERT INTO orders (
   id, created_at, status, customer_name, customer_phone, governorate, address, notes,
-  shipping_method, payment_method, item_count, subtotal, discount, net, shipping, total, version, updated_at, promo_code, pickup
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`;
+  shipping_method, payment_method, item_count, subtotal, discount, net, shipping, total, version, updated_at, promo_code, pickup, paypal
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`;
 
 // The orders table's shipping_method CHECK predates pickup (migration 0005): a pickup order is stored as
 // shipping_method 'standard' with pickup = 1, and read back as "pickup".
 const dbShipping = (m: ShippingMethod): string => (m === "pickup" ? "standard" : m);
 const appShipping = (method: string, pickup: number | null | undefined): ShippingMethod =>
   pickup === 1 ? "pickup" : (method as ShippingMethod);
+// Likewise payment_method's CHECK predates PayPal (migration 0006): a PayPal order is stored as 'instapay' (paid in
+// advance, never cash on delivery) with paypal = 1, and read back as "paypal".
+const dbPayment = (m: PaymentMethod): string => (m === "paypal" ? "instapay" : m);
+const appPayment = (method: string, paypal: number | null | undefined): PaymentMethod =>
+  paypal === 1 ? "paypal" : (method as PaymentMethod);
 
 // One use of the order's promo code, in the same batch. Past the limit, CHECK promo_not_overused fails the order.
 const USE_PROMO = `UPDATE promo_codes SET used = used + 1 WHERE code = ?`;
@@ -283,6 +348,11 @@ interface OrderRow {
   updated_at: string | null;
   promo_code: string | null;
   pickup?: number | null;
+  paypal?: number | null;
+  paypal_order_id?: string | null;
+  paypal_usd_cents?: number | null;
+  paypal_capture_id?: string | null;
+  paid_at?: string | null;
 }
 
 interface PromoRow {
@@ -328,9 +398,10 @@ export function d1Repository(db: D1Like): OrderRepository {
             order.id, order.createdAt, order.status,
             order.customer.name, order.customer.phone, order.customer.governorate, order.customer.address,
             order.customer.notes ?? null,
-            dbShipping(order.shippingMethod), order.paymentMethod,
+            dbShipping(order.shippingMethod), dbPayment(order.paymentMethod),
             t.itemCount, t.subtotal, t.discount, t.net, t.shipping, t.total,
             order.createdAt, order.promoCode ?? null, order.shippingMethod === "pickup" ? 1 : 0,
+            order.paymentMethod === "paypal" ? 1 : 0,
           ),
         ...order.items.map((i) =>
           db.prepare(INSERT_ITEM).bind(order.id, i.productId, i.name, i.unitPrice, i.quantity, i.lineTotal, i.productId),
@@ -394,6 +465,8 @@ WHERE oi.stock_taken = 1 AND o.status IN ('new', 'confirmed') GROUP BY oi.produc
           db.prepare("SELECT product_id, quantity, updated_at FROM inventory LIMIT 0"),
           db.prepare("SELECT promo_code FROM orders LIMIT 0"),
           db.prepare("SELECT pickup FROM orders LIMIT 0"),
+          db.prepare("SELECT paypal, paypal_order_id, paypal_usd_cents, paypal_capture_id, paid_at FROM orders LIMIT 0"),
+          db.prepare("SELECT key, value, updated_at FROM settings LIMIT 0"),
           db.prepare("SELECT code, amount, min_subtotal, max_uses, used, expires_at, active, created_at FROM promo_codes LIMIT 0"),
         ]);
         return true;
@@ -404,7 +477,7 @@ WHERE oi.stock_taken = 1 AND o.status IN ('new', 'confirmed') GROUP BY oi.produc
 
     async listOrders({ status, limit }) {
       const sql = `SELECT id, created_at, status, customer_name, customer_phone, governorate, item_count, total,
-shipping_method, payment_method, version, pickup FROM orders ${status ? "WHERE status = ?" : ""} ORDER BY created_at DESC LIMIT ?`;
+shipping_method, payment_method, version, pickup, paypal, paid_at FROM orders ${status ? "WHERE status = ?" : ""} ORDER BY created_at DESC LIMIT ?`;
       const stmt = status ? db.prepare(sql).bind(status, limit) : db.prepare(sql).bind(limit);
       const { results = [] } = await stmt.all<OrderRow>();
       return results.map((r) => ({
@@ -417,7 +490,8 @@ shipping_method, payment_method, version, pickup FROM orders ${status ? "WHERE s
         itemCount: r.item_count,
         total: r.total,
         shippingMethod: appShipping(r.shipping_method, r.pickup),
-        paymentMethod: r.payment_method as PaymentMethod,
+        paymentMethod: appPayment(r.payment_method, r.paypal),
+        paid: !!r.paid_at,
         version: r.version,
       }));
     },
@@ -449,7 +523,7 @@ shipping_method, payment_method, version, pickup FROM orders ${status ? "WHERE s
         },
         items,
         shippingMethod: appShipping(row.shipping_method, row.pickup),
-        paymentMethod: row.payment_method as PaymentMethod,
+        paymentMethod: appPayment(row.payment_method, row.paypal),
         ...(row.promo_code ? { promoCode: row.promo_code } : {}),
         totals: {
           itemCount: row.item_count,
@@ -461,6 +535,16 @@ shipping_method, payment_method, version, pickup FROM orders ${status ? "WHERE s
         },
         version: row.version,
         updatedAt: row.updated_at,
+        ...(row.paypal === 1
+          ? {
+              paypal: {
+                orderId: row.paypal_order_id ?? null,
+                usdCents: row.paypal_usd_cents ?? null,
+                captureId: row.paypal_capture_id ?? null,
+                paidAt: row.paid_at ?? null,
+              },
+            }
+          : {}),
       };
     },
 
@@ -496,6 +580,37 @@ shipping_method, payment_method, version, pickup FROM orders ${status ? "WHERE s
     async setPromoActive(code, active) {
       const result = await db.prepare("UPDATE promo_codes SET active = ? WHERE code = ?").bind(active ? 1 : 0, code).run();
       return (result.meta?.changes ?? 0) === 1;
+    },
+
+    async usdRate() {
+      const row = await db.prepare("SELECT value FROM settings WHERE key = ?").bind(USD_RATE_KEY).first<{ value: string }>();
+      const rate = row ? Number(row.value) : NaN;
+      return Number.isSafeInteger(rate) && rate > 0 ? rate : null;
+    },
+
+    async setUsdRate(rate, now) {
+      await db
+        .prepare("INSERT INTO settings (key, value, updated_at) VALUES (?, ?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at")
+        .bind(USD_RATE_KEY, String(rate), now)
+        .run();
+    },
+
+    async setPaypalOrder(id, paypalOrderId, usdCents) {
+      const result = await db
+        .prepare("UPDATE orders SET paypal_order_id = ?, paypal_usd_cents = ? WHERE id = ? AND paypal = 1 AND paid_at IS NULL AND status <> 'cancelled'")
+        .bind(paypalOrderId, usdCents, id)
+        .run();
+      return (result.meta?.changes ?? 0) === 1;
+    },
+
+    async markPaid(id, paypalOrderId, captureId, now) {
+      const result = await db
+        .prepare("UPDATE orders SET paypal_capture_id = ?, paid_at = ? WHERE id = ? AND paypal = 1 AND paypal_order_id = ? AND paid_at IS NULL")
+        .bind(captureId, now, id, paypalOrderId)
+        .run();
+      if ((result.meta?.changes ?? 0) === 1) return "ok";
+      const row = await db.prepare("SELECT paid_at FROM orders WHERE id = ? AND paypal = 1 AND paypal_order_id = ?").bind(id, paypalOrderId).first<{ paid_at: string | null }>();
+      return row?.paid_at ? "already" : "not_found";
     },
   };
 }

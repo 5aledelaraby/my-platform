@@ -56,12 +56,14 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
       <label class="radio"><input type="radio" name="shippingMethod" value="standard" checked /> {ar ? "عادي" : "Standard"} ({formatEgp(SHIPPING.standard)} {cur}{ar ? "، " : ", "}{ar ? `مجاني من ${formatEgp(SHIPPING.freeOver)}` : `free from ${formatEgp(SHIPPING.freeOver)}`})</label>
       <label class="radio"><input type="radio" name="shippingMethod" value="express" /> {ar ? "سريع" : "Express"} ({formatEgp(SHIPPING.express)} {cur})</label>
       <label class="radio"><input type="radio" name="shippingMethod" value="pickup" /> {ar ? "استلام من مقرنا في مدينة نصر (مجاني)" : "Pick up from us in Nasr City (free)"}</label>
-      <small class="muted" data-pickup-only hidden>{ar ? "هنكلمك نتفق على المكان والميعاد، وتدفعي عند الاستلام." : "We will call you to agree the place and time, and you pay on pickup."}</small>
+      <small class="muted" data-pickup-only hidden>{ar ? "هنكلمك نتفق على المكان والميعاد." : "We will call you to agree the place and time."}</small>
     </fieldset>
     <fieldset>
       <legend>{ar ? "الدفع" : "Payment"}</legend>
       <label class="radio"><input type="radio" name="paymentMethod" value="cod" checked /> {ar ? "الدفع عند الاستلام" : "Cash on delivery"}</label>
       <label class="radio"><input type="radio" name="paymentMethod" value="instapay" /> InstaPay</label>
+      <label class="radio" data-paypal-option hidden><input type="radio" name="paymentMethod" value="paypal" /> {ar ? "PayPal (بالدولار)" : "PayPal (in US dollars)"}</label>
+      <small class="muted" data-paypal-only hidden>{ar ? "بعد «تأكيد الطلب» هيظهرلك زرار PayPal تدفعي بيه المبلغ بالدولار." : "After \u201cPlace order\u201d you pay the amount in US dollars with the PayPal button."}</small>
     </fieldset>
     <details class="co-more promo-box" data-promo-box>
       <summary>{ar ? "عندك كود خصم؟" : "Have a promo code?"}</summary>

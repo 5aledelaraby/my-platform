@@ -8,7 +8,7 @@ export const shippingAr: PolicyDoc = {
   title: "الشحن والتوصيل",
   description: `مصاريف الشحن في فيكونا، والشحن المجاني من ${fees.freeOver} جنيه، والتوصيل لكل محافظات مصر خلال ${site.deliveryDays} أيام عمل، وطرق الدفع.`,
   html: `
-<p class="policy-summary"><b>باختصار:</b> نوصّل إلى كل محافظات مصر خلال ${site.deliveryDays} أيام عمل، والشحن العادي بـ ${fees.standard} جنيه ومجاني للطلبات من ${fees.freeOver} جنيه، والدفع عند الاستلام أو InstaPay.</p>
+<p class="policy-summary"><b>باختصار:</b> نوصّل إلى كل محافظات مصر خلال ${site.deliveryDays} أيام عمل، والشحن العادي بـ ${fees.standard} جنيه ومجاني للطلبات من ${fees.freeOver} جنيه، والدفع عند الاستلام أو InstaPay أو PayPal بالدولار.</p>
 
 <h2>مصاريف الشحن</h2>
 <table>
@@ -30,6 +30,7 @@ export const shippingAr: PolicyDoc = {
 <ul>
 <li><b>الدفع عند الاستلام:</b> تدفعين للمندوب عند استلام الطلب، أو عندنا إذا استلمتِه من مقرنا.</li>
 <li><b>InstaPay:</b> تحوّلين الإجمالي إلى ${ltr(site.instapay)}، وترسلين صورة التحويل مع رقم الطلب على واتساب.</li>
+<li><b>PayPal (عند ظهوره في السلة):</b> بعد تأكيد الطلب تدفعين الإجمالي بالدولار على صفحة PayPal، بسعر صرف نحدده ويظهر المبلغ بالدولار قبل الدفع. رسوم PayPal علينا.</li>
 </ul>
 <p>لا نطلب ولا نحفظ أي أرقام بطاقات أو حسابات بنكية.</p>
 
@@ -45,7 +46,7 @@ export const shippingEn: PolicyDoc = {
   title: "Shipping and delivery",
   description: `Vicuna shipping fees, free shipping from EGP ${fees.freeOver}, delivery across Egypt in ${site.deliveryDays} working days, and payment.`,
   html: `
-<p class="policy-summary"><b>In short:</b> we deliver to every governorate in Egypt within ${site.deliveryDays} working days; standard shipping is EGP ${fees.standard} and free on orders of EGP ${fees.freeOver} or more; pay on delivery or by InstaPay.</p>
+<p class="policy-summary"><b>In short:</b> we deliver to every governorate in Egypt within ${site.deliveryDays} working days; standard shipping is EGP ${fees.standard} and free on orders of EGP ${fees.freeOver} or more; pay on delivery, by InstaPay or with PayPal in US dollars.</p>
 
 <h2>Shipping fees</h2>
 <table>
@@ -67,6 +68,7 @@ export const shippingEn: PolicyDoc = {
 <ul>
 <li><b>Cash on delivery:</b> you pay the courier when the order arrives, or us if you pick it up.</li>
 <li><b>InstaPay:</b> transfer the total to ${site.instapay} and send the receipt with your order number on WhatsApp.</li>
+<li><b>PayPal (when shown in the cart):</b> after you place the order you pay the total in US dollars on PayPal, at an exchange rate we set; you see the dollar amount before you pay. PayPal's fees are on us.</li>
 </ul>
 <p>We never ask for or keep card or bank account numbers.</p>
 

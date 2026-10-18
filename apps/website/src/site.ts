@@ -32,7 +32,7 @@ export const site = {
   /** Egyptian Consumer Protection Agency. */
   consumerAgency: { hotline: "19588", url: "https://cpa.gov.eg" },
   /** Date the policy pages last changed (YYYY-MM-DD). Update with every change to src/policies. */
-  policiesUpdated: "2026-10-17",
+  policiesUpdated: "2026-10-18",
   maxWeightKg: 90,
   social: [
     { label: "TikTok", href: "https://www.tiktok.com/@elaraby_khaled" },

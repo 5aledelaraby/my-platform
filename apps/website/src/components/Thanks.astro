@@ -18,6 +18,13 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
     <p id="t-fallback" class="muted">{ar ? "لو الصفحة اتفتحت من غير طلب، تقدري تتصفحي أحزمة الخصر من تاني." : "If you opened this page without placing an order, you can keep browsing the belts."}</p>
     <p id="t-total" hidden></p>
     <p id="t-instapay" hidden>{ar ? `للدفع بـ InstaPay حوّلي المبلغ على ${site.instapay} وابعتي لنا صورة التحويل على واتساب مع رقم الطلب.` : `To pay by InstaPay, transfer the amount to ${site.instapay} and send us the receipt on WhatsApp with your order number.`}</p>
+    <div id="t-paypal" class="paypal-box" hidden>
+      <p><b>{ar ? "خطوة أخيرة: ادفعي " : "One last step: pay "}<span id="t-usd" dir="ltr"></span>{ar ? " بـ PayPal" : " with PayPal"}</b></p>
+      <div id="paypal-buttons"></div>
+      <p id="t-paypal-msg" class="muted" role="status"></p>
+      <p class="muted">{ar ? "طلبك متسجّل خلاص. لو الدفع ما نفعش، كلمينا على واتساب ونغيّر طريقة الدفع." : "Your order is already placed. If the payment does not work, message us on WhatsApp and we will change the payment method."}</p>
+    </div>
+    <p id="t-paid" hidden><b>{ar ? "تم الدفع بـ PayPal ✓" : "Paid with PayPal ✓"}</b></p>
     <p class="muted">{ar ? `هنتواصل معاكي لتأكيد الطلب، والتوصيل بياخد حوالي ${site.deliveryDays} أيام عمل.` : `We will contact you to confirm, and delivery takes about ${site.deliveryDays} working days.`}</p>
     <div class="hero-actions">
       <a class="btn" href={beltsUrl(lang)}>{ar ? "كملي تسوق" : "Keep shopping"}</a>
@@ -26,8 +33,14 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
   </div>
 </Base>
 
+<style>
+  .paypal-box { max-width: 420px; margin: 1.2rem auto; }
+  #paypal-buttons { min-height: 48px; margin-block: .8rem; }
+</style>
+
 <script>
   import { formatEgp } from "@platform/commerce";
+  import { startPaypal } from "../scripts/paypal.ts";
   import { track } from "../scripts/tracking.ts";
   const lang = document.documentElement.lang === "en" ? "en" : "ar";
   try {
@@ -52,6 +65,7 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
         sessionStorage.setItem(sent, "1");
       }
       if (order.paymentMethod === "instapay") document.getElementById("t-instapay")!.hidden = false;
+      if (order.paymentMethod === "paypal" && typeof order.totals?.total === "number") void startPaypal(order.id, order.totals.total, lang);
       const wa = document.getElementById("t-wa") as HTMLAnchorElement;
       const text = lang === "ar" ? `أهلاً فيكونا، رقم طلبي ${order.id}` : `Hello Vicuna, my order number is ${order.id}`;
       wa.href = `${wa.href.split("?")[0]}?text=${encodeURIComponent(text)}`;

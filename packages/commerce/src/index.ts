@@ -1,5 +1,7 @@
 export { PIASTERS_PER_EGP, assertPiasters, egp, formatEgp } from "./money.ts";
 export type { Piasters } from "./money.ts";
+export { USD_RATE_LIMITS, formatUsd, isUsdRate, parseUsd, toUsdCents } from "./usd.ts";
+export type { UsdCents } from "./usd.ts";
 export { calculateTotals, shippingCost } from "./pricing.ts";
 export { MAX_PROMO_AMOUNT, PROMO_CODE_PATTERN, normalizePromoCode, promoAmountFor, promoProblem, validateNewPromo } from "./promo.ts";
 export type { NewPromoInput, PromoCode, PromoProblem } from "./promo.ts";

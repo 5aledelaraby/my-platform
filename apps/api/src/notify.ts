@@ -1,6 +1,6 @@
 // Telegram messages for the owner: a new order, and every status change made in the admin. Sent AFTER the
 // change is stored; a failure here never fails the order or the change.
-import { formatEgp } from "@platform/commerce";
+import { formatEgp, formatUsd } from "@platform/commerce";
 import type { Order, OrderStatus } from "@platform/commerce";
 
 export type Notifier = (order: Order) => Promise<void>;
@@ -9,7 +9,7 @@ export type StatusNotifier = (order: Order, from: OrderStatus, to: OrderStatus) 
 export type MessageSender = (text: string) => Promise<void>;
 
 const SHIPPING_AR = { standard: "عادي", express: "سريع", pickup: "استلام من المقر" } as const;
-const PAYMENT_AR = { cod: "الدفع عند الاستلام", instapay: "InstaPay (تحويل يدوي)" } as const;
+const PAYMENT_AR = { cod: "الدفع عند الاستلام", instapay: "InstaPay (تحويل يدوي)", paypal: "PayPal بالدولار (لسه ما اتدفعش، هيوصلك تأكيد لما يتدفع)" } as const;
 /** Same words as the admin page. */
 const STATUS_AR: Record<OrderStatus, string> = { new: "جديد", confirmed: "اتأكد", shipped: "اتشحن", delivered: "اتسلم", cancelled: "ملغي" };
 const TELEGRAM_MAX = 4000; // Telegram's limit is 4096 characters per message.
@@ -57,6 +57,27 @@ export function formatStatusMessage(order: Order, from: OrderStatus, to: OrderSt
     `واتساب: https://wa.me/2${c.phone}`,
     `الإجمالي: ${formatEgp(order.totals.total)} ج`,
     ...(to === "cancelled" ? ["", "أي كمية كانت محجوزة للطلب ده رجعت للمخزون."] : []),
+  ];
+  return capped(lines.join("\n"));
+}
+
+/** A PayPal payment for an order (ADR 0014): taken ("paid"), or held by PayPal for a check ("pending"). */
+export function formatPaymentMessage(
+  order: Order & { paypal?: { usdCents: number | null; captureId: string | null } },
+  state: "paid" | "pending",
+  at: Date,
+): string {
+  const c = order.customer;
+  const usd = order.paypal?.usdCents;
+  const lines = [
+    state === "paid" ? `✅ اتدفع بـ PayPal: الطلب ${order.id}` : `⏳ PayPal لسه بيراجع دفع الطلب ${order.id}`,
+    cairoTime(at),
+    "",
+    `الاسم: ${c.name}`,
+    `الموبايل: ${c.phone}`,
+    `المبلغ: ${usd ? `$${formatUsd(usd)}` : "-"} (الطلب ${formatEgp(order.totals.total)} ج)`,
+    ...(state === "paid" && order.paypal?.captureId ? [`رقم العملية في PayPal: ${order.paypal.captureId}`] : []),
+    ...(state === "pending" ? ["", "افتح حساب PayPal وشوف العملية قبل ما تشحن."] : []),
   ];
   return capped(lines.join("\n"));
 }

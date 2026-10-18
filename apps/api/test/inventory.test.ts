@@ -238,6 +238,8 @@ describe("schema check and status guard", () => {
     db.migrate("0004_design_product_ids.sql");
     assert.equal((await health()).status, 503, "0005 (pickup) still missing");
     db.migrate("0005_pickup.sql");
+    assert.equal((await health()).status, 503, "0006 (PayPal) still missing");
+    db.migrate("0006_paypal.sql");
     assert.equal((await health()).status, 200);
   });
 

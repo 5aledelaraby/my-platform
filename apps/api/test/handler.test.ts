@@ -298,9 +298,10 @@ describe("d1Repository", () => {
     assert.equal(calls.length, 5);
     assert.match(calls[0]?.sql ?? "", /INSERT INTO orders/);
     assert.equal(calls[0]?.values[7], null);
-    assert.equal(calls[0]?.values.length, 19);
+    assert.equal(calls[0]?.values.length, 20);
     assert.equal(calls[0]?.values[17], null, "no promo code");
     assert.equal(calls[0]?.values[18], 0, "delivery, not pickup");
+    assert.equal(calls[0]?.values[19], 0, "not PayPal");
     assert.deepEqual(calls[1]?.values, ["V-1009-AAAAA", "wide-tie-mustard", "رباط عريض مسطردة", 20000, 2, 40000, "wide-tie-mustard"]);
     assert.match(calls[3]?.sql ?? "", /UPDATE inventory SET quantity = quantity - \?/);
     assert.deepEqual(calls[3]?.values, [2, NOW.toISOString(), "wide-tie-mustard"]);

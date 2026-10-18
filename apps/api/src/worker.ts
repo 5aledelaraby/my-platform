@@ -6,7 +6,8 @@ import { createHandler } from "./handler.ts";
 import { metaPurchaseReporter } from "./meta.ts";
 import { SITE_CHECKS, backupFileName, backupJson, backupKey, failedChecks, telegramDocumentSender, watch } from "./scheduled.ts";
 import type { BucketLike } from "./scheduled.ts";
-import { STAGING_TAG, formatOrderMessage, formatStatusMessage, tagged, telegramSender } from "./notify.ts";
+import { STAGING_TAG, formatOrderMessage, formatPaymentMessage, formatStatusMessage, tagged, telegramSender } from "./notify.ts";
+import { paypalApi } from "./paypal.ts";
 import { d1Repository } from "./repository.ts";
 import type { D1Like } from "./repository.ts";
 
@@ -41,6 +42,16 @@ interface Env {
   /** Workers Rate Limiting bindings (wrangler.toml [[ratelimits]]): orders and promo-code checks per visitor. */
   ORDER_LIMIT?: RateLimiter;
   PROMO_LIMIT?: RateLimiter;
+  PAYMENT_LIMIT?: RateLimiter;
+  /**
+   * PayPal (ADR 0014), set in the dashboard. The live site uses the live app: PAYPAL_CLIENT_ID (Text, public) and
+   * PAYPAL_CLIENT_SECRET (Secret). Staging uses only the sandbox app: PAYPAL_SANDBOX_CLIENT_ID and
+   * PAYPAL_SANDBOX_CLIENT_SECRET, so a test never takes real money. A site without its pair has no PayPal.
+   */
+  PAYPAL_CLIENT_ID?: string;
+  PAYPAL_CLIENT_SECRET?: string;
+  PAYPAL_SANDBOX_CLIENT_ID?: string;
+  PAYPAL_SANDBOX_CLIENT_SECRET?: string;
 }
 
 /** The slice of the Workers rate limiting binding this app uses. */
@@ -107,6 +118,10 @@ export default {
     const capiToken = env.META_TOKEN?.trim();
     const testCode = env.META_TEST_EVENT_CODE?.trim();
     const reportPurchase = pixelId && capiToken && (!onStaging || testCode) ? metaPurchaseReporter(pixelId, capiToken, onStaging ? testCode : undefined) : null;
+    const paypalId = (onStaging ? env.PAYPAL_SANDBOX_CLIENT_ID : env.PAYPAL_CLIENT_ID)?.trim();
+    const paypalSecret = (onStaging ? env.PAYPAL_SANDBOX_CLIENT_SECRET : env.PAYPAL_CLIENT_SECRET)?.trim();
+    const paypal =
+      paypalId && paypalSecret ? { api: paypalApi({ clientId: paypalId, secret: paypalSecret, environment: onStaging ? "sandbox" : "live" }), clientId: paypalId } : null;
     const waitUntil = ctx ? { waitUntil: (work: Promise<unknown>) => ctx.waitUntil(work) } : {};
     const emails = (env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
     const missingSettings = [
@@ -132,7 +147,7 @@ export default {
       admin,
       ...(env.ADMIN_HOST?.trim() ? { adminHost: env.ADMIN_HOST.trim().toLowerCase() } : {}),
       allow: async (kind, key) => {
-        const limiter = kind === "order" ? env.ORDER_LIMIT : env.PROMO_LIMIT;
+        const limiter = kind === "order" ? env.ORDER_LIMIT : kind === "promo" ? env.PROMO_LIMIT : env.PAYMENT_LIMIT;
         return limiter ? (await limiter.limit({ key: `${kind}:${key}` })).success : true;
       },
       // A missing variable means "no browser origin is allowed" (fail closed), not a crash.
@@ -143,6 +158,8 @@ export default {
       reportError,
       ...(send ? { notify: (order) => send(formatOrderMessage(order)) } : {}),
       ...(reportPurchase ? { reportPurchase } : {}),
+      ...(paypal ? { paypal } : {}),
+      ...(send ? { notifyPayment: (order, state) => send(formatPaymentMessage(order, state, now())) } : {}),
       ...waitUntil,
     });
     return handler(request);

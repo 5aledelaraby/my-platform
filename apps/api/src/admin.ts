@@ -1,7 +1,7 @@
 // Owner-only admin: orders (view, change status) and stock. Everything here requires a verified owner
 // (Cloudflare Access JWT, see access.ts). Mutations also require a custom header and a same-origin request,
 // so another site cannot make the owner's browser change anything (CSRF).
-import { canTransition, catalog, isOrderStatus, nextStatuses, normalizePromoCode, validateNewPromo } from "@platform/commerce";
+import { canTransition, catalog, isOrderStatus, isUsdRate, nextStatuses, normalizePromoCode, validateNewPromo } from "@platform/commerce";
 import type { OrderStatus } from "@platform/commerce";
 import { unverifiedAccessHints } from "./access.ts";
 import type { AccessHints, AdminVerifier } from "./access.ts";
@@ -212,6 +212,17 @@ export function createAdminHandler(deps: AdminDeps): (request: Request, path: st
         const active = body["active"];
         if (!code || typeof active !== "boolean") return json(400, { error: "invalid_request" });
         return (await deps.repository.setPromoActive(code, active)) ? json(200, { code, active }) : json(404, { error: "not_found" });
+      }
+
+      // GET /settings, PUT /settings {usdRate}: piasters per US dollar for PayPal orders (ADR 0014).
+      if (route === "/settings" && method === "GET") {
+        return json(200, { usdRate: await deps.repository.usdRate() });
+      }
+      if (route === "/settings" && method === "PUT") {
+        const usdRate = body["usdRate"];
+        if (!isUsdRate(usdRate)) return json(400, { error: "invalid_rate" });
+        await deps.repository.setUsdRate(usdRate, deps.now().toISOString());
+        return json(200, { usdRate });
       }
 
       return json(404, { error: "not_found" });

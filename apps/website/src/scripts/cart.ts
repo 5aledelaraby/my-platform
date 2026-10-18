@@ -1,6 +1,6 @@
 // Global cart: state in localStorage, drawer UI, checkout via POST /api/orders.
 // Prices shown here are for display only. The server recalculates everything from the catalogue.
-import { LIMITS, SHIPPING, calculateTotals, formatEgp, lookupProduct, normalizeEgyptianMobile, normalizePromoCode, promoAmountFor, remainingQuantity } from "@platform/commerce";
+import { LIMITS, SHIPPING, calculateTotals, formatEgp, formatUsd, isUsdRate, lookupProduct, normalizeEgyptianMobile, normalizePromoCode, promoAmountFor, remainingQuantity, toUsdCents } from "@platform/commerce";
 import type { CartLine, ShippingMethod } from "@platform/commerce";
 import { getProduct, productName, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
@@ -12,6 +12,7 @@ const KEY = "vicuna-cart-v1";
 const ORDER_KEY = "vicuna-last-order";
 const API_URL = (import.meta.env.PUBLIC_API_URL as string | undefined) ?? "/api/orders";
 const PROMO_URL = API_URL.replace(/\/orders\/?$/, "/promo");
+const PAYPAL_CONFIG_URL = API_URL.replace(/\/orders\/?$/, "/paypal/config");
 const lang: Lang = document.documentElement.lang === "en" ? "en" : "ar";
 
 const T = {
@@ -32,6 +33,7 @@ const T = {
     soldOut: "بعض المنتجات نفدت أو المتاح منها أقل، فعدّلنا السلة. راجعيها وأكّدي الطلب تاني.", soldOutBtn: "نفدت الكمية",
     trimmed: "عدّلنا بعض الكميات في السلة على حسب المتاح.",
     added: "اتضاف للسلة", notAdded: "مش متاح نضيف أكتر من المنتج ده",
+    usd: "بالدولار (PayPal)",
   },
   en: {
     cur: "EGP", free: "Free", remove: "Remove", sending: "Sending...", submit: "Place order",
@@ -50,6 +52,7 @@ const T = {
     soldOut: "Some items sold out or have fewer left, so we updated your cart. Please check it and place the order again.", soldOutBtn: "Sold out",
     trimmed: "We adjusted some quantities in your cart to what is available.",
     added: "Added to your cart", notAdded: "We cannot add more of this item",
+    usd: "In US dollars (PayPal)",
   },
 }[lang];
 
@@ -101,6 +104,29 @@ const limitEl = $("#cart-limit");
 const actionsEl = $("#cart-actions");
 /** The drawer first shows the cart; the delivery form appears only after "Checkout". */
 let step: "cart" | "checkout" = "cart";
+
+/** PayPal (ADR 0014): shown only when the API says it is on; the dollar figure here is a preview, the API decides. */
+let paypal: { usdRate: number } | null = null;
+let paypalAsked = false;
+
+/** The PayPal choice is hidden until the API confirms PayPal is on (asked once, when the checkout form opens). */
+async function loadPaypal(): Promise<void> {
+  if (paypalAsked) return;
+  paypalAsked = true;
+  try {
+    const res = await fetch(PAYPAL_CONFIG_URL, { headers: { Accept: "application/json" } });
+    const data = (await res.json()) as { enabled?: unknown; usdRate?: unknown };
+    if (res.ok && data.enabled === true && isUsdRate(data.usdRate)) {
+      paypal = { usdRate: data.usdRate };
+      form?.querySelectorAll<HTMLElement>("[data-paypal-option]").forEach((e) => (e.hidden = false));
+      render();
+    }
+  } catch {
+    /* PayPal stays hidden: cash on delivery and InstaPay still work */
+  }
+}
+
+const paymentMethod = (): string => form?.querySelector<HTMLInputElement>('input[name="paymentMethod"]:checked')?.value ?? "cod";
 
 /** A code the API accepted (preview only; the API checks it again when the order is sent). */
 let promo: { code: string; amount: number; minSubtotal: number } | null = null;
@@ -288,6 +314,9 @@ function render(): void {
   if (t.discount > 0) add(`${T.discount} (${promo?.code ?? ""})`, `- ${money(t.discount)}`);
   add(T.shipping, t.shipping === 0 ? T.free : money(t.shipping));
   add(T.total, money(t.total), true);
+  const payingPaypal = paypal !== null && paymentMethod() === "paypal";
+  if (payingPaypal) add(T.usd, `$${formatUsd(toUsdCents(t.total, paypal!.usdRate))}`);
+  form.querySelectorAll<HTMLElement>("[data-paypal-only]").forEach((e) => (e.hidden = !payingPaypal));
   renderPromo(t);
 }
 
@@ -403,6 +432,7 @@ function openCart(): void {
 
 function goToCheckout(): void {
   step = "checkout";
+  void loadPaypal();
   track({ type: "begin_checkout", value: currentTotals().total, items: lines.map((l) => ({ id: l.id, quantity: l.quantity, price: lookupProduct(l.id)?.unitPrice })) });
   render();
   // On a phone, do not pop the keyboard up straight away: show the form from its top and let the customer tap.
@@ -611,10 +641,11 @@ promoInput?.addEventListener("keydown", (e) => {
   }
 });
 form?.addEventListener("change", (e) => {
-  if ((e.target as HTMLInputElement).name === "shippingMethod") {
+  const name = (e.target as HTMLInputElement).name;
+  if (name === "shippingMethod") {
     syncPickup();
     render();
-  }
+  } else if (name === "paymentMethod") render();
 });
 // The browser may restore the chosen radio when the page comes back from history.
 window.addEventListener("pageshow", () => {

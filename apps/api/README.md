@@ -28,7 +28,7 @@ Cloudflare Worker بيستقبل الطلب من الموقع، ويتحقق م�
 }
 ```
 
-- `shippingMethod`: `standard` أو `express` أو `pickup` (استلام من مقرنا في مدينة نصر، مجاني، ومن غير `governorate` ولا `address`؛ بيتخزن `shipping_method = 'standard'` و`pickup = 1`، migration 0005). `paymentMethod`: `cod` (عند الاستلام) أو `instapay` (تحويل يدوي، لا يتم خصم أي شيء أونلاين).
+- `shippingMethod`: `standard` أو `express` أو `pickup` (استلام من مقرنا في مدينة نصر، مجاني، ومن غير `governorate` ولا `address`؛ بيتخزن `shipping_method = 'standard'` و`pickup = 1`، migration 0005). `paymentMethod`: `cod` (عند الاستلام) أو `instapay` (تحويل يدوي، لا يتم خصم أي شيء أونلاين) أو `paypal` (بالدولار بعد الطلب، تحت؛ بيتخزن `payment_method = 'instapay'` و`paypal = 1`، migration 0006).
 - `promoCode` اختياري: كود خصم بمبلغ ثابت من الأحزمة. لو مش صالح الرد `422` وفيه `errors.promoCode` (`invalid_promo` أو `promo_expired` أو `promo_used_up` أو `promo_min_subtotal`). الاستخدام بيتحسب مع تسجيل الطلب في نفس العملية.
 - `website` حقل مخفي في الصفحة (honeypot): لازم يفضل فاضي، وأي بوت بيملاه يتم رفضه.
 - الأخطاء: `422` فيها `errors` بأكواد ثابتة (مثل `invalid_phone`) والواجهة تترجمها. `403` أصل غير مسموح (أو `ALLOWED_ORIGINS` مش متضبوط). `413` حجم أكبر من 16 KB (الـ API بيوقف القراءة أول ما الحجم يعدّي الحد). `503` تعارض متكرر في رقم الطلب فقط (يُعاد المحاولة). `500` أي خطأ تاني في التخزين، وبيتسجل اسمه في اللوج.
@@ -86,7 +86,7 @@ Cloudflare Worker بيستقبل الطلب من الموقع، ويتحقق م�
 - قاعدة D1 `vicuna-db` اتعملت من اللوحة، والـ `database_id` في `wrangler.toml` (معرّف، مش سر).
 - `GET /api/health` بيرد `503 schema_outdated` لو الـ migrations مش متطبقة على D1، فافتحه بعد أي نشر.
 - رابط `workers.dev` للـ API مقفول (`workers_dev = false`): الوصول من خلال الدومين بس، علشان قواعد الحماية تتطبق.
-- الـ migrations بتتنفذ يدويًا من **D1 Console** في اللوحة، أمر في كل سطر (`0001_orders.sql` ثم `0002_inventory.sql` ثم `0003_promo_codes.sql` ثم `0004_design_product_ids.sql` ثم `0005_pickup.sql`؛ من 0002 لـ 0005 كل أمر مكتوب في سطر علشان يتنسخ مباشرة). الخمسة متنفذين على القاعدتين. `0004` بتغيّر أسماء المنتجات المتخزنة للأسماء الجديدة (ADR 0012) وبتتنفذ مع أول نشر للأسماء دي. أي migration جديدة لازم تتنفذ على القاعدة **قبل** دمج الكود اللي بيعتمد عليها، لأن الدمج بينشر فورًا.
+- الـ migrations بتتنفذ يدويًا من **D1 Console** في اللوحة، أمر في كل سطر (`0001_orders.sql` ثم `0002_inventory.sql` ثم `0003_promo_codes.sql` ثم `0004_design_product_ids.sql` ثم `0005_pickup.sql` ثم `0006_paypal.sql`؛ من 0002 لـ 0006 كل أمر مكتوب في سطر علشان يتنسخ مباشرة). من 0001 لـ 0005 متنفذين على القاعدتين؛ 0006 لازم تتنفذ على القاعدتين قبل نشر كود PayPal على `main`. `0004` بتغيّر أسماء المنتجات المتخزنة للأسماء الجديدة (ADR 0012) وبتتنفذ مع أول نشر للأسماء دي. أي migration جديدة لازم تتنفذ على القاعدة **قبل** دمج الكود اللي بيعتمد عليها، لأن الدمج بينشر فورًا.
 - تنبيه: التنفيذ اليدوي ما بيتسجلش في جدول `d1_migrations`. لو حد شغّل بعد كده `pnpm db:migrate:remote` (يعني `wrangler d1 migrations apply --remote`)، هيحاول ينفذ `0001` تاني ويفشل لأن الجداول موجودة. التزموا بطريقة واحدة.
 - المسارات (في `wrangler.toml`): `vicuna-eg.com/api/*` و`staging.vicuna-eg.com/api/*` و`admin.vicuna-eg.com`.
 
@@ -109,6 +109,22 @@ Cloudflare Worker بيستقبل الطلب من الموقع، ويتحقق م�
 | `META_PIXEL_ID` | متغير في `wrangler.toml` | رقم البيكسل (عام) |
 | `META_TOKEN` | **Secret** | من Events Manager. من غيره مفيش حاجة بتتبعت |
 | `META_TEST_EVENT_CODE` | متغير من اللوحة (اختياري) | طلبات الـ staging بتتبعت كـ Test events بس لو موجود |
+
+## الدفع بـ PayPal (ADR 0014)
+
+الطلب بيتسجل عادي، وبعدين العميلة بتدفع بالدولار في صفحة الشكر بزرار PayPal. المبلغ = إجمالي الطلب ÷ سعر الدولار اللي بتحطه في الإدارة (تبويب PayPal)، متقرّب لأعلى سنت. الـ API بيحسب المبلغ من الطلب المتخزن، وبيتأكد من PayPal (رقم طلبنا، الدولار، المبلغ) **قبل** ما يسحب الفلوس، وبعدها بيعلّم الطلب "اتدفع" ويبعت Telegram.
+
+- `GET /api/paypal/config`: شغال ولا لأ، والـ client id العام، والسعر.
+- `POST /api/paypal/orders` `{orderId}` و`POST /api/paypal/capture` `{orderId, paypalOrderId}`.
+
+| الاسم | النوع | ملاحظات |
+|---|---|---|
+| `PAYPAL_CLIENT_ID` | متغير Text من اللوحة | تطبيق PayPal الـ **Live**، للموقع العام |
+| `PAYPAL_CLIENT_SECRET` | **Secret** | سر تطبيق الـ Live |
+| `PAYPAL_SANDBOX_CLIENT_ID` | متغير Text من اللوحة | تطبيق الـ **Sandbox**، للـ staging بس |
+| `PAYPAL_SANDBOX_CLIENT_SECRET` | **Secret** | سر تطبيق الـ Sandbox |
+
+من غير الاتنين بتوع الموقع، أو من غير سعر، اختيار PayPal مش بيظهر. الـ staging عمره ما بيستخدم الـ Live. الاسترجاع بيتعمل من حساب PayPal نفسه.
 
 ## مهام مجدولة
 

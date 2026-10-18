@@ -10,8 +10,11 @@ export const SHIPPING: ShippingConfig = {
 
 export const SHIPPING_METHODS = ["standard", "express", "pickup"] as const;
 
-/** "cod" = cash on delivery. "instapay" = customer transfers manually and sends the receipt; nothing is charged online. */
-export const PAYMENT_METHODS = ["cod", "instapay"] as const;
+/**
+ * "cod" = cash on delivery. "instapay" = customer transfers manually and sends the receipt; nothing is charged online.
+ * "paypal" = paid online in US dollars on the thank-you page after the order is placed (ADR 0014).
+ */
+export const PAYMENT_METHODS = ["cod", "instapay", "paypal"] as const;
 
 /** Canonical governorate names (Arabic), in display order. */
 export const GOVERNORATES = [
