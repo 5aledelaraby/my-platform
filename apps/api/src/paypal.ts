@@ -91,7 +91,8 @@ export function paypalApi(credentials: PaypalCredentials, fetchImpl: typeof fetc
   }
 
   async function call(method: string, path: string, body?: unknown, requestId?: string): Promise<unknown> {
-    const headers: Record<string, string> = { Authorization: `Bearer ${await token()}`, Accept: "application/json" };
+    // The full order in every reply: by default PayPal may answer with a shorter form that leaves out custom_id.
+    const headers: Record<string, string> = { Authorization: `Bearer ${await token()}`, Accept: "application/json", Prefer: "return=representation" };
     if (body !== undefined) headers["Content-Type"] = "application/json";
     if (requestId) headers["PayPal-Request-Id"] = requestId;
     const res = await fetchImpl(`${base}${path}`, { method, headers, ...(body !== undefined ? { body: JSON.stringify(body) } : {}) });

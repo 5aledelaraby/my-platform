@@ -5,7 +5,7 @@ import { cookieValue } from "./meta.ts";
 import type { BrowserSignal, PurchaseReporter } from "./meta.ts";
 import type { Notifier } from "./notify.ts";
 import { PAYPAL_ORDER_ID, PaypalDeclined } from "./paypal.ts";
-import type { PaypalApi } from "./paypal.ts";
+import type { PaypalApi, PaypalOrderInfo } from "./paypal.ts";
 import type { OrderRepository, StoredOrder } from "./repository.ts";
 
 export { MAX_BODY_BYTES };
@@ -125,9 +125,51 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
       const order = await deps.repository.getOrder(orderId);
       if (!order?.paypal) return json(404, { error: "not_found" }, cors);
 
+      const recorded = order.paypal;
+      const matches = (info: PaypalOrderInfo) => info.customId === order.id && info.currency === "USD" && info.cents === recorded.usdCents;
+
+      /**
+       * Records the result of a PayPal order whose money was taken (status COMPLETED). The state is always read
+       * back from PayPal in full (a capture's own reply may leave fields out), and checked again.
+       */
+      const settle = async (paypalOrderId: string, info: PaypalOrderInfo): Promise<Response> => {
+        const capture = info.capture;
+        if (!capture || capture.status === "DECLINED" || capture.status === "FAILED") return json(402, { error: "payment_declined" }, cors);
+        if (capture.status === "PENDING") {
+          if (deps.notifyPayment) {
+            const sent = deps.notifyPayment(order, "pending").catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
+            deps.waitUntil?.(sent);
+          }
+          return json(202, { paid: false, pending: true }, cors);
+        }
+        if (capture.status !== "COMPLETED" || !matches(info)) {
+          deps.reportError?.(`paypal_capture_unexpected:${capture.status.replace(/[^A-Z_]/g, "").slice(0, 30)}`);
+          return json(502, { error: "payment_unclear" }, cors);
+        }
+        const now = deps.now().toISOString();
+        const result = await deps.repository.markPaid(order.id, paypalOrderId, capture.id, now);
+        if (result === "not_found") return json(409, { error: "payment_mismatch" }, cors);
+        if (result === "ok" && deps.notifyPayment) {
+          const paid: StoredOrder = { ...order, paypal: { ...recorded, captureId: capture.id, paidAt: now } };
+          const sent = deps.notifyPayment(paid, "paid").catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
+          deps.waitUntil?.(sent);
+        }
+        return json(200, { paid: true }, cors);
+      };
+
       if (path === "/paypal/orders") {
-        if (order.paypal.paidAt) return json(409, { error: "already_paid" }, cors);
+        if (recorded.paidAt) return json(409, { error: "already_paid" }, cors);
         if (order.status === "cancelled") return json(409, { error: "order_cancelled" }, cors);
+        // Never charge twice: if the PayPal order made earlier was already paid (the page lost the answer), record
+        // that instead of making a new one.
+        if (recorded.orderId) {
+          const earlier = await paypal.api.getOrder(recorded.orderId);
+          if (earlier.status === "COMPLETED") {
+            const settled = await settle(recorded.orderId, earlier);
+            if (settled.status === 200) return json(409, { error: "already_paid" }, cors);
+            return settled;
+          }
+        }
         const rate = await deps.repository.usdRate();
         if (rate === null || !isUsdRate(rate)) return json(503, { error: "paypal_unavailable" }, cors);
         const usdCents = toUsdCents(order.totals.total, rate);
@@ -139,42 +181,17 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
       // POST /paypal/capture
       const paypalOrderId = isRecord(body) ? body["paypalOrderId"] : undefined;
       if (typeof paypalOrderId !== "string" || !PAYPAL_ORDER_ID.test(paypalOrderId)) return json(400, { error: "invalid_request" }, cors);
-      if (order.paypal.orderId !== paypalOrderId) return json(409, { error: "payment_mismatch" }, cors);
-      if (order.paypal.paidAt) return json(200, { paid: true }, cors);
-      const expected = order.paypal.usdCents;
-      const matches = (info: { customId: string | null; currency: string | null; cents: number | null }) =>
-        info.customId === order.id && info.currency === "USD" && info.cents === expected;
+      if (recorded.orderId !== paypalOrderId) return json(409, { error: "payment_mismatch" }, cors);
+      if (recorded.paidAt) return json(200, { paid: true }, cors);
 
-      let info = await paypal.api.getOrder(paypalOrderId);
-      if (!matches(info)) {
+      const before = await paypal.api.getOrder(paypalOrderId);
+      if (!matches(before)) {
         deps.reportError?.("paypal_mismatch");
         return json(409, { error: "payment_mismatch" }, cors);
       }
-      if (info.status === "APPROVED") info = await paypal.api.captureOrder(paypalOrderId);
-      else if (info.status !== "COMPLETED") return json(409, { error: "not_approved" }, cors);
-
-      const capture = info.capture;
-      if (!capture || capture.status === "DECLINED" || capture.status === "FAILED") return json(402, { error: "payment_declined" }, cors);
-      if (capture.status === "PENDING") {
-        if (deps.notifyPayment) {
-          const sent = deps.notifyPayment(order, "pending").catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
-          deps.waitUntil?.(sent);
-        }
-        return json(202, { paid: false, pending: true }, cors);
-      }
-      if (capture.status !== "COMPLETED" || !matches(info)) {
-        deps.reportError?.(`paypal_capture_unexpected:${capture.status.replace(/[^A-Z_]/g, "").slice(0, 30)}`);
-        return json(502, { error: "payment_unclear" }, cors);
-      }
-      const now = deps.now().toISOString();
-      const result = await deps.repository.markPaid(order.id, paypalOrderId, capture.id, now);
-      if (result === "not_found") return json(409, { error: "payment_mismatch" }, cors);
-      if (result === "ok" && deps.notifyPayment) {
-        const paid: StoredOrder = { ...order, paypal: { ...order.paypal, captureId: capture.id, paidAt: now } };
-        const sent = deps.notifyPayment(paid, "paid").catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
-        deps.waitUntil?.(sent);
-      }
-      return json(200, { paid: true }, cors);
+      if (before.status === "APPROVED") await paypal.api.captureOrder(paypalOrderId);
+      else if (before.status !== "COMPLETED") return json(409, { error: "not_approved" }, cors);
+      return await settle(paypalOrderId, await paypal.api.getOrder(paypalOrderId));
     } catch (error) {
       if (error instanceof PaypalDeclined) return json(402, { error: "payment_declined" }, cors);
       // paypal.ts errors are fixed labels (status and PayPal's issue name), safe to log; any other message is not.

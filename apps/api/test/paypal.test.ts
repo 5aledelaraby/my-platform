@@ -119,11 +119,11 @@ describe("PayPal payment", () => {
       assert.equal(stored?.paypal?.captureId, `CAP${ppId}`);
       assert.equal((await repo.listOrders({ limit: 10 }))[0]?.paid, true);
       assert.deepEqual(payments.map((p) => p.state), ["paid"]);
-      assert.deepEqual(paypal.calls, [`create:${ppId}:${expected}`, `get:${ppId}`, `capture:${ppId}`]);
+      assert.deepEqual(paypal.calls, [`create:${ppId}:${expected}`, `get:${ppId}`, `capture:${ppId}`, `get:${ppId}`]);
 
       // Repeating the capture changes nothing and takes nothing again; a new PayPal order is refused.
       assert.deepEqual(await (await handler(post("/paypal/capture", { orderId: id, paypalOrderId: ppId }))).json(), { paid: true });
-      assert.equal(paypal.calls.length, 3);
+      assert.equal(paypal.calls.length, 4);
       const again = await handler(post("/paypal/orders", { orderId: id }));
       assert.equal(again.status, 409);
       assert.deepEqual(await again.json(), { error: "already_paid" });
@@ -206,6 +206,36 @@ describe("PayPal payment", () => {
     assert.deepEqual(await held.json(), { paid: false, pending: true });
     assert.equal((await repo.getOrder(id))?.paypal?.paidAt, null);
     assert.deepEqual(payments.map((p) => p.state), ["pending"]);
+  });
+
+  it("trusts PayPal's full order, not the capture's short reply that leaves out our id", async () => {
+    const repo = memoryRepository();
+    await repo.setUsdRate(RATE, NOW.toISOString());
+    const { handler, paypal } = app(repo);
+    const { id } = await placeOrder(handler);
+    const { id: ppId } = (await (await handler(post("/paypal/orders", { orderId: id }))).json()) as { id: string };
+    paypal.approve(ppId);
+    const realCapture = paypal.api.captureOrder.bind(paypal.api);
+    paypal.api.captureOrder = async (ppid) => ({ ...(await realCapture(ppid)), customId: null, cents: null, currency: null });
+    const res = await handler(post("/paypal/capture", { orderId: id, paypalOrderId: ppId }));
+    assert.equal(res.status, 200);
+    assert.ok((await repo.getOrder(id))?.paypal?.paidAt);
+  });
+
+  it("never charges twice: a PayPal order already paid is recorded instead of making a new one", async () => {
+    const repo = memoryRepository();
+    await repo.setUsdRate(RATE, NOW.toISOString());
+    const { handler, paypal, payments } = app(repo);
+    const { id } = await placeOrder(handler);
+    const { id: ppId } = (await (await handler(post("/paypal/orders", { orderId: id }))).json()) as { id: string };
+    // The customer paid, but the page never got the answer.
+    paypal.orders.set(ppId, { ...paypal.orders.get(ppId)!, status: "COMPLETED", capture: { id: "CAPLOST", status: "COMPLETED" } });
+    const again = await handler(post("/paypal/orders", { orderId: id }));
+    assert.equal(again.status, 409);
+    assert.deepEqual(await again.json(), { error: "already_paid" });
+    assert.equal(paypal.calls.filter((c) => c.startsWith("create:")).length, 1);
+    assert.equal((await repo.getOrder(id))?.paypal?.captureId, "CAPLOST");
+    assert.deepEqual(payments.map((p) => p.state), ["paid"]);
   });
 
   it("answers 503 when PayPal is not set up", async () => {
