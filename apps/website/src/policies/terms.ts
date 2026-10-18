@@ -35,7 +35,7 @@ export const termsAr: PolicyDoc = {
 <li>الأسعار بالجنيه المصري ومكتوبة على كل منتج، وهي نهائية: لا نضيف عليها أي ضرائب أو رسوم غير مصاريف الشحن الظاهرة في السلة.</li>
 <li>السعر الذي أُكِّد به طلبكِ هو ما تدفعينه، حتى لو تغير السعر بعد ذلك.</li>
 <li>مصاريف الشحن موضحة في صفحة <a href="${policyPath("ar", "shipping")}">الشحن والتوصيل</a>، وتظهر في الإجمالي قبل إرسال الطلب.</li>
-<li>طرق الدفع: الدفع عند الاستلام، أو أونلاين بالكارت أو PayPal بالدولار بالمبلغ الظاهر قبل الدفع (وأي مبلغ نردّه يرجع لنفس حساب PayPal).</li>
+<li>طرق الدفع: الدفع عند الاستلام، أو أونلاين بالكارت أو PayPal، ويُحصَّل بالدولار بالمبلغ الظاهر قبل الدفع (وأي مبلغ نردّه يرجع لنفس الكارت أو حساب PayPal).</li>
 <li>إذا ظهر خطأ في سعر أو وصف على الموقع، نخبركِ قبل الشحن، ولكِ أن تكملي بالسعر الصحيح أو تلغي الطلب دون مصاريف.</li>
 </ul>
 
@@ -128,7 +128,7 @@ export const termsEn: PolicyDoc = {
 <li>Prices are in Egyptian pounds, shown on each product, and final: we add no taxes or fees other than the shipping fee shown in the cart.</li>
 <li>You pay the price your order was confirmed at, even if the price changes later.</li>
 <li>Shipping fees are on the <a href="${policyPath("en", "shipping")}">shipping and delivery</a> page and appear in the total before you send the order.</li>
-<li>Payment: cash on delivery, or online by card or PayPal in US dollars at the amount shown before you pay (any refund goes back to the same PayPal account).</li>
+<li>Payment: cash on delivery, or online by card or PayPal, charged in US dollars at the amount shown before you pay (any refund goes back to the same card or PayPal account).</li>
 <li>If a price or description on the website is wrong, we tell you before shipping, and you may continue at the correct price or cancel free of charge.</li>
 </ul>
 

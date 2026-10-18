@@ -34,7 +34,7 @@ export const returnsAr: PolicyDoc = {
 </ul>
 
 <h2>استرداد المبلغ</h2>
-<p>نردّ المبلغ خلال ${site.refundDays} أيام من استلامنا للمنتج المرتجع، بنفس طريقة الدفع. وإذا كان الدفع نقدًا عند الاستلام، نحوّل المبلغ بموافقتكِ إلى InstaPay أو إلى محفظة إلكترونية تختارينها، دون أي رسوم عليكِ.</p>
+<p>نردّ المبلغ خلال ${site.refundDays} أيام من استلامنا للمنتج المرتجع، بنفس طريقة الدفع. وإذا كان الدفع نقدًا عند الاستلام، نحوّل المبلغ بموافقتكِ إلى محفظة إلكترونية أو حساب بنكي تختارينه، دون أي رسوم عليكِ.</p>
 
 <h2>منتج به عيب أو وصلكِ خطأ</h2>
 <ul>
@@ -85,7 +85,7 @@ export const returnsEn: PolicyDoc = {
 </ul>
 
 <h2>Refunds</h2>
-<p>We refund within ${site.refundDays} days of receiving the returned item, by the same payment method. If you paid cash on delivery, we transfer the amount, with your agreement, by InstaPay or to a mobile wallet of your choice, at no charge to you.</p>
+<p>We refund within ${site.refundDays} days of receiving the returned item, by the same payment method. If you paid cash on delivery, we transfer the amount, with your agreement, to a mobile wallet or bank account of your choice, at no charge to you.</p>
 
 <h2>Faulty or wrong items</h2>
 <ul>

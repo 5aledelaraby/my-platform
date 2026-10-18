@@ -45,7 +45,7 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     faqTitle: "أسئلة شائعة",
     faq: [
       { q: "كم تستغرق مدة التوصيل؟", a: `يصلكِ الطلب إلى أي محافظة في مصر خلال ${d} أيام عمل.` },
-      { q: "كيف أدفع؟", a: "الدفع عند الاستلام، أو أونلاين بالكارت (فيزا أو ماستركارد) أو PayPal بالدولار." },
+      { q: "كيف أدفع؟", a: "الدفع عند الاستلام، أو أونلاين بالكارت (فيزا أو ماستركارد) أو PayPal." },
       { q: "هل يمكنني استرجاع حزام الوسط؟", a: `نعم، خلال ${r} يومًا من الاستلام، ويُردّ المبلغ خلال ${site.refundDays} أيام.` },
       { q: "ما خامة أحزمة الخصر؟", a: "جلد PU. أما الجلد الطبيعي فيتوفر فقط عند الطلب الخاص." },
       { q: "ما المقاس المناسب لي؟", a: "حزام الرباط العريض بعرض 14 سم وطول 140 سم، وحزام الرباط الرفيع بعرض 10 سم وطول بطن 90 سم، وحزام الكشكشة بداخله أستك يضبط المقاس على الخصر بالتحديد. للمقاسات الأخرى راسلينا على واتساب." },
@@ -70,7 +70,7 @@ export const homeCopy: Record<Lang, HomeCopy> = {
     faqTitle: "Common questions",
     faq: [
       { q: "How long does delivery take?", a: `Your order reaches any governorate in Egypt in ${d} working days.` },
-      { q: "How do I pay?", a: "Cash on delivery, or online by card (Visa or Mastercard) or PayPal in US dollars." },
+      { q: "How do I pay?", a: "Cash on delivery, or online by card (Visa or Mastercard) or PayPal." },
       { q: "Can I return a belt?", a: `Yes, within ${r} days of receiving it, and the amount is refunded within ${site.refundDays} days.` },
       { q: "What are the belts made of?", a: "PU leather. Natural leather is only available as a custom order." },
       { q: "Which size is right for me?", a: "The wide-tie belt is 14 cm wide and 140 cm long, the thin-tie belt is 10 cm wide and 90 cm around the waist, and the ruffle belt has elastic inside for an exact fit at the waist. For other sizes, message us on WhatsApp." },

@@ -61,8 +61,8 @@ const govs = ar ? GOVERNORATES : GOVERNORATES_EN;
     <fieldset>
       <legend>{ar ? "الدفع" : "Payment"}</legend>
       <label class="radio"><input type="radio" name="paymentMethod" value="cod" checked /> {ar ? "الدفع عند الاستلام" : "Cash on delivery"}</label>
-      <label class="radio" data-paypal-option hidden><input type="radio" name="paymentMethod" value="paypal" /> {ar ? "فيزا / ماستركارد أو PayPal (بالدولار)" : "Card or PayPal (in US dollars)"}</label>
-      <small class="muted" data-paypal-only hidden>{ar ? "بعد «تأكيد الطلب» تدفعي المبلغ بالدولار بالكارت أو بحساب PayPal." : "After \u201cPlace order\u201d you pay the amount in US dollars by card or with PayPal."}</small>
+      <label class="radio" data-paypal-option hidden><input type="radio" name="paymentMethod" value="paypal" /> {ar ? "فيزا / ماستركارد أو PayPal" : "Card or PayPal"}</label>
+      <small class="muted" data-paypal-only hidden>{ar ? "بعد «تأكيد الطلب» تدفعي بالكارت أو بحساب PayPal، والمبلغ اللي هيتخصم ظاهر تحت الإجمالي." : "After \u201cPlace order\u201d you pay by card or with PayPal; the amount charged is shown under the total."}</small>
     </fieldset>
     <details class="co-more promo-box" data-promo-box>
       <summary>{ar ? "عندك كود خصم؟" : "Have a promo code?"}</summary>

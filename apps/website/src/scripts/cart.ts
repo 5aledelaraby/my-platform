@@ -33,7 +33,7 @@ const T = {
     soldOut: "بعض المنتجات نفدت أو المتاح منها أقل، فعدّلنا السلة. راجعيها وأكّدي الطلب تاني.", soldOutBtn: "نفدت الكمية",
     trimmed: "عدّلنا بعض الكميات في السلة على حسب المتاح.",
     added: "اتضاف للسلة", notAdded: "مش متاح نضيف أكتر من المنتج ده",
-    usd: "بالدولار (كارت أو PayPal)",
+    usd: "المبلغ اللي هيتخصم",
   },
   en: {
     cur: "EGP", free: "Free", remove: "Remove", sending: "Sending...", submit: "Place order",
@@ -52,7 +52,7 @@ const T = {
     soldOut: "Some items sold out or have fewer left, so we updated your cart. Please check it and place the order again.", soldOutBtn: "Sold out",
     trimmed: "We adjusted some quantities in your cart to what is available.",
     added: "Added to your cart", notAdded: "We cannot add more of this item",
-    usd: "In US dollars (card or PayPal)",
+    usd: "Amount charged",
   },
 }[lang];
 

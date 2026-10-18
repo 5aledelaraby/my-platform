@@ -8,7 +8,7 @@ export const shippingAr: PolicyDoc = {
   title: "الشحن والتوصيل",
   description: `مصاريف الشحن في فيكونا، والشحن المجاني من ${fees.freeOver} جنيه، والتوصيل لكل محافظات مصر خلال ${site.deliveryDays} أيام عمل، وطرق الدفع.`,
   html: `
-<p class="policy-summary"><b>باختصار:</b> نوصّل إلى كل محافظات مصر خلال ${site.deliveryDays} أيام عمل، والشحن العادي بـ ${fees.standard} جنيه ومجاني للطلبات من ${fees.freeOver} جنيه، والدفع عند الاستلام أو أونلاين بالكارت أو PayPal بالدولار.</p>
+<p class="policy-summary"><b>باختصار:</b> نوصّل إلى كل محافظات مصر خلال ${site.deliveryDays} أيام عمل، والشحن العادي بـ ${fees.standard} جنيه ومجاني للطلبات من ${fees.freeOver} جنيه، والدفع عند الاستلام أو أونلاين بالكارت أو PayPal.</p>
 
 <h2>مصاريف الشحن</h2>
 <table>
@@ -45,7 +45,7 @@ export const shippingEn: PolicyDoc = {
   title: "Shipping and delivery",
   description: `Vicuna shipping fees, free shipping from EGP ${fees.freeOver}, delivery across Egypt in ${site.deliveryDays} working days, and payment.`,
   html: `
-<p class="policy-summary"><b>In short:</b> we deliver to every governorate in Egypt within ${site.deliveryDays} working days; standard shipping is EGP ${fees.standard} and free on orders of EGP ${fees.freeOver} or more; pay on delivery, or online by card or PayPal in US dollars.</p>
+<p class="policy-summary"><b>In short:</b> we deliver to every governorate in Egypt within ${site.deliveryDays} working days; standard shipping is EGP ${fees.standard} and free on orders of EGP ${fees.freeOver} or more; pay on delivery, or online by card or PayPal.</p>
 
 <h2>Shipping fees</h2>
 <table>
