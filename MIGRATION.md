@@ -16,8 +16,8 @@
 | الخطوط (Cairo, El Messiri, Great Vibes, Marcellus) | `src/assets/fonts/` | `apps/website/src/assets/fonts/` | self-hosted، ترخيص OFL |
 | صور الموقع، الفيديوهات، التوقيع | `src/assets/{site,video}/` | `apps/website/src/assets/` | |
 | منطق الخصم المتعدد | `src/client/app.ts` (`RATES`) | **تم**: `packages/commerce` | مختبر ومطابق للقديم على كل تركيبات الأسعار الحالية |
-| Worker الـ CAPI (تتبع، مش طلبات) | `workers/capi/worker.js` | `apps/capi-worker/` (لاحقًا) | التوكن `META_TOKEN` يفضل Secret في Cloudflare. لا ينتقل في الكود |
-| معرفات التتبع العامة (GA4, Meta Pixel, Snap) | `src/data/site.ts` | config | معرفات عامة. التوكنات لا |
+| Worker الـ CAPI (تتبع، مش طلبات) | `workers/capi/worker.js` | **تم** (2026-10-17): جوه `apps/api` (`src/meta.ts`) بدل Worker منفصل | التوكن `META_TOKEN` Secret في `vicuna-api`. الـ Worker القديم `vicuna-capi` لسه على Cloudflare ومش مستخدم، يتمسح بعد التأكد من حدث الشراء في Events Manager |
+| معرفات التتبع العامة (GA4, Meta Pixel, Snap) | `src/data/site.ts` | **تم**: `tracking` في `apps/website/src/site.ts` | معرفات عامة. التوكنات لا |
 
 ## خريطة الصفحات (قرار: الرئيسية تعريف فقط، ADR 0009)
 
@@ -52,17 +52,21 @@
 5. Lighthouse موبايل: أداء وSEO وإتاحة ≥ 90 على الصفحة الرئيسية والمنتج والمقال.
 6. تحويلات الروابط القديمة: **لا**. قرار المالك (2026-10-10): بداية نظيفة تمامًا، لأن الموقع القديم مكانش معروف. مفيش `_redirects`، والفهرسة في جوجل تبدأ من الصفر.
 
-## متبقي قبل تحويل الدومين (من مراجعة 2026-10-09)
+## تحويل الدومين: **تم** (2026-10-17)
+
+`vicuna-eg.com` بيخدمه `vicuna-site-production` من `main`، والـ API على `vicuna-eg.com/api/*`. المتبقي الوحيد من معايير القبول: التأكد من التتبع (بند 4) بطلب تجربة حقيقي ومراجعة Events Manager. Lighthouse (بند 5): 100 في الأداء والإتاحة وأفضل الممارسات وSEO على الموبايل والكمبيوتر (2026-10-18).
+
+## اللي كان متبقي قبل التحويل (من مراجعة 2026-10-09)، للتاريخ
 
 - صفحات `/privacy/` و`/returns/` و`/terms/` (وبالإنجليزي): **تمت** بنفس المسارات، فمش محتاجة تحويل.
-- ملف كتالوج Meta/Google: القديم بينشر `/catalog/products.csv` وصوره `/catalog/img/`. لو كتالوج فيسبوك أو Merchant Center بيسحب من الرابط ده، هيقف بعد التحويل. لازم نتأكد ونبني بديل قبل التحويل.
+- (تم) ملف كتالوج Meta/Google: الموقع الجديد بينشر `/catalog/products.csv` وصوره `/catalog/img/` على نفس الروابط.
 - (تم) Rate limiting في الكود: `ORDER_LIMIT` (5 طلبات في الدقيقة) و`PROMO_LIMIT` (20 في الدقيقة) في `apps/api/wrangler.toml`. ورابط `workers.dev` مقفول للـ API والموقع (`workers_dev = false`).
 - (تم) فصل بيانات التجربة: الـ staging ليه قاعدة لوحده (`vicuna-db-staging`، binding `DB_STAGING`)، والـ API بيختارها حسب الـ hostname، ومن غيرها بيرفض (503) بدل ما يكتب في `vicuna-db`. لسه مطلوب: مسح طلبات التجربة القديمة من `vicuna-db` وضبط المخزون الحقيقي قبل التحويل.
-- `DEPLOY_ENV=production` في **Build variables** لـ `vicuna-site` وقت التحويل.
-- الـ routes الجديدة (`vicuna-eg.com` للموقع، و`vicuna-eg.com/api/*` للـ API) **لازم تتكتب في `wrangler.toml`** مش في الـ dashboard بس: كل deploy من GitHub بيرجّع الـ routes للي مكتوب في الملف ويشيل أي route اتضاف من الـ dashboard.
-- `vicuna-eg.com` النهارده لسه بيشاور على الموقع القديم (GitHub Pages). ربطه بالـ Worker كـ custom domain محتاج يتشال الـ DNS record القديم الأول.
+- (تم) `DEPLOY_ENV=production` في Build variables لـ `vicuna-site-production`، و`staging` لـ `vicuna-site`.
+- (تم) الـ routes الجديدة (`vicuna-eg.com` للموقع، و`vicuna-eg.com/api/*` للـ API) **لازم تتكتب في `wrangler.toml`** مش في الـ dashboard بس: كل deploy من GitHub بيرجّع الـ routes للي مكتوب في الملف ويشيل أي route اتضاف من الـ dashboard.
+- (تم) `vicuna-eg.com` اتشال من GitHub Pages واتربط بالـ Worker كـ custom domain.
 - (قرار المالك 2026-10-17) الـ staging والإنتاج Workers منفصلين:
   - `vicuna-site` = `staging.vicuna-eg.com`، بيتبني من فرع `staging` بـ `DEPLOY_ENV=staging`، أمر النشر `pnpm --filter @platform/api exec wrangler deploy --config ../website/wrangler.toml --env=""`.
   - `vicuna-site-production` = `vicuna-eg.com`، بيتبني من `main` بـ `DEPLOY_ENV=production`، أمر النشر `pnpm --filter @platform/api exec wrangler deploy --config ../website/wrangler.toml --env production`.
-  - (تم 2026-10-17) مشروع Workers Builds بتاع `vicuna-site` بقى فرعه `staging` وأمر النشره زي اللي فوق. ومشروع جديد لـ `vicuna-site-production` (نفس الريبو، Root `/`، Build command `pnpm --filter @platform/website build`، ومتغير `DEPLOY_ENV=production`) **يتعمل وقت التحويل بس**، بعد ما يتشال DNS الموقع القديم، لأن أول deploy ليه بيربط `vicuna-eg.com`.
+  - (تم 2026-10-17) مشروع Workers Builds بتاع `vicuna-site` بقى فرعه `staging` وأمر النشره زي اللي فوق. ومشروع جديد لـ `vicuna-site-production` (نفس الريبو، Root `/`، Build command `pnpm --filter @platform/website build`، ومتغير `DEPLOY_ENV=production`) اتعمل وقت التحويل (تم).
   - الـ API (`vicuna-api`) واحد للاتنين وبيتنشر من `main`، وبيختار القاعدة حسب الـ hostname.

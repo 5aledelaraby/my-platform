@@ -17,8 +17,8 @@
 | `packages/seo` (canonical، robots، sitemap، JSON-LD) | جاهز ومختبر |
 | `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
 | `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
-| `apps/api` (الطلبات، المخزون، أكواد الخصم، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1، ومعاه صفحة الإدارة على `admin.vicuna-eg.com` وإشعارات Telegram (`apps/api/README.md`) |
-| `apps/website` | Astro شغال: رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (5 تصميمات و18 منتج) عربي/إنجليزي، المقالات `/journal/style-guides/`، السلة، صفحة الشكر، صفحات السياسات، شريط الكوكيز، وملف الكتالوج `/catalog/products.csv` لـ Meta وGoogle. Worker صغير بيخفي أي حزام مخزونه صفر (ADR 0013). منشور كنسخة تجريبية (staging) على Cloudflare Workers (`vicuna-site`) (`apps/website/README.md`) |
+| `apps/api` (الطلبات، المخزون، أكواد الخصم، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1، ومعاه صفحة الإدارة على `admin.vicuna-eg.com`، وإشعارات Telegram، وحدث الشراء لـ Meta (CAPI)، ونسخة احتياطية يومية وفحص كل ساعة (`apps/api/README.md`) |
+| `apps/website` | منشور على **vicuna-eg.com** (`vicuna-site-production` من `main`)، ونسخة تجريبية على `staging.vicuna-eg.com` (`vicuna-site` من `staging`). رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (5 تصميمات و18 منتج) عربي/إنجليزي، المقالات `/journal/style-guides/`، السلة (شحن عادي وسريع واستلام من المقر)، صفحة الشكر، صفحات السياسات، شريط الكوكيز، Meta Pixel وGA4، وملف الكتالوج `/catalog/products.csv` لـ Meta وGoogle. Worker صغير بيخفي أي حزام مخزونه صفر (ADR 0013). PageSpeed: 100 في الأربعة على الموبايل والكمبيوتر (2026-10-18) (`apps/website/README.md`) |
 | حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
 
 ## تشغيل المشروع (أول مرة)
@@ -51,10 +51,10 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 ## الخطوة التالية
 
 1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers، وصفحة الإدارة، والمخزون، وأكواد الخصم.
-2. (تم) الـ migrations من 0001 لـ 0004 متنفذة على القاعدتين. على `vicuna-db` (الإنتاج) اتنفذت يدويًا من الـ Console، فمفيش فيها جدول `d1_migrations`: **ممنوع** تشغيل `wrangler d1 migrations apply` عليها قبل ما الجدول يتعمل وتتسجل فيه 0001 لـ 0004 (زي ما اتعمل في `vicuna-db-staging`)، وإلا هيحاول ينفذ 0001 تاني.
-3. اختبار الطلب كامل على `staging.vicuna-eg.com` (السلة ثم الـ API ثم D1 ثم صفحة الشكر).
-4. قبل تحويل الدومين: مسح طلبات التجربة. القائمة الكاملة في `MIGRATION.md`.
-5. تحويل الدومين: `DEPLOY_ENV=production` وربط `vicuna-eg.com`. قرار المالك: بداية نظيفة من غير أي تحويلات من روابط الموقع القديم. ملف الكتالوج على نفس الرابط القديم، فـ Meta وGoogle بيكمّلوا من غير تغيير.
+2. (تم) الـ migrations من 0001 لـ 0005 متنفذة على القاعدتين. على `vicuna-db` (الإنتاج) اتنفذت يدويًا من الـ Console، فمفيش فيها جدول `d1_migrations`: **ممنوع** تشغيل `wrangler d1 migrations apply` عليها قبل ما الجدول يتعمل وتتسجل فيه 0001 لـ 0005 (زي ما اتعمل في `vicuna-db-staging`)، وإلا هيحاول ينفذ 0001 تاني.
+3. (تم 2026-10-17) تحويل الدومين: `vicuna-eg.com` على `vicuna-site-production`، بداية نظيفة من غير تحويلات من روابط الموقع القديم. ملف الكتالوج على نفس الرابط القديم.
+4. (تم 2026-10-18) السرعة: PageSpeed 100 في الأربعة على الموبايل والكمبيوتر.
+5. طلب تجربة حقيقي من الموقع العام، والتأكد إن حدث الشراء وصل لـ Meta من المتصفح والسيرفر (Events Manager) ولـ GA4، وبعدها يتلغي من صفحة الإدارة. بعدها يتمسح الـ Worker القديم `vicuna-capi`.
 6. (تم) حماية `main`: Ruleset «Protect main» شغال، ويشترط نجاح `guards-and-tests` و`full`.
 
 ## قاعدة أمان

@@ -22,9 +22,11 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 | منتجات، سلة، أسعار، خصم، شحن | `packages/commerce` | جاهز ومختبر |
 | SEO (canonical، robots، sitemap، JSON-LD) | `packages/seo` | جاهز ومختبر |
 | محتوى ومقالات | `packages/content` | نموذج التحقق جاهز |
-| مكونات التصميم | `packages/ui` | هيكل فاضي |
-| الواجهة الأمامية | `apps/website` | محتاج scaffold لـ Astro |
-| إنشاء الطلبات وتخزينها (D1) | `apps/api` | جاهز ومختبر، محتاج نشر على Cloudflare (ADR 0008) |
+| مكونات التصميم | `packages/ui` | هيكل فاضي (لحد ما يظهر مكون مشترك) |
+| الواجهة الأمامية | `apps/website` | منشور على `vicuna-eg.com` (Astro)، ونسخة تجريبية على `staging.vicuna-eg.com` |
+| إنشاء الطلبات وتخزينها (D1) | `apps/api` | منشور (`vicuna-api`)، ومعاه صفحة الإدارة وإشعارات Telegram والنسخ الاحتياطي (ADR 0008، 0010) |
+| التتبع والإعلانات (Pixel وCAPI) | البيكسل في `apps/website` (`scripts/tracking.ts`)، والـ CAPI في `apps/api` (`meta.ts`) | **اتبنى** (2026-10-17): حدث الشراء بيتبعت من المتصفح والسيرفر بنفس `event_id`. اتعمل جوه التطبيقين بدل `packages/tracking` و`apps/capi-worker`، لأن مفيش مستهلك تاني. الـ Worker القديم `vicuna-capi` مش مستخدم |
+| الاستلام من المقر | `commerce` + `apps/api` (migration 0005) + السلة | **اتبنى** (2026-10-17) |
 
 ## المجالات المستقبلية
 
@@ -34,7 +36,6 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 | المخزون | **اتبنى** في `commerce` (`inventory.ts`) وD1 (ADR 0010) | — | commerce |
 | الدفع الأونلاين | `packages/payments` | تختار مزود دفع | commerce (وapi يستدعيه) |
 | الإيميل والإشعارات | `packages/notifications` | تبعت تأكيدات أو نشرات | لا شيء داخلي |
-| التتبع والإعلانات (Pixel وCAPI) | `packages/tracking` + `apps/capi-worker` | تنقل الـ CAPI من الموقع القديم | لا شيء داخلي |
 | الخدمات (مثل التفصيل بجلد طبيعي) | صفحات في `content/` أولًا، وحزمة `services` لو احتجت حجز وقت أو تسعير خاص | الخدمة ليها منطق (حجز، عروض أسعار) | content, commerce |
 | السفر | تطبيق منفصل `apps/travel` (أو براند آخر) يعيد استخدام `ui`/`seo`/`content` | يبقى له كتالوج ونموذج بيانات خاص | ui, seo, content |
 | الميديا والصور | `packages/media` + تخزين R2 | ترفع صور من لوحة الإدارة | لا شيء داخلي |
@@ -45,7 +46,7 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 ## هيكل الموقع (ADR 0009)
 
-الرئيسية `/` تعريف بالبراند فقط، والمتجر تحت `/belts/`. كل مجال جديد (خدمات، سفر، مقالات...) ياخد قسم رئيسي خاص بيه، والرئيسية بتربط عليه لما يتطلق بدون ما تعرض محتواه.
+الرئيسية `/` تعريف بالبراند فقط، والمتجر تحت `/collections/vicuna-belts/`، والمقالات تحت `/journal/style-guides/`. كل مجال جديد (خدمات، سفر، مقالات...) ياخد قسم رئيسي خاص بيه، والرئيسية بتربط عليه لما يتطلق بدون ما تعرض محتواه.
 
 ## قواعد ثابتة مهما كبرنا
 
