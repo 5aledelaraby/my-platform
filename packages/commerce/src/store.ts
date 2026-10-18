@@ -11,10 +11,14 @@ export const SHIPPING: ShippingConfig = {
 export const SHIPPING_METHODS = ["standard", "express", "pickup"] as const;
 
 /**
- * "cod" = cash on delivery. "instapay" = customer transfers manually and sends the receipt; nothing is charged online.
- * "paypal" = paid online in US dollars on the thank-you page after the order is placed (ADR 0014).
+ * Every payment method an order can carry. "cod" = cash on delivery. "paypal" = paid online in US dollars (card or
+ * PayPal account) on the thank-you page after the order is placed (ADR 0014). "instapay" = manual transfer: no longer
+ * offered (owner, 2026-10-18), kept so older orders still read correctly.
  */
 export const PAYMENT_METHODS = ["cod", "instapay", "paypal"] as const;
+
+/** The methods a new order may choose (owner, 2026-10-18: cash on delivery, or card / PayPal). */
+export const OFFERED_PAYMENT_METHODS = ["cod", "paypal"] as const satisfies ReadonlyArray<(typeof PAYMENT_METHODS)[number]>;
 
 /** Canonical governorate names (Arabic), in display order. */
 export const GOVERNORATES = [

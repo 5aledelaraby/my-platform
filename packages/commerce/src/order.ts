@@ -4,7 +4,8 @@ import type { Piasters } from "./money.ts";
 import type { CartTotals, ShippingConfig, ShippingMethod } from "./pricing.ts";
 import { calculateTotals } from "./pricing.ts";
 import { normalizePromoCode } from "./promo.ts";
-import { GOVERNORATES, GOVERNORATES_EN, PAYMENT_METHODS, SHIPPING_METHODS } from "./store.ts";
+import type { PAYMENT_METHODS } from "./store.ts";
+import { GOVERNORATES, GOVERNORATES_EN, OFFERED_PAYMENT_METHODS, SHIPPING_METHODS } from "./store.ts";
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
@@ -215,7 +216,7 @@ export function validateOrderRequest(input: unknown, lookup: PriceLookup): Valid
   const shippingMethod = input["shippingMethod"] ?? "standard";
   if (!(SHIPPING_METHODS as readonly unknown[]).includes(shippingMethod)) errors["shippingMethod"] = "invalid_choice" satisfies ErrorCode;
   const paymentMethod = input["paymentMethod"] ?? "cod";
-  if (!(PAYMENT_METHODS as readonly unknown[]).includes(paymentMethod)) errors["paymentMethod"] = "invalid_choice" satisfies ErrorCode;
+  if (!(OFFERED_PAYMENT_METHODS as readonly unknown[]).includes(paymentMethod)) errors["paymentMethod"] = "invalid_choice" satisfies ErrorCode;
 
   // optional promo code (format only here)
   let promoCode: string | undefined;

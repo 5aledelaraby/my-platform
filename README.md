@@ -46,7 +46,7 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 
 ## قرار واتساب والطلبات
 
-واتساب قناة اختيارية بعد إنشاء الطلب، مش أساس نظام الطلبات ([ADR 0007](architecture/adr/0007-whatsapp-is-an-optional-channel.md)). الطلب بيتسجل عبر الـ API ([ADR 0008](architecture/adr/0008-order-api.md)). صفحة الإدارة (الطلبات والمخزون وأكواد الخصم) شغالة على `admin.vicuna-eg.com` ([ADR 0010](architecture/adr/0010-inventory-and-owner-admin.md)). الدفع الأونلاين مش مبني، ومش هيتبني غير لما المالك يطلبه: الدفع عند الاستلام أو InstaPay يدويًا.
+واتساب قناة اختيارية بعد إنشاء الطلب، مش أساس نظام الطلبات ([ADR 0007](architecture/adr/0007-whatsapp-is-an-optional-channel.md)). الطلب بيتسجل عبر الـ API ([ADR 0008](architecture/adr/0008-order-api.md)). صفحة الإدارة (الطلبات والمخزون وأكواد الخصم) شغالة على `admin.vicuna-eg.com` ([ADR 0010](architecture/adr/0010-inventory-and-owner-admin.md)). الدفع: عند الاستلام، أو أونلاين بالكارت أو PayPal بالدولار في صفحة الشكر ([ADR 0014](architecture/adr/0014-paypal-in-us-dollars.md))؛ InstaPay اتشال (2026-10-18).
 
 ## الخطوة التالية
 

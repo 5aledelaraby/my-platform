@@ -21,7 +21,7 @@ export const returnsAr: PolicyDoc = {
 
 <h2>تأكيد الطلب وتعديله وإلغاؤه</h2>
 <p>بعد إرسال الطلب من السلة يظهر لكِ رقمه، ثم نتواصل معكِ على واتساب أو بالهاتف لتأكيد بيانات الطلب والإجمالي.</p>
-<p>يمكنكِ تعديل الطلب (الموديل أو الكمية أو العنوان) أو إلغاؤه دون أي مصاريف في أي وقت قبل شحنه، وإذا كنتِ دفعتِ بـ InstaPay نردّ لكِ المبلغ كاملًا. وبعد الشحن يمكنكِ الإرجاع أو الاستبدال كما هو موضح أدناه.</p>
+<p>يمكنكِ تعديل الطلب (الموديل أو الكمية أو العنوان) أو إلغاؤه دون أي مصاريف في أي وقت قبل شحنه، وإذا كنتِ دفعتِ أونلاين نردّ لكِ المبلغ كاملًا. وبعد الشحن يمكنكِ الإرجاع أو الاستبدال كما هو موضح أدناه.</p>
 
 <h2>الاسترجاع والاستبدال</h2>
 <ul>
@@ -72,7 +72,7 @@ export const returnsEn: PolicyDoc = {
 
 <h2>Confirming, changing and cancelling an order</h2>
 <p>When you send the order from the cart, you see its number; we then contact you on WhatsApp or by phone to confirm the order details and the total.</p>
-<p>You can change the order (style, quantity or address) or cancel it free of charge at any time before it ships; if you paid by InstaPay, we refund the full amount. After it ships, you can return or exchange it as described below.</p>
+<p>You can change the order (style, quantity or address) or cancel it free of charge at any time before it ships; if you paid online, we refund the full amount. After it ships, you can return or exchange it as described below.</p>
 
 <h2>Returns and exchanges</h2>
 <ul>

@@ -28,7 +28,7 @@ Cloudflare Worker بيستقبل الطلب من الموقع، ويتحقق م�
 }
 ```
 
-- `shippingMethod`: `standard` أو `express` أو `pickup` (استلام من مقرنا في مدينة نصر، مجاني، ومن غير `governorate` ولا `address`؛ بيتخزن `shipping_method = 'standard'` و`pickup = 1`، migration 0005). `paymentMethod`: `cod` (عند الاستلام) أو `instapay` (تحويل يدوي، لا يتم خصم أي شيء أونلاين) أو `paypal` (بالدولار بعد الطلب، تحت؛ بيتخزن `payment_method = 'instapay'` و`paypal = 1`، migration 0006).
+- `shippingMethod`: `standard` أو `express` أو `pickup` (استلام من مقرنا في مدينة نصر، مجاني، ومن غير `governorate` ولا `address`؛ بيتخزن `shipping_method = 'standard'` و`pickup = 1`، migration 0005). `paymentMethod`: `cod` (عند الاستلام) أو `paypal`؛ `instapay` (تحويل يدوي) اتشال من الطلبات الجديدة (2026-10-18) وبيفضل يتقري في الطلبات القديمة. `paypal` (بالدولار بعد الطلب، تحت؛ بيتخزن `payment_method = 'instapay'` و`paypal = 1`، migration 0006).
 - `promoCode` اختياري: كود خصم بمبلغ ثابت من الأحزمة. لو مش صالح الرد `422` وفيه `errors.promoCode` (`invalid_promo` أو `promo_expired` أو `promo_used_up` أو `promo_min_subtotal`). الاستخدام بيتحسب مع تسجيل الطلب في نفس العملية.
 - `website` حقل مخفي في الصفحة (honeypot): لازم يفضل فاضي، وأي بوت بيملاه يتم رفضه.
 - الأخطاء: `422` فيها `errors` بأكواد ثابتة (مثل `invalid_phone`) والواجهة تترجمها. `403` أصل غير مسموح (أو `ALLOWED_ORIGINS` مش متضبوط). `413` حجم أكبر من 16 KB (الـ API بيوقف القراءة أول ما الحجم يعدّي الحد). `503` تعارض متكرر في رقم الطلب فقط (يُعاد المحاولة). `500` أي خطأ تاني في التخزين، وبيتسجل اسمه في اللوج.

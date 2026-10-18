@@ -10,7 +10,6 @@ export const site = {
   supportEmail: "support@vicuna-eg.com",
   whatsappDisplay: "01221988192",
   whatsappInternational: "201221988192",
-  instapay: "01221988192",
   legalNameAr: "فيكونا للتجارة العامة والتصميمات",
   legalNameEn: "Vicuna for General Trading & Designs",
   legalFormAr: "شركة ذات مسئولية محدودة",

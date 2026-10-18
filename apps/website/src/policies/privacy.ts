@@ -23,8 +23,8 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <h2>2. البيانات التي نجمعها</h2>
 <ul>
 <li><b>بيانات الطلب:</b> الاسم، ورقم الموبايل، والمحافظة، والعنوان، والملاحظات، والمنتجات والكميات، وطريقة الشحن والدفع. تكتبينها في السلة، وتصلنا عند الضغط على «تأكيد الطلب».</li>
-<li><b>التواصل:</b> رسائلكِ معنا على واتساب أو البريد، وأي صور ترسلينها، مثل إيصال تحويل InstaPay أو صورة منتج به عيب.</li>
-<li><b>الدفع:</b> عند الدفع بـ InstaPay يصلنا ما يظهر في إيصال التحويل، مثل اسم المحوِّل والمبلغ. وعند ردّ مبلغ، نحتاج رقم InstaPay أو المحفظة الذي تختارينه. وعند الدفع بـ PayPal يصلنا من PayPal تأكيد الدفع ورقم العملية والمبلغ واسم حساب PayPal وبريده. لا نطلب ولا نحفظ أرقام بطاقات بنكية.</li>
+<li><b>التواصل:</b> رسائلكِ معنا على واتساب أو البريد، وأي صور ترسلينها، مثل صورة منتج به عيب.</li>
+<li><b>الدفع:</b> عند ردّ مبلغ طلب مدفوع نقدًا، نحتاج رقم InstaPay أو المحفظة الذي تختارينه. وعند الدفع أونلاين (بالكارت أو PayPal) يصلنا من PayPal تأكيد الدفع ورقم العملية والمبلغ واسم حساب PayPal وبريده. لا نطلب ولا نحفظ أرقام بطاقات بنكية.</li>
 <li><b>الطلبات الخاصة:</b> مقاساتكِ عند طلب مقاس خاص أو حزام مفصّل.</li>
 <li><b>بيانات تقنية:</b> عنوان IP ونوع المتصفح والجهاز، تسجلها خدمة الاستضافة تلقائيًا لتشغيل الموقع وحمايته، مثل تحديد عدد الطلبات المسموح به من الجهاز نفسه.</li>
 <li><b>بيانات التحليل والإعلانات (فقط إذا وافقتِ على الكوكيز):</b> الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وبدء الطلب، ورقم الطلب وقيمته والمنتجات فيه، ونوع الجهاز والمتصفح، والموقع التقريبي، ومعرّفات الكوكيز. تجمعها ${andAr(tagTools("ar"))}. ${tracking.meta ? "ونرسل عملية الشراء إلى Meta من خادمنا أيضًا، ومعها رقم موبايلكِ مشفّرًا لا يمكن استرجاعه. لا نرسل اسمكِ أو عنوانكِ." : "لا نرسل لها اسمكِ أو رقمكِ أو عنوانكِ."}</li>
@@ -106,8 +106,8 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <h2>2. What we collect</h2>
 <ul>
 <li><b>Order details:</b> name, mobile number, governorate, address, notes, items and quantities, shipping and payment method. You enter them in the cart, and they reach us when you press "Place order".</li>
-<li><b>Messages:</b> your messages with us on WhatsApp or by email, and any photos you send, such as an InstaPay receipt or a photo of a faulty item.</li>
-<li><b>Payment:</b> with InstaPay we see what the transfer receipt shows, such as the sender's name and the amount. To send a refund we need the InstaPay or wallet number you choose. With PayPal, PayPal tells us the payment went through, its reference and amount, and the PayPal account name and email. We never ask for or keep card numbers.</li>
+<li><b>Messages:</b> your messages with us on WhatsApp or by email, and any photos you send, such as a photo of a faulty item.</li>
+<li><b>Payment:</b> to refund an order paid in cash we need the InstaPay or wallet number you choose. When you pay online (card or PayPal), PayPal tells us the payment went through, its reference and amount, and the PayPal account name and email. We never ask for or keep card numbers.</li>
 <li><b>Special orders:</b> your measurements for a custom size or a made-to-measure belt.</li>
 <li><b>Technical data:</b> IP address, browser and device type, logged automatically by our hosting provider to run and protect the website, for example to limit how many orders one device can send.</li>
 <li><b>Analytics and advertising data (only if you accept cookies):</b> pages and products you view, items you add to the cart, starting checkout, the order number, value and products, device and browser type, approximate location and cookie identifiers. Collected by ${andEn(tagTools("en"))}. ${tracking.meta ? "Our server also sends the purchase to Meta, with your mobile number hashed so it cannot be recovered. We do not send your name or address." : "We do not send them your name, number or address."}</li>

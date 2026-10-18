@@ -1,10 +1,21 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { PAYMENT_METHODS, formatUsd, isUsdRate, parseUsd, toUsdCents } from "../src/index.ts";
+import { OFFERED_PAYMENT_METHODS, PAYMENT_METHODS, formatUsd, isUsdRate, lookupProduct, parseUsd, toUsdCents, validateOrderRequest } from "../src/index.ts";
 
 describe("US dollars for PayPal", () => {
-  it("offers PayPal as a payment method", () => {
-    assert.ok((PAYMENT_METHODS as readonly string[]).includes("paypal"));
+  it("offers cash on delivery and PayPal; InstaPay only stays readable on older orders", () => {
+    assert.deepEqual([...OFFERED_PAYMENT_METHODS], ["cod", "paypal"]);
+    assert.ok((PAYMENT_METHODS as readonly string[]).includes("instapay"));
+    const order = (paymentMethod: string) =>
+      validateOrderRequest(
+        { items: [{ id: "lace-white", quantity: 1 }], customer: { name: "منى أحمد", phone: "01012345678", governorate: "القاهرة", address: "مدينة نصر، شارع عباس العقاد" }, paymentMethod },
+        lookupProduct,
+      );
+    assert.equal(order("paypal").ok, true);
+    assert.equal(order("cod").ok, true);
+    const instapay = order("instapay");
+    assert.equal(instapay.ok, false);
+    assert.deepEqual(instapay.ok ? null : instapay.errors, { paymentMethod: "invalid_choice" });
   });
 
   it("converts piasters at the owner's rate, rounding up to the cent", () => {

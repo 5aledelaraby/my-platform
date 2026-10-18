@@ -17,7 +17,6 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
     <p id="t-id-wrap" hidden>{ar ? "طلبك اتسجّل، ورقمه:" : "Your order is placed. Order number:"} <span class="order-id" id="t-id"></span></p>
     <p id="t-fallback" class="muted">{ar ? "لو الصفحة اتفتحت من غير طلب، تقدري تتصفحي أحزمة الخصر من تاني." : "If you opened this page without placing an order, you can keep browsing the belts."}</p>
     <p id="t-total" hidden></p>
-    <p id="t-instapay" hidden>{ar ? `للدفع بـ InstaPay حوّلي المبلغ على ${site.instapay} وابعتي لنا صورة التحويل على واتساب مع رقم الطلب.` : `To pay by InstaPay, transfer the amount to ${site.instapay} and send us the receipt on WhatsApp with your order number.`}</p>
     <div id="t-paypal" class="paypal-box" hidden>
       <p><b>{ar ? "خطوة أخيرة: ادفعي " : "One last step: pay "}<span id="t-usd" dir="ltr"></span>{ar ? " بـ PayPal" : " with PayPal"}</b></p>
       <div id="paypal-buttons"></div>
@@ -64,7 +63,6 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
         track({ type: "purchase", orderId: order.id, value: order.totals.total, items: Array.isArray(order.items) ? order.items : [] });
         sessionStorage.setItem(sent, "1");
       }
-      if (order.paymentMethod === "instapay") document.getElementById("t-instapay")!.hidden = false;
       if (order.paymentMethod === "paypal" && typeof order.totals?.total === "number") void startPaypal(order.id, order.totals.total, lang);
       const wa = document.getElementById("t-wa") as HTMLAnchorElement;
       const text = lang === "ar" ? `أهلاً فيكونا، رقم طلبي ${order.id}` : `Hello Vicuna, my order number is ${order.id}`;

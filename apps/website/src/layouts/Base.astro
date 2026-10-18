@@ -44,8 +44,8 @@ const switchHref = altPath ?? (lang === "ar" ? "/en/" : "/");
 // Facts for the red announcement bar (all from the shared settings).
 const ar = lang === "ar";
 const announce = ar
-  ? [`توصيل لكل مصر خلال ${store.deliveryDays} أيام عمل`, `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} جنيه`, `استرجاع خلال ${store.returnDays} يومًا`, "الدفع عند الاستلام أو InstaPay"]
-  : [`Delivery across Egypt in ${store.deliveryDays} working days`, `Free shipping from EGP ${formatEgp(SHIPPING.freeOver)}`, `${store.returnDays}-day returns`, "Cash on delivery or InstaPay"];
+  ? [`توصيل لكل مصر خلال ${store.deliveryDays} أيام عمل`, `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} جنيه`, `استرجاع خلال ${store.returnDays} يومًا`, "الدفع عند الاستلام أو بالكارت"]
+  : [`Delivery across Egypt in ${store.deliveryDays} working days`, `Free shipping from EGP ${formatEgp(SHIPPING.freeOver)}`, `${store.returnDays}-day returns`, "Cash on delivery or card"];
 ---
 
 <!doctype html>
