@@ -173,6 +173,8 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
         const rate = await deps.repository.usdRate();
         if (rate === null || !isUsdRate(rate)) return json(503, { error: "paypal_unavailable" }, cors);
         const usdCents = toUsdCents(order.totals.total, rate);
+        // A promo code can bring a pickup order to 0: there is nothing to pay, and PayPal refuses an order for $0.00.
+        if (usdCents === 0) return json(409, { error: "nothing_to_pay" }, cors);
         const id = await paypal.api.createOrder({ orderId: order.id, usdCents, description: `Vicuna order ${order.id}` });
         if (!(await deps.repository.setPaypalOrder(order.id, id, usdCents))) return json(409, { error: "already_paid" }, cors);
         return json(201, { id, usdCents }, cors);

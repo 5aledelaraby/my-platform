@@ -253,6 +253,23 @@ describe("PayPal payment", () => {
     assert.deepEqual(await (await handler(post("/paypal/capture", { orderId: id, paypalOrderId: ppId }))).json(), { error: "paypal_error" });
   });
 
+  it("does not open PayPal for an order with nothing to pay", async () => {
+    const repo = memoryRepository();
+    await repo.setUsdRate(RATE, NOW.toISOString());
+    await repo.createPromo({ code: "FREE", amount: 1_000_000, minSubtotal: 0, maxUses: null, expiresAt: null }, NOW.toISOString());
+    const { handler, paypal } = app(repo);
+    const res = await handler(
+      post("/orders", { items: [{ id: "lace-white", quantity: 1 }], customer: { name: "منى أحمد", phone: "01012345678" }, shippingMethod: "pickup", paymentMethod: "paypal", promoCode: "FREE" }),
+    );
+    assert.equal(res.status, 201);
+    const { order } = (await res.json()) as { order: { id: string; totals: { total: number } } };
+    assert.equal(order.totals.total, 0);
+    const opened = await handler(post("/paypal/orders", { orderId: order.id }));
+    assert.equal(opened.status, 409);
+    assert.deepEqual(await opened.json(), { error: "nothing_to_pay" });
+    assert.equal(paypal.calls.length, 0);
+  });
+
   it("answers 503 when PayPal is not set up", async () => {
     const { handler } = app(memoryRepository(), false);
     const { id } = await placeOrder(handler);

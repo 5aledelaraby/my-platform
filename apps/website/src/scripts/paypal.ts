@@ -89,7 +89,13 @@ export async function startPaypal(orderId: string, total: number, lang: Lang): P
       msg.textContent = t.off;
       return;
     }
-    document.getElementById("t-usd")!.textContent = `$${formatUsd(toUsdCents(total, config.usdRate))}`;
+    const cents = toUsdCents(total, config.usdRate);
+    if (cents === 0) {
+      // Nothing to pay (a promo code covered the whole order): no PayPal button.
+      box.hidden = true;
+      return;
+    }
+    document.getElementById("t-usd")!.textContent = `$${formatUsd(cents)}`;
     const sdk = await loadSdk(config.clientId, lang);
     await sdk
       .Buttons({
