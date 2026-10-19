@@ -6,7 +6,7 @@ datePublished: "2026-10-04"
 image: "/img/looks/thin-tie-camel-1200.webp"
 imageWidth: 1200
 imageHeight: 1500
-imageAlt: "حزام كامل برباط رفيع على بلوزة بيضا وجينز"
+imageAlt: "حزام وسط كامل برباط رفيع على قميص كريمي وبنطلون بيج"
 products:
   - thin-tie-camel
   - wide-tie-white
