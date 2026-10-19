@@ -109,6 +109,11 @@ describe("site Worker", () => {
       assert.equal(res.status, 301, from);
       assert.equal(res.headers.get("Location"), to);
     }
+    for (const from of ["/collections", "/collections/", "/collections/all/"]) {
+      const res = await worker.fetch(get(from), { ASSETS: assets("page"), API: api({}) });
+      assert.equal(res.status, 301, from);
+      assert.equal(res.headers.get("Location"), B);
+    }
     const plain = await worker.fetch(new Request("https://staging.vicuna-eg.com/english/"), { ASSETS: { fetch: async () => new Response("page") }, API: api({}) });
     assert.equal(plain.status, 200, "only /en and /en/... move");
   });

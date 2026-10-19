@@ -87,11 +87,18 @@ export function englishRootRedirect(url: URL): string | null {
   return `${url.pathname.slice(3) || "/"}${url.search}`;
 }
 
+/** Addresses people type by habit that have no page of their own: "/collections" and "/collections/all" lead to the belts. */
+const SHORTCUTS: Readonly<Record<string, string>> = { "/collections": "/collections/vicuna-belts/", "/collections/": "/collections/vicuna-belts/", "/collections/all": "/collections/vicuna-belts/", "/collections/all/": "/collections/vicuna-belts/" };
+export function shortcutRedirect(url: URL): string | null {
+  const to = SHORTCUTS[url.pathname];
+  return to ? `${to}${url.search}` : null;
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     // The site is English only at the root (owner, 2026-10-19): the old /en/ addresses move there for good.
-    const enMove = englishRootRedirect(url);
+    const enMove = englishRootRedirect(url) ?? shortcutRedirect(url);
     if (enMove) return new Response(null, { status: 301, headers: { Location: enMove, "Cache-Control": "public, max-age=86400" } });
     const isFeed = url.pathname === FEED_PATH || url.pathname === LOCAL_FEED_PATH;
     const isSitemap = url.pathname === "/sitemap.xml";
