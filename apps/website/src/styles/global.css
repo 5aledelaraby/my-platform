@@ -1927,3 +1927,45 @@ dialog.cart h2 { font-size: 21px; letter-spacing: -.04em; }
 /* every title in the normal weight, like the reference; small labels keep their own weight */
 main :is(h1, h2, h3):not(.card-name), main summary, .faq summary, .wl-faq summary { font-weight: 400; }
 main h1 { letter-spacing: -.04em; }
+
+/* ---------- calm on white (owner, 2026-10-19, later the same day): no navy, no brown, no rust. White header with the
+   dark logo, a quiet stone announcement bar and footer, black type and buttons, the on-model photo first. ---------- */
+:root { --sx-sand-bar: #f3f1ec; --sx-brown: #ffffff; --sx-rust: #f7f6f3; --sx-strip: #ecebe6; --sx-photo: #f3f1ec; }
+.announce { background: var(--sx-sand-bar); color: var(--sx-ink); border-bottom: 1px solid var(--sx-line); }
+.site-header, .site-header[data-scrolled] { background: #fff; color: var(--sx-ink); border-bottom: 1px solid var(--sx-line); }
+.site-header .icon-btn { color: var(--sx-ink); }
+.site-header .logo-en { color: var(--sx-ink); }
+.site-header .logo-sub { color: var(--muted); }
+.site-header .count-badge { background: var(--sx-ink); color: #fff; }
+.hero { height: calc(100svh - 96px); min-height: 520px; }
+.site-footer { background: var(--sx-rust); color: var(--sx-ink); }
+.promise-strip { background: var(--sx-strip); color: var(--sx-ink); }
+.footer-group { border-bottom-color: var(--sx-line); }
+.footer-group a, .footer-cookies { color: var(--sx-ink); }
+@media (min-width: 900px) { .footer-group summary { color: var(--muted); } }
+.footer-social a.soc, .soc-tiktok, .soc-instagram, .soc-snapchat { color: var(--sx-ink); }
+.footer-base { background: #fff; color: var(--muted); border-top: 1px solid var(--sx-line); }
+.footer-base a, .footer-base .logo-en { color: var(--sx-ink); }
+.footer-base .logo-sub { color: var(--muted); }
+.footer-base .signature img { filter: none; opacity: .75; }
+
+/* cards: the model photo fills the frame; the belt alone appears on hover (mouse only) */
+.card-media.has-model { background: var(--sx-photo); }
+.card-media .card-model { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: normal; }
+.card-media .card-belt { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--sx-photo); mix-blend-mode: normal; opacity: 0; transition: opacity .5s var(--ease-soft); }
+@media (hover: hover) and (pointer: fine) { .card-media.has-model:hover .card-belt { opacity: 1; } }
+
+/* product page: on-model photos first, the belt on its own after them */
+.pdp-media { display: grid; gap: 8px; }
+.pdp-looks { display: grid; gap: 8px; margin: 0; }
+.pdp-look img { width: 100%; height: auto; }
+@media (min-width: 900px) {
+  .product { grid-template-columns: 1.2fr 1fr; grid-template-areas: "media info"; gap: 48px; align-items: start; }
+  .pdp-media { grid-area: media; }
+  .pdp-info { grid-area: info; position: sticky; top: 110px; }
+}
+.sx-banner { display: block; color: #fff; }
+.sx-banner img { filter: none; }
+.card-media > a { display: block; position: absolute; inset: 0; padding: 0; }
+.card-media > a img, .card-media img.card-model { padding: 0; margin: 0; max-width: none; }
+.footer-base .signature img { filter: invert(1); opacity: .7; }

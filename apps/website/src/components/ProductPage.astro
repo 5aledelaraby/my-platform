@@ -122,8 +122,20 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   <Breadcrumbs items={crumbs} />
   <div class="wrap product">
     <div class="pdp-media">
-    <figure class="pdp-photo glow" style={`--tint:${product.hex}`} data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
-      <img data-pdp-img src={imageOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 900px) 52vw, 100vw" alt={name} width="1200" height="1200" fetchpriority="high" />
+      <div class="pdp-looks" data-pdp-looks hidden={looks.length === 0 && !detail}>
+          {looks.map((look, i) => (
+            <figure class="pdp-look">
+              <img src={look.src} srcset={look.srcset} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? `${name} على الخصر` : `${name}, worn at the waist`} width="640" height="800" loading={i === 0 ? "eager" : "lazy"} fetchpriority={i === 0 ? "high" : undefined} decoding="async" />
+            </figure>
+          ))}
+          {detail && (
+            <figure class="pdp-look pdp-detail">
+              <img src={`${detail.src}-1200.webp`} srcset={`${detail.src}-640.webp 640w, ${detail.src}-1200.webp 1200w`} sizes="(min-width: 900px) 52vw, 100vw" alt={detail.alt} width="1200" height="1200" loading="lazy" decoding="async" />
+            </figure>
+          )}
+      </div>
+    <figure class="pdp-photo" data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
+      <img data-pdp-img src={imageOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 900px) 52vw, 100vw" alt={name} width="1200" height="1200" fetchpriority={looks.length ? undefined : "high"} loading={looks.length ? "lazy" : undefined} />
       {nextP && prevP && (
         <>
           <a class="pdp-arrow prev" href={beltsUrl(lang, prevP.id)} aria-label={`${ar ? "اللون السابق" : "Previous colour"}: ${productName(lang, prevP)}`}><Icon name="arrow" size={18} /></a>
@@ -158,18 +170,6 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
         <h2>{ar ? "معلومات أكتر" : "More info"}</h2>
         {info.map(([t, d], i) => <details open={i === 0 || undefined}><summary>{t}</summary><p>{d}</p></details>)}
       </div>
-    </div>
-    <div class="pdp-looks" data-pdp-looks hidden={looks.length === 0 && !detail}>
-        {looks.map((look) => (
-          <figure class="pdp-look reveal">
-            <img src={look.src} srcset={look.srcset} sizes="(min-width: 900px) 52vw, 100vw" alt={ar ? `${name} على الخصر` : `${name}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
-          </figure>
-        ))}
-        {detail && (
-          <figure class="pdp-look pdp-detail reveal">
-            <img src={`${detail.src}-1200.webp`} srcset={`${detail.src}-640.webp 640w, ${detail.src}-1200.webp 1200w`} sizes="(min-width: 900px) 52vw, 100vw" alt={detail.alt} width="1200" height="1200" loading="lazy" decoding="async" />
-          </figure>
-        )}
     </div>
   </div>
   <section class="wrap style-group">

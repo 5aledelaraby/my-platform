@@ -65,7 +65,7 @@ const promises = ar
 
   <div class="footer-base">
     <div class="wrap">
-      <a class="brand" href={langPath(lang, "/")} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo light size={28} /></a>
+      <a class="brand" href={langPath(lang, "/")} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={28} /></a>
       <p>{ar ? site.legalNameAr : site.legalNameEn} · {ar ? "سجل تجاري" : "Commercial register"} <bdi dir="ltr">{site.commercialRegister}</bdi> · {ar ? "رقم التسجيل الضريبي" : "Tax no."} <bdi dir="ltr">{site.taxNumber}</bdi></p>
       <p>{ar ? site.addressAr : site.addressEn} · <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a></p>
       <p class="signature" lang="en" dir="ltr">

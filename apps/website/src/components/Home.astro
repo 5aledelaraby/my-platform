@@ -3,9 +3,10 @@
 // product grid on /"). The film fills the screen with a short line over it; then the newest belts as cards, a one-line
 // brand note, two designs as large photos, every belt by design behind tabs, and a quiet closing photo. Few words.
 import ProductCard from "./ProductCard.astro";
-import { HOME_FILM, leadOf } from "../lib/designs.ts";
+import { HOME_FILM } from "../lib/designs.ts";
+import { lookOf } from "../lib/looks.ts";
 import { langPath } from "../site.ts";
-import { beltsUrl, products, styleText, styles } from "../store.ts";
+import { beltsUrl, getProduct, productName, products, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
@@ -15,7 +16,12 @@ const t = ar
   ? { kicker: "أحزمة الخصر", title: "تكمّل كل لبسة", discover: "اكتشفي أكتر", newIn: "وصل حديثًا", viewAll: "شوفي الكل", note: "أحزمة خصر بنصنعها بإيدينا في القاهرة، علشان تكمّل أي لبسة.", about: "من نحن", shop: "تسوّقي", all: "الكل", closing: "مصنوعة في القاهرة" }
   : { kicker: "Waist belts", title: "Made to finish the look", discover: "Discover more", newIn: "Just arrived", viewAll: "View all", note: "Waist belts we make by hand in Cairo, so every outfit feels finished.", about: "About us", shop: "Shop", all: "All", closing: "Made in Cairo" };
 const newest = products.filter((p) => p.style !== "pattern").slice(0, 8);
-const tiles = styles.slice(1, 3).map((s) => ({ id: s.id, name: styleText(lang, s.id).name, img: leadOf(s.id, lang).img }));
+// Every photo leads to the belt in it (owner, 2026-10-19): two on-model photos, each opening its own product page.
+const tiles = ["lace-white", "wide-tie-mustard"].flatMap((id) => {
+  const p = getProduct(id);
+  const look = p ? lookOf(p) : null;
+  return p && look ? [{ href: beltsUrl(lang, p.id), name: productName(lang, p), look }] : [];
+});
 ---
 
 <section class="hero">
@@ -46,8 +52,8 @@ const tiles = styles.slice(1, 3).map((s) => ({ id: s.id, name: styleText(lang, s
 
 <section class="sx-tiles">
   {tiles.map((x) => (
-    <a class="sx-tile" href={beltsUrl(lang, x.id)}>
-      <img src={x.img.src} srcset={x.img.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt="" width={x.img.w} height={x.img.h} loading="lazy" decoding="async" />
+    <a class="sx-tile" href={x.href}>
+      <img src={x.look.src} srcset={x.look.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt={x.name} width="640" height="800" loading="lazy" decoding="async" />
       <span class="text-btn">{t.shop} {x.name}</span>
     </a>
   ))}
@@ -65,10 +71,10 @@ const tiles = styles.slice(1, 3).map((s) => ({ id: s.id, name: styleText(lang, s
   </div>
 </section>
 
-<section class="sx-banner">
+<a class="sx-banner" href={beltsUrl(lang, "lace-white")}>
   <img src="/img/editorial/lace-close-1600.webp" srcset="/img/editorial/lace-close-800.webp 800w, /img/editorial/lace-close-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1200" loading="lazy" decoding="async" />
   <p class="sx-banner-text">{t.closing}</p>
-</section>
+</a>
 
 <script>
   // Design tabs: show the belts of one design (or all) in the grid under them.

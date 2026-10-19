@@ -76,7 +76,7 @@ const announce = ar
     <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
     <Consent lang={lang} />
     <div class="announce"><p>{announce[1]}</p></div>
-    <Header lang={lang} overlay={theme === "neutral" && Astro.url.pathname === "/"} />
+    <Header lang={lang} />
     <main id="main">
       <slot />
     </main>
