@@ -72,6 +72,8 @@ const dataLayer = () => ((g["dataLayer"] as unknown[][] | undefined) ?? []).map(
 const fbqCalls = () => ((g["fbq"] as { queue?: unknown[][] } | undefined)?.queue ?? []).map((a) => [...a]);
 const snapCalls = () => ((g["snaptr"] as { queue?: unknown[][] } | undefined)?.queue ?? []).map((a) => [...a]);
 const hosts = () => b.scripts.map((s) => new URL(s).host).sort();
+/** Exact host match (a whole-host comparison, not a substring of the URL). */
+const hasHost = (host: string) => hosts().some((h) => h === host);
 const viewItem = { type: "view_item" as const, item: { id: "lace-white", name: "دانتيل دهبي", price: 30000 } };
 
 describe("tracking and consent", () => {
@@ -83,8 +85,8 @@ describe("tracking and consent", () => {
     const t = await page();
     assert.equal(t.consent(), "granted");
     t.initTracking();
-    assert.ok(hosts().includes("www.googletagmanager.com"));
-    assert.ok(hosts().includes("connect.facebook.net"));
+    assert.ok(hasHost("www.googletagmanager.com"));
+    assert.ok(hasHost("connect.facebook.net"));
     assert.equal(t.track(viewItem), true);
     assert.ok(dataLayer().some((a) => a[0] === "event" && a[1] === "view_item"));
     assert.ok(fbqCalls().some((a) => a[1] === "ViewContent"));
@@ -112,7 +114,7 @@ describe("tracking and consent", () => {
     const next = await page();
     next.initTracking();
     assert.equal(next.consent(), "granted");
-    assert.ok(hosts().includes("www.googletagmanager.com"));
+    assert.ok(hasHost("www.googletagmanager.com"));
     assert.equal(next.track({ type: "add_to_cart", item: { id: "wide-tie-mustard", price: 20000 } }), true);
   });
 
@@ -167,7 +169,7 @@ describe("tracking and consent", () => {
     const t = await page();
     t.initTracking();
     assert.equal(t.consent(), "granted");
-    assert.ok(hosts().includes("www.googletagmanager.com"));
+    assert.ok(hasHost("www.googletagmanager.com"));
     t.setConsent("denied");
     assert.equal(t.consent(), "denied");
     assert.equal(t.track(viewItem), false);
