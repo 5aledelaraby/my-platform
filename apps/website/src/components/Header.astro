@@ -62,7 +62,7 @@ const isGroup = (e: Link | Group): e is Group => "items" in e;
     <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
       <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M3 6.5h18M3 12h18M3 17.5h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
     </button>
-    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo /></a>
+    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo light /></a>
     <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
       <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "أحزمة الخصر" : "Waist belts"}</a>
       {ar && <a class="nav-pill" href={JOURNAL_PATH}>المقالات</a>}
@@ -78,7 +78,7 @@ const isGroup = (e: Link | Group): e is Group => "items" in e;
         <span class="count-badge fav-count" data-fav-count hidden>0</span>
       </a>
       <button type="button" class="bag-btn" data-open-cart aria-label={ar ? "السلة" : "Cart"}>
-        <span class="bag-shine"><span class="bag-emoji" aria-hidden="true">🛍️</span></span>
+        <span class="bag-shine"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg></span>
         <span class="count-badge" data-cart-count hidden>0</span>
       </button>
     </div>

@@ -23,17 +23,17 @@ const wa = `https://wa.me/${site.whatsappInternational}`;
   </figure>
   <div class="wrap intro-text">
     <p class="intro-kicker" lang="en">VICUNA</p>
-    <h1 class="wl-title bw-title">{title.map((w, i) => <span class="wl-word shine" style={`--w:${i}`} data-neon={w}>{w} </span>)}</h1>
+    <h1 class="wl-title bw-title">{title.map((w, i) => <span class="wl-word" style={`--w:${i}`}>{w} </span>)}</h1>
     <p class="lead wl-word" style={`--w:${title.length + 1}`}>{ar ? "فيكونا علامة تجارية مميزة في تصنيع الجلود، وخدمات بناء المواقع والسوشيال ميديا." : "Vicuna is a distinctive brand in leather making, website building and social media services."}</p>
     <div class="hero-actions wl-word" style={`--w:${title.length + 2}`}>
-      <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي أحزمة الخصر" : "Shop waist belts"}</a>
+      <a class="ulink" href={beltsUrl(lang)}>{ar ? "تسوّقي أحزمة الخصر" : "Shop waist belts"}</a>
     </div>
   </div>
 </section>
 
 <section class="wrap bw-designs reveal">
   <div class="bw-head">
-    <h2><a class="bw-head-link shine" href={beltsUrl(lang)} data-neon={ar ? "أحزمة الخصر" : "Waist belts"}>{ar ? "أحزمة الخصر" : "Waist belts"}</a></h2>
+    <h2><a class="bw-head-link" href={beltsUrl(lang)}>{ar ? "أحزمة الخصر" : "Waist belts"}</a></h2>
     <a class="wl-cta" href={beltsUrl(lang)}>{ar ? "شوفيها كلها" : "See them all"} <SpiralArrow /></a>
   </div>
   <div class="bw-row">

@@ -75,7 +75,7 @@ const announce = ar
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
     {lcpImage && <link rel="preload" href={lcpImage} as="image" type="image/webp" fetchpriority="high" />}
     <link rel="preload" href={lang === "ar" ? "/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2" : "/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={lang === "ar" ? "/fonts/el-messiri-arabic-700-normal.woff2" : "/fonts/el-messiri-latin-700-normal.woff2"} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={lang === "ar" ? "/fonts/ibm-plex-sans-arabic-arabic-500-normal.woff2" : "/fonts/ibm-plex-sans-arabic-latin-500-normal.woff2"} as="font" type="font/woff2" crossorigin />
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
     {/* Browsers that support it fetch a page in the background as soon as a finger or the mouse rests on its link,
         so opening it feels instant. Prefetch only (no prerender): no page runs before it is really opened. */}
@@ -89,7 +89,7 @@ const announce = ar
       <button type="button" class="motion-toggle announce-toggle" data-announce-toggle data-label-pause={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"} data-label-play={ar ? "تشغيل الشريط المتحرك" : "Play the moving bar"} aria-label={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"}><span class="mt-dot" set:html={PAUSE_SVG} /></button>
       <div class="marquee" aria-hidden="true">
         <div class="marquee-track">
-          {[0, 1].map(() => announce.map((a) => <span>{a}<i>✦</i></span>))}
+          {[0, 1].map(() => announce.map((a) => <span>{a}<i>·</i></span>))}
         </div>
       </div>
     </div>

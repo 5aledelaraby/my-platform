@@ -1691,3 +1691,140 @@ a.shine { display: inline-block; text-decoration: none; }
 .btn:has(.icon-wa):hover, .btn.btn-wa:hover { background: linear-gradient(135deg, #2ee073 0%, #1db75d 55%, #139a8a 100%); color: #fff; }
 .btn:has(.icon-wa) .icon-wa, .btn.btn-wa .icon-wa { padding: 0; background: none; }
 
+
+/* =====================================================================================================================
+   Calm look (owner, 2026-10-19: "as close as possible" to the quiet fashion store he showed, casasancho.com).
+   Written last so it wins over the earlier layers above. What it does:
+   - one quiet type family (IBM Plex Sans Arabic) at lighter weights, wide letter spacing on small labels;
+   - a deep navy header with the light logo, a muted taupe announcement bar;
+   - the home film fills the screen with the words over it and a thin underlined link, not a button;
+   - photos and buttons with square corners, no glow, no neon, no sparkles, no breathing buttons, no emoji;
+   - belt photos on one plain light grey, product cards = photo, name, price and a small square "+" button;
+   - links as underlined small capitals ("See them all") instead of the hand-drawn arrow.
+   ===================================================================================================================== */
+:root {
+  --font-display: "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r-sm: 2px; --r-md: 0; --r-lg: 0;
+  --calm-bar: #6c6548; --calm-head: #152245; --calm-tile: #f3f2ef; --calm-soft: #f7f7f7;
+  --leaf: var(--ink); --leaf-deep: var(--ink); --leaf-soft: rgb(0 0 0 / .18); --leaf-line: transparent;
+}
+:root[data-mode="dark"] { --calm-tile: #1b1a19; --calm-soft: #141312; --leaf: #f2ede4; --leaf-deep: #f2ede4; --leaf-soft: rgb(255 255 255 / .25); }
+h1, h2, h3, .h2, .wl-title, .wl-name, .wl-h2, .bw-head h2, .bw-title, .intro-text h1 { font-family: var(--font-display); font-weight: 500; letter-spacing: -.01em; }
+.wl-big, .bw-title { font-weight: 500; }
+
+/* no neon, sparkles, glints, breathing or glass */
+.shine { color: inherit; text-shadow: none; }
+.shine::after { content: none; display: none; }
+.sparkles, .spk, .price::after { display: none !important; }
+.btn, .wl-cta, .bw-head-link, .lux .btn.lux-btn { animation: none !important; }
+.story-ring, .story-ring > span { animation: none !important; }
+.story-ring { background: rgb(0 0 0 / .14); }
+.story[aria-current="page"] .story-ring { background: var(--ink); }
+
+/* announcement bar */
+.announce, .announce-toggle { background: var(--calm-bar); color: rgb(255 255 255 / .82); }
+.announce { font-size: 11.5px; font-weight: 500; letter-spacing: .14em; }
+.marquee-track i { opacity: .6; }
+
+/* header: navy, light logo and line icons */
+.site-header, :root[data-mode="dark"] .site-header { background: var(--calm-head); backdrop-filter: none; -webkit-backdrop-filter: none; color: #fff; }
+.site-header[data-scrolled] { box-shadow: none; }
+.site-header .logo-en, .site-header .logo-sub { color: #fff; }
+.site-header .icon-btn, .site-header .mode-btn, .site-header .fav-link, .site-header .lang-switch { color: #fff; background: transparent; box-shadow: none; }
+.site-header .icon-btn:hover, .site-header .mode-btn:hover, .site-header .fav-link:hover, .site-header .lang-switch:hover { background: rgb(255 255 255 / .1); color: #fff; }
+.site-header .lang-switch { font-weight: 500; letter-spacing: .12em; }
+.site-header .nav-pill { background: transparent; color: rgb(255 255 255 / .86); box-shadow: none; font-weight: 500; letter-spacing: .04em; }
+.site-header .nav-pill:hover { background: transparent; color: #fff; transform: none; text-decoration: underline; text-underline-offset: 6px; }
+.bag-shine, :root[data-mode="dark"] .bag-shine { background: transparent; color: #fff; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.bag-btn:hover .bag-shine { background: rgb(255 255 255 / .1); }
+.count-badge, .count-badge:not(.fav-count), .fav-count { background: #fff; color: var(--calm-head); border-color: var(--calm-head); }
+.design-bar { border-top: 1px solid rgb(255 255 255 / .12); }
+.design-row a { color: rgb(255 255 255 / .66); font-weight: 500; letter-spacing: .02em; }
+.design-row a:hover, .design-row a[aria-current="page"] { color: #fff; }
+.design-row a::after { height: 1px; background: #fff; }
+
+/* buttons: square, black, no shadow; the plain underlined link */
+.btn, .btn-berry, .lux .btn.lux-btn, .btn.bag-cta, .bag-cta, .lux .btn.bag-cta, .btn.btn-berry.bag-cta, .btn:has(.icon-wa), .btn.btn-wa {
+  border-radius: var(--r-sm); background: var(--ink); color: #fff; box-shadow: none; text-shadow: none; filter: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none; font-weight: 500; letter-spacing: .06em;
+}
+.btn:hover, .btn-berry:hover, .bag-cta:hover, .lux .btn.bag-cta:hover, .btn.btn-berry.bag-cta:hover, .btn:has(.icon-wa):hover, .btn.btn-wa:hover { background: #000; color: #fff; transform: none; filter: none; }
+.btn-white, .btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.btn-white:hover, .btn.ghost:hover { background: var(--ink); color: #fff; }
+.btn .icon-wa, .btn:has(.icon-wa) .icon-wa { padding: 0; background: none; }
+:root[data-mode="dark"] :is(.btn, .bag-cta, .btn.bag-cta, .btn:has(.icon-wa)) { background: #f2ede4; color: #111; }
+.ulink, .wl-cta, .textlink {
+  display: inline-block; padding-bottom: 3px; border-bottom: 1px solid currentColor; color: var(--ink);
+  font-size: 13px; font-weight: 500; letter-spacing: .14em; text-decoration: none; text-transform: uppercase;
+}
+.textlink { font-size: inherit; letter-spacing: .02em; text-transform: none; }
+.ulink:hover, .wl-cta:hover, .textlink:hover { color: var(--ink); opacity: .7; }
+.spiral { display: none; }
+
+/* home: the film fills the screen, the words sit on it */
+.bw-hero.intro-hero { position: relative; display: block; max-width: none; margin: 0; }
+.bw-hero .intro-cover { height: calc(100svh - 120px); min-height: 520px; max-height: 900px; }
+.bw-hero .intro-cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / .45), rgb(0 0 0 / .08) 55%, rgb(0 0 0 / .12)); }
+.bw-hero .intro-text { position: absolute; inset-inline: 0; bottom: 0; max-width: none; padding: 0 20px clamp(36px, 7vh, 72px); color: #fff; text-align: center; }
+.bw-hero .intro-kicker { color: rgb(255 255 255 / .8); }
+.bw-hero .bw-title, .bw-hero .intro-text h1 { color: #fff; font-size: clamp(2.2rem, 8.5vw, 4.4rem); font-weight: 400; line-height: 1.15; }
+.bw-hero .intro-text .lead { color: rgb(255 255 255 / .85); font-size: 15px; }
+.bw-hero .hero-actions { margin-top: 18px; }
+.bw-hero .ulink { color: #fff; }
+:root[data-mode="dark"] .bw-hero .intro-text { background: transparent; }
+
+/* section heads: title at the start, the underlined link at the end */
+.bw-head { align-items: baseline; }
+.bw-head h2, .wl-h2 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 400; }
+.bw-head-link { color: var(--ink); }
+.bw-designs { padding-block: clamp(40px, 7vw, 72px); background: var(--calm-soft); margin-top: 0; }
+.bw-tile { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.bw-tile img { border-radius: 0; background: var(--calm-tile); }
+.bw-lines h2 { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+
+/* photos: square corners, one plain grey behind the belts */
+.glow, .pdp-photo.glow, .sg-media.glow, .lux-slide-media.glow,
+:root[data-mode="dark"] .glow, :root[data-mode="dark"] .pdp-photo.glow { background: var(--calm-tile); }
+.card-media, .pdp-photo, .sg-media, .sg-shot, .pdp-look { box-shadow: none; }
+.wl-media { border-radius: 0; }
+
+/* product cards: photo, name, price; a small square "+" on the photo */
+.quick-add, .card .quick-add, .quick-add.bag-cta {
+  inset-inline: auto 10px; left: auto; right: auto; bottom: 10px; translate: none;
+  display: grid; place-items: center; width: 40px; height: 40px; min-height: 0; padding: 0;
+  border-radius: 8px; background: var(--ink); color: #fff; font-size: 0;
+}
+[dir="rtl"] .quick-add, [dir="rtl"] .card .quick-add { left: 10px; right: auto; }
+[dir="ltr"] .quick-add, [dir="ltr"] .card .quick-add { right: 10px; left: auto; }
+.quick-add svg { width: 20px; height: 20px; }
+.card-style { display: none; }
+.card-name, .card-name a { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+.card-price { font-size: 14px; font-weight: 400; letter-spacing: .04em; }
+.fav-btn { box-shadow: none; background: rgb(255 255 255 / .9); }
+
+/* the collection page: one quiet title, designs in a calm grid */
+.wl-intro { padding-top: clamp(40px, 8vw, 88px); }
+.wl-small { font-size: 12px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.wl-big { font-size: clamp(2.2rem, 9vw, 4rem); font-weight: 400; }
+.wl-index a { border-radius: 0; box-shadow: none; border-bottom: 1px solid transparent; min-height: 32px; padding: 0 10px; font-weight: 500; letter-spacing: .04em; }
+.wl-index a:hover { box-shadow: none; border-bottom-color: var(--ink); }
+.wl-name { font-size: 15px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.wl-price { font-weight: 400; }
+.wl-bespoke, .wl-faq details { border-color: var(--line); }
+
+/* small round things that were green become plain */
+.swatch { box-shadow: inset 0 0 0 3px var(--white, #fff), inset 0 0 0 4px rgb(0 0 0 / .14); }
+.swatch[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--ink), inset 0 0 0 4px var(--white, #fff); }
+.dot[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--white, #fff), 0 0 0 3px var(--ink); }
+
+/* "Wear it with": plain words, no pictures */
+.wear-icon { display: none; }
+.wear-chips li { background: transparent; box-shadow: inset 0 0 0 1px var(--line); border-radius: 0; font-weight: 500; }
+
+/* footer social marks: plain white outlines, no coloured tiles */
+.footer-social a.soc, .soc-tiktok, .soc-instagram, .soc-snapchat { background: transparent !important; box-shadow: none !important; color: rgb(255 255 255 / .7); }
+.footer-social a.soc:hover { color: #fff; transform: none; }
+.soc-tiktok svg { filter: none; }
+.soc-snapchat svg path { fill: none; stroke: currentColor; }
+/* the grey band behind the designs reaches both edges of the screen */
+.bw-designs { box-shadow: 0 0 0 100vmax var(--calm-soft); clip-path: inset(0 -100vmax); }

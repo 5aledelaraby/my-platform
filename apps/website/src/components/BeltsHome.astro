@@ -29,9 +29,9 @@ const line2 = words(ar ? "اختاري تصميمك" : "Choose your design", lin
   <section class="wl-intro wrap">
     <h1 class="wl-title">
       <span class="wl-small">{line1.map((x) => <span class="wl-word" style={`--w:${x.i}`}>{x.w} </span>)}</span>
-      <span class="wl-big">{line2.map((x) => <span class="wl-word shine" style={`--w:${x.i}`} data-neon={x.w}>{x.w} </span>)}</span>
+      <span class="wl-big">{line2.map((x) => <span class="wl-word" style={`--w:${x.i}`}>{x.w} </span>)}</span>
     </h1>
-    <p class="wl-lead wl-word" style={`--w:${line1.length + line2.length + 1}`}>{ar ? "جلد PU مستورد بضمان ضد التقشير ❤️" : "Imported PU leather, guaranteed not to peel ❤️"}</p>
+    <p class="wl-lead wl-word" style={`--w:${line1.length + line2.length + 1}`}>{ar ? "جلد PU مستورد بضمان ضد التقشير" : "Imported PU leather, guaranteed not to peel"}</p>
     <nav class="wl-index wl-word" style={`--w:${line1.length + line2.length + 2}`} aria-label={ar ? "التصميمات" : "Designs"}>
       {panels.map((p) => <a href={beltsUrl(lang, p.id)} data-jump={`d-${p.id}`}>{p.name}</a>)}
     </nav>
@@ -49,7 +49,7 @@ const line2 = words(ar ? "اختاري تصميمك" : "Choose your design", lin
           <a class="wl-hit" href={beltsUrl(lang, p.id)} tabindex="-1" aria-hidden="true"></a>
         </figure>
         <div class="wl-text">
-          <h2 class="wl-name"><a class="shine" href={beltsUrl(lang, p.id)} data-neon={p.name}>{p.name}</a></h2>
+          <h2 class="wl-name"><a href={beltsUrl(lang, p.id)}>{p.name}</a></h2>
           <p class="wl-meta">
             <span class="wl-price">{p.from && <small>{ar ? "من" : "from"}</small>} {price(p.id)} <small>{cur}</small></span>
             <span class="wl-swatches" aria-label={ar ? "الألوان" : "Colours"}>
