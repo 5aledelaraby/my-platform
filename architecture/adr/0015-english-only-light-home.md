@@ -17,7 +17,7 @@ that is not a sales page, where every photo leads to the belts. He also said mos
   then the designs as large words with their on-model photos in a row that slides sideways (each photo opens its
   belt), and a link to all belts. No product grid and no "add to cart" on `/`. The photo rows are product cards for the
   site Worker, so a sold-out belt's photos leave the home page too (ADR 0013).
-- `/collections/vicuna-belts/` opens on two on-model photos (olive kimono, cream shirt), then every belt; each design
+- `/collections/vicuna-belts/` opens on the olive kimono photo, then every belt; each design
   page is the same collection layout filtered to that design.
 - One look, written once: `src/styles/global.css` holds only the current look (no older layers, no dark mode, no
   sparkles or neon), phones first. The stylesheet is inlined in every page, so its size is page weight.

@@ -150,7 +150,7 @@ dialog.menu::backdrop { background: rgb(17 17 17 / .5); }
 .collection-photos { display: grid; }
 .collection-photos a { display: block; background: var(--stone); }
 .collection-photos img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-@media (min-width: 900px) { .collection-photos { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .collection-photos img { aspect-ratio: auto; height: calc(100svh - var(--head-h) - 35px); min-height: 560px; max-height: 1000px; object-position: 50% 25%; } }
 .collection-title { margin: 56px 0; font-size: 21px; letter-spacing: -.02em; text-align: center; text-transform: uppercase; }
 .collection-tabs { display: flex; gap: 22px; margin: 0 0 28px; padding: 0 var(--gutter); overflow-x: auto; scrollbar-width: none; }
 .collection-tabs::-webkit-scrollbar { display: none; }

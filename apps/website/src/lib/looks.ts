@@ -9,7 +9,7 @@ export const LOOK_COUNTS: Readonly<Record<string, number>> = {
   "pattern-brown": 3,
   "ruffle-brown": 1,
   "ruffle-red": 1,
-  "thin-tie-camel": 2,
+  "thin-tie-camel": 1,
   "thin-tie-croc-pink": 1,
   "thin-tie-green": 1,
   "thin-tie-orange": 1,

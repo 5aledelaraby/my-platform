@@ -1,8 +1,8 @@
 ---
 // A collection page (owner, 2026-10-19: the layout of the quiet fashion store he showed): small breadcrumbs, the name
 // in capitals in the middle, the designs as tabs, the count, and the belts two by two. Used for all waist belts and for
-// each design. All waist belts opens on two on-model photos (owner, 2026-10-19): the olive kimono with the signature
-// pattern belt, then the cream shirt with the camel belt; each leads to its belt. Cards are <article class="card" data-product>, which the site Worker removes when sold out (ADR 0013).
+// each design. All waist belts opens on the olive kimono photo with the signature pattern belt (owner, 2026-10-19),
+// which leads to that belt. Cards are <article class="card" data-product>, which the site Worker removes when sold out (ADR 0013).
 import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
 import { beltsUrl, getProduct, productName, productsOfStyle, products, styleText, styles } from "../store.ts";
@@ -24,7 +24,6 @@ const photos = styleId
   ? []
   : [
       { id: "pattern-brown", n: 2, alt: "worn with an olive kimono" },
-      { id: "thin-tie-camel", n: 2, alt: "worn with a cream shirt" },
     ].flatMap(({ id, n, alt }) => {
       const p = getProduct(id);
       const look = p ? looksOf(p)[n - 1] : undefined;
