@@ -1,5 +1,6 @@
 ---
-// Cookie settings. The analytics and ad tags run from the first page (owner, 2026-10-19), so this box never opens
+// Cookie settings. The analytics and ad tags run from the first page (owner, 2026-10-19), loaded on the first touch,
+// scroll or key press (2026-10-20), so this box never opens
 // by itself: only "Cookie settings" in the footer opens it, to refuse (or allow again). Focus moves into it, Escape returns it.
 import { policyPath } from "../policies/index.ts";
 import type { Lang } from "../site.ts";
@@ -23,7 +24,7 @@ const ar = lang === "ar";
 </section>
 
 <script>
-  import { consent, initTracking, setConsent } from "../scripts/tracking.ts";
+  import { consent, initTrackingOnInteraction, setConsent } from "../scripts/tracking.ts";
   const box = document.querySelector<HTMLElement>("[data-consent]");
   if (box) {
     let opener: HTMLElement | null = null;
@@ -56,5 +57,5 @@ const ar = lang === "ar";
       box.querySelector<HTMLButtonElement>("[data-consent-choice]")?.focus();
     });
   }
-  initTracking();
+  initTrackingOnInteraction();
 </script>

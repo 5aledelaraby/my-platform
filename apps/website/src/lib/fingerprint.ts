@@ -4,14 +4,15 @@
 // copy instead. /v/* is cached for a year (public/_headers): a replaced photo gets a new hash, so a new address,
 // and visitors fetch it at once. The original addresses keep working with the short cache, for links this step
 // does not rewrite (the cart script, og:image and other absolute URLs, outside links).
-// Fonts are left alone: the stylesheet links them by their plain address and they are already cached for 30 days.
+// Fonts too (2026-10-20, PageSpeed "efficient cache lifetimes"): the stylesheet written into every page and the font
+// preload link point to /v/<hash>/fonts/..., so they are cached for a year like the photos.
 
 /** Asset folders whose files are fingerprinted. */
-export const FINGERPRINTED = ["img", "video", "brand"] as const;
+export const FINGERPRINTED = ["img", "video", "brand", "fonts"] as const;
 export const VERSIONED_PREFIX = "/v/";
 
 /** A site-relative asset path in a page: in an attribute, a srcset list or a JSON string. */
-const ASSET_PATH = /(?<=["'\s,(=])\/(?:img|video|brand)\/[A-Za-z0-9._/-]+\.(?:webp|jpe?g|png|avif|gif|svg|mp4|webm)(?=["'\s,)])/g;
+const ASSET_PATH = /(?<=["'\s,(=])\/(?:img|video|brand|fonts)\/[A-Za-z0-9._/-]+\.(?:webp|jpe?g|png|avif|gif|svg|mp4|webm|woff2)(?=["'\s,)])/g;
 
 /** The versioned address of a file whose content hash is `hash`. */
 export function versionedPath(path: string, hash: string): string {

@@ -52,7 +52,7 @@ const rows = styles
 </section>
 
 <section class="home-feature">
-  <a href={lace.href} aria-label={lace.name}>
+  <a href={lace.href}>
     <img src={lace.look.src} srcset={lace.look.srcset} sizes="(min-width: 900px) 760px, 100vw" alt={`${lace.name}, worn with a white satin dress`} width="640" height="800" loading="lazy" decoding="async" />
     <span class="home-feature-text">
       <span class="script">Transform your dress</span>
@@ -70,7 +70,7 @@ const rows = styles
       {r.slides.map((s) => (
         <article class="card look-card" data-product={s.p.id}>
           <a href={s.href}>
-            <img src={s.look.src} srcset={s.look.srcset} sizes="(min-width: 900px) 30vw, 78vw" alt={`${s.name}, worn`} width="640" height="800" loading="lazy" decoding="async" />
+            <img src={s.look.src} srcset={s.look.srcset} sizes="(min-width: 900px) 28vw, calc(74vw - 30px)" alt={`${s.name}, worn`} width="640" height="800" loading="lazy" decoding="async" />
             <span class="look-name">{s.name}</span>
             <span class="look-price">LE {s.price}</span>
           </a>

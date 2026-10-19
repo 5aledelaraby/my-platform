@@ -51,9 +51,11 @@ export function setConsent(v: Choice): void {
     /* storage blocked: the choice lasts for this page only */
   }
   if (v === "granted") {
-    load();
+    start();
     return;
   }
+  waiting = false;
+  held.length = 0;
   clearTrackingCookies();
   if (wasLoaded) {
     revoke();
@@ -227,15 +229,47 @@ function send(e: TrackEvent): void {
   }
 }
 
+// Until the visitor first touches, scrolls or types, the tags wait (owner, 2026-10-20: PageSpeed 100), so a page view
+// event made while the page loads is kept and sent with them. Anything the visitor does (add to bag, checkout) and the
+// purchase on the thank-you page load them at once.
+let waiting = false;
+const held: TrackEvent[] = [];
+
 /** Sends the event unless the visitor refused; then it is dropped (never kept for later). */
 export function track(e: TrackEvent): boolean {
   if (revoked || consent() !== "granted") return false;
-  load();
+  if (waiting && e.type === "view_item") {
+    held.push(e);
+    return true;
+  }
+  start();
   send(e);
   return true;
 }
 
-/** Called once per page (Consent.astro): loads the tags unless the visitor refused. */
+function start(): void {
+  waiting = false;
+  load();
+  for (const e of held.splice(0)) if (!revoked && consent() === "granted") send(e);
+}
+
+/** Called once per page: loads the tags unless the visitor refused. */
 export function initTracking(): void {
-  if (consent() === "granted") load();
+  if (consent() === "granted") start();
+}
+
+const FIRST_TOUCH = ["pointerdown", "touchstart", "keydown", "scroll", "wheel"] as const;
+
+/**
+ * Called once per page (Consent.astro): loads the tags on the visitor's first touch, scroll or key press, so the
+ * page itself loads without them. A visitor who leaves without doing anything is not counted.
+ */
+export function initTrackingOnInteraction(target: Pick<EventTarget, "addEventListener" | "removeEventListener"> = window): void {
+  if (consent() !== "granted" || trackingOff()) return;
+  waiting = true;
+  const go = () => {
+    for (const t of FIRST_TOUCH) target.removeEventListener(t, go, true);
+    if (waiting) initTracking();
+  };
+  for (const t of FIRST_TOUCH) target.addEventListener(t, go, { capture: true, passive: true, once: true });
 }

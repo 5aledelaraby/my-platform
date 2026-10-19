@@ -29,7 +29,7 @@ const line = (d: string, size = 24) => `<svg viewBox="0 0 24 24" width="${size}"
     <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
       <Fragment set:html={line('<path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17"/>', 26)} />
     </button>
-    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={30} both={overlay} /></a>
+    <a class="brand" href={home}><Logo size={30} both={overlay} /></a>
     <div class="header-end">
       <a class="icon-btn fav-link" href={langPath(lang, "/favorites/")} aria-label={ar ? "المفضلة" : "Wishlist"}>
         <Fragment set:html={line('<path d="M12 20.3s-7.3-4.4-9.2-8.9C1.5 8.3 3.4 4.8 6.9 4.8c2 0 3.5 1.1 5.1 2.9 1.6-1.8 3.1-2.9 5.1-2.9 3.5 0 5.4 3.5 4.1 6.6-1.9 4.5-9.2 8.9-9.2 8.9z"/>', 22)} />

@@ -150,7 +150,7 @@ dialog.menu::backdrop { background: rgb(17 17 17 / .5); }
 .looks { padding-block: var(--space); }
 .looks-tabs { display: flex; gap: 18px; margin: 0 0 32px; padding: 0 var(--gutter); overflow-x: auto; scrollbar-width: none; }
 .looks-tabs::-webkit-scrollbar { display: none; }
-.looks-tabs button { flex: none; padding: 0; border: 0; background: none; color: #b5b5b5; font: 400 clamp(24px, 6.2vw, 44px)/1.2 var(--font); letter-spacing: -.04em; white-space: nowrap; cursor: pointer; transition: color .25s; }
+.looks-tabs button { flex: none; padding: 0; border: 0; background: none; color: #8c8c8c; font: 400 clamp(24px, 6.2vw, 44px)/1.2 var(--font); letter-spacing: -.04em; white-space: nowrap; cursor: pointer; transition: color .25s; }
 .looks-tabs button[aria-selected="true"] { color: var(--text); }
 @media (min-width: 900px) { .looks-tabs { justify-content: center; gap: 36px; } }
 .looks-row { display: grid; grid-auto-flow: column; grid-auto-columns: 74%; gap: 12px; padding: 0 var(--gutter); overflow-x: auto; overscroll-behavior-x: contain;

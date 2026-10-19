@@ -81,6 +81,40 @@ describe("tracking and consent", () => {
     b = browser();
   });
 
+  it("the tags wait for the first touch or scroll; a page view made before it is sent with them (2026-10-20)", async () => {
+    const listeners = new Map<string, () => void>();
+    const target = {
+      addEventListener: (t: string, f: () => void) => void listeners.set(t, f),
+      removeEventListener: (t: string) => void listeners.delete(t),
+    };
+    const t = await page();
+    t.initTrackingOnInteraction(target);
+    assert.equal(b.scripts.length, 0);
+    assert.equal(t.track(viewItem), true);
+    assert.equal(b.scripts.length, 0);
+    assert.ok(listeners.has("scroll") && listeners.has("pointerdown"));
+    listeners.get("scroll")?.();
+    assert.ok(hasHost("www.googletagmanager.com"));
+    assert.ok(fbqCalls().some((c) => c[0] === "track" && c[1] === "ViewContent"));
+    assert.equal(listeners.size, 0);
+  });
+
+  it("a purchase loads the tags at once, without waiting for a touch", async () => {
+    const t = await page();
+    t.initTrackingOnInteraction({ addEventListener: () => undefined, removeEventListener: () => undefined });
+    t.track({ type: "purchase", orderId: "V-1", value: 30000, items: [{ id: "lace-white" }] });
+    assert.ok(fbqCalls().some((c) => c[1] === "Purchase"));
+  });
+
+  it("a held page view is dropped when the visitor refuses before touching", async () => {
+    const t = await page();
+    t.initTrackingOnInteraction({ addEventListener: () => undefined, removeEventListener: () => undefined });
+    t.track(viewItem);
+    t.setConsent("denied");
+    t.setConsent("granted");
+    assert.ok(!fbqCalls().some((c) => c[1] === "ViewContent"));
+  });
+
   it("a new visitor: the tags load on the first page, with no banner choice (owner, 2026-10-19)", async () => {
     const t = await page();
     assert.equal(t.consent(), "granted");

@@ -29,8 +29,8 @@ describe("fingerprint", () => {
     assert.equal(used.size, 5);
   });
 
-  it("leaves absolute URLs, fonts, other folders and missing files alone", () => {
-    const html = `<meta property="og:image" content="https://vicuna-eg.com/img/a-1200.webp"><link href="/fonts/x.woff2"><img src="/catalog/img/a.jpg"><img src="/img/missing.webp">`;
+  it("leaves absolute URLs, other folders and missing files alone", () => {
+    const html = `<meta property="og:image" content="https://vicuna-eg.com/img/a-1200.webp"><link href="/other/x.woff2"><img src="/catalog/img/a.jpg"><img src="/img/missing.webp">`;
     const { html: out, used } = fingerprintHtml(html, hashOf);
     assert.equal(out, html);
     assert.equal(used.size, 0);
