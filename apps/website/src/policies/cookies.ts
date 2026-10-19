@@ -37,11 +37,11 @@ ${li("__cf_bm, cf_clearance", "Cloudflare", "protect the website from attacks an
 </ul>
 
 <h2>3. Analytics and advertising</h2>
-<p>We use these tools to understand how the website is used and to show and measure our ads. They record the pages and products you view, items you add to the cart, starting checkout and completed orders (order number and value), with your device, browser and approximate location. Each company uses this data under its own privacy policy and may transfer it outside Egypt.</p>
+<p>We use these tools to understand how the website is used and to show and measure our ads. They record the pages and products you view, what you add to the cart and your orders (number and value). Each company uses this data under its own privacy policy.</p>
 <ul>
 ${tagItemsEn()}
 </ul>
-<p>If you choose "Reject" in "Cookie settings", none of these load and nothing about your visit is sent to them${tracking.meta ? ", and our server does not send your purchase to Meta either" : ""}. Refusing does not affect your purchase. If they already ran on your visit, we stop loading these tools and delete their cookies from our website. Cookies these companies keep on their own websites (for example when you are logged in to Facebook) are managed in your account with them.</p>
+<p>If you choose "Reject" in "Cookie settings", these tools stop and their cookies are deleted from our website${tracking.meta ? ", and our server does not send your purchase to Meta" : ""}. It does not affect your purchase.</p>
 
 <h2>4. How to change your choice</h2>
 <ul>
@@ -83,11 +83,11 @@ ${li('<bdi dir="ltr">__cf_bm</bdi>، <bdi dir="ltr">cf_clearance</bdi>', "Cloudf
 </ul>
 
 <h2>3. التحليل والإعلانات</h2>
-<p>نستخدمها لنفهم كيف يُستخدم الموقع ولعرض إعلاناتنا وقياسها. تسجّل الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وبدء الطلب وإتمامه (رقمه وقيمته)، مع نوع الجهاز والمتصفح والموقع التقريبي. وتستخدم كل شركة هذه البيانات وفق سياستها وقد تنقلها إلى خارج مصر.</p>
+<p>نستخدمها لنفهم كيف يُستخدم الموقع ولعرض إعلاناتنا وقياسها. تسجّل الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وطلباتكِ (رقمها وقيمتها). وتستخدم كل شركة هذه البيانات وفق سياستها.</p>
 <ul>
 ${tagItemsAr()}
 </ul>
-<p>إذا اخترتِ «رفض» من «إعدادات الكوكيز» لا يعمل أي منها${tracking.meta ? "، ولا يرسل خادمنا عملية الشراء إلى Meta" : ""}، ولا يؤثر ذلك على شرائكِ. وإذا كانت قد عملت أثناء زيارتكِ، نتوقف عن تحميل هذه الأدوات ونحذف كوكيزها من موقعنا. أما ما تحفظه هذه الشركات على مواقعها (مثلًا إذا كنتِ مسجلة الدخول في Facebook) فتديرينه من حسابكِ لديها.</p>
+<p>إذا اخترتِ «رفض» من «إعدادات الكوكيز» تتوقف هذه الأدوات ونحذف كوكيزها من موقعنا${tracking.meta ? "، ولا يرسل خادمنا عملية الشراء إلى Meta" : ""}، ولا يؤثر ذلك على شرائكِ.</p>
 
 <h2>4. كيف تغيّرين اختياركِ</h2>
 <ul>

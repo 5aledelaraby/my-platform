@@ -11,6 +11,12 @@ import { contactHtml, ltr, policyPath } from "./shared.ts";
 import { adPlatforms, andAr, andEn, tagCompanies, tagTools } from "./tags.ts";
 import type { PolicyDoc } from "./shared.ts";
 
+// How Google and Meta use the data, and where to opt out of their ads: the disclosures their tag terms ask for.
+const GOOGLE_DATA = "https://policies.google.com/technologies/partner-sites";
+const AD_CHOICES = "https://optout.aboutads.info/";
+const OPTOUT_AR = `${tracking.ga4 ? ` <a href="${GOOGLE_DATA}">كيف تستخدم Google هذه البيانات</a>.` : ""}${tracking.meta ? ` ويمكنكِ أيضًا إيقاف الإعلانات المخصصة من <a href="${AD_CHOICES}">aboutads.info</a> أو من إعدادات الإعلانات في حسابكِ على Facebook.` : ""}`;
+const OPTOUT_EN = `${tracking.ga4 ? ` <a href="${GOOGLE_DATA}">How Google uses this data</a>.` : ""}${tracking.meta ? ` You can also opt out of personalised ads at <a href="${AD_CHOICES}">aboutads.info</a> or in the ad settings of your Facebook account.` : ""}`;
+
 export const privacyAr: PolicyDoc = {
   title: "سياسة الخصوصية",
   description: "ما البيانات التي تجمعها فيكونا، ولماذا، وأين تُحفظ، ومدة الاحتفاظ بها، وحقوقكِ في بياناتكِ الشخصية.",
@@ -28,7 +34,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li><b>الدفع:</b> عند ردّ مبلغ طلب مدفوع نقدًا، نحتاج رقم المحفظة أو الحساب البنكي الذي تختارينه. وعند الدفع أونلاين (بالكارت أو PayPal) يصلنا من PayPal تأكيد الدفع ورقم العملية والمبلغ واسم حساب PayPal وبريده. لا نطلب ولا نحفظ أرقام بطاقات بنكية.</li>
 <li><b>الطلبات الخاصة:</b> مقاساتكِ عند طلب مقاس خاص أو حزام مفصّل.</li>
 <li><b>بيانات تقنية:</b> عنوان IP ونوع المتصفح والجهاز، تسجلها خدمة الاستضافة تلقائيًا لتشغيل الموقع وحمايته، مثل تحديد عدد الطلبات المسموح به من الجهاز نفسه.</li>
-<li><b>بيانات التحليل والإعلانات (إلا إذا أوقفتِها من «إعدادات الكوكيز»):</b> الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وبدء الطلب، ورقم الطلب وقيمته والمنتجات فيه، ونوع الجهاز والمتصفح، والموقع التقريبي، ومعرّفات الكوكيز. تجمعها ${andAr(tagTools("ar"))}. ${tracking.meta ? "ونرسل عملية الشراء إلى Meta من خادمنا أيضًا، ومعها رقم موبايلكِ مشفّرًا لا يمكن استرجاعه. لا نرسل اسمكِ أو عنوانكِ." : "لا نرسل لها اسمكِ أو رقمكِ أو عنوانكِ."}</li>
+<li><b>بيانات التحليل والإعلانات:</b> الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وطلباتكِ (رقمها وقيمتها)، مع نوع الجهاز والموقع التقريبي. تجمعها ${andAr(tagTools("ar"))}. ${tracking.meta ? "ونرسل عملية الشراء إلى Meta من خادمنا أيضًا، ومعها رقم موبايلكِ مشفّرًا لا يمكن استرجاعه. لا نرسل اسمكِ أو عنوانكِ." : "لا نرسل لها اسمكِ أو رقمكِ أو عنوانكِ."}</li>
 <li><b>على جهازكِ:</b> محتوى السلة يُحفظ في متصفحكِ (localStorage) حتى لا يضيع عند غلق الصفحة، ولا يصلنا إلا عند إرسال الطلب. ورقم آخر طلب وإجماليه وطريقة دفعه والأحزمة فيه (دون اسمكِ أو رقمكِ أو عنوانكِ) تُحفظ مؤقتًا في المتصفح لعرضها في صفحة الشكر، وتُحذف عند غلق تبويب المتصفح.</li>
 </ul>
 
@@ -47,7 +53,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <li><b>شركة الشحن:</b> الاسم ورقم الموبايل والعنوان، لتوصيل الطلب.</li>
 <li><b>Cloudflare:</b> تستضيف الموقع وقاعدة بيانات الطلبات وتحمي الموقع، وتعالج البيانات لحسابنا.</li>
 <li><b>PayPal (فقط إذا اخترتِ الدفع به):</b> نرسل لها رقم الطلب والمبلغ، وتعالج الدفع وبياناتكِ لديها وفق سياستها.</li>
-<li><b>${andAr(tagCompanies("ar"))} (إلا إذا أوقفتِها من «إعدادات الكوكيز»):</b> تستلم بيانات التحليل والإعلانات الموضحة أعلاه وتستخدمها وفق سياساتها، وقد تنقلها إلى خارج مصر.</li>
+<li><b>${andAr(tagCompanies("ar"))}:</b> تستلم بيانات التحليل والإعلانات الموضحة أعلاه وتستخدمها وفق سياساتها، وقد تنقلها إلى خارج مصر.</li>
 <li><b>خدمات نتواصل من خلالها،</b> ولكل منها سياسة خصوصية خاصة بها:
 <ul>
 <li>Telegram: نستلم عليه رسالة بكل طلب جديد وكل تغيير في حالته، فيها رقم الطلب وبياناتكِ والمنتجات والإجمالي.</li>
@@ -82,7 +88,7 @@ ${contactHtml("ar", "السلام عليكم، عندي طلب بخصوص بيا
 <p>الاتصال بالموقع مشفّر (HTTPS)، ولا يُفتح سجل الطلبات من جهتنا إلا من حسابات محمية بتسجيل دخول. وإذا حدث اختراق يمس بياناتكِ، نبلغ مركز حماية البيانات الشخصية ونبلغكِ خلال المدد التي يحددها القانون. ومع ذلك، لا توجد طريقة نقل أو حفظ على الإنترنت آمنة بنسبة 100%.</p>
 
 <h2>9. الكوكيز وأدوات القياس</h2>
-<p>نستخدم ${andAr(tagTools("ar"))}، ويمكنكِ إيقافها في أي وقت من «إعدادات الكوكيز» أسفل الموقع. إذا أوقفتِها نتوقف عن تحميل هذه الأدوات ونحذف كوكيزها من موقعنا. الكوكيز الضرورية لعمل الموقع وحمايته لا تحتاج موافقة. التفاصيل في <a href="${policyPath("ar", "cookies")}">سياسة الكوكيز</a>.</p>
+<p>نستخدم ${andAr(tagTools("ar"))}، وقد تستخدم هذه الشركات الكوكيز لجمع بيانات زيارتكِ وقياس الإعلانات وعرض إعلانات تناسبكِ. يمكنكِ إيقافها في أي وقت من «إعدادات الكوكيز» أسفل الموقع.${OPTOUT_AR} التفاصيل في <a href="${policyPath("ar", "cookies")}">سياسة الكوكيز</a>.</p>
 
 <h2>10. السن</h2>
 <p>الموقع موجّه لمن بلغن سن الرشد. إذا لم تبلغيه بعد، اطلبي بمعرفة وليّ أمركِ وموافقته.</p>
@@ -111,7 +117,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li><b>Payment:</b> to refund an order paid in cash we need the wallet or bank account number you choose. When you pay online (card or PayPal), PayPal tells us the payment went through, its reference and amount, and the PayPal account name and email. We never ask for or keep card numbers.</li>
 <li><b>Special orders:</b> your measurements for a custom size or a made-to-measure belt.</li>
 <li><b>Technical data:</b> IP address, browser and device type, logged automatically by our hosting provider to run and protect the website, for example to limit how many orders one device can send.</li>
-<li><b>Analytics and advertising data (unless you turn it off in "Cookie settings"):</b> pages and products you view, items you add to the cart, starting checkout, the order number, value and products, device and browser type, approximate location and cookie identifiers. Collected by ${andEn(tagTools("en"))}. ${tracking.meta ? "Our server also sends the purchase to Meta, with your mobile number hashed so it cannot be recovered. We do not send your name or address." : "We do not send them your name, number or address."}</li>
+<li><b>Analytics and advertising data:</b> pages and products you view, items you add to the cart and your orders (number and value), with device type and approximate location. Collected by ${andEn(tagTools("en"))}. ${tracking.meta ? "Our server also sends the purchase to Meta, with your mobile number hashed so it cannot be recovered. We do not send your name or address." : "We do not send them your name, number or address."}</li>
 <li><b>On your device:</b> your cart is kept in your browser (localStorage) so it is not lost when you close the page; it reaches us only when you send the order. Your last order's number, total, payment method and the belts in it (not your name, number or address) are kept briefly in the browser for the thank-you page and are deleted when you close the browser tab.</li>
 </ul>
 
@@ -130,7 +136,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <li><b>The courier:</b> name, mobile number and address, to deliver the order.</li>
 <li><b>Cloudflare:</b> hosts the website and the order database and protects the website, processing data on our behalf.</li>
 <li><b>PayPal (only if you choose to pay with it):</b> we send it the order number and amount; it processes the payment and your details under its own policy.</li>
-<li><b>${andEn(tagCompanies("en"))} (unless you turn them off in "Cookie settings"):</b> receive the analytics and advertising data described above and use it under their own policies; they may transfer it outside Egypt.</li>
+<li><b>${andEn(tagCompanies("en"))}:</b> receive the analytics and advertising data described above and use it under their own policies; they may transfer it outside Egypt.</li>
 <li><b>Services we communicate through,</b> each with its own privacy policy:
 <ul>
 <li>Telegram: we receive a message for every new order and every status change, with the order number, your details, the items and the total.</li>
@@ -165,7 +171,7 @@ ${contactHtml("en", "Hello, I have a request about my data")}
 <p>The connection to the website is encrypted (HTTPS), and on our side the order records can only be opened from accounts protected by a sign-in. If a breach affects your data, we notify the Personal Data Protection Center and you within the periods set by law. Still, no way of sending or storing data on the internet is 100% secure.</p>
 
 <h2>9. Cookies and measurement tools</h2>
-<p>We use ${andEn(tagTools("en"))}, and you can turn them off at any time from "Cookie settings" at the bottom of the website. If you turn them off, we stop loading these tools and delete their cookies from our website. Cookies strictly needed to run and protect the website need no consent. Details are in the <a href="${policyPath("en", "cookies")}">cookie policy</a>.</p>
+<p>We use ${andEn(tagTools("en"))}. These companies may use cookies to collect information about your visit, measure ads and show you ads that suit you. You can turn them off at any time from "Cookie settings" at the bottom of the website.${OPTOUT_EN} Details are in the <a href="${policyPath("en", "cookies")}">cookie policy</a>.</p>
 
 <h2>10. Age</h2>
 <p>The website is meant for adults of legal age. If you are not of legal age yet, order with your parent's or guardian's knowledge and consent.</p>
