@@ -147,6 +147,14 @@
       "texture": "smooth"
     },
     {
+      "id": "wide-tie-black",
+      "name": "رباط عريض أسود",
+      "style": "wide-tie",
+      "color": "black",
+      "hex": "#1E1E22",
+      "texture": "smooth"
+    },
+    {
       "id": "thin-tie-red",
       "name": "رباط رفيع أحمر",
       "style": "thin-tie",

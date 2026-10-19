@@ -1,5 +1,6 @@
 // Analytics and ad tags (GA4, Meta Pixel, TikTok Pixel, Snap Pixel). They load on every page as soon as it opens
-// (owner, 2026-10-19: no cookie banner); a visitor can turn them off from "Cookie settings" in the footer.
+// (owner, 2026-10-19: no cookie banner); a visitor can turn them off from "Cookie settings" in the footer. They run on
+// the live site only: staging and previews never load them.
 // Only tags with an ID in site.ts `tracking` ever load. Events: page view on every page, view_item on a product page,
 // add_to_cart, begin_checkout, purchase (thank-you page).
 // A refusal is kept in localStorage ("vicuna-consent": "denied"); with no stored choice the tags run.
@@ -68,8 +69,18 @@ function script(src: string): void {
   document.head.append(s);
 }
 
+/** Staging and previews carry data-track="off" on <html> (Base.astro): the tags never load there, so test visits and
+    test orders stay out of Google Analytics, Meta and Snap (owner, 2026-10-20). */
+function trackingOff(): boolean {
+  try {
+    return document.documentElement?.dataset?.["track"] === "off";
+  } catch {
+    return false;
+  }
+}
+
 function load(): void {
-  if (loaded || revoked) return;
+  if (loaded || revoked || trackingOff()) return;
   loaded = true;
   const win = w();
   if (tracking.ga4) {

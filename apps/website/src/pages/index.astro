@@ -3,6 +3,12 @@ import Base from "../layouts/Base.astro";
 import Home from "../components/Home.astro";
 import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../site.ts";
+import { getProduct } from "../store.ts";
+import { looksOf } from "../lib/looks.ts";
+
+// The hero photo (Home.astro): fetched first, at the size the screen needs.
+const heroProduct = getProduct("pattern-brown");
+const hero = heroProduct ? looksOf(heroProduct)[2] : undefined;
 
 const title = "Vicuna | The waist belt that makes every outfit";
 const description = "Vicuna is a distinctive brand in leather making, website building and social media services. Waist belts that make every outfit, delivered across Egypt.";
@@ -20,6 +26,6 @@ const jsonLd = serializeJsonLd([
 ]);
 ---
 
-<Base title={title} description={description} lang="en" jsonLd={jsonLd} image="/img/looks/lace-white-1200.webp">
+<Base title={title} description={description} lang="en" jsonLd={jsonLd} image="/img/looks/lace-white-1200.webp" lcpImage={hero?.src} lcpSrcset={hero?.srcset} overlayHeader>
   <Home lang="en" />
 </Base>

@@ -18,12 +18,12 @@ const work = ar
       { t: "تصميم المواقع وبناؤها", d: "نصمّم المواقع الإلكترونية ونبنيها: سريعة وواضحة وسهلة الاستخدام." },
     ]
   : [
-      { t: "Products and accessories", d: "We design and make by hand. Where we started: belts.", href: beltsUrl(lang) },
+      { t: "Products and accessories", d: "We design and make by hand. Where we started: waist belts.", href: beltsUrl(lang) },
       { t: "Website design and building", d: "We design and build websites: fast, clear and easy to use." },
     ];
 ---
 
-<Base title={title} description={description} lang={lang} image="/img/editorial/about-abaya-1200.webp">
+<Base title={title} description={description} lang={lang} image="/img/founder-collage-1400.webp">
   <section class="wrap about-page">
     <header class="about-head">
       <p class="intro-kicker" lang="en">VICUNA DESIGNS</p>
@@ -34,7 +34,11 @@ const work = ar
           : "Vicuna Designs is an Egyptian brand based in Cairo, working across design."}
       </p>
     </header>
-    <figure class="about-photo"><img src="/img/editorial/about-abaya-1200.webp" srcset="/img/editorial/about-abaya-640.webp 640w, /img/editorial/about-abaya-1200.webp 1200w" sizes="(min-width: 900px) 60vw, 100vw" alt="" width="1200" height="1500" decoding="async" /></figure>
+    <figure class="about-photo about-founder"><img src="/img/founder-collage-1400.webp" srcset="/img/founder-collage-800.webp 800w, /img/founder-collage-1400.webp 1400w" sizes="(min-width: 900px) 820px, 100vw" alt="Khaled Elaraby, Vicuna's founder, fitting a blue waist belt on a dress form" width="1400" height="726" decoding="async" /></figure>
+    <figure class="about-photo about-mannequin">
+      <img src="/img/editorial/about-mannequin-1200.webp" srcset="/img/editorial/about-mannequin-640.webp 640w, /img/editorial/about-mannequin-1200.webp 1200w" sizes="(min-width: 900px) 820px, 100vw" alt="A blue Vicuna waist belt on a dress form" width="1200" height="1200" loading="lazy" decoding="async" />
+      <figcaption class="script">The art of the waist</figcaption>
+    </figure>
     <h2 class="about-h2">{ar ? "ماذا نفعل" : "What we do"}</h2>
     <ul class="about-work">
       {work.map((w) => (

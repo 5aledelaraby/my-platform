@@ -18,6 +18,7 @@ export const LOOK_COUNTS: Readonly<Record<string, number>> = {
   "thin-tie-rose": 1,
   "thin-tie-royal-blue": 1,
   "thin-tie-sky-blue": 1,
+  "wide-tie-black": 1,
   "wide-tie-burgundy": 1,
   "wide-tie-green": 1,
   "wide-tie-mustard": 1,
@@ -43,3 +44,10 @@ export function looksOf(p: CatalogProduct): Look[] {
 
 /** The main look photo of a product, or null when it has none. */
 export const lookOf = (p: CatalogProduct): Look | null => looksOf(p)[0] ?? null;
+
+/** Short product films (owner, 2026-10-20): /video/<id>.mp4 with its poster /video/<id>.webp, shown on the product page
+    after the photos. Muted, looping, and played only while on screen. */
+export const FILM_IDS: ReadonlySet<string> = new Set(["wide-tie-black"]);
+export interface Film { src: string; poster: string }
+export const filmOf = (p: CatalogProduct): Film | null =>
+  FILM_IDS.has(p.id) ? { src: `/video/${p.id}.mp4`, poster: `/video/${p.id}.webp` } : null;

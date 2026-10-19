@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync } from "node:fs";
 import { describe, it } from "node:test";
 import { catalog } from "@platform/commerce";
-import { LOOK_COUNTS, LOOK_IDS, LOOK_SIZES, lookOf, lookStem, looksOf } from "../src/lib/looks.ts";
+import { FILM_IDS, LOOK_COUNTS, LOOK_IDS, LOOK_SIZES, filmOf, lookOf, lookStem, looksOf } from "../src/lib/looks.ts";
 
 const dir = new URL("../public/img/looks/", import.meta.url);
 
@@ -36,5 +36,20 @@ describe("look photos", () => {
     assert.deepEqual(lookOf(many), all[0]);
     assert.match(all[0]!.srcset, new RegExp(`/${many.id}-640\\.webp 640w, .*/${many.id}-1200\\.webp 1200w$`));
     assert.match(all[1]!.src, new RegExp(`/${many.id}-2-640\\.webp$`));
+  });
+
+  it("every product film has its video and poster, and the folder holds nothing else", () => {
+    const films = new URL("../public/video/", import.meta.url);
+    const expected = new Set<string>();
+    for (const id of FILM_IDS) {
+      const p = catalog.products.find((x) => x.id === id);
+      assert.ok(p, `unknown product ${id}`);
+      const f = filmOf(p)!;
+      for (const path of [f.src, f.poster]) {
+        expected.add(path.replace("/video/", ""));
+        assert.ok(existsSync(new URL(`..${path}`, films)), `missing ${path}`);
+      }
+    }
+    for (const f of readdirSync(films)) assert.ok(expected.has(f), `${f} is not listed in FILM_IDS`);
   });
 });

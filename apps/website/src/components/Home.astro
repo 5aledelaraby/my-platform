@@ -1,7 +1,8 @@
 ---
 // The home page (owner, 2026-10-19, ADR 0015): light and simple, not a sales page. Every photo leads to the belt in
 // it, and the belts are bought on the belts and product pages. From the top: the white-dress photo with the signature
-// pattern belt, one line about the brand, the lace white photo, then the designs as large words with their on-model
+// pattern belt (the header sits on it), one line about the brand, the lace white photo with "Transform your dress"
+// written on it, then the designs as large words with their on-model
 // photos in a row that slides sideways (the layout of the store he showed), and a link to all the belts.
 // Slides are <article class="card ..." data-product>, so the site Worker removes a sold-out belt's photos (ADR 0013).
 import { getProduct, beltsUrl, priceOfProduct, productName, products, styleText, styles } from "../store.ts";
@@ -52,9 +53,12 @@ const rows = styles
 
 <section class="home-feature">
   <a href={lace.href} aria-label={lace.name}>
-    <img src={lace.look.src} srcset={lace.look.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt={`${lace.name}, worn with a white satin dress`} width="640" height="800" loading="lazy" decoding="async" />
+    <img src={lace.look.src} srcset={lace.look.srcset} sizes="(min-width: 900px) 760px, 100vw" alt={`${lace.name}, worn with a white satin dress`} width="640" height="800" loading="lazy" decoding="async" />
+    <span class="home-feature-text">
+      <span class="script">Transform your dress</span>
+      <span class="text-btn">{lace.name}</span>
+    </span>
   </a>
-  <a class="text-btn" href={lace.href}>{lace.name}</a>
 </section>
 
 <section class="looks" aria-label="Designs">

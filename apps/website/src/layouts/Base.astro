@@ -19,11 +19,14 @@ interface Props {
   noindex?: boolean;
   /** Social preview image, site-relative. Defaults to the lace white photo (owner, 2026-10-19). */
   image?: string;
-  /** The largest image on the first screen, fetched first and at high priority. */
+  /** The largest image on the first screen, fetched first and at high priority (with its srcset when it has one). */
   lcpImage?: string;
+  lcpSrcset?: string;
+  /** The header sits on the first photo (home page). */
+  overlayHeader?: boolean;
 }
 
-const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage } = Astro.props;
+const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage, lcpSrcset, overlayHeader = false } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
@@ -35,7 +38,7 @@ const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} ج
 ---
 
 <!doctype html>
-<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"} data-track={env === "production" ? undefined : "off"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -54,7 +57,7 @@ const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} ج
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#ffffff" />
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
-    {lcpImage && <link rel="preload" href={lcpImage} as="image" type="image/webp" fetchpriority="high" />}
+    {lcpImage && <link rel="preload" href={lcpImage} imagesrcset={lcpSrcset} imagesizes={lcpSrcset ? "100vw" : undefined} as="image" type="image/webp" fetchpriority="high" />}
     <link rel="preload" href="/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     {lang === "ar" && <link rel="preload" href="/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2" as="font" type="font/woff2" crossorigin />}
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
@@ -66,7 +69,7 @@ const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} ج
     <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
     <Consent lang={lang} />
     <div class="announce"><p>{announce}</p></div>
-    <Header lang={lang} />
+    <Header lang={lang} overlay={overlayHeader} />
     <main id="main">
       <slot />
     </main>

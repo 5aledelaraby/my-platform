@@ -1,14 +1,17 @@
 ---
 // Vicuna logo (owner's mark, 2026-10-10): the navy V with the vicuña and a gold stripe, beside the wordmark.
-// The mark is a transparent WebP (106 and 212 px wide) cut from the owner's file; replace it with an SVG when the
-// designer sends one. The browser picks the smaller file unless the screen is dense enough to need the larger one.
-interface Props { size?: number }
-const { size = 40 } = Astro.props;
+// The mark is a transparent WebP (106 and 212 px wide) cut from the owner's file. `light` shows the light mark (on dark
+// photos: the footer); `both` carries the two marks so the home header can switch from the light one (over the photo)
+// to the dark one (on white) with CSS alone.
+interface Props { size?: number; light?: boolean; both?: boolean }
+const { size = 40, light = false, both = false } = Astro.props;
 const w = Math.round((size * 268) / 242);
+const mark = (m: string, cls: string) => ({ class: cls, src: `/brand/${m}-96.webp`, srcset: `/brand/${m}-96.webp 106w, /brand/${m}-192.webp 212w` });
+const marks = both ? [mark("vicuna-mark", "logo-mark logo-mark-dark"), mark("vicuna-mark-light", "logo-mark logo-mark-light")] : [mark(light ? "vicuna-mark-light" : "vicuna-mark", "logo-mark")];
 ---
 
 <span class="logo">
-  <img class="logo-mark" src="/brand/vicuna-mark-96.webp" srcset="/brand/vicuna-mark-96.webp 106w, /brand/vicuna-mark-192.webp 212w" sizes={`${w}px`} width={w} height={size} alt="" decoding="async" />
+  {marks.map((m) => <img class={m.class} src={m.src} srcset={m.srcset} sizes={`${w}px`} width={w} height={size} alt="" decoding="async" />)}
   <span class="logo-word" lang="en">
     <span class="logo-en">VICUNA</span>
     <span class="logo-sub">DESIGNS</span>

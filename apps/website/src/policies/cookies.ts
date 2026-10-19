@@ -4,18 +4,17 @@
 // refused in "Cookie settings" (Consent.astro). Any new tag needs this page, privacy.ts and site.policiesUpdated updated first.
 import { site, tracking } from "../site.ts";
 import { contactHtml, policyPath } from "./shared.ts";
-import { activeTags, andAr, andEn, tagCompanies } from "./tags.ts";
+import { activeTags, andEn, tagCompanies } from "./tags.ts";
 import type { PolicyDoc } from "./shared.ts";
 
 const li = (name: string, who: string, what: string, how: string) => `<li><b>${name}</b> (${who}): ${what} <span class="muted">${how}</span></li>`;
-const tagItemsEn = () => activeTags().flatMap((t) => t.cookies.map((c) => li(c.name, t.tool.en.replace(/^the /, ""), c.en, c.lifeEn))).join("\n");
-const tagItemsAr = () => activeTags().flatMap((t) => t.cookies.map((c) => li(`<bdi dir="ltr">${c.name}</bdi>`, t.tool.ar, c.ar, c.lifeAr))).join("\n");
+const tagItemsEn = () => activeTags().flatMap((t) => t.cookies.map((c) => li(c.name, t.tool.replace(/^the /, ""), c.what, c.life))).join("\n");
 
 export const cookiesEn: PolicyDoc = {
   title: "Cookie policy",
   description: "The cookies and browser storage the Vicuna website uses, why, and how you can turn them off.",
   html: `
-<p class="policy-summary"><b>In short:</b> the website needs a few strictly necessary items to work. We also use analytics and advertising cookies (${andEn(tagCompanies("en"))}), and you can turn them off at any time from "Cookie settings" at the bottom of every page.</p>
+<p class="policy-summary"><b>In short:</b> the website needs a few strictly necessary items to work. We also use analytics and advertising cookies (${andEn(tagCompanies())}), and you can turn them off at any time from "Cookie settings" at the bottom of every page.</p>
 
 <h2>1. What are cookies?</h2>
 <p>Cookies are small text files a website saves in your browser. "Local storage" (localStorage and sessionStorage) is similar: space in your browser where a site keeps simple data on your device. On this page we call both "cookies".</p>
@@ -46,7 +45,7 @@ ${tagItemsEn()}
 <ul>
 <li>Press "Cookie settings" at the bottom of any page to choose "Reject" (turn them off) or "Accept" (turn them back on).</li>
 <li>Your browser settings let you clear or block cookies and site data. Blocking strictly necessary cookies may stop your cart from being saved or show you a check page.</li>
-<li>${andEn(tagCompanies("en"))} also offer ad settings in your account with them.</li>
+<li>${andEn(tagCompanies())} also offer ad settings in your account with them.</li>
 </ul>
 
 <h2>5. Changes to this policy</h2>
@@ -57,46 +56,3 @@ ${contactHtml("en", "Hello Vicuna, I have a question about cookies and privacy."
 `,
 };
 
-export const cookiesAr: PolicyDoc = {
-  title: "سياسة الكوكيز",
-  description: "الكوكيز والتخزين في المتصفح الذي يستخدمه موقع فيكونا، ولماذا، وكيف تقبلينه أو ترفضينه.",
-  html: `
-<p class="policy-summary"><b>باختصار:</b> يحتاج الموقع عناصر ضرورية قليلة ليعمل. أما كوكيز التحليل والإعلانات (${andAr(tagCompanies("ar"))}) فتعمل أيضًا، ويمكنكِ إيقافها في أي وقت من «إعدادات الكوكيز» أسفل كل صفحة.</p>
-
-<h2>1. ما الكوكيز؟</h2>
-<p>ملفات نصية صغيرة يحفظها الموقع في متصفحكِ، ويشبهها «التخزين المحلي» (localStorage و sessionStorage). في هذه الصفحة نسمّي الاثنين «كوكيز».</p>
-
-<h2>2. ضرورية (تعمل دائمًا)</h2>
-<ul>
-${li('<bdi dir="ltr">vicuna-cart-v1</bdi>', "فيكونا، تخزين محلي", "حفظ محتوى السلة.", "حتى تفرغي السلة أو تمسحي بيانات المتصفح.")}
-${li('<bdi dir="ltr">vicuna-last-order</bdi>', "فيكونا، تخزين مؤقت", "عرض رقم الطلب وإجماليه في صفحة الشكر (مع الأحزمة فيه، دون اسمكِ أو رقمكِ أو عنوانكِ).", "يُحذف عند غلق التبويب.")}
-${li('<bdi dir="ltr">vicuna-tracked-&lt;رقم الطلب&gt;</bdi>', "فيكونا، تخزين مؤقت", "يُحفظ في صفحة الشكر حتى لا يُحسب الطلب أكثر من مرة، ولا يُحسب لاحقًا إذا كنتِ أوقفتِ هذه الأدوات.", "يُحذف عند غلق التبويب.")}
-${li('<bdi dir="ltr">vicuna-cart-peeked</bdi>', "فيكونا، تخزين مؤقت", "تفتح السلة وحدها بعد أول حزام تضيفينه فقط.", "يُحذف عند غلق التبويب.")}
-${li('<bdi dir="ltr">vicuna-swipe-hint</bdi>', "فيكونا، تخزين مؤقت", "تظهر إشارة السحب على صورة المنتج مرة واحدة فقط.", "يُحذف عند غلق التبويب.")}
-${li('<bdi dir="ltr">vicuna-consent</bdi>', "فيكونا، تخزين محلي", "تذكّر اختياركِ لكوكيز التحليل والإعلانات من «إعدادات الكوكيز».", "حتى تمسحي بيانات المتصفح.")}
-${li('<bdi dir="ltr">vicuna-favorites</bdi>', "فيكونا، تخزين محلي", "تحفظ الأحزمة اللي علّمتيها بالقلب على جهازك فقط، ولا تُرسل لنا أبدًا.", "حتى تحذفيها أو تمسحي بيانات المتصفح.")}
-${li('<bdi dir="ltr">vicuna-paid-&lt;رقم الطلب&gt;</bdi>', "فيكونا، تخزين مؤقت", "في صفحة الشكر، تتذكّر أن طلب PayPal اتدفع حتى لا يظهر زر الدفع مرة أخرى.", "يُحذف عند غلق التبويب.")}
-${li("كوكيز PayPal", "PayPal", "في صفحة الشكر فقط وإذا اخترتِ PayPal: يحتاجها زر الدفع من PayPal لإتمام الدفع بأمان.", "تحددها PayPal، راجعي سياسة الكوكيز لديها.")}
-${li('<bdi dir="ltr">__cf_bm</bdi>، <bdi dir="ltr">cf_clearance</bdi>', "Cloudflare", "حماية الموقع من الهجمات والزيارات الآلية الضارة.", "من 30 دقيقة حتى سنة.")}
-</ul>
-
-<h2>3. التحليل والإعلانات</h2>
-<p>نستخدمها لنفهم كيف يُستخدم الموقع ولعرض إعلاناتنا وقياسها. تسجّل الصفحات والمنتجات التي تشاهدينها، وما تضيفينه إلى السلة، وطلباتكِ (رقمها وقيمتها). وتستخدم كل شركة هذه البيانات وفق سياستها.</p>
-<ul>
-${tagItemsAr()}
-</ul>
-<p>إذا اخترتِ «رفض» من «إعدادات الكوكيز» تتوقف هذه الأدوات ونحذف كوكيزها من موقعنا${tracking.meta ? "، ولا يرسل خادمنا عملية الشراء إلى Meta" : ""}، ولا يؤثر ذلك على شرائكِ.</p>
-
-<h2>4. كيف تغيّرين اختياركِ</h2>
-<ul>
-<li>اضغطي «إعدادات الكوكيز» أسفل أي صفحة واختاري «رفض» لإيقافها أو «موافقة» لتشغيلها من جديد.</li>
-<li>من إعدادات متصفحكِ يمكنكِ مسح الكوكيز أو منعها.</li>
-</ul>
-
-<h2>5. تحديث هذه السياسة</h2>
-<p>نحدّث هذه الصفحة قبل إضافة أي كوكيز أو تغييرها. اقرئي أيضًا <a href="${policyPath("ar", "privacy")}">سياسة الخصوصية</a>.</p>
-
-<h2>6. تواصلي معنا</h2>
-${contactHtml("ar", "أهلاً فيكونا، لدي سؤال عن الكوكيز والخصوصية.", site.email)}
-`,
-};

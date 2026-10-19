@@ -8,8 +8,9 @@ import type { Lang } from "../site.ts";
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
-// Footer (owner, 2026-10-19): the links in three groups that open on phones, the social marks, then the company
-// details. No moving strip (owner, 2026-10-19).
+// Footer (owner, 2026-10-19/20): his dark photo of a black bow belt behind it, with the words in white over it; the
+// links in three groups that open on phones, the social marks, then the company details. No moving strip. The photo is
+// an <img> (not a CSS background) so it loads only when the visitor nears the end of the page.
 const socialIcon: Record<string, string> = {
   TikTok: '<path fill="currentColor" d="M16.6 2.5c.4 2.6 2 4.3 4.6 4.6v3.3c-1.7 0-3.3-.5-4.6-1.4v6.7a5.9 5.9 0 1 1-5.9-5.9l1 .1v3.4a2.6 2.6 0 1 0 1.7 2.4V2.5h3.2Z"/>',
   Instagram:
@@ -20,6 +21,7 @@ const socialIcon: Record<string, string> = {
 ---
 
 <footer class="site-footer">
+  <img class="footer-photo" src="/img/editorial/footer-bow-800.webp" srcset="/img/editorial/footer-bow-800.webp 800w, /img/editorial/footer-bow-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1600" loading="lazy" decoding="async" />
   <div class="footer-main">
     <div class="wrap">
       <details class="footer-group">
@@ -41,7 +43,7 @@ const socialIcon: Record<string, string> = {
       <details class="footer-group">
         <summary>{ar ? "السياسات" : "Boring stuff"}</summary>
         <ul>
-          {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
+          {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id).title}</a></li>)}
           <li><button type="button" class="footer-cookies" data-cookie-settings>{ar ? "إعدادات الكوكيز" : "Cookie settings"}</button></li>
         </ul>
       </details>
@@ -55,7 +57,7 @@ const socialIcon: Record<string, string> = {
 
   <div class="footer-base">
     <div class="wrap">
-      <a class="brand" href={langPath(lang, "/")} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={28} /></a>
+      <a class="brand" href={langPath(lang, "/")} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={28} light /></a>
       <p>{ar ? site.legalNameAr : site.legalNameEn} · {ar ? "سجل تجاري" : "Commercial register"} <bdi dir="ltr">{site.commercialRegister}</bdi> · {ar ? "رقم التسجيل الضريبي" : "Tax no."} <bdi dir="ltr">{site.taxNumber}</bdi></p>
       <p>{ar ? site.addressAr : site.addressEn} · <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a></p>
       <p class="signature" lang="en" dir="ltr">

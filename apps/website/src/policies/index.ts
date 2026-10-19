@@ -1,23 +1,23 @@
-// The store's policy pages: one entry per page and language.
-import type { Lang } from "../site.ts";
-import { cookiesAr, cookiesEn } from "./cookies.ts";
-import { privacyAr, privacyEn } from "./privacy.ts";
-import { returnsAr, returnsEn } from "./returns.ts";
-import { shippingAr, shippingEn } from "./shipping.ts";
-import { termsAr, termsEn } from "./terms.ts";
+// The store's policy pages, English only (owner, 2026-10-20): one entry per page.
+import { cookiesEn } from "./cookies.ts";
+import { privacyEn } from "./privacy.ts";
+import { returnsEn } from "./returns.ts";
+import { shippingEn } from "./shipping.ts";
+import { termsEn } from "./terms.ts";
 import type { PolicyDoc, PolicyId } from "./shared.ts";
 
 export { POLICY_IDS, formatPolicyDate, policyPath } from "./shared.ts";
 export type { PolicyDoc, PolicyId } from "./shared.ts";
 
-const DOCS: Record<PolicyId, Record<Lang, PolicyDoc>> = {
-  shipping: { ar: shippingAr, en: shippingEn },
-  returns: { ar: returnsAr, en: returnsEn },
-  terms: { ar: termsAr, en: termsEn },
-  privacy: { ar: privacyAr, en: privacyEn },
-  cookies: { ar: cookiesAr, en: cookiesEn },
+const DOCS: Record<PolicyId, PolicyDoc> = {
+  shipping: shippingEn,
+  returns: returnsEn,
+  terms: termsEn,
+  privacy: privacyEn,
+  cookies: cookiesEn,
 };
 
-export function getPolicy(id: PolicyId, lang: Lang): PolicyDoc {
-  return DOCS[id][lang];
+/** The page (English; the Arabic article pages link to the same English pages). */
+export function getPolicy(id: PolicyId): PolicyDoc {
+  return DOCS[id];
 }

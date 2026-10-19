@@ -178,6 +178,16 @@ describe("tracking and consent", () => {
     assert.equal(next.consent(), "granted");
   });
 
+  it("staging and previews (data-track=\"off\" on <html>) never load a tag", async () => {
+    const t = await page();
+    (document as unknown as Record<string, unknown>)["documentElement"] = { dataset: { track: "off" } };
+    t.initTracking();
+    t.track(viewItem);
+    t.setConsent("granted");
+    assert.deepEqual(b.scripts, []);
+    delete (document as unknown as Record<string, unknown>)["documentElement"];
+  });
+
   it("purchase sends the product ids (the catalogue SKUs) to every vendor, and no personal data", async () => {
     const t = await page();
     t.setConsent("granted");

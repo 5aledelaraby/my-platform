@@ -8,7 +8,7 @@ import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
 import { langPath, site } from "../site.ts";
-import { looksOf } from "../lib/looks.ts";
+import { filmOf, looksOf } from "../lib/looks.ts";
 import { designOf } from "../lib/designs.ts";
 import type { Lang } from "../site.ts";
 
@@ -24,15 +24,12 @@ const idx = siblings.findIndex((s) => s.id === product.id);
 const nextP = siblings.length > 1 ? siblings[(idx + 1) % siblings.length]! : null;
 const prevP = siblings.length > 1 ? siblings[(idx - 1 + siblings.length) % siblings.length]! : null;
 const looks = looksOf(product);
-// A close-up under the on-model photos: the croc print on croc belts, the lace and its satin bow on lace belts
-// (owner, 2026-10-16).
+// A close-up under the on-model photos of lace belts: the lace and its satin bow (owner, 2026-10-16). The croc close-up
+// was removed (owner, 2026-10-20): it showed a white croc belt on every croc colour.
 const detailOf = (p: CatalogProduct): { src: string; alt: string } | null =>
-  p.id.includes("-croc-")
-    ? { src: "/img/editorial/croc-detail", alt: ar ? "نقشة الكروكو عن قرب" : "The croc print, up close" }
-    : p.style === "lace"
-      ? { src: "/img/editorial/lace-bow", alt: ar ? "الدانتيل وفيونكة الساتان عن قرب" : "The lace and its satin bow, up close" }
-      : null;
+  p.style === "lace" ? { src: "/img/editorial/lace-bow", alt: ar ? "الدانتيل وفيونكة الساتان عن قرب" : "The lace and its satin bow, up close" } : null;
 const detail = detailOf(product);
+const film = filmOf(product);
 const related = styles.filter((x) => x.id !== product.style).slice(0, 4).map((x) => coverOf(x.id));
 // Size: what the owner gave for this design (lib/designs.ts), else the usual size.
 const specs = designOf(product.style).specs[lang];
@@ -109,6 +106,7 @@ const colourData = siblings.map((p) => {
     looks: looksOf(p),
     lookAlt: ar ? `${n} على الخصر` : `${n}, worn at the waist`,
     detail: detailOf(p),
+    film: filmOf(p),
   };
 });
 const colourJson = JSON.stringify(colourData).replace(/</g, "\\u003c");
@@ -143,6 +141,9 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
           <span class="pdp-count" dir="ltr">{idx + 1} / {siblings.length}</span>
         </>
       )}
+    </figure>
+    <figure class="pdp-film" data-pdp-film hidden={!film}>
+      <video data-src={film?.src} poster={film?.poster} muted loop playsinline preload="none" aria-label={`${name}, a short film`} width="540" height="948"></video>
     </figure>
     {nextP && <link rel="prefetch" href={beltsUrl(lang, nextP.id)} />}
     {prevP && prevP !== nextP && <link rel="prefetch" href={beltsUrl(lang, prevP.id)} />}
@@ -198,6 +199,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
   interface Colour {
     id: string; url: string; alt: string; name: string; shade: string; price: string; priceRaw: number;
     image: string; hex: string; srcset: string; title: string; wa: string; looks: Look[]; lookAlt: string; detail: { src: string; alt: string } | null;
+    film: { src: string; poster: string } | null;
   }
 
   const raw = document.getElementById("pdp-colours")?.textContent;
@@ -274,6 +276,17 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       const count = q<HTMLElement>(".pdp-count");
       if (count) { count.textContent = `${i + 1} / ${list.length}`; count.hidden = list.length < 2; }
       renderLooks(c);
+      const filmBox = q<HTMLElement>("[data-pdp-film]");
+      const filmVideo = filmBox?.querySelector("video");
+      if (filmBox && filmVideo) {
+        filmVideo.pause();
+        filmVideo.removeAttribute("src");
+        filmVideo.dataset["src"] = c.film?.src ?? "";
+        filmVideo.poster = c.film?.poster ?? "";
+        filmBox.hidden = !c.film;
+        filmVideo.load();
+        dispatchEvent(new Event("vicuna:film-refresh"));
+      }
       info.dataset["viewItem"] = c.id; info.dataset["viewName"] = c.name; info.dataset["viewPrice"] = String(c.priceRaw);
       document.title = c.title;
       for (const l of document.querySelectorAll<HTMLAnchorElement>(".lang-switch, .menu-lang")) l.href = c.alt;
@@ -325,5 +338,22 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
     let seen = false;
     try { seen = sessionStorage.getItem("vicuna-swipe-hint") === "1"; sessionStorage.setItem("vicuna-swipe-hint", "1"); } catch { /* ignore */ }
     if (!calm && !seen && available().length > 1) setTimeout(() => fig.classList.add("nudge"), 700);
+  }
+</script>
+
+<script>
+  // The product film plays (muted, looping) only while it is on screen, and is downloaded only when first reached.
+  const box = document.querySelector<HTMLElement>("[data-pdp-film]");
+  const video = box?.querySelector("video");
+  if (box && video && "IntersectionObserver" in window) {
+    let visible = false;
+    const sync = () => {
+      const src = video.dataset["src"];
+      if (!visible || box.hidden || !src) { video.pause(); return; }
+      if (video.getAttribute("src") !== src) video.src = src;
+      void video.play().catch(() => undefined);
+    };
+    new IntersectionObserver((entries) => { visible = entries.some((e) => e.isIntersecting); sync(); }, { threshold: 0.25 }).observe(box);
+    addEventListener("vicuna:film-refresh", sync);
   }
 </script>

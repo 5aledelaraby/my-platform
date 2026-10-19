@@ -9,7 +9,7 @@ import type { Lang } from "../site.ts";
 interface Props { id: PolicyId; lang: Lang }
 const { id, lang } = Astro.props;
 const ar = lang === "ar";
-const doc = getPolicy(id, lang);
+const doc = getPolicy(id);
 // Table of contents from the page's own headings (each gets an id so the links work).
 const toc: { id: string; text: string }[] = [];
 const html = doc.html.replace(/<h2(?: id="([^"]+)")?>([^<]+)<\/h2>/g, (_m, given: string | undefined, text: string) => {
@@ -34,9 +34,8 @@ const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "
       </nav>
     )}
     <div class="prose" set:html={html} />
-    <p class="muted">{ar ? "عند أي اختلاف بين النسختين العربية والإنجليزية من هذه الصفحة، تُعتمد النسخة العربية." : "If the Arabic and English versions of this page differ, the Arabic version applies."}</p>
     <nav class="policy-nav" aria-label={ar ? "سياسات المتجر" : "Store policies"}>
-      {POLICY_IDS.filter((p) => p !== id).map((p) => <a class="textlink" href={policyPath(lang, p)}>{getPolicy(p, lang).title}</a>)}
+      {POLICY_IDS.filter((p) => p !== id).map((p) => <a class="textlink" href={policyPath(lang, p)}>{getPolicy(p).title}</a>)}
     </nav>
   </article>
 </Base>

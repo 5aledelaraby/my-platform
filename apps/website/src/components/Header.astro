@@ -1,6 +1,8 @@
 ---
 // Header (owner, 2026-10-19): white, with the menu button, the logo in the middle and the favourites and bag on the
-// other side, like the big fashion stores. The menu is a white panel from the side with plain links.
+// other side, like the big fashion stores. The menu is a white panel from the side with plain links. On the home page
+// (`overlay`, owner 2026-10-20) it sits on the photo with no white bar, in white, and turns white with dark icons once
+// the visitor scrolls.
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
 import { beltsUrl, styleText, styles } from "../store.ts";
 import Logo from "./ui/Logo.astro";
@@ -27,7 +29,7 @@ const line = (d: string, size = 24) => `<svg viewBox="0 0 24 24" width="${size}"
     <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
       <Fragment set:html={line('<path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17"/>', 26)} />
     </button>
-    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={30} /></a>
+    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={30} both={overlay} /></a>
     <div class="header-end">
       <a class="icon-btn fav-link" href={langPath(lang, "/favorites/")} aria-label={ar ? "المفضلة" : "Wishlist"}>
         <Fragment set:html={line('<path d="M12 20.3s-7.3-4.4-9.2-8.9C1.5 8.3 3.4 4.8 6.9 4.8c2 0 3.5 1.1 5.1 2.9 1.6-1.8 3.1-2.9 5.1-2.9 3.5 0 5.4 3.5 4.1 6.6-1.9 4.5-9.2 8.9-9.2 8.9z"/>', 22)} />
@@ -55,7 +57,7 @@ const line = (d: string, size = 24) => `<svg viewBox="0 0 24 24" width="${size}"
       </ul>
       <ul class="menu-small">
         {help.map((h) => <li><a href={h.href} aria-current={here(h.href) ? "page" : undefined}>{h.label}</a></li>)}
-        {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
+        {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id).title}</a></li>)}
       </ul>
     </nav>
   </div>
@@ -63,6 +65,13 @@ const line = (d: string, size = 24) => `<svg viewBox="0 0 24 24" width="${size}"
 
 <script>
   import "../scripts/favorites.ts";
+  // The home header: on the photo at the top, a white bar after a little scrolling. Reads only scrollY (no layout).
+  const overlay = document.querySelector<HTMLElement>(".site-header.is-overlay");
+  if (overlay) {
+    const paint = () => overlay.toggleAttribute("data-scrolled", window.scrollY > 24);
+    addEventListener("scroll", paint, { passive: true });
+    paint();
+  }
   const menu = document.getElementById("menu") as HTMLDialogElement | null;
   const openBtn = document.querySelector<HTMLButtonElement>("[data-open-menu]");
   openBtn?.addEventListener("click", () => {
