@@ -49,7 +49,6 @@ button, input, select, textarea { font-family: var(--font); }
 /* links that read as small capitals with a line under ("VIEW ALL") */
 .text-btn { display: inline-block; padding: 4px 0; border: 0; border-bottom: 1px solid currentColor; background: none; color: var(--text);
   font: 400 12px/15px var(--font); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
-.text-btn:hover { opacity: .65; }
 .textlink { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 5px; }
 .kicker, .intro-kicker { margin: 0 0 10px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
 .fine-print { margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center; }
@@ -59,9 +58,7 @@ button, input, select, textarea { font-family: var(--font); }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; padding: 0 28px; border: 0; border-radius: 999px;
   background: var(--ink); color: #fff; font: 400 11px/1 var(--font); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; cursor: pointer;
   transition: background-color .25s, color .25s; }
-.btn:hover { background: #000; }
 .btn-white { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
-.btn-white:hover { background: var(--ink); color: #fff; }
 .btn-block { width: 100%; }
 .btn.small { min-height: 40px; padding: 0 18px; }
 .btn[disabled] { opacity: .45; cursor: not-allowed; }
@@ -78,7 +75,6 @@ button, input, select, textarea { font-family: var(--font); }
 .brand { justify-self: center; color: var(--ink); text-decoration: none; }
 .header-end { justify-self: end; display: flex; align-items: center; gap: 2px; margin-inline-end: -8px; }
 .icon-btn { position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; }
-.icon-btn:hover { opacity: .7; }
 .count-badge { position: absolute; top: 3px; inset-inline-end: 1px; display: grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;
   background: var(--ink); color: #fff; font-size: 9.5px; font-weight: 600; line-height: 1; }
 [data-cart-count].bump { animation: pop .5s var(--ease); }
@@ -107,7 +103,6 @@ dialog.menu::backdrop { background: rgb(17 17 17 / .5); }
 .menu-main a[aria-current="page"] { font-weight: 500; }
 .menu-small { display: grid; gap: 2px; margin-top: 28px; }
 .menu-small a { display: block; padding: 6px 0; color: var(--muted); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; }
-.menu-main a:hover, .menu-small a:hover { color: var(--ink); }
 
 /* breadcrumbs: small capitals, centred */
 .crumbs { padding-top: 26px; color: var(--text); font-size: 10px; letter-spacing: .1em; text-align: center; text-transform: uppercase; }
@@ -177,7 +172,6 @@ dialog.menu::backdrop { background: rgb(17 17 17 / .5); }
 @media (hover: hover) and (pointer: fine) { .card-media.has-model:hover .card-belt { opacity: 1; } }
 .quick-add { position: absolute; z-index: 2; bottom: 10px; inset-inline-end: 10px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 8px;
   background: var(--ink); color: #fff; cursor: pointer; }
-.quick-add:hover { background: #000; }
 .quick-add[disabled] { background: rgb(17 17 17 / .5); cursor: not-allowed; }
 .fav-btn { position: absolute; z-index: 3; top: 8px; inset-inline-end: 8px; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 999px;
   background: rgb(255 255 255 / .8); color: #3a3a3a; cursor: pointer; }
@@ -301,10 +295,8 @@ dialog.cart::backdrop { background: rgb(17 17 17 / .5); }
 .footer-group summary { padding: 18px 0; font-size: 17px; letter-spacing: -.04em; }
 .footer-group ul { display: grid; gap: 6px; margin: 0; padding: 0 0 18px; list-style: none; }
 .footer-group a, .footer-cookies { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-decoration: none; cursor: pointer; }
-.footer-group a:hover, .footer-cookies:hover { text-decoration: underline; text-underline-offset: 4px; }
 .footer-social { display: flex; gap: 20px; padding: 22px 0; }
 .soc { display: grid; place-items: center; color: var(--ink); }
-.soc:hover { opacity: .7; }
 .soc-snapchat svg path { fill: none; stroke: currentColor; stroke-width: 1.4; }
 @media (min-width: 900px) {
   .footer-main .wrap { display: grid; grid-template-columns: repeat(3, 1fr) auto; align-items: start; gap: 40px; }
@@ -384,7 +376,6 @@ dialog.cart::backdrop { background: rgb(17 17 17 / .5); }
 .policy-toc p { margin-bottom: 6px; color: var(--muted); }
 .policy-toc ol { margin: 0; padding-inline-start: 20px; }
 .policy-toc a { text-decoration: none; }
-.policy-toc a:hover { text-decoration: underline; }
 @media (min-width: 600px) { .policy-toc ol { columns: 2; column-gap: 24px; } .policy-toc li { break-inside: avoid; } }
 .policy-nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 36px; }
 .page-head { display: grid; gap: 10px; padding-top: 24px; }
@@ -400,6 +391,19 @@ dialog.cart::backdrop { background: rgb(17 17 17 / .5); }
 .thanks { max-width: 640px; margin: 0 auto; padding-block: 48px 72px; text-align: center; }
 .thanks p { margin-top: 10px; }
 .thanks .order-id { font-size: 22px; font-weight: 500; direction: ltr; unicode-bidi: isolate; }
+
+/* hover effects only where there is a mouse: on a phone a tap would leave them stuck on */
+@media (hover: hover) and (pointer: fine) {
+  .text-btn:hover { opacity: .65; }
+  .btn:hover { background: #000; }
+  .btn-white:hover { background: var(--ink); color: #fff; }
+  .icon-btn:hover { opacity: .7; }
+  .menu-main a:hover, .menu-small a:hover { color: var(--ink); }
+  .quick-add:hover { background: #000; }
+  .footer-group a:hover, .footer-cookies:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .soc:hover { opacity: .7; }
+  .policy-toc a:hover { text-decoration: underline; }
+}
 
 /* ---------- motion ---------- */
 @keyframes pop { 0% { transform: scale(1); } 35% { transform: scale(1.3); } 100% { transform: scale(1); } }
