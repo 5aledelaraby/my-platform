@@ -1,65 +1,84 @@
 ---
-// The home page (vicuna-eg.com): a calm introduction to Vicuna, black on white and few words (owner, 2026-10-16).
-// It never shows the product grid or cart UI (ADR 0009): the designs appear as plain links to their pages, all of
-// them alike.
-import Icon from "./ui/Icon.astro";
-import SpiralArrow from "./ui/SpiralArrow.astro";
+// The home page (owner, 2026-10-19: the layout of the quiet fashion store he showed; this replaces ADR 0009's "no
+// product grid on /"). The film fills the screen with a short line over it; then the newest belts as cards, a one-line
+// brand note, two designs as large photos, every belt by design behind tabs, and a quiet closing photo. Few words.
+import ProductCard from "./ProductCard.astro";
 import { HOME_FILM, leadOf } from "../lib/designs.ts";
-import { langPath, site } from "../site.ts";
-import { beltsUrl, styleText, styles } from "../store.ts";
+import { langPath } from "../site.ts";
+import { beltsUrl, products, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
-const designs = styles.map((s) => ({ id: s.id, name: styleText(lang, s.id).name, img: leadOf(s.id, lang).img }));
-const title = (ar ? "حزام الوسط اللي يفرق في كل لبسة" : "The waist belt that makes every outfit").split(" ");
-const wa = `https://wa.me/${site.whatsappInternational}`;
+const t = ar
+  ? { kicker: "أحزمة الخصر", title: "تكمّل كل لبسة", discover: "اكتشفي أكتر", newIn: "وصل حديثًا", viewAll: "شوفي الكل", note: "أحزمة خصر بنصنعها بإيدينا في القاهرة، علشان تكمّل أي لبسة.", about: "من نحن", shop: "تسوّقي", all: "الكل", closing: "مصنوعة في القاهرة" }
+  : { kicker: "Waist belts", title: "Made to finish the look", discover: "Discover more", newIn: "Just arrived", viewAll: "View all", note: "Waist belts we make by hand in Cairo, so every outfit feels finished.", about: "About us", shop: "Shop", all: "All", closing: "Made in Cairo" };
+const newest = products.filter((p) => p.style !== "pattern").slice(0, 8);
+const tiles = styles.slice(1, 3).map((s) => ({ id: s.id, name: styleText(lang, s.id).name, img: leadOf(s.id, lang).img }));
 ---
 
-<section class="intro-hero bw-hero">
-  <figure class="intro-cover">
-    <video data-motion src={`${HOME_FILM}.mp4`} poster={`${HOME_FILM}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
-  </figure>
-  <div class="wrap intro-text">
-    <p class="intro-kicker" lang="en">VICUNA</p>
-    <h1 class="wl-title bw-title">{title.map((w, i) => <span class="wl-word" style={`--w:${i}`}>{w} </span>)}</h1>
-    <p class="lead wl-word" style={`--w:${title.length + 1}`}>{ar ? "فيكونا علامة تجارية مميزة في تصنيع الجلود، وخدمات بناء المواقع والسوشيال ميديا." : "Vicuna is a distinctive brand in leather making, website building and social media services."}</p>
-    <div class="hero-actions wl-word" style={`--w:${title.length + 2}`}>
-      <a class="ulink" href={beltsUrl(lang)}>{ar ? "تسوّقي أحزمة الخصر" : "Shop waist belts"}</a>
+<section class="hero">
+  <video class="hero-media" data-motion src={`${HOME_FILM}.mp4`} poster={`${HOME_FILM}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
+  <div class="hero-text">
+    <p class="kicker">{t.kicker}</p>
+    <h1 class="hero-title">{t.title}</h1>
+    <a class="text-btn" href={beltsUrl(lang)}>{t.discover}</a>
+  </div>
+</section>
+
+<section class="sx-section sx-soft">
+  <div class="wrap">
+    <div class="sx-head">
+      <h2 class="sx-h">{t.newIn}</h2>
+      <a class="text-btn" href={beltsUrl(lang)}>{t.viewAll}</a>
+    </div>
+    <div class="card-row">
+      {newest.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </div>
 </section>
 
-<section class="wrap bw-designs reveal">
-  <div class="bw-head">
-    <h2><a class="bw-head-link" href={beltsUrl(lang)}>{ar ? "أحزمة الخصر" : "Waist belts"}</a></h2>
-    <a class="wl-cta" href={beltsUrl(lang)}>{ar ? "شوفيها كلها" : "See them all"} <SpiralArrow /></a>
-  </div>
-  <div class="bw-row">
-    {designs.map((d) => (
-      <a class="bw-tile" href={beltsUrl(lang, d.id)}>
-        <img src={d.img.src} srcset={d.img.srcset} sizes="(min-width: 900px) 18vw, 42vw" alt="" width={d.img.w} height={d.img.h} loading="lazy" decoding="async" />
-        <span>{d.name}</span>
-      </a>
-    ))}
+<section class="sx-note wrap">
+  <p>{t.note}</p>
+  <a class="text-btn" href={langPath(lang, "/about/")}>{t.about}</a>
+</section>
+
+<section class="sx-tiles">
+  {tiles.map((x) => (
+    <a class="sx-tile" href={beltsUrl(lang, x.id)}>
+      <img src={x.img.src} srcset={x.img.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt="" width={x.img.w} height={x.img.h} loading="lazy" decoding="async" />
+      <span class="text-btn">{t.shop} {x.name}</span>
+    </a>
+  ))}
+</section>
+
+<section class="sx-section">
+  <div class="wrap">
+    <div class="sx-tabs" role="tablist" aria-label={ar ? "التصميمات" : "Designs"}>
+      <button type="button" role="tab" aria-selected="true" data-tab="all">{t.all}</button>
+      {styles.map((s) => <button type="button" role="tab" aria-selected="false" data-tab={s.id}>{styleText(lang, s.id).name}</button>)}
+    </div>
+    <div class="card-grid" data-tab-grid>
+      {products.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
+    </div>
   </div>
 </section>
 
-<section class="wrap bw-lines reveal">
-  <div>
-    <h2>{ar ? "من نحن" : "About us"}</h2>
-    <p>{ar ? "علامة مصرية من القاهرة، بنصمم منتجات يدوية ومواقع إلكترونية." : "An Egyptian brand from Cairo: handmade products and websites."} <a class="textlink" href={langPath(lang, "/about/")}>{ar ? "اعرفي أكتر" : "More about us"}</a></p>
-  </div>
-  <div>
-    <h2>{ar ? "لتجار الجملة" : "Wholesale"}</h2>
-    <p><a class="textlink" href={`mailto:${site.email}`}><bdi dir="ltr">{site.email}</bdi></a></p>
-  </div>
-  <div>
-    <h2>{ar ? "تواصلي معنا" : "Contact us"}</h2>
-    <p class="bw-contact">
-      <a class="btn" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "واتساب" : "WhatsApp"}</a>
-      <a class="wl-cta" href={langPath(lang, "/contact/")}>{ar ? "اختاري الطريقة اللي تريحك" : "Reach us your way"} <SpiralArrow /></a>
-    </p>
-  </div>
+<section class="sx-banner">
+  <img src="/img/editorial/lace-close-1600.webp" srcset="/img/editorial/lace-close-800.webp 800w, /img/editorial/lace-close-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1200" loading="lazy" decoding="async" />
+  <p class="sx-banner-text">{t.closing}</p>
 </section>
+
+<script>
+  // Design tabs: show the belts of one design (or all) in the grid under them.
+  const tabs = document.querySelectorAll<HTMLButtonElement>("[data-tab]");
+  const grid = document.querySelector<HTMLElement>("[data-tab-grid]");
+  tabs.forEach((tab) =>
+    tab.addEventListener("click", () => {
+      const id = tab.dataset["tab"];
+      tabs.forEach((x) => x.setAttribute("aria-selected", String(x === tab)));
+      grid?.querySelectorAll<HTMLElement>("article.card").forEach((c) => (c.hidden = id !== "all" && c.dataset["style"] !== id));
+    }),
+  );
+</script>

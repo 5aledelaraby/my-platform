@@ -1,146 +1,69 @@
 ---
+// Header (owner, 2026-10-19: the look of the quiet fashion store he showed). A brown bar with the menu button, the name
+// in the middle and the favourites and bag on the other side. On the home page it sits over the film, transparent,
+// and turns brown once the page scrolls. The menu is a white panel from the side with plain links.
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
-import { BELTS_PATH, beltsUrl, getProduct, styleText, styles } from "../store.ts";
+import { beltsUrl, styleText, styles } from "../store.ts";
 import Logo from "./ui/Logo.astro";
-import { JOURNAL_PATH, langPath } from "../site.ts";
+import { langPath } from "../site.ts";
 import type { Lang } from "../site.ts";
 
-interface Props { lang: Lang; altHref: string }
-const { lang, altHref } = Astro.props;
+interface Props { lang: Lang; overlay?: boolean }
+const { lang, overlay = false } = Astro.props;
 const ar = lang === "ar";
 const home = langPath(lang, "/");
-// The design bar under the header: every design one tap away on every page. The current design (or the design of the
-// product on screen) is marked.
-const path = Astro.url.pathname.replace(/^\/en(?=\/)/, "");
-const slug = path.startsWith(BELTS_PATH) ? path.slice(BELTS_PATH.length).replace(/\/$/, "") : null;
-const activeDesign = slug === null ? null : slug === "" ? "all" : (getProduct(slug)?.style ?? slug);
-// The menu (owner, 2026-10-16): tiles with a small icon each, the designs and the help pages as groups that open.
 const here = (href: string) => Astro.url.pathname === href;
-const icon = (d: string) => `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
-const icons: Record<string, string> = {
-  home: icon('<path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/>'),
-  bag: icon('<path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>'),
-  grid: icon('<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>'),
-  pen: icon('<path d="M15.5 4.5l4 4L9 19l-5 1 1-5z"/>'),
-  users: icon('<circle cx="9" cy="8.5" r="3.5"/><path d="M3 20c.6-3.4 3-5.5 6-5.5s5.4 2.1 6 5.5"/><path d="M16 5.2a3.5 3.5 0 0 1 0 6.6M18 14.8c1.6.8 2.7 2.6 3 5.2"/>'),
-  help: icon('<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4"/><path d="M12 16.8v.2"/>'),
-  chat: icon('<path d="M4 5h16v11H9l-5 4z"/>'),
-  doc: icon('<path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 6 20V4a.5.5 0 0 1 .5-.5z"/><path d="M14 3.5V8h4M9 12h6M9 15.5h6"/>'),
-  heart: icon('<path d="M12 20.3s-7.3-4.4-9.2-8.9C1.5 8.3 3.4 4.8 6.9 4.8c2 0 3.5 1.1 5.1 2.9 1.6-1.8 3.1-2.9 5.1-2.9 3.5 0 5.4 3.5 4.1 6.6-1.9 4.5-9.2 8.9-9.2 8.9z"/>'),
-  chevron: icon('<path d="m6 9 6 6 6-6"/>'),
-  sun: icon('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>'),
-  moon: icon('<path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/>'),
-};
-const top = [
-  { href: home, label: ar ? "الرئيسية" : "Home", icon: "home", on: here(home) },
-  { href: beltsUrl(lang), label: ar ? "كل أحزمة الخصر" : "All waist belts", icon: "bag", on: activeDesign === "all" },
-  ...(ar ? [{ href: JOURNAL_PATH, label: "المقالات", icon: "pen", on: Astro.url.pathname.startsWith(JOURNAL_PATH) }] : []),
-  { href: langPath(lang, "/about/"), label: ar ? "من نحن" : "About us", icon: "users", on: here(langPath(lang, "/about/")) },
-  { href: langPath(lang, "/faq/"), label: ar ? "الأسئلة الشائعة" : "FAQ", icon: "help", on: here(langPath(lang, "/faq/")) },
-  { href: langPath(lang, "/contact/"), label: ar ? "تواصلي معنا" : "Contact us", icon: "chat", on: here(langPath(lang, "/contact/")) },
-  { href: langPath(lang, "/favorites/"), label: ar ? "المفضلة" : "Favourites", icon: "heart", on: here(langPath(lang, "/favorites/")) },
+const designs = styles.map((st) => ({ href: beltsUrl(lang, st.id), label: styleText(lang, st.id).name }));
+const help = [
+  { href: langPath(lang, "/about/"), label: ar ? "من نحن" : "About us" },
+  { href: langPath(lang, "/contact/"), label: ar ? "تواصلي معنا" : "Contact" },
+  { href: langPath(lang, "/faq/"), label: ar ? "الأسئلة الشائعة" : "FAQ" },
+  { href: langPath(lang, "/favorites/"), label: ar ? "المفضلة" : "Wishlist" },
 ];
-const groups = [
-  {
-    label: ar ? "التصميمات" : "Designs", icon: "grid", on: !!activeDesign && activeDesign !== "all",
-    items: styles.map((st) => ({ href: beltsUrl(lang, st.id), label: styleText(lang, st.id).name, on: activeDesign === st.id })),
-  },
-  {
-    label: ar ? "الشحن والسياسات" : "Shipping and policies", icon: "doc", on: POLICY_IDS.some((id) => here(policyPath(lang, id))),
-    items: POLICY_IDS.map((id) => ({ href: policyPath(lang, id), label: getPolicy(id, lang).title, on: here(policyPath(lang, id)) })),
-  },
-];
-// Order: home, all belts, the designs, then the rest, the policies last.
-type Link = (typeof top)[number];
-type Group = (typeof groups)[number];
-const entries: (Link | Group)[] = [top[0]!, top[1]!, groups[0]!, ...top.slice(2), groups[1]!];
-const isGroup = (e: Link | Group): e is Group => "items" in e;
+const line = (d: string, size = 24) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 ---
 
-<header class="site-header">
+<header class={overlay ? "site-header is-overlay" : "site-header"}>
   <div class="wrap header-bar">
     <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
-      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M3 6.5h18M3 12h18M3 17.5h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+      <Fragment set:html={line('<path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17"/>', 26)} />
     </button>
-    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo light /></a>
-    <nav class="nav" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
-      <a class="nav-pill" href={beltsUrl(lang)}>{ar ? "أحزمة الخصر" : "Waist belts"}</a>
-      {ar && <a class="nav-pill" href={JOURNAL_PATH}>المقالات</a>}
-      <a class="nav-pill" href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a>
-    </nav>
+    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={30} light /></a>
     <div class="header-end">
-      <button type="button" class="mode-btn" data-mode-toggle aria-label={ar ? "تبديل الشكل الفاتح والداكن" : "Switch light and dark"}>
-        <span class="mode-sun" set:html={icons["sun"]} /><span class="mode-moon" set:html={icons["moon"]} />
-      </button>
-      <a class="lang-switch" href={altHref} hreflang={ar ? "en" : "ar"} lang={ar ? "en" : "ar"} aria-label={ar ? "English" : "العربية"}>{ar ? "EN" : "ع"}</a>
-      <a class="fav-link" href={langPath(lang, "/favorites/")} aria-label={ar ? "المفضلة" : "Favourites"}>
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 20.3s-7.3-4.4-9.2-8.9C1.5 8.3 3.4 4.8 6.9 4.8c2 0 3.5 1.1 5.1 2.9 1.6-1.8 3.1-2.9 5.1-2.9 3.5 0 5.4 3.5 4.1 6.6-1.9 4.5-9.2 8.9-9.2 8.9z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" /></svg>
+      <a class="icon-btn fav-link" href={langPath(lang, "/favorites/")} aria-label={ar ? "المفضلة" : "Wishlist"}>
+        <Fragment set:html={line('<path d="M12 20.3s-7.3-4.4-9.2-8.9C1.5 8.3 3.4 4.8 6.9 4.8c2 0 3.5 1.1 5.1 2.9 1.6-1.8 3.1-2.9 5.1-2.9 3.5 0 5.4 3.5 4.1 6.6-1.9 4.5-9.2 8.9-9.2 8.9z"/>', 22)} />
         <span class="count-badge fav-count" data-fav-count hidden>0</span>
       </a>
-      <button type="button" class="bag-btn" data-open-cart aria-label={ar ? "السلة" : "Cart"}>
-        <span class="bag-shine"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg></span>
+      <button type="button" class="icon-btn bag-btn" data-open-cart aria-label={ar ? "السلة" : "Cart"}>
+        <Fragment set:html={line('<path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>')} />
         <span class="count-badge" data-cart-count hidden>0</span>
       </button>
     </div>
   </div>
-  <nav class="design-bar" aria-label={ar ? "التصميمات" : "Designs"}>
-    <div class="wrap design-row">
-      <a href={beltsUrl(lang)} aria-current={activeDesign === "all" ? "page" : undefined}>{ar ? "كل أحزمة الخصر" : "All waist belts"}</a>
-      {styles.map((st) => (
-        <a href={beltsUrl(lang, st.id)} aria-current={activeDesign === st.id ? "page" : undefined}>{styleText(lang, st.id).name}</a>
-      ))}
-    </div>
-  </nav>
 </header>
 
 <dialog id="menu" class="menu" aria-label={ar ? "القائمة" : "Menu"}>
   <div class="menu-inner" tabindex="-1" autofocus>
-  <div class="menu-head">
-    <a class="brand" href={home} aria-label={ar ? "فيكونا - الرئيسية" : "Vicuna - Home"}><Logo size={34} light /></a>
-    <button type="button" class="menu-close" data-close-menu aria-label={ar ? "إغلاق القائمة" : "Close the menu"}>
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
-    </button>
-  </div>
-  <nav class="menu-nav" aria-label={ar ? "القائمة" : "Menu"}>
-    <ul class="menu-tiles">
-      {entries.map((e) => isGroup(e) ? (
-        <li>
-          <details class="tile-group" open={e.on || undefined}>
-            <summary class="tile" aria-current={e.on ? "true" : undefined}><span class="tile-icon" set:html={icons[e.icon]} /><span class="tile-label">{e.label}</span><span class="tile-chev" set:html={icons["chevron"]} /></summary>
-            <ul class="tile-sub">
-              {e.items.map((i) => <li><a href={i.href} aria-current={i.on ? "page" : undefined}>{i.label}</a></li>)}
-            </ul>
-          </details>
-        </li>
-      ) : (
-        <li><a class="tile" href={e.href} aria-current={e.on ? "page" : undefined}><span class="tile-icon" set:html={icons[e.icon]} /><span class="tile-label">{e.label}</span></a></li>
-      ))}
-    </ul>
-  </nav>
-  <div class="menu-foot">
-    <div class="seg" role="group" aria-label={ar ? "شكل الموقع" : "Appearance"}>
-      <button type="button" data-mode-set="light" aria-pressed="true"><span set:html={icons["sun"]} />{ar ? "فاتح" : "Light"}</button>
-      <button type="button" data-mode-set="dark" aria-pressed="false"><span set:html={icons["moon"]} />{ar ? "داكن" : "Dark"}</button>
+    <div class="menu-head">
+      <button type="button" class="menu-close" data-close-menu aria-label={ar ? "إغلاق القائمة" : "Close the menu"}>
+        <Fragment set:html={line('<path d="M6 6l12 12M18 6 6 18"/>', 24)} />
+      </button>
     </div>
-    <div class="seg" role="group" aria-label={ar ? "اللغة" : "Language"}>
-      {ar ? <span class="seg-on" aria-current="true">العربية</span> : <a class="menu-lang" href={altHref} hreflang="ar" lang="ar">العربية</a>}
-      {ar ? <a class="menu-lang" href={altHref} hreflang="en" lang="en">EN</a> : <span class="seg-on" aria-current="true">EN</span>}
-    </div>
-  </div>
+    <nav class="menu-nav" aria-label={ar ? "القائمة" : "Menu"}>
+      <ul class="menu-main">
+        <li><a href={beltsUrl(lang)} aria-current={here(beltsUrl(lang)) ? "page" : undefined}>{ar ? "كل أحزمة الخصر" : "Shop all"}</a></li>
+        {designs.map((d) => <li><a href={d.href} aria-current={here(d.href) ? "page" : undefined}>{d.label}</a></li>)}
+      </ul>
+      <ul class="menu-small">
+        {help.map((h) => <li><a href={h.href} aria-current={here(h.href) ? "page" : undefined}>{h.label}</a></li>)}
+        {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id, lang).title}</a></li>)}
+      </ul>
+    </nav>
   </div>
 </dialog>
 
 <script>
   import "../scripts/favorites.ts";
-  // On narrow screens the design bar scrolls sideways: bring the current design into view (without moving the page).
-  const row = document.querySelector<HTMLElement>(".design-row");
-  const here = row?.querySelector<HTMLElement>('[aria-current="page"]');
-  // Measured in the next frame, once the page is laid out, so loading does not force an extra layout.
-  if (row && here) requestAnimationFrame(() => {
-    if (row.scrollWidth <= row.clientWidth) return;
-    const r = row.getBoundingClientRect(), h = here.getBoundingClientRect();
-    row.scrollLeft += h.left + h.width / 2 - (r.left + r.width / 2);
-  });
   const menu = document.getElementById("menu") as HTMLDialogElement | null;
   const openBtn = document.querySelector<HTMLButtonElement>("[data-open-menu]");
   openBtn?.addEventListener("click", () => {
@@ -149,22 +72,6 @@ const isGroup = (e: Link | Group): e is Group => "items" in e;
     openBtn.setAttribute("aria-expanded", "true");
   });
   menu?.addEventListener("close", () => openBtn?.setAttribute("aria-expanded", "false"));
-  // Light or dark (owner, 2026-10-16): the switches in the menu and the small sun/moon button in the header. The
-  // choice is kept on this device; Base.astro applies it before the page paints, so there is no flash.
-  const paintMode = () => {
-    const dark = document.documentElement.dataset["mode"] === "dark";
-    for (const b of document.querySelectorAll<HTMLButtonElement>("[data-mode-set]")) b.setAttribute("aria-pressed", String((b.dataset["modeSet"] === "dark") === dark));
-    for (const b of document.querySelectorAll<HTMLButtonElement>("[data-mode-toggle]")) b.setAttribute("aria-pressed", String(dark));
-  };
-  const setMode = (mode: "light" | "dark") => {
-    document.documentElement.dataset["mode"] = mode;
-    try { localStorage.setItem("vicuna-mode", mode); } catch { /* private mode: the choice lasts for this page only */ }
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", mode === "dark" ? "#0f0e0d" : "#ffffff");
-    paintMode();
-  };
-  for (const b of document.querySelectorAll<HTMLButtonElement>("[data-mode-set]")) b.addEventListener("click", () => setMode(b.dataset["modeSet"] === "dark" ? "dark" : "light"));
-  for (const b of document.querySelectorAll<HTMLButtonElement>("[data-mode-toggle]")) b.addEventListener("click", () => setMode(document.documentElement.dataset["mode"] === "dark" ? "light" : "dark"));
-  paintMode();
   // Close on the ✕ button or a tap on the dimmed area outside the panel (the panel itself is .menu-inner).
   menu?.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;

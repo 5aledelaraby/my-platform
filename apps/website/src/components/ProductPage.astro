@@ -7,7 +7,6 @@ import { PIASTERS_PER_EGP, SHIPPING, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
 import Icon from "./ui/Icon.astro";
-import Sparkles from "./ui/Sparkles.astro";
 import { langPath, site } from "../site.ts";
 import { looksOf } from "../lib/looks.ts";
 import { designOf } from "../lib/designs.ts";
@@ -50,10 +49,6 @@ const info = ar
       ["Craft", "Laser-cut and sewn by hand."],
       ["Delivery and returns", `Delivery in ${site.deliveryDays} working days to every governorate, ${site.returnDays}-day returns. Cash on delivery or card.`],
     ];
-// "Wear it with": the outfits the owner suggests for every belt (owner, 2026-10-16).
-const wearWith: [string, string][] = ar
-  ? [["💼", "لبس الشغل"], ["👖", "الجينز والكاجوال"], ["🧥", "الجاكيت والبالطو"], ["🎓", "أيام الجامعة"], ["👗", "الفساتين السواريه والمناسبات"]]
-  : [["💼", "Workwear"], ["👖", "Jeans & casual"], ["🧥", "Jackets & coats"], ["🎓", "Uni days"], ["👗", "Evening dresses & occasions"]];
 const title = ar ? `${name} | حزام خصر نسائي | فيكونا` : `${name} | Women's waist belt | Vicuna`;
 const description = ar
   ? `${name} من فيكونا بسعر ${priceOfProduct(product)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل واسترجاع خلال ${site.returnDays} يوم.`
@@ -123,12 +118,11 @@ const orderText = ar
 const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(orderText)}`;
 ---
 
-<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", product.id)} jsonLd={jsonLd} image={imageOf(product)}>
+<Base title={title} description={description} lang={lang} jsonLd={jsonLd} image={imageOf(product)}>
   <Breadcrumbs items={crumbs} />
   <div class="wrap product">
     <div class="pdp-media">
     <figure class="pdp-photo glow" style={`--tint:${product.hex}`} data-swipe-next={nextP ? beltsUrl(lang, nextP.id) : undefined} data-swipe-prev={prevP ? beltsUrl(lang, prevP.id) : undefined}>
-      <Sparkles />
       <img data-pdp-img src={imageOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 900px) 52vw, 100vw" alt={name} width="1200" height="1200" fetchpriority="high" />
       {nextP && prevP && (
         <>
@@ -142,34 +136,27 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
     {prevP && prevP !== nextP && <link rel="prefetch" href={beltsUrl(lang, prevP.id)} />}
     </div>
     <div class="pdp-info" data-view-item={product.id} data-view-name={name} data-view-price={priceOf(product)}>
-      <a class="tag" href={beltsUrl(lang, product.style)}>{st.name}</a>
       <div class="pdp-title-row">
         <h1 data-pdp-name>{name}</h1>
         <button type="button" class="fav-btn pdp-fav" data-fav={product.id} data-fav-name={name} aria-pressed="false" aria-label={ar ? `إضافة ${name} للمفضلة` : `Add ${name} to favourites`}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 20.3s-7.3-4.4-9.2-8.9C1.5 8.3 3.4 4.8 6.9 4.8c2 0 3.5 1.1 5.1 2.9 1.6-1.8 3.1-2.9 5.1-2.9 3.5 0 5.4 3.5 4.1 6.6-1.9 4.5-9.2 8.9-9.2 8.9z" /></svg></button>
       </div>
-      <div class="price"><span data-pdp-price>{priceOfProduct(product)}</span> <small>{cur}</small></div>
+      <div class="price">{ar ? "" : "LE "}<span data-pdp-price>{priceOfProduct(product)}</span>{ar ? ` ${cur}` : ""}</div>
+      <p class="pdp-intro">{st.intro}</p>
       <p class="soldout" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية حاليًا. كلمينا على واتساب نبلغك أول ما يتوفر." : "Sold out for now. Message us on WhatsApp and we will tell you when it is back."}</p>
-      <p class="swatch-label">{ar ? "اللون:" : "Colour:"} <b data-pdp-shade>{shadeName(lang, product)}</b></p>
+      <p class="swatch-label">{ar ? "اللون" : "Color"} <b data-pdp-shade>{shadeName(lang, product)}</b></p>
       <div class="pdp-swatches" aria-label={ar ? "ألوان متاحة" : "Available colours"}>
         {siblings.map((sib) => (
           <a class="swatch big" href={beltsUrl(lang, sib.id)} style={`--c:${sib.hex}`} title={productName(lang, sib)} aria-label={productName(lang, sib)} aria-current={sib.id === product.id ? "true" : undefined}></a>
         ))}
       </div>
       <div class="pdp-actions">
-        <button type="button" class="btn btn-berry btn-block bag-cta" data-add={product.id}>{ar ? "أضيفي للسلة" : "Add to bag"}</button>
-        <a class="btn btn-white btn-block" data-pdp-wa href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "أو اطلبي على واتساب" : "Or order on WhatsApp"}</a>
+        <button type="button" class="btn btn-berry btn-block bag-cta" data-add={product.id}>{ar ? "أضيفي للسلة" : "Add to cart"}</button>
+        <a class="btn btn-white btn-block" data-pdp-wa href={wa} rel="noopener noreferrer">{ar ? "اطلبي على واتساب" : "Order on WhatsApp"}</a>
       </div>
-      <ul class="pdp-perks">
-        <li><Icon name="plane" size={26} /> {ar ? `توصيل لكل مصر خلال ${site.deliveryDays} أيام عمل` : `Delivery across Egypt in ${site.deliveryDays} working days`}</li>
-        <li><Icon name="return" size={26} /> {ar ? `استرجاع خلال ${site.returnDays} يومًا دون مصاريف شحن` : `${site.returnDays}-day returns, no shipping cost to you`}</li>
-        <li><Icon name="cash" size={26} /> {ar ? "الدفع عند الاستلام أو بالكارت" : "Cash on delivery or card"}</li>
-      </ul>
-      <p class="pdp-intro muted">{st.intro}</p>
-      <div class="wear-with reveal">
-        <h2 class="wear-title">{ar ? "البسيه مع" : "Wear it with"}</h2>
-        <ul class="wear-chips">
-          {wearWith.map(([icon, label], i) => <li style={`--i:${i}`}><span class="wear-icon" aria-hidden="true">{icon}</span>{label}</li>)}
-        </ul>
+      <p class="pdp-trust">{ar ? "الدفع عند الاستلام أو بالكارت" : "100% secure payments · Cash on delivery"}</p>
+      <div class="more-info">
+        <h2>{ar ? "معلومات أكتر" : "More info"}</h2>
+        {info.map(([t, d], i) => <details open={i === 0 || undefined}><summary>{t}</summary><p>{d}</p></details>)}
       </div>
     </div>
     <div class="pdp-looks" data-pdp-looks hidden={looks.length === 0 && !detail}>
@@ -185,17 +172,9 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
         )}
     </div>
   </div>
-  <section class="wrap">
-    <div class="spec-card reveal">
-      <h2>{ar ? "التفاصيل" : "Details"}</h2>
-      <dl class="spec-table">
-        {info.map(([t, d]) => <div><dt>{t}</dt><dd>{d}</dd></div>)}
-      </dl>
-    </div>
-  </section>
   <section class="wrap style-group">
-    <div class="group-head"><h2>{ar ? "قد يعجبك أيضًا" : "You may also like"}</h2></div>
-    <div class="grid">
+    <div class="sx-head"><h2 class="sx-h">{ar ? "قد يعجبك أيضًا" : "You may also like"}</h2></div>
+    <div class="card-grid">
       {related.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </section>

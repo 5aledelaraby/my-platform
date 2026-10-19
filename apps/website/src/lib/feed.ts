@@ -2,6 +2,7 @@
 // /catalog/products.csv like on the old site, with the same columns. Product ids are the catalogue ids, the same ids
 // the Pixel sends as content_ids and the product pages use as sku, so catalog ads match each visitor's belts.
 // Every row is "in stock": the site Worker drops sold-out rows when it serves the file (ADR 0013).
+import { productName, shadeName, styleText } from "../store.ts";
 import { PIASTERS_PER_EGP, catalog, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 
@@ -30,16 +31,12 @@ export interface FeedOptions {
 }
 
 export function buildFeedCsv(o: FeedOptions): string {
-  const styles = new Map(catalog.styles.map((s) => [s.id, s]));
-  const colours = new Map(catalog.colors.map((c) => [c.id, c.name]));
+  // English (owner, 2026-10-19: the site is English only), e.g. "Thin Tie Croc Black Waist Belt".
   const rows = catalog.products.filter((p) => !NOT_IN_FEED.has(p.style)).map((p) => {
-    const st = styles.get(p.style);
-    if (!st) throw new Error(`Unknown style ${p.style}`);
-    // "رباط رفيع كروكو أسود" -> "حزام عريض برباط رفيع كروكو أسود"; "دانتيل أسود" -> "حزام دانتيل أسود"
-    const shade = p.name.replace(/^رباط (?:عريض|رفيع) /, "").replace(new RegExp(`^${st.name} `), "");
+    const st = styleText("en", p.style);
     return [
       p.id,
-      `حزام ${st.name} ${shade}`,
+      `${productName("en", p)} Waist Belt`,
       `${st.headline}. ${st.intro}`,
       "in stock",
       "new",
@@ -52,8 +49,8 @@ export function buildFeedCsv(o: FeedOptions): string {
       "Clothing & Accessories > Accessories > Belts",
       `Belts > ${st.name}`,
       p.style,
-      colours.get(p.color) ?? p.color,
-      "جلد PU",
+      shadeName("en", p),
+      "PU leather",
       "female",
       "adult",
       IDENTIFIER_EXISTS,

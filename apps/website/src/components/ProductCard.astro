@@ -1,6 +1,6 @@
 ---
 import type { CatalogProduct } from "@platform/commerce";
-import { beltsUrl, priceOfProduct, productName, productsOfStyle, srcsetOf, styleText, thumbOf } from "../store.ts";
+import { beltsUrl, priceOfProduct, productName, srcsetOf, thumbOf } from "../store.ts";
 import type { Lang } from "../site.ts";
 import { lookOf } from "../lib/looks.ts";
 
@@ -9,16 +9,14 @@ const { product, lang, index = 0 } = Astro.props;
 const ar = lang === "ar";
 const name = productName(lang, product);
 const href = beltsUrl(lang, product.id);
-const siblings = productsOfStyle(product.style);
-const shown = siblings.slice(0, 3);
 // The on-model photo fades in over the product photo on hover (mouse only), and loads only when it is first needed.
 const look = lookOf(product);
 ---
 
-<article class="card reveal" data-color={product.color} data-product={product.id} style={`--i:${index % 2}`}>
+<article class="card reveal" data-color={product.color} data-product={product.id} data-style={product.style} style={`--i:${index % 2}`}>
   <div class={look ? "card-media glow has-look" : "card-media glow"} style={`--tint:${product.hex}`}>
     <a href={href} aria-label={name}>
-      <img src={thumbOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 1100px) 23vw, (min-width: 760px) 31vw, 46vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />
+      <img src={thumbOf(product)} srcset={srcsetOf(product)} sizes="(min-width: 1100px) 23vw, (min-width: 760px) 31vw, 48vw" alt={name} width="480" height="480" loading="lazy" decoding="async" />
       {look && <img class="card-look" src={look.src} alt="" width="640" height="800" loading="lazy" decoding="async" />}
     </a>
     <button type="button" class="quick-add bag-cta" data-add={product.id} aria-label={ar ? `أضيفي ${name} للسلة` : `Add ${name} to cart`}><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -26,14 +24,7 @@ const look = lookOf(product);
     <span class="card-out" data-soldout-for={product.id} hidden>{ar ? "نفدت الكمية" : "Sold out"}</span>
   </div>
   <div class="card-body">
-    <span class="card-style">{styleText(lang, product.style).name}</span>
     <h3 class="card-name"><a href={href}>{name}</a></h3>
-    <span class="card-price">{priceOfProduct(product)} <small>{ar ? "جنيه" : "EGP"}</small></span>
-    <span class="card-swatches" aria-label={ar ? "الألوان المتاحة" : "Available colours"}>
-      {shown.map((q) => (
-        <a class="swatch" href={beltsUrl(lang, q.id)} style={`--c:${q.hex}`} aria-current={q.id === product.id ? "true" : undefined} aria-label={productName(lang, q)} title={productName(lang, q)}></a>
-      ))}
-      {siblings.length > 3 && <a class="swatch-more" href={beltsUrl(lang, product.style)} dir="ltr">+{siblings.length - 3}</a>}
-    </span>
+    <span class="card-price">{ar ? `${priceOfProduct(product)} جنيه` : `LE ${priceOfProduct(product)}`}</span>
   </div>
 </article>

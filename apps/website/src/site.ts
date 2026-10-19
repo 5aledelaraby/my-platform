@@ -53,10 +53,12 @@ export const tracking = {
 
 export type Lang = "ar" | "en";
 
-/** Path prefix for a language: Arabic is at the root, English under /en/. */
-export function langPath(lang: Lang, path: string): string {
-  const clean = path.startsWith("/") ? path : `/${path}`;
-  return lang === "ar" ? clean : `/en${clean}`;
+/**
+ * The site is English only, at the root (owner, 2026-10-19). Old /en/ addresses redirect to the root (worker.ts).
+ * "ar" remains only for the Arabic articles under JOURNAL_PATH, kept for search; their links lead to the same pages.
+ */
+export function langPath(_lang: Lang, path: string): string {
+  return path.startsWith("/") ? path : `/${path}`;
 }
 
 /** The articles index (Arabic only for now). */

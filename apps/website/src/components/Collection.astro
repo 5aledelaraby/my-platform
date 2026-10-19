@@ -1,0 +1,36 @@
+---
+// A collection page (owner, 2026-10-19: the layout of the quiet fashion store he showed): small breadcrumbs, the name
+// in capitals in the middle, the designs as tabs, the count, and the belts two by two. Used for all waist belts and for
+// each design. Cards are <article class="card" data-product>, which the site Worker removes when sold out (ADR 0013).
+import Breadcrumbs from "./Breadcrumbs.astro";
+import ProductCard from "./ProductCard.astro";
+import { beltsUrl, productsOfStyle, products, styleText, styles } from "../store.ts";
+import { langPath } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang; styleId?: string }
+const { lang, styleId } = Astro.props;
+const ar = lang === "ar";
+const list = styleId ? productsOfStyle(styleId) : products;
+const name = styleId ? styleText(lang, styleId).name : ar ? "أحزمة الخصر" : "Waist belts";
+const crumbs = [
+  { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
+  ...(styleId ? [{ name: ar ? "أحزمة الخصر" : "Waist belts", href: beltsUrl(lang) }] : []),
+  { name },
+];
+---
+
+<div class="collection">
+  <Breadcrumbs items={crumbs} />
+  <h1 class="collection-title">{name}</h1>
+  <nav class="sx-tabs collection-tabs" aria-label={ar ? "التصميمات" : "Designs"}>
+    <a href={beltsUrl(lang)} aria-current={!styleId ? "page" : undefined}>{ar ? "الكل" : "All"}</a>
+    {styles.map((s) => <a href={beltsUrl(lang, s.id)} aria-current={s.id === styleId ? "page" : undefined}>{styleText(lang, s.id).name}</a>)}
+  </nav>
+  <div class="wrap">
+    <p class="collection-count">{ar ? `${list.length} منتج` : `Showing ${list.length} products`}</p>
+    <div class="card-grid">
+      {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
+    </div>
+  </div>
+</div>

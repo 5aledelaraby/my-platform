@@ -7,7 +7,7 @@ export function GET(): Response {
   const csv = buildFeedCsv({
     siteUrl: site.url,
     brand: site.nameEn,
-    productUrl: (p) => `${site.url}${beltsUrl("ar", p.id)}`,
+    productUrl: (p) => `${site.url}${beltsUrl("en", p.id)}`,
   });
   return new Response(csv, { headers: { "Content-Type": "text/csv; charset=utf-8" } });
 }

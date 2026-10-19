@@ -1,18 +1,11 @@
 ---
-// Every design page (owner, 2026-10-16: "all the designs like the signature pattern page"): dark and editorial. The
-// design's film (or, without one, an on-model photo) opens the page, then one large showcase of the colours (swatches
-// under the photo, arrows and swipe to change colour), then the belt on the move and the other designs.
-// Each colour is an <article class="card" data-product> and each swatch an <a class="swatch">, the markup the site
-// Worker and the cart already use to hide a sold-out colour (ADR 0013); the showcase script copes with that.
+// A design page (owner, 2026-10-19): the collection layout filtered to one design (Collection.astro). Title,
+// description and breadcrumb data stay as they were for search.
 import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../layouts/Base.astro";
-import Breadcrumbs from "./Breadcrumbs.astro";
-import Icon from "./ui/Icon.astro";
-import Sparkles from "./ui/Sparkles.astro";
-import { beltsUrl, coverOf, getProduct, hasHigherPrices, imageOf, price, priceOfProduct, productName, productsOfStyle, shadeName, srcsetOf, styleText, styles } from "../store.ts";
-import { looksOf } from "../lib/looks.ts";
-import { colourCount, colourHeading, designOf, leadOf, stillSrc, stillSrcset } from "../lib/designs.ts";
-import type { Film, Still } from "../lib/designs.ts";
+import Collection from "./Collection.astro";
+import { beltsUrl, coverOf, hasHigherPrices, imageOf, price, productsOfStyle, styleText } from "../store.ts";
+import { colourCount } from "../lib/designs.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -20,255 +13,21 @@ interface Props { lang: Lang; styleId: string }
 const { lang, styleId } = Astro.props;
 const ar = lang === "ar";
 const t = styleText(lang, styleId);
-const d = designOf(styleId);
 const list = productsOfStyle(styleId);
-const cur = ar ? "جنيه" : "EGP";
 const from = hasHigherPrices(styleId);
 const title = ar ? `حزام خصر ${t.name} | فيكونا` : `${t.name} waist belt | Vicuna`;
 const description = ar
   ? `${t.headline}. ${colourCount(lang, list.length)} بسعر ${from ? "يبدأ من " : ""}${price(styleId)} جنيه. توصيل لكل مصر خلال ${site.deliveryDays} أيام.`
   : `${t.headline}. ${colourCount(lang, list.length)} ${from ? "from" : "at"} ${price(styleId)} EGP. Delivery across Egypt in ${site.deliveryDays} days.`;
-const crumbs = [
-  { name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") },
-  { name: ar ? "أحزمة الخصر" : "Waist belts", href: beltsUrl(lang) },
-  { name: t.name },
-];
 const jsonLd = serializeJsonLd(
   breadcrumbJsonLd([
-    { name: crumbs[0]!.name, url: `${site.url}${crumbs[0]!.href}` },
-    { name: crumbs[1]!.name, url: `${site.url}${crumbs[1]!.href}` },
+    { name: ar ? "الرئيسية" : "Home", url: `${site.url}${langPath(lang, "/")}` },
+    { name: ar ? "أحزمة الخصر" : "Waist belts", url: `${site.url}${beltsUrl(lang)}` },
     { name: t.name, url: `${site.url}${beltsUrl(lang, styleId)}` },
   ]),
 );
-// Said once and small: the size (when the owner gave it) and, under the buttons, delivery and returns.
-const specs = d.specs[lang];
-const terms = ar
-  ? `توصيل خلال ${site.deliveryDays} أيام عمل · استرجاع خلال ${site.returnDays} يومًا · الدفع عند الاستلام`
-  : `Delivery in ${site.deliveryDays} working days · ${site.returnDays}-day returns · Cash on delivery`;
-// The lead visual: the film, or the first on-model photo of a colour (which then leaves the mosaic).
-const leadLook = d.lead.kind === "look" ? getProduct(d.lead.productId) : undefined;
-const leadPhoto = leadLook ? looksOf(leadLook)[0] : undefined;
-const leadFilm = d.lead.kind === "film" ? d.lead : undefined;
-// The mosaic: a film opens it, then the on-model photos and close-ups, and a second film closes it.
-type Tile = Film | Still | { kind: "look"; p: (typeof list)[number]; src: string; srcset: string };
-const looks: Tile[] = list.flatMap((p) => looksOf(p).filter((l) => l !== leadPhoto && l.src !== leadPhoto?.src).map((l) => ({ kind: "look" as const, p, ...l })));
-const tiles: Tile[] = [...d.films.slice(0, 1), ...looks, ...d.stills, ...d.films.slice(1)];
-const hasLooks = looks.length > 0;
-const pad = (n: number) => String(n).padStart(2, "0");
-const longName = t.name.length > 12;
-// The other designs, to move on to (in the store's order), each with its lead visual (small files for the tiles).
-const others = styles.filter((s) => s.id !== styleId).map((s) => ({ id: s.id, name: styleText(lang, s.id).name, word: designOf(s.id).word, img: leadOf(s.id, lang).img }));
 ---
 
-<Base title={title} description={description} lang={lang} altPath={beltsUrl(ar ? "en" : "ar", styleId)} jsonLd={jsonLd} image={imageOf(coverOf(styleId))} lcpImage={leadFilm ? `${leadFilm.src}.webp` : undefined}>
-  <div class="lux">
-    <section class="lux-hero">
-      <figure class="lux-hero-media">
-        {leadFilm ? (
-          <video data-motion src={`${leadFilm.src}.mp4`} poster={`${leadFilm.src}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
-        ) : leadPhoto && leadLook ? (
-          <img src={leadPhoto.src} srcset={leadPhoto.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt={ar ? `${productName(lang, leadLook)} على الخصر` : `${productName(lang, leadLook)}, worn at the waist`} width="640" height="800" fetchpriority="high" decoding="async" />
-        ) : null}
-      </figure>
-      <div class="lux-hero-text">
-        <Breadcrumbs items={crumbs} />
-        <p class="lux-kicker lux-in" lang="en" style="--d:0"><span class="lux-rule" aria-hidden="true"></span>VICUNA {d.word}</p>
-        <h1 class={`lux-title${longName ? " is-long" : ""}`}>
-          {ar ? (
-            <>
-              <span class="lux-line"><span class="lux-in" style="--d:1">حزام خصر</span></span>
-              <span class="lux-line"><span class="lux-in" style="--d:2">{t.name}</span></span>
-            </>
-          ) : (
-            <>
-              <span class="lux-line"><span class="lux-in" style="--d:1">{t.name}</span></span>
-              <span class="lux-line"><span class="lux-in lux-sub" style="--d:2">waist belt</span></span>
-            </>
-          )}
-        </h1>
-        <p class="lux-lead lux-in" style="--d:3">{t.intro}</p>
-        {specs.length > 0 && <ul class="lux-specs lux-in" style="--d:3">{specs.map((x) => <li>{x}</li>)}</ul>}
-        <div class="lux-hero-foot lux-in" style="--d:4">
-          <p class="lux-price">{from && <small>{ar ? "من" : "from"}</small>} {price(styleId)} <small>{cur}</small></p>
-          <a class="btn lux-btn" href="#colours">{ar ? "اختاري لونك" : "Choose your colour"} <Icon name="arrow" size={18} class="dir-icon" /></a>
-        </div>
-      </div>
-    </section>
-
-    <section class="lux-show" id="colours" data-showcase aria-roledescription={ar ? "عرض الألوان" : "colour showcase"}>
-      <div class="wrap">
-        <header class="lux-head reveal">
-          <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>THE COLOURS</p>
-          <h2 class="lux-h2">{colourHeading(lang, list.length)}</h2>
-        </header>
-        <div class="lux-stage" data-stage>
-          {list.map((p, i) => (
-            <article class="card lux-slide" data-color={p.color} data-product={p.id} data-slide aria-label={productName(lang, p)}>
-              <a class="lux-slide-media glow" href={beltsUrl(lang, p.id)} tabindex="-1" aria-hidden="true" style={`--tint:${p.hex}`}>
-                <Sparkles />
-                <img src={imageOf(p)} srcset={srcsetOf(p)} sizes="(min-width: 960px) 56vw, 100vw" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
-              </a>
-              <div class="lux-slide-info">
-                <p class="lux-count" dir="ltr" data-count>{pad(i + 1)} / {pad(list.length)}</p>
-                <p class="lux-shade-label">{ar ? "اللون" : "Colour"}</p>
-                <h3 class="lux-shade">{shadeName(lang, p)}</h3>
-                <p class="lux-slide-price">{priceOfProduct(p)} <small>{cur}</small></p>
-                <span class="lux-out" data-soldout-for={p.id} hidden>{ar ? "نفدت الكمية حاليًا" : "Sold out for now"}</span>
-                <div class="lux-actions">
-                  <button type="button" class="btn lux-btn bag-cta" data-add={p.id}>{ar ? "أضيفي للسلة" : "Add to bag"}</button>
-                  <a class="lux-more" href={beltsUrl(lang, p.id)}>{ar ? "تفاصيل هذا اللون" : "This colour in detail"}</a>
-                </div>
-                <p class="lux-terms">{terms}</p>
-              </div>
-            </article>
-          ))}
-          <button type="button" class="lux-nav prev" data-step="-1" aria-label={ar ? "اللون السابق" : "Previous colour"} hidden><Icon name="arrow" size={20} /></button>
-          <button type="button" class="lux-nav next" data-step="1" aria-label={ar ? "اللون التالي" : "Next colour"} hidden><Icon name="arrow" size={20} /></button>
-          <div class={`lux-swatches${list.length > 5 ? " many" : ""}`} aria-label={ar ? "الألوان" : "Colours"}>
-            {list.map((p, i) => (
-              <a class="swatch big" href={beltsUrl(lang, p.id)} style={`--c:${p.hex}`} aria-current={i === 0 ? "true" : undefined} aria-label={productName(lang, p)} title={shadeName(lang, p)}></a>
-            ))}
-            <span class="lux-swatch-name" data-swatch-name aria-live="polite">{shadeName(lang, list[0]!)}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {tiles.length > 0 && (
-      <section class="lux-section lux-move">
-        <div class="wrap">
-          <header class="lux-head reveal">
-            <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>{hasLooks ? "ON THE MOVE" : "THE DETAILS"}</p>
-            <h2 class="lux-h2">{hasLooks ? (ar ? "مع إطلالتك اليومية" : "With your everyday look") : (ar ? "التفاصيل عن قرب" : "Up close")}</h2>
-          </header>
-          <div class={`lux-mosaic${tiles.length === 1 ? " single" : ""}`}>
-            {tiles.map((x, i) =>
-              x.kind === "film" ? (
-                <figure class="lux-tile lux-tile-film reveal" style={`--i:${i % 3}`}>
-                  <video data-motion src={`${x.src}.mp4`} data-poster={`${x.src}.webp`} muted loop playsinline preload="none" aria-hidden="true" width="704" height="1280"></video>
-                  {x.caption && <figcaption>{x.caption[lang]}</figcaption>}
-                </figure>
-              ) : x.kind === "look" ? (
-                <figure class="lux-tile reveal" style={`--i:${i % 3}`}>
-                  <img src={x.src} srcset={x.srcset} sizes="(min-width: 960px) 25vw, 50vw" alt={ar ? `${productName(lang, x.p)} على الخصر` : `${productName(lang, x.p)}, worn at the waist`} width="640" height="800" loading="lazy" decoding="async" />
-                  <figcaption><a href={beltsUrl(lang, x.p.id)}>{shadeName(lang, x.p)}</a></figcaption>
-                </figure>
-              ) : (
-                <figure class="lux-tile lux-tile-still reveal" style={`--i:${i % 3}; --ar:${x.w} / ${x.h}`}>
-                  <img src={stillSrc(x)} srcset={stillSrcset(x)} sizes="(min-width: 960px) 25vw, 50vw" alt={x.alt[lang]} width={x.w} height={x.h} loading="lazy" decoding="async" />
-                  <figcaption>{x.caption[lang]}</figcaption>
-                </figure>
-              ),
-            )}
-          </div>
-        </div>
-      </section>
-    )}
-
-    <section class="lux-section lux-close">
-      <div class="wrap">
-        <nav class="lux-others" aria-label={ar ? "تصميمات أخرى" : "Other designs"}>
-          <header class="lux-head reveal">
-            <p class="lux-kicker" lang="en"><span class="lux-rule" aria-hidden="true"></span>MORE DESIGNS</p>
-            <h2 class="lux-h2">{ar ? "تصميمات تانية" : "More designs"}</h2>
-          </header>
-          <div class="lux-others-row">
-            {others.map((o, i) => (
-              <a class="lux-other reveal" href={beltsUrl(lang, o.id)} style={`--i:${i}`}>
-                <img src={o.img.src} srcset={o.img.srcset} sizes="(min-width: 900px) 25vw, 44vw" alt="" width={o.img.w} height={o.img.h} loading="lazy" decoding="async" />
-                <span class="lux-other-text"><small lang="en">{o.word}</small><b>{o.name}</b></span>
-              </a>
-            ))}
-          </div>
-        </nav>
-        <p class="lux-mark" lang="en" aria-hidden="true">{d.word}</p>
-      </div>
-    </section>
-  </div>
+<Base title={title} description={description} lang={lang} jsonLd={jsonLd} image={imageOf(coverOf(styleId))}>
+  <Collection lang={lang} styleId={styleId} />
 </Base>
-
-<script>
-  // The colour showcase: one colour at a time. Swatches, arrows, swipe and the arrow keys change it. Colours removed
-  // or hidden because they are sold out (site Worker, cart) drop out of the rotation.
-  const root = document.querySelector<HTMLElement>("[data-showcase]");
-  const stage = root?.querySelector<HTMLElement>("[data-stage]");
-  if (root && stage) {
-    const rtl = document.documentElement.dir === "rtl";
-    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const nameEl = root.querySelector<HTMLElement>("[data-swatch-name]");
-    const all = () => [...stage.querySelectorAll<HTMLElement>("[data-slide]")];
-    const live = () => all().filter((s) => !s.hidden);
-    const swatchFor = (id: string) =>
-      [...root.querySelectorAll<HTMLAnchorElement>("a.swatch")].find((a) => a.pathname.replace(/\/$/, "").endsWith(`/${id}`));
-    let current = live()[0]?.dataset["product"] ?? "";
-
-    const show = (id: string, dir = 1) => {
-      const slides = live();
-      if (!slides.length) return;
-      const target = slides.find((s) => s.dataset["product"] === id) ?? slides[0]!;
-      current = target.dataset["product"] ?? "";
-      for (const s of all()) {
-        const on = s === target;
-        s.classList.toggle("is-active", on);
-        s.toggleAttribute("inert", !on);
-        s.setAttribute("aria-hidden", String(!on));
-      }
-      stage.style.setProperty("--dir", String(dir));
-      slides.forEach((s, i) => {
-        const c = s.querySelector<HTMLElement>("[data-count]");
-        if (c) c.textContent = `${String(i + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
-      });
-      for (const s of all()) {
-        const a = swatchFor(s.dataset["product"] ?? "");
-        if (!a) continue;
-        a.hidden = s.hidden;
-        if (s === target) a.setAttribute("aria-current", "true");
-        else a.removeAttribute("aria-current");
-        if (s === target && nameEl) nameEl.textContent = a.title;
-      }
-      const many = slides.length > 1;
-      stage.querySelectorAll<HTMLButtonElement>(".lux-nav").forEach((b) => (b.hidden = !many));
-    };
-    const step = (n: number) => {
-      const slides = live();
-      const i = slides.findIndex((s) => s.dataset["product"] === current);
-      const next = slides[(i + n + slides.length) % slides.length];
-      if (next) show(next.dataset["product"] ?? "", n);
-    };
-
-    stage.classList.add("is-live");
-    if (!calm) stage.classList.add("is-animated");
-    show(current);
-
-    stage.addEventListener("click", (e) => {
-      const b = (e.target as HTMLElement).closest<HTMLButtonElement>(".lux-nav");
-      if (b) step(Number(b.dataset["step"]));
-    });
-    root.addEventListener("click", (e) => {
-      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>(".lux-swatches a.swatch");
-      if (!a) return;
-      e.preventDefault();
-      const id = a.pathname.replace(/\/$/, "").split("/").pop() ?? "";
-      const slides = live();
-      const from = slides.findIndex((s) => s.dataset["product"] === current);
-      const to = slides.findIndex((s) => s.dataset["product"] === id);
-      show(id, to >= from ? 1 : -1);
-    });
-    stage.addEventListener("keydown", (e) => {
-      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-      const towardEnd = (e.key === "ArrowLeft") === rtl; // the "next" key follows the reading direction
-      step(towardEnd ? 1 : -1);
-    });
-    let x0 = 0, y0 = 0;
-    stage.addEventListener("touchstart", (e) => { const t = e.touches[0]!; x0 = t.clientX; y0 = t.clientY; }, { passive: true });
-    stage.addEventListener("touchend", (e) => {
-      const t = e.changedTouches[0]!;
-      const dx = t.clientX - x0, dy = t.clientY - y0;
-      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-      step((rtl ? dx > 0 : dx < 0) ? 1 : -1);
-    }, { passive: true });
-    // The cart hides a colour that sells out while the page is open.
-    const watch = new MutationObserver(() => show(current));
-    for (const s of all()) watch.observe(s, { attributes: true, attributeFilter: ["hidden"] });
-  }
-</script>

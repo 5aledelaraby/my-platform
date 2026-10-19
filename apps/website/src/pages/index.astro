@@ -5,12 +5,11 @@ import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/se
 import { site } from "../site.ts";
 import { HOME_FILM } from "../lib/designs.ts";
 
-const title = "فيكونا | حزام الوسط اللي يفرق في كل لبسة";
-const description = "فيكونا علامة تجارية مميزة في تصنيع الجلود، وخدمات بناء المواقع والسوشيال ميديا. أحزمة وسط وخصر تفرق في كل لبسة، وتوصيل لكل مصر.";
+const title = "Vicuna | The waist belt that makes every outfit";
+const description = "Vicuna is a distinctive brand in leather making, website building and social media services. Waist belts that make every outfit, delivered across Egypt.";
 const jsonLd = serializeJsonLd([
-  // No sameAs: the social links in site.ts are not confirmed as the brand's own accounts (owner to confirm).
   organizationJsonLd({
-    name: site.nameAr,
+    name: site.nameEn,
     legalName: site.legalNameEn,
     url: site.url,
     logo: `${site.url}/brand/vicuna-logo.png`,
@@ -18,10 +17,10 @@ const jsonLd = serializeJsonLd([
     telephone: `+${site.whatsappInternational}`,
     address: site.addressParts,
   }),
-  websiteJsonLd({ name: site.nameAr, url: site.url, language: "ar" }),
+  websiteJsonLd({ name: site.nameEn, url: site.url, language: "en" }),
 ]);
 ---
 
-<Base title={title} description={description} lang="ar" altPath="/en/" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp" lcpImage={`${HOME_FILM}.webp`}>
-  <Home lang="ar" />
+<Base title={title} description={description} lang="en" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp" lcpImage={`${HOME_FILM}.webp`}>
+  <Home lang="en" />
 </Base>

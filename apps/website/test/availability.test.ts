@@ -75,8 +75,8 @@ describe("hiding sold-out belts", () => {
   it("the components still have the markup the rewrites look for", () => {
     const read = (f: string) => readFileSync(new URL(`../src/components/${f}`, import.meta.url), "utf8");
     assert.match(read("ProductCard.astro"), /<article class="card reveal" data-color=\{product\.color\} data-product=\{product\.id\}/);
-    assert.match(read("ProductCard.astro"), /<a class="swatch" href=\{beltsUrl\(lang, q\.id\)\}/);
     const page = read("ProductPage.astro");
+    assert.match(page, /<a class="swatch big" href=\{beltsUrl\(lang, sib\.id\)\}/);
     for (const re of [/<a class="pdp-arrow prev" href=/, /<a class="pdp-arrow next" href=/, /<span class="pdp-count"/, /data-swipe-next=/, /<link rel="prefetch"/]) assert.match(page, re);
   });
 });
@@ -97,10 +97,20 @@ describe("site Worker", () => {
   });
   const get = (path: string) => new Request(`https://staging.vicuna-eg.com${path}`, { headers: { "If-None-Match": '"abc"' } });
 
-  it("a sold-out product page redirects to its design (English too)", async () => {
-    const res = await worker.fetch(get(`/en${B}ruffle-red/`), { ASSETS: assets("page"), API: api({ "ruffle-red": 0 }) });
+  it("a sold-out product page redirects to its design", async () => {
+    const res = await worker.fetch(get(`${B}ruffle-red/`), { ASSETS: assets("page"), API: api({ "ruffle-red": 0 }) });
     assert.equal(res.status, 302);
-    assert.equal(res.headers.get("Location"), `/en${B}ruffle/`);
+    assert.equal(res.headers.get("Location"), `${B}ruffle/`);
+  });
+
+  it("old /en/ addresses move to the same page at the root for good (English only since 2026-10-19)", async () => {
+    for (const [from, to] of [[`/en${B}ruffle-red/`, `${B}ruffle-red/`], ["/en/", "/"], ["/en", "/"], ["/en/privacy/?x=1", "/privacy/?x=1"]] as const) {
+      const res = await worker.fetch(get(from), { ASSETS: assets("page"), API: api({}) });
+      assert.equal(res.status, 301, from);
+      assert.equal(res.headers.get("Location"), to);
+    }
+    const plain = await worker.fetch(new Request("https://staging.vicuna-eg.com/english/"), { ASSETS: { fetch: async () => new Response("page") }, API: api({}) });
+    assert.equal(plain.status, 200, "only /en and /en/... move");
   });
 
   it("an in-stock product page is served, without ETag and with no-cache", async () => {

@@ -6,7 +6,7 @@ import { POLICY_IDS, policyPath } from "../policies/index.ts";
 
 export function GET(): Response {
   const paths = [
-    ...(["ar", "en"] as const).flatMap((lang) => [
+    ...(["en"] as const).flatMap((lang) => [
       langPath(lang, "/"),
       beltsUrl(lang),
       ...styles.map((s) => beltsUrl(lang, s.id)),
@@ -21,7 +21,7 @@ export function GET(): Response {
   ];
   const lastmod = new Map<string, string>([
     ...articles.map((a) => [articleUrl(a.slug), a.dateModified ?? a.datePublished] as [string, string]),
-    ...(["ar", "en"] as const).flatMap((lang) => POLICY_IDS.map((id) => [policyPath(lang, id), site.policiesUpdated] as [string, string])),
+    ...(["en"] as const).flatMap((lang) => POLICY_IDS.map((id) => [policyPath(lang, id), site.policiesUpdated] as [string, string])),
   ]);
   const entries = paths.map((p) => {
     const date = lastmod.get(p);

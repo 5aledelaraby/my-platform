@@ -39,8 +39,9 @@ describe("catalog feed", () => {
   });
 
   it("titles name the design and colour, and every image the feed points to exists", () => {
-    assert.equal(rows.find((r) => r[0] === "thin-tie-croc-wine")?.[col("title")], "حزام عريض برباط رفيع كروكو عنابي");
-    assert.equal(rows.find((r) => r[0] === "lace-white")?.[col("title")], "حزام دانتيل أبيض");
+    // English since 2026-10-19 (the site is English only).
+    assert.equal(rows.find((r) => r[0] === "thin-tie-croc-wine")?.[col("title")], "Thin Tie Croc Wine Waist Belt");
+    assert.equal(rows.find((r) => r[0] === "lace-white")?.[col("title")], "Lace White Waist Belt");
     for (const r of rows) {
       for (const link of [r[col("image_link")], r[col("additional_image_link")]]) {
         if (!link) continue;

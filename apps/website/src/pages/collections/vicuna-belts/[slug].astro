@@ -11,4 +11,4 @@ const { slug } = Astro.params;
 const product = getProduct(slug!);
 ---
 
-{product ? <ProductPage lang="ar" product={product} /> : <DesignPage lang="ar" styleId={slug!} />}
+{product ? <ProductPage lang="en" product={product} /> : <DesignPage lang="en" styleId={slug!} />}

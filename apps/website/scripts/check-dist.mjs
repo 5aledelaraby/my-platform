@@ -65,7 +65,8 @@ for (const file of pages) {
   const h1s = html.match(/<h1[\s>]/g)?.length ?? 0;
   if (h1s !== 1) fail(name, `expected exactly one <h1>, found ${h1s}`);
 
-  if (!/<link rel="alternate" hreflang="x-default"/.test(html)) fail(name, "missing hreflang x-default");
+  // English only since 2026-10-19: one version of every page, so no hreflang alternates.
+  if (/<link rel="alternate" hreflang=/.test(html)) fail(name, "hreflang alternates point at pages that no longer exist (English only)");
 
   // Markdown article bodies cannot carry width/height; their images are square and sized by CSS (aspect-ratio).
   const prose = /<div class="prose">[\s\S]*?<\/div>/.exec(html)?.[0] ?? "";
@@ -84,15 +85,7 @@ for (const file of pages) {
     }
   }
 
-  if (url.startsWith("/collections/") || url.startsWith("/en/collections/")) {
-    const other = url.startsWith("/en/") ? url.replace("/en", "") : "/en" + url;
-    if (!known.has(other)) fail(name, `no counterpart page ${other} for hreflang`);
-  }
-
-  // ADR 0009: the homepage introduces the brand, it is not the store.
-  if (url === "/" || url === "/en/") {
-    if (/data-product|class="product-card|add-to-cart/i.test(html)) fail(name, "homepage must not contain a product grid or cart UI (ADR 0009)");
-  }
+  if (url.startsWith("/en/")) fail(name, "English pages live at the root since 2026-10-19; /en/ only redirects");
 }
 
 for (const f of ["sitemap.xml", "robots.txt"]) {

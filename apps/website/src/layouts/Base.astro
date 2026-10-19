@@ -15,6 +15,7 @@ interface Props {
   description: string;
   lang?: Lang;
   /** Site-relative path of the same page in the other language, e.g. "/en/". */
+  /** Unused since the site is English only (2026-10-19); kept so the Arabic article pages still type-check. */
   altPath?: string;
   /** Optional JSON-LD, already serialized with serializeJsonLd. */
   jsonLd?: string;
@@ -29,19 +30,14 @@ interface Props {
   theme?: "belts" | "neutral";
 }
 
-const { title, description, lang = "ar", altPath, jsonLd, noindex = false, image = "/img/looks/wide-tie-mustard-1200.webp", theme = "belts", lcpImage } = Astro.props;
+const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/wide-tie-mustard-1200.webp", theme = "belts", lcpImage } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
 const site = Astro.site!.toString();
 const canonical = canonicalUrl(site, Astro.url.pathname);
-const alt = altPath ? canonicalUrl(site, altPath) : undefined;
 const ogImage = new URL(image, site).toString();
-const arUrl = lang === "ar" ? canonical : alt;
-const enUrl = lang === "en" ? canonical : alt;
-const PAUSE_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5.5v13M16 5.5v13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>';
-const switchHref = altPath ?? (lang === "ar" ? "/en/" : "/");
-// Facts for the red announcement bar (all from the shared settings).
+// Facts for the announcement bar (all from the shared settings).
 const ar = lang === "ar";
 const announce = ar
   ? [`توصيل لكل مصر خلال ${store.deliveryDays} أيام عمل`, `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} جنيه`, `استرجاع خلال ${store.returnDays} يومًا`, "الدفع عند الاستلام أو بالكارت"]
@@ -57,9 +53,6 @@ const announce = ar
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex,nofollow" : robotsDirective(env)} />
     <link rel="canonical" href={canonical} />
-    {arUrl && <link rel="alternate" hreflang="ar" href={arUrl} />}
-    {enUrl && <link rel="alternate" hreflang="en" href={enUrl} />}
-    <link rel="alternate" hreflang="x-default" href={arUrl ?? canonical} />
     <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
     <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -69,13 +62,11 @@ const announce = ar
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    {/* Light or dark, as chosen in the menu on this device; applied before the page paints so it never flashes. */}
-    <script is:inline>try{if(localStorage.getItem("vicuna-mode")==="dark"){document.documentElement.dataset.mode="dark";}}catch(e){}</script>
-    <meta name="theme-color" content={theme === "neutral" ? "#f4f1ec" : "#ffffff"} />
+    <meta name="theme-color" content="#492612" />
     <meta property="og:locale" content={lang === "ar" ? "ar_EG" : "en_US"} />
     {lcpImage && <link rel="preload" href={lcpImage} as="image" type="image/webp" fetchpriority="high" />}
-    <link rel="preload" href={lang === "ar" ? "/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2" : "/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2"} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={lang === "ar" ? "/fonts/ibm-plex-sans-arabic-arabic-500-normal.woff2" : "/fonts/ibm-plex-sans-arabic-latin-500-normal.woff2"} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    {lang === "ar" && <link rel="preload" href="/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2" as="font" type="font/woff2" crossorigin />}
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
     {/* Browsers that support it fetch a page in the background as soon as a finger or the mouse rests on its link,
         so opening it feels instant. Prefetch only (no prerender): no page runs before it is really opened. */}
@@ -84,16 +75,8 @@ const announce = ar
   <body>
     <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
     <Consent lang={lang} />
-    <div class="announce" data-announce>
-      <p class="sr-only">{announce.join(" · ")}</p>
-      <button type="button" class="motion-toggle announce-toggle" data-announce-toggle data-label-pause={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"} data-label-play={ar ? "تشغيل الشريط المتحرك" : "Play the moving bar"} aria-label={ar ? "إيقاف الشريط المتحرك" : "Pause the moving bar"}><span class="mt-dot" set:html={PAUSE_SVG} /></button>
-      <div class="marquee" aria-hidden="true">
-        <div class="marquee-track">
-          {[0, 1].map(() => announce.map((a) => <span>{a}<i>·</i></span>))}
-        </div>
-      </div>
-    </div>
-    <Header lang={lang} altHref={switchHref} />
+    <div class="announce"><p>{announce[1]}</p></div>
+    <Header lang={lang} overlay={theme === "neutral" && Astro.url.pathname === "/"} />
     <main id="main">
       <slot />
     </main>

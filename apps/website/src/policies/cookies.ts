@@ -29,7 +29,6 @@ ${li("vicuna-tracked-&lt;order number&gt;", "Vicuna, session storage", "set on t
 ${li("vicuna-cart-peeked", "Vicuna, session storage", "the cart opens by itself only after your first added belt.", "Deleted when you close the tab.")}
 ${li("vicuna-swipe-hint", "Vicuna, session storage", "the small swipe hint on the product photo shows only once.", "Deleted when you close the tab.")}
 ${li("vicuna-consent", "Vicuna, local storage", "remembers your choice for analytics and advertising cookies in \"Cookie settings\".", "Until you clear your browser data.")}
-${li("vicuna-mode", "Vicuna, local storage", "remembers whether you chose the light or the dark look in the menu or the header.", "Until you clear your browser data.")}
 ${li("vicuna-favorites", "Vicuna, local storage", "keeps the belts you marked with a heart, on this device only; it is never sent to us.", "Until you remove them or clear your browser data.")}
 ${li("vicuna-paid-&lt;order number&gt;", "Vicuna, session storage", "on the thank-you page, remembers that a PayPal order was paid, so the PayPal button is not shown again.", "Deleted when you close the tab.")}
 ${li("PayPal cookies", "PayPal", "only on the thank-you page and only if you chose PayPal: needed by PayPal's payment button to take the payment securely.", "Set by PayPal; see its cookie statement.")}
@@ -75,7 +74,6 @@ ${li('<bdi dir="ltr">vicuna-tracked-&lt;رقم الطلب&gt;</bdi>', "فيكو�
 ${li('<bdi dir="ltr">vicuna-cart-peeked</bdi>', "فيكونا، تخزين مؤقت", "تفتح السلة وحدها بعد أول حزام تضيفينه فقط.", "يُحذف عند غلق التبويب.")}
 ${li('<bdi dir="ltr">vicuna-swipe-hint</bdi>', "فيكونا، تخزين مؤقت", "تظهر إشارة السحب على صورة المنتج مرة واحدة فقط.", "يُحذف عند غلق التبويب.")}
 ${li('<bdi dir="ltr">vicuna-consent</bdi>', "فيكونا، تخزين محلي", "تذكّر اختياركِ لكوكيز التحليل والإعلانات من «إعدادات الكوكيز».", "حتى تمسحي بيانات المتصفح.")}
-${li('<bdi dir="ltr">vicuna-mode</bdi>', "فيكونا، تخزين محلي", "تذكّر اختياركِ للشكل الفاتح أو الداكن من القائمة أو أعلى الصفحة.", "حتى تمسحي بيانات المتصفح.")}
 ${li('<bdi dir="ltr">vicuna-favorites</bdi>', "فيكونا، تخزين محلي", "تحفظ الأحزمة اللي علّمتيها بالقلب على جهازك فقط، ولا تُرسل لنا أبدًا.", "حتى تحذفيها أو تمسحي بيانات المتصفح.")}
 ${li('<bdi dir="ltr">vicuna-paid-&lt;رقم الطلب&gt;</bdi>', "فيكونا، تخزين مؤقت", "في صفحة الشكر، تتذكّر أن طلب PayPal اتدفع حتى لا يظهر زر الدفع مرة أخرى.", "يُحذف عند غلق التبويب.")}
 ${li("كوكيز PayPal", "PayPal", "في صفحة الشكر فقط وإذا اخترتِ PayPal: يحتاجها زر الدفع من PayPal لإتمام الدفع بأمان.", "تحددها PayPal، راجعي سياسة الكوكيز لديها.")}

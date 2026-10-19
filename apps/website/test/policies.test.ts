@@ -17,7 +17,7 @@ describe("policy pages", () => {
       assert.ok(doc.title.length > 3 && doc.description.length > 20 && doc.html.length > 500, `${id}/${lang}`);
     }
     assert.equal(policyPath("ar", "returns"), "/returns/");
-    assert.equal(policyPath("en", "privacy"), "/en/privacy/");
+    assert.equal(policyPath("en", "privacy"), "/privacy/", "English lives at the root since 2026-10-19");
   });
 
   it("take every number from the shared settings", () => {

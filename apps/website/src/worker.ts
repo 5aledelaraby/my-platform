@@ -81,9 +81,18 @@ function rewritten(res: Response, body: string): Response {
   return new Response(body, { status: res.status, headers: out });
 }
 
+/** The root address an old /en/ address now lives at (query kept), or null for any other address. */
+export function englishRootRedirect(url: URL): string | null {
+  if (url.pathname !== "/en" && !url.pathname.startsWith("/en/")) return null;
+  return `${url.pathname.slice(3) || "/"}${url.search}`;
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    // The site is English only at the root (owner, 2026-10-19): the old /en/ addresses move there for good.
+    const enMove = englishRootRedirect(url);
+    if (enMove) return new Response(null, { status: 301, headers: { Location: enMove, "Cache-Control": "public, max-age=86400" } });
     const isFeed = url.pathname === FEED_PATH || url.pathname === LOCAL_FEED_PATH;
     const isSitemap = url.pathname === "/sitemap.xml";
     const isBelts = BELTS_PREFIX.test(url.pathname);
