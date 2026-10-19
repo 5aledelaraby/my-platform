@@ -2,6 +2,8 @@
 
 > Update (2026-10-17): the store now lives under `/collections/vicuna-belts/` (styles at `/collections/vicuna-belts/<style>/`, products at `/collections/vicuna-belts/<product-id>/`). Read every `/belts/` below as that path; the decision itself is unchanged.
 
+> Update (2026-10-19): ADR 0015 makes the site English only at the root (no `/en/`, no hreflang) and keeps `/` light, without the product grid.
+
 Status: accepted. The product URL scheme `/belts/<product-id>/` was confirmed by the owner. The owner decided to keep the English version under `/en/` with the same structure and hreflang alternates.
 
 ## Context

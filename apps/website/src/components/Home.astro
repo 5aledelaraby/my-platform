@@ -1,90 +1,100 @@
 ---
-// The home page (owner, 2026-10-19: the layout of the quiet fashion store he showed; this replaces ADR 0009's "no
-// product grid on /"). The film fills the screen with a short line over it; then the newest belts as cards, a one-line
-// brand note, two designs as large photos, every belt by design behind tabs, and a quiet closing photo. Few words.
-import ProductCard from "./ProductCard.astro";
-import { HOME_FILM } from "../lib/designs.ts";
-import { lookOf } from "../lib/looks.ts";
+// The home page (owner, 2026-10-19, ADR 0015): light and simple, not a sales page. Every photo leads to the belt in
+// it, and the belts are bought on the belts and product pages. From the top: the white-dress photo with the signature
+// pattern belt, one line about the brand, the lace white photo, then the designs as large words with their on-model
+// photos in a row that slides sideways (the layout of the store he showed), and a link to all the belts.
+// Slides are <article class="card ..." data-product>, so the site Worker removes a sold-out belt's photos (ADR 0013).
+import { getProduct, beltsUrl, priceOfProduct, productName, products, styleText, styles } from "../store.ts";
+import { looksOf } from "../lib/looks.ts";
+import type { Look } from "../lib/looks.ts";
 import { langPath } from "../site.ts";
-import { beltsUrl, getProduct, productName, products, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
-const ar = lang === "ar";
-const t = ar
-  ? { kicker: "أحزمة الخصر", title: "تكمّل كل لبسة", discover: "اكتشفي أكتر", newIn: "وصل حديثًا", viewAll: "شوفي الكل", note: "أحزمة خصر بنصنعها بإيدينا في القاهرة، علشان تكمّل أي لبسة.", about: "من نحن", shop: "تسوّقي", all: "الكل", closing: "مصنوعة في القاهرة" }
-  : { kicker: "Waist belts", title: "Made to finish the look", discover: "Discover more", newIn: "Just arrived", viewAll: "View all", note: "Waist belts we make by hand in Cairo, so every outfit feels finished.", about: "About us", shop: "Shop", all: "All", closing: "Made in Cairo" };
-const newest = products.filter((p) => p.style !== "pattern").slice(0, 8);
-// Every photo leads to the belt in it (owner, 2026-10-19): two on-model photos, each opening its own product page.
-const tiles = ["lace-white", "wide-tie-mustard"].flatMap((id) => {
+
+const photo = (id: string, n: number): { href: string; name: string; look: Look } => {
   const p = getProduct(id);
-  const look = p ? lookOf(p) : null;
-  return p && look ? [{ href: beltsUrl(lang, p.id), name: productName(lang, p), look }] : [];
-});
+  const look = p ? looksOf(p)[n - 1] : undefined;
+  if (!p || !look) throw new Error(`Home: no photo ${n} for ${id}`);
+  return { href: beltsUrl(lang, p.id), name: productName(lang, p), look };
+};
+const hero = photo("pattern-brown", 3);
+const lace = photo("lace-white", 1);
+
+// Every on-model photo of every belt, grouped by design; designs without one are left out.
+const rows = styles
+  .map((s) => ({
+    id: s.id,
+    name: styleText(lang, s.id).name,
+    slides: products
+      .filter((p) => p.style === s.id)
+      .flatMap((p) => looksOf(p).map((look) => ({ p, look, name: productName(lang, p), href: beltsUrl(lang, p.id), price: priceOfProduct(p) }))),
+  }))
+  .filter((r) => r.slides.length > 0);
 ---
 
-<section class="hero">
-  <video class="hero-media" data-motion src={`${HOME_FILM}.mp4`} poster={`${HOME_FILM}.webp`} muted loop playsinline preload="metadata" aria-hidden="true" width="704" height="1280"></video>
-  <div class="hero-text">
-    <p class="kicker">{t.kicker}</p>
-    <h1 class="hero-title">{t.title}</h1>
-    <a class="text-btn" href={beltsUrl(lang)}>{t.discover}</a>
+<section class="home-hero">
+  <a class="home-hero-photo" href={hero.href} aria-label={hero.name}>
+    <img src={hero.look.src} srcset={hero.look.srcset} sizes="100vw" alt={`${hero.name}, worn with a white dress`} width="1200" height="1500" fetchpriority="high" decoding="async" />
+  </a>
+  <div class="home-hero-text">
+    <p class="kicker">Waist belts</p>
+    <h1>Made to finish the look</h1>
+    <a class="text-btn" href={beltsUrl(lang)}>Discover more</a>
   </div>
 </section>
 
-<section class="sx-section sx-soft">
-  <div class="wrap">
-    <div class="sx-head">
-      <h2 class="sx-h">{t.newIn}</h2>
-      <a class="text-btn" href={beltsUrl(lang)}>{t.viewAll}</a>
-    </div>
-    <div class="card-row">
-      {newest.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
-    </div>
+<section class="home-note wrap">
+  <p>Waist belts we make by hand in Cairo, so every outfit feels finished.</p>
+  <a class="text-btn" href={langPath(lang, "/about/")}>About us</a>
+</section>
+
+<section class="home-feature">
+  <a href={lace.href} aria-label={lace.name}>
+    <img src={lace.look.src} srcset={lace.look.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt={`${lace.name}, worn with a white satin dress`} width="640" height="800" loading="lazy" decoding="async" />
+  </a>
+  <a class="text-btn" href={lace.href}>{lace.name}</a>
+</section>
+
+<section class="looks" aria-label="Designs">
+  <div class="looks-tabs" role="tablist">
+    {rows.map((r, i) => <button type="button" role="tab" id={`looks-tab-${r.id}`} aria-controls={`looks-${r.id}`} aria-selected={i === 0 ? "true" : "false"} data-looks-tab={r.id}>{r.name}</button>)}
   </div>
-</section>
-
-<section class="sx-note wrap">
-  <p>{t.note}</p>
-  <a class="text-btn" href={langPath(lang, "/about/")}>{t.about}</a>
-</section>
-
-<section class="sx-tiles">
-  {tiles.map((x) => (
-    <a class="sx-tile" href={x.href}>
-      <img src={x.look.src} srcset={x.look.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt={x.name} width="640" height="800" loading="lazy" decoding="async" />
-      <span class="text-btn">{t.shop} {x.name}</span>
-    </a>
+  {rows.map((r, i) => (
+    <div class="looks-row" id={`looks-${r.id}`} role="tabpanel" aria-labelledby={`looks-tab-${r.id}`} data-looks-row={r.id} hidden={i > 0}>
+      {r.slides.map((s) => (
+        <article class="card look-card" data-product={s.p.id}>
+          <a href={s.href}>
+            <img src={s.look.src} srcset={s.look.srcset} sizes="(min-width: 900px) 30vw, 78vw" alt={`${s.name}, worn`} width="640" height="800" loading="lazy" decoding="async" />
+            <span class="look-name">{s.name}</span>
+            <span class="look-price">LE {s.price}</span>
+          </a>
+        </article>
+      ))}
+    </div>
   ))}
+  <p class="looks-more"><a class="text-btn" href={beltsUrl(lang)}>View all</a></p>
 </section>
-
-<section class="sx-section">
-  <div class="wrap">
-    <div class="sx-tabs" role="tablist" aria-label={ar ? "التصميمات" : "Designs"}>
-      <button type="button" role="tab" aria-selected="true" data-tab="all">{t.all}</button>
-      {styles.map((s) => <button type="button" role="tab" aria-selected="false" data-tab={s.id}>{styleText(lang, s.id).name}</button>)}
-    </div>
-    <div class="card-grid" data-tab-grid>
-      {products.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
-    </div>
-  </div>
-</section>
-
-<a class="sx-banner" href={beltsUrl(lang, "lace-white")}>
-  <img src="/img/editorial/lace-close-1600.webp" srcset="/img/editorial/lace-close-800.webp 800w, /img/editorial/lace-close-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1200" loading="lazy" decoding="async" />
-  <p class="sx-banner-text">{t.closing}</p>
-</a>
 
 <script>
-  // Design tabs: show the belts of one design (or all) in the grid under them.
-  const tabs = document.querySelectorAll<HTMLButtonElement>("[data-tab]");
-  const grid = document.querySelector<HTMLElement>("[data-tab-grid]");
-  tabs.forEach((tab) =>
-    tab.addEventListener("click", () => {
-      const id = tab.dataset["tab"];
-      tabs.forEach((x) => x.setAttribute("aria-selected", String(x === tab)));
-      grid?.querySelectorAll<HTMLElement>("article.card").forEach((c) => (c.hidden = id !== "all" && c.dataset["style"] !== id));
-    }),
-  );
+  // Design tabs: one row of photos at a time. A design whose photos were all removed (sold out) loses its tab.
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>("[data-looks-tab]")];
+  const rowOf = (id: string | undefined) => document.querySelector<HTMLElement>(`[data-looks-row="${id}"]`);
+  for (const tab of tabs) {
+    const row = rowOf(tab.dataset["looksTab"]);
+    if (!row?.querySelector(".look-card")) tab.hidden = true;
+  }
+  const select = (tab: HTMLButtonElement) => {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on));
+      const row = rowOf(t.dataset["looksTab"]);
+      if (row) row.hidden = !on;
+    }
+    rowOf(tab.dataset["looksTab"])?.scrollTo({ left: 0 });
+  };
+  for (const tab of tabs) tab.addEventListener("click", () => select(tab));
+  const first = tabs.find((t) => !t.hidden);
+  if (first && first.getAttribute("aria-selected") !== "true") select(first);
 </script>

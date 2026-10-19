@@ -1,10 +1,12 @@
 ---
 // A collection page (owner, 2026-10-19: the layout of the quiet fashion store he showed): small breadcrumbs, the name
 // in capitals in the middle, the designs as tabs, the count, and the belts two by two. Used for all waist belts and for
-// each design. Cards are <article class="card" data-product>, which the site Worker removes when sold out (ADR 0013).
+// each design. All waist belts opens on two on-model photos (owner, 2026-10-19): the olive kimono with the signature
+// pattern belt, then the cream shirt with the camel belt; each leads to its belt. Cards are <article class="card" data-product>, which the site Worker removes when sold out (ADR 0013).
 import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
-import { beltsUrl, productsOfStyle, products, styleText, styles } from "../store.ts";
+import { beltsUrl, getProduct, productName, productsOfStyle, products, styleText, styles } from "../store.ts";
+import { looksOf } from "../lib/looks.ts";
 import { langPath } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -18,12 +20,31 @@ const crumbs = [
   ...(styleId ? [{ name: ar ? "أحزمة الخصر" : "Waist belts", href: beltsUrl(lang) }] : []),
   { name },
 ];
+const photos = styleId
+  ? []
+  : [
+      { id: "pattern-brown", n: 2, alt: "worn with an olive kimono" },
+      { id: "thin-tie-camel", n: 2, alt: "worn with a cream shirt" },
+    ].flatMap(({ id, n, alt }) => {
+      const p = getProduct(id);
+      const look = p ? looksOf(p)[n - 1] : undefined;
+      return p && look ? [{ href: beltsUrl(lang, id), name: productName(lang, p), alt: `${productName(lang, p)}, ${alt}`, look }] : [];
+    });
 ---
 
 <div class="collection">
+  {photos.length > 0 && (
+    <div class="collection-photos">
+      {photos.map((x, i) => (
+        <a href={x.href} aria-label={x.name}>
+          <img src={x.look.src} srcset={x.look.srcset} sizes="(min-width: 900px) 50vw, 100vw" alt={x.alt} width="1200" height="1500" loading={i === 0 ? "eager" : "lazy"} fetchpriority={i === 0 ? "high" : undefined} decoding="async" />
+        </a>
+      ))}
+    </div>
+  )}
   <Breadcrumbs items={crumbs} />
   <h1 class="collection-title">{name}</h1>
-  <nav class="sx-tabs collection-tabs" aria-label={ar ? "التصميمات" : "Designs"}>
+  <nav class="collection-tabs" aria-label={ar ? "التصميمات" : "Designs"}>
     <a href={beltsUrl(lang)} aria-current={!styleId ? "page" : undefined}>{ar ? "الكل" : "All"}</a>
     {styles.map((s) => <a href={beltsUrl(lang, s.id)} aria-current={s.id === styleId ? "page" : undefined}>{styleText(lang, s.id).name}</a>)}
   </nav>

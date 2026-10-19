@@ -77,6 +77,10 @@ describe("hiding sold-out belts", () => {
     assert.match(read("ProductCard.astro"), /<article class="card reveal" data-color=\{product\.color\} data-product=\{product\.id\}/);
     const page = read("ProductPage.astro");
     assert.match(page, /<a class="swatch big" href=\{beltsUrl\(lang, sib\.id\)\}/);
+    // The home page's on-model photos are cards too, so a sold-out belt's photos leave the home page as well.
+    assert.match(read("Home.astro"), /<article class="card look-card" data-product=\{s\.p\.id\}>/);
+    const look = '<article class="card look-card" data-product="lace-white">\n<a href="/collections/vicuna-belts/lace-white/"><img src="x" alt=""></a>\n</article>';
+    assert.equal(hideSoldOut(`<div>${look}${look}</div>`, ["lace-white"]), "<div></div>");
     for (const re of [/<a class="pdp-arrow prev" href=/, /<a class="pdp-arrow next" href=/, /<span class="pdp-count"/, /data-swipe-next=/, /<link rel="prefetch"/]) assert.match(page, re);
   });
 });

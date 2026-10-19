@@ -1,18 +1,14 @@
 ---
-// Vicuna logo (owner's new mark, 2026-10-10): the navy V with the vicuña and a gold stripe, beside the wordmark.
+// Vicuna logo (owner's mark, 2026-10-10): the navy V with the vicuña and a gold stripe, beside the wordmark.
 // The mark is a transparent WebP (106 and 212 px wide) cut from the owner's file; replace it with an SVG when the
 // designer sends one. The browser picks the smaller file unless the screen is dense enough to need the larger one.
-interface Props { size?: number; light?: boolean }
-const { size = 40, light = false } = Astro.props;
-const mark = light ? "vicuna-mark-light" : "vicuna-mark";
+interface Props { size?: number }
+const { size = 40 } = Astro.props;
 const w = Math.round((size * 268) / 242);
-const set = (m: string) => `/brand/${m}-96.webp 106w, /brand/${m}-192.webp 212w`;
 ---
 
 <span class="logo">
-  <img class="logo-mark" src={`/brand/${mark}-96.webp`} srcset={set(mark)} sizes={`${w}px`} width={w} height={size} alt="" decoding="async" />
-  {/* In dark mode the light mark takes over; it loads only when shown (lazy, hidden otherwise). */}
-  {!light && <img class="logo-mark logo-mark-dark" src="/brand/vicuna-mark-light-96.webp" srcset={set("vicuna-mark-light")} sizes={`${w}px`} width={w} height={size} alt="" loading="lazy" decoding="async" />}
+  <img class="logo-mark" src="/brand/vicuna-mark-96.webp" srcset="/brand/vicuna-mark-96.webp 106w, /brand/vicuna-mark-192.webp 212w" sizes={`${w}px`} width={w} height={size} alt="" decoding="async" />
   <span class="logo-word" lang="en">
     <span class="logo-en">VICUNA</span>
     <span class="logo-sub">DESIGNS</span>

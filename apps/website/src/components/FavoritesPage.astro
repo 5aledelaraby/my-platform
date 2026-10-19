@@ -4,7 +4,6 @@
 import Base from "../layouts/Base.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
-import Sparkles from "./ui/Sparkles.astro";
 import { beltsUrl, products } from "../store.ts";
 import { langPath } from "../site.ts";
 import type { Lang } from "../site.ts";
@@ -16,11 +15,11 @@ const title = ar ? "المفضلة | فيكونا" : "Favourites | Vicuna";
 const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") }, { name: ar ? "المفضلة" : "Favourites" }];
 ---
 
-<Base title={title} description={title} lang={lang} altPath={ar ? "/en/favorites/" : "/favorites/"} noindex>
+<Base title={title} description={title} lang={lang} noindex>
   <Breadcrumbs items={crumbs} />
   <section class="wrap style-group favorites">
     <div class="group-head">
-      <h1 class="has-sparkles">{ar ? "المفضلة" : "Favourites"}<Sparkles variant="b" /></h1>
+      <h1>{ar ? "المفضلة" : "Favourites"}</h1>
     </div>
     <div class="fav-empty" data-fav-empty>
       <p>{ar ? "لسه مفيش أحزمة في المفضلة. دوسي على القلب على أي حزام وسط عشان تحفظيه هنا." : "No favourites yet. Tap the heart on any waist belt to keep it here."}</p>

@@ -4,8 +4,7 @@ import Base from "../../../layouts/Base.astro";
 import BeltsHome from "../../../components/BeltsHome.astro";
 import { homeCopy } from "../../../home-copy.ts";
 import { site } from "../../../site.ts";
-import { beltsUrl, styles } from "../../../store.ts";
-import { leadPoster } from "../../../lib/designs.ts";
+import { beltsUrl } from "../../../store.ts";
 
 const c = homeCopy.en;
 const jsonLd = serializeJsonLd(
@@ -16,6 +15,6 @@ const jsonLd = serializeJsonLd(
 );
 ---
 
-<Base title={c.title} description={c.description} lang="en" jsonLd={jsonLd} lcpImage={leadPoster(styles[0]!.id)}>
+<Base title={c.title} description={c.description} lang="en" jsonLd={jsonLd}>
   <BeltsHome lang="en" />
 </Base>

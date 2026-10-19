@@ -10,7 +10,6 @@ interface Props { id: PolicyId; lang: Lang }
 const { id, lang } = Astro.props;
 const ar = lang === "ar";
 const doc = getPolicy(id, lang);
-const other: Lang = ar ? "en" : "ar";
 // Table of contents from the page's own headings (each gets an id so the links work).
 const toc: { id: string; text: string }[] = [];
 const html = doc.html.replace(/<h2(?: id="([^"]+)")?>([^<]+)<\/h2>/g, (_m, given: string | undefined, text: string) => {
@@ -21,7 +20,7 @@ const html = doc.html.replace(/<h2(?: id="([^"]+)")?>([^<]+)<\/h2>/g, (_m, given
 const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "/") }, { name: doc.title }];
 ---
 
-<Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang} altPath={policyPath(other, id)} theme="neutral">
+<Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang}>
   <Breadcrumbs items={crumbs} />
   <article class="wrap article policy">
     <header>

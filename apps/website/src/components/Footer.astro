@@ -3,14 +3,13 @@ import Logo from "./ui/Logo.astro";
 import { POLICY_IDS, getPolicy, policyPath } from "../policies/index.ts";
 import { langPath, site } from "../site.ts";
 import { beltsUrl, styleText, styles } from "../store.ts";
-import { SHIPPING, formatEgp } from "@platform/commerce";
 import type { Lang } from "../site.ts";
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const ar = lang === "ar";
-// Footer (owner, 2026-10-19): a light strip of what we promise, then rust with the links in groups, then brown with
-// the company details. Social marks are plain outlines.
+// Footer (owner, 2026-10-19): the links in three groups that open on phones, the social marks, then the company
+// details. No moving strip (owner, 2026-10-19).
 const socialIcon: Record<string, string> = {
   TikTok: '<path fill="currentColor" d="M16.6 2.5c.4 2.6 2 4.3 4.6 4.6v3.3c-1.7 0-3.3-.5-4.6-1.4v6.7a5.9 5.9 0 1 1-5.9-5.9l1 .1v3.4a2.6 2.6 0 1 0 1.7 2.4V2.5h3.2Z"/>',
   Instagram:
@@ -18,18 +17,9 @@ const socialIcon: Record<string, string> = {
   Snapchat:
     '<path fill="currentColor" d="M12 2.6c3.2 0 5.3 2.3 5.3 5.5v2.3l1.6-.6c.8-.2 1.3.7.7 1.2-.8.6-1.7.9-2.1 1.1.5 1.9 2.1 3.3 3.8 3.8.6.2.5 1-.1 1.1-1 .2-1.7.4-2 1.1-.2.6-1 .5-2 .4-1.1-.1-2.1 1-5.2 1s-4.1-1.1-5.2-1c-1 .1-1.8.2-2-.4-.3-.7-1-.9-2-1.1-.6-.1-.7-.9-.1-1.1 1.7-.5 3.3-1.9 3.8-3.8-.4-.2-1.3-.5-2.1-1.1-.6-.5-.1-1.4.7-1.2l1.6.6V8.1c0-3.2 2.1-5.5 5.3-5.5Z"/>',
 };
-const promises = ar
-  ? ["الدفع عند الاستلام أو بالكارت", `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} جنيه`, `توصيل خلال ${site.deliveryDays} أيام عمل`, `استرجاع خلال ${site.returnDays} يومًا`]
-  : ["Cash on delivery or card", `Free shipping from EGP ${formatEgp(SHIPPING.freeOver)}`, `Delivery in ${site.deliveryDays} working days`, `${site.returnDays}-day returns`];
 ---
 
 <footer class="site-footer">
-  <div class="promise-strip" aria-label={ar ? "وعودنا" : "Our promises"}>
-    <div class="promise-track">
-      {[0, 1].map((n) => promises.map((p) => <span aria-hidden={n > 0 ? "true" : undefined}>{p}</span>))}
-    </div>
-  </div>
-
   <div class="footer-main">
     <div class="wrap">
       <details class="footer-group">
@@ -75,3 +65,11 @@ const promises = ar
     </div>
   </div>
 </footer>
+
+<script>
+  // On wide screens the three groups stand open side by side; on phones they open with a tap.
+  const wide = matchMedia("(min-width: 900px)");
+  const fit = () => document.querySelectorAll<HTMLDetailsElement>(".footer-group").forEach((d) => (d.open = wide.matches));
+  fit();
+  wide.addEventListener("change", fit);
+</script>

@@ -19,7 +19,7 @@ const hours = site.supportHours[lang];
       <p>{ar ? "تحدّثي مع فريقنا مباشرة عن أي منتج أو طلب." : "Chat with our team about any product or order."}</p>
       <p>{ar ? `متاحون ${hours}` : `Available ${hours}`}</p>
       <p><a class="cc-number" href={wa} rel="noopener noreferrer"><bdi dir="ltr">+{site.whatsappInternational}</bdi></a></p>
-      <a class="btn btn-block btn-wa" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "ابدئي المحادثة" : "Start the chat"}</a>
+      <a class="btn btn-block" href={wa} rel="noopener noreferrer"><Icon name="whatsapp" size={18} /> {ar ? "ابدئي المحادثة" : "Start the chat"}</a>
     </div>
   </details>
   {!compact && (

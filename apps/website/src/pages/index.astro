@@ -3,7 +3,6 @@ import Base from "../layouts/Base.astro";
 import Home from "../components/Home.astro";
 import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
 import { site } from "../site.ts";
-import { HOME_FILM } from "../lib/designs.ts";
 
 const title = "Vicuna | The waist belt that makes every outfit";
 const description = "Vicuna is a distinctive brand in leather making, website building and social media services. Waist belts that make every outfit, delivered across Egypt.";
@@ -21,6 +20,6 @@ const jsonLd = serializeJsonLd([
 ]);
 ---
 
-<Base title={title} description={description} lang="en" jsonLd={jsonLd} theme="neutral" image="/img/editorial/lace-close-1600.webp" lcpImage={`${HOME_FILM}.webp`}>
+<Base title={title} description={description} lang="en" jsonLd={jsonLd} image="/img/looks/lace-white-1200.webp">
   <Home lang="en" />
 </Base>
