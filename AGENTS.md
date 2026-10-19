@@ -41,7 +41,7 @@ pnpm check:boundaries            # architecture rules
 
 ## Site structure (ADR 0009, ADR 0015)
 
-- Two levels (ADR 0015, owner 2026-10-19): `/` is light and simple, not a sales page: on-model photos that each lead to the belt in them, one line about the brand, the designs as large words with their photos in a sideways row, and a link to all belts. No product grid, no "add to cart" on `/`. `/collections/vicuna-belts/` opens on two on-model photos, then every belt; design pages use the same layout (`Collection.astro`).
+- Two levels (ADR 0015, owner 2026-10-19): `/` is light and simple, not a sales page: on-model photos that each lead to the belt in them, one line about the brand, the designs as large words with their photos in a sideways row, and a link to all belts. No product grid, no "add to cart" on `/`. `/collections/vicuna-belts/` opens on the olive kimono on-model photo, then every belt; design pages use the same layout (`Collection.astro`).
 - The store lives under `/collections/vicuna-belts/` (the page itself, `<style>/`, `<product-id>/`); the path is `BELTS_PATH` in `store.ts`. Articles live under `/journal/style-guides/` (`JOURNAL_PATH` in `site.ts`). No redirects from the old site (clean start). Other areas get their own top-level section and are only linked from `/`.
 - Ads, Merchant Center and product keywords point to `/collections/vicuna-belts/...`, never to `/`.
 
