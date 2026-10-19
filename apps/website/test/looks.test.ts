@@ -25,7 +25,9 @@ describe("look photos", () => {
   });
 
   it("products without photos get none; the first photo is the main one", () => {
-    const p = catalog.products.find((x) => !LOOK_IDS.has(x.id))!;
+    // Every belt has a photo now (2026-10-20), so a made-up product stands in for one without.
+    const p = { ...catalog.products[0]!, id: "no-photo-yet" };
+    assert.equal(LOOK_IDS.has(p.id), false);
     assert.equal(lookOf(p), null);
     assert.deepEqual(looksOf(p), []);
     const many = catalog.products.find((x) => (LOOK_COUNTS[x.id] ?? 0) > 1)!;
