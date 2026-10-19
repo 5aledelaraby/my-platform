@@ -21,6 +21,7 @@ export const LOOK_COUNTS: Readonly<Record<string, number>> = {
   "wide-tie-burgundy": 1,
   "wide-tie-green": 1,
   "wide-tie-mustard": 1,
+  "wide-tie-white": 1,
 };
 
 export const LOOK_IDS: ReadonlySet<string> = new Set(Object.keys(LOOK_COUNTS));
