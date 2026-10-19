@@ -99,6 +99,11 @@ describe("tracking and consent", () => {
     if (tracking.tiktok) expected.push("analytics.tiktok.com");
     assert.deepEqual(hosts(), expected.sort());
     assert.deepEqual(dataLayer()[0]?.slice(0, 2), ["consent", "default"]);
+    // gtag.js ignores real arrays in the dataLayer: every command must be an `arguments` object, or GA4 sends nothing.
+    for (const entry of g["dataLayer"] as unknown[]) {
+      assert.equal(Array.isArray(entry), false);
+      assert.equal(Object.prototype.toString.call(entry), "[object Arguments]");
+    }
     assert.deepEqual(fbqCalls()[0], ["consent", "grant"]);
     assert.equal(t.track(viewItem), true);
     assert.ok(dataLayer().some((a) => a[0] === "event" && a[1] === "view_item"));

@@ -72,9 +72,12 @@ function load(): void {
   const win = w();
   if (tracking.ga4) {
     win["dataLayer"] = (win["dataLayer"] as unknown[]) ?? [];
-    const gtag = function (...args: unknown[]) {
-      (win["dataLayer"] as unknown[]).push(args);
-    };
+    // gtag.js only reads `arguments` objects from the dataLayer; a real array is taken as something else and ignored,
+    // so with `...args` GA4 never received its config and sent nothing (found 2026-10-19).
+    const gtag = function () {
+      // eslint-disable-next-line prefer-rest-params
+      (win["dataLayer"] as unknown[]).push(arguments);
+    } as (...args: unknown[]) => void;
     win["gtag"] = gtag;
     win[`ga-disable-${tracking.ga4}`] = false;
     // Google consent mode: the visitor accepted, so storage is granted from the first hit.
