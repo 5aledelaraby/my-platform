@@ -93,6 +93,7 @@ const rows = styles
       if (row) row.hidden = !on;
     }
     rowOf(tab.dataset["looksTab"])?.scrollTo({ left: 0 });
+    tab.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
   };
   for (const tab of tabs) tab.addEventListener("click", () => select(tab));
   const first = tabs.find((t) => !t.hidden);
