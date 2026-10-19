@@ -27,3 +27,11 @@ that is not a sales page, where every photo leads to the belts. He also said mos
 - The stylesheet went from about 128 KB to about 28 KB per page; films and photos no page used were removed.
 - Ads, Merchant Center and product keywords keep pointing at `/collections/vicuna-belts/...` (ADR 0009).
 - The product feed and policies are in English; the Merchant Center data source language must match.
+
+## Update (2026-10-20): the final pass
+- The home header sits on the hero photo and turns into the white bar on scroll; "Transform your dress" is written on
+  the lace white photo; the footer carries the owner's dark bow photo with the words in white.
+- The policy pages are English only (the Arabic texts are removed from the code), and the terms are short.
+- Analytics and ad tags load only on the live site (`DEPLOY_ENV=production`), so staging tests never reach Google
+  Analytics, Meta or Snap.
+
