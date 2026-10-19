@@ -1,7 +1,6 @@
 ---
-// Cookie consent (Personal Data Protection Law 151/2020): analytics and ad tags load only after "Accept".
-// Placed early in the page (Base.astro) so keyboard and screen-reader users reach it first; shown fixed at the bottom.
-// A first visit does not move focus (no focus stealing). "Cookie settings" moves focus into it and Escape returns it.
+// Cookie settings. The analytics and ad tags run from the first page (owner, 2026-10-19), so this box never opens
+// by itself: only "Cookie settings" in the footer opens it, to refuse (or allow again). Focus moves into it, Escape returns it.
 import { policyPath } from "../policies/index.ts";
 import type { Lang } from "../site.ts";
 
@@ -34,7 +33,6 @@ const ar = lang === "ar";
       opener?.focus();
       opener = null;
     };
-    if (consent() === null) box.hidden = false;
     box.addEventListener("click", (event) => {
       const b = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-consent-choice]");
       if (!b) return;
@@ -50,8 +48,8 @@ const ar = lang === "ar";
       event.preventDefault();
       const c = consent();
       if (current) {
-        current.hidden = c === null;
-        current.textContent = c === "granted" ? (box.dataset["currentGranted"] ?? "") : c === "denied" ? (box.dataset["currentDenied"] ?? "") : "";
+        current.hidden = false;
+        current.textContent = c === "granted" ? (box.dataset["currentGranted"] ?? "") : (box.dataset["currentDenied"] ?? "");
       }
       opener = trigger;
       box.hidden = false;

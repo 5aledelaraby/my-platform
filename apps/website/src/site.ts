@@ -31,7 +31,7 @@ export const site = {
   /** Egyptian Consumer Protection Agency. */
   consumerAgency: { hotline: "19588", url: "https://cpa.gov.eg" },
   /** Date the policy pages last changed (YYYY-MM-DD). Update with every change to src/policies. */
-  policiesUpdated: "2026-10-18",
+  policiesUpdated: "2026-10-19",
   maxWeightKg: 90,
   social: [
     { label: "TikTok", href: "https://www.tiktok.com/@elaraby_khaled" },
@@ -41,8 +41,8 @@ export const site = {
 } as const;
 
 /**
- * Analytics and ad tags. Public IDs (not secrets). Empty = not loaded. Nothing loads until the visitor accepts the
- * cookie banner (Consent.astro); the cookie and privacy policies list every tag here.
+ * Analytics and ad tags. Public IDs (not secrets). Empty = not loaded. They load from the first page unless the visitor
+ * turned them off in "Cookie settings" (Consent.astro); the cookie and privacy policies list every tag here.
  */
 export const tracking = {
   ga4: "G-PD8H3JF2WR",

@@ -25,7 +25,7 @@ export interface HandlerDeps {
   notify?: Notifier;
   /**
    * Sends the order's Purchase event to Meta from the server (Conversions API, see meta.ts), owner-approved on
-   * 2026-10-17. Called only when the order says the visitor accepted cookies (`consent: true`). Its failure never
+   * 2026-10-17. Called only when the order says `consent: true` (the visitor did not turn the tags off). Its failure never
    * fails the order.
    */
   reportPurchase?: PurchaseReporter;
@@ -345,7 +345,7 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
             const sent = deps.notify(order).catch((error: unknown) => deps.reportError?.(`notify_failed:${errorLabel(error)}`));
             if (deps.waitUntil) deps.waitUntil(sent);
           }
-          // Only for a visitor who accepted cookies, like the Pixel in the browser.
+          // Only when the visitor did not turn the tags off, like the Pixel in the browser.
           if (deps.reportPurchase && isRecord(body) && body["consent"] === true) {
             const reported = deps.reportPurchase(order, browserSignal(request, origin)).catch((error: unknown) => deps.reportError?.(`purchase_report_failed:${errorLabel(error)}`));
             if (deps.waitUntil) deps.waitUntil(reported);

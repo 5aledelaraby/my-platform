@@ -1,11 +1,12 @@
-// Analytics and ad tags (GA4, Meta Pixel, TikTok Pixel, Snap Pixel), loaded only after the visitor accepts cookies.
+// Analytics and ad tags (GA4, Meta Pixel, TikTok Pixel, Snap Pixel). They load on every page as soon as it opens
+// (owner, 2026-10-19: no cookie banner); a visitor can turn them off from "Cookie settings" in the footer.
 // Only tags with an ID in site.ts `tracking` ever load. Events: page view on every page, view_item on a product page,
 // add_to_cart, begin_checkout, purchase (thank-you page).
-// The choice is kept in localStorage ("vicuna-consent": "granted" | "denied"); "Cookie settings" in the footer reopens it.
+// A refusal is kept in localStorage ("vicuna-consent": "denied"); with no stored choice the tags run.
 //
 // Rules this file keeps:
-// - Nothing loads and nothing is sent before "Accept". Events that happen before the choice are dropped, never queued.
-// - Withdrawing ("Reject" after an earlier "Accept") tells each loaded tag to stop in the way its vendor documents,
+// - A visitor who refused gets nothing loaded and nothing sent, on every later page.
+// - Refusing after the tags ran tells each loaded tag to stop in the way its vendor documents,
 //   deletes the tags' first-party cookies on this site, and reloads the page so no tag code keeps running.
 import { tracking } from "../site.ts";
 
@@ -29,14 +30,15 @@ let pageChoice: Choice | null = null;
 let loaded = false;
 let revoked = false;
 
-export function consent(): Choice | null {
+/** "denied" only after the visitor refused in "Cookie settings"; otherwise the tags run ("granted"). */
+export function consent(): Choice {
   try {
     const v = localStorage.getItem(CONSENT_KEY);
     if (v === "granted" || v === "denied") return v;
   } catch {
     /* storage blocked */
   }
-  return pageChoice;
+  return pageChoice ?? "granted";
 }
 
 export function setConsent(v: Choice): void {
@@ -214,7 +216,7 @@ function send(e: TrackEvent): void {
   }
 }
 
-/** Sends the event only if the visitor has accepted cookies; otherwise it is dropped (never kept for later). */
+/** Sends the event unless the visitor refused; then it is dropped (never kept for later). */
 export function track(e: TrackEvent): boolean {
   if (revoked || consent() !== "granted") return false;
   load();
@@ -222,7 +224,7 @@ export function track(e: TrackEvent): boolean {
   return true;
 }
 
-/** Called once per page by the consent banner. */
+/** Called once per page (Consent.astro): loads the tags unless the visitor refused. */
 export function initTracking(): void {
   if (consent() === "granted") load();
 }

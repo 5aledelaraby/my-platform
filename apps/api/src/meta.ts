@@ -3,7 +3,7 @@
 // tracking protection). Meta counts it once: both carry the order id as the event id.
 //
 // Rules this file keeps:
-// - Only for a visitor who accepted cookies on the site (the order says `consent: true`), exactly like the Pixel.
+// - Only when the order says `consent: true`: the site sends it unless the visitor turned the tags off in "Cookie settings", exactly like the Pixel.
 // - Only what the privacy policy lists for Meta (owner, 2026-10-17: "send what helps us and Meta without causing
 //   problems"): the order id, value and products, the browser (IP address and user agent), the Meta cookie ids,
 //   and the mobile number and country hashed with SHA-256 (Meta matches the hash; the number itself never leaves).

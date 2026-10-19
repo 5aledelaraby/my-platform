@@ -1,4 +1,4 @@
-// Consent and tracking in a small fake browser: what loads, what is sent, and what withdrawing does.
+// Tracking in a small fake browser: what loads, what is sent, and what refusing in "Cookie settings" does.
 // Each "page" is a fresh copy of tracking.ts (a new module instance) on top of the same storage and cookies.
 import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
@@ -79,17 +79,15 @@ describe("tracking and consent", () => {
     b = browser();
   });
 
-  it("a new visitor: nothing loads, events are dropped (not kept for later)", async () => {
+  it("a new visitor: the tags load on the first page, with no banner choice (owner, 2026-10-19)", async () => {
     const t = await page();
+    assert.equal(t.consent(), "granted");
     t.initTracking();
-    assert.equal(t.consent(), null);
-    assert.equal(t.track(viewItem), false);
-    assert.deepEqual(b.scripts, []);
-    assert.deepEqual(dataLayer(), []);
-    // Accepting afterwards does not send what happened before the choice.
-    t.setConsent("granted");
-    assert.ok(!dataLayer().some((a) => a[1] === "view_item"), "pre-consent view_item must not be sent");
-    assert.ok(!fbqCalls().some((a) => a[1] === "ViewContent"));
+    assert.ok(hosts().includes("www.googletagmanager.com"));
+    assert.ok(hosts().includes("connect.facebook.net"));
+    assert.equal(t.track(viewItem), true);
+    assert.ok(dataLayer().some((a) => a[0] === "event" && a[1] === "view_item"));
+    assert.ok(fbqCalls().some((a) => a[1] === "ViewContent"));
   });
 
   it("accept: only the configured tags load (no TikTok without an ID), with consent granted first", async () => {
@@ -164,19 +162,18 @@ describe("tracking and consent", () => {
     }
   });
 
-  it("blocked storage: the choice works for the page, then the next page asks again and loads nothing", async () => {
+  it("blocked storage: the tags run; a refusal works for that page only", async () => {
     b = browser({ blockStorage: true });
     const t = await page();
     t.initTracking();
-    assert.equal(t.consent(), null);
-    assert.equal(t.track(viewItem), false);
-    t.setConsent("granted");
     assert.equal(t.consent(), "granted");
     assert.ok(hosts().includes("www.googletagmanager.com"));
+    t.setConsent("denied");
+    assert.equal(t.consent(), "denied");
+    assert.equal(t.track(viewItem), false);
     const next = await page();
     next.initTracking();
-    assert.equal(next.consent(), null);
-    assert.deepEqual(b.scripts, []);
+    assert.equal(next.consent(), "granted");
   });
 
   it("purchase sends the product ids (the catalogue SKUs) to every vendor, and no personal data", async () => {

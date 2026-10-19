@@ -505,7 +505,7 @@ async function submit(event: SubmitEvent): Promise<void> {
     // Only a code that applies right now (the minimum may no longer be reached after the cart changed).
     ...(promo && currentTotals().discount > 0 ? { promoCode: promo.code } : {}),
     website: val("website"),
-    // The order's Purchase event also goes to Meta from the server, only for a visitor who accepted cookies.
+    // The order's Purchase event also goes to Meta from the server, unless the visitor turned the tags off in "Cookie settings".
     ...(consent() === "granted" ? { consent: true } : {}),
   };
   submitBtn.disabled = true;
