@@ -189,6 +189,22 @@ describe("PayPal payment", () => {
     assert.deepEqual(await res.json(), { error: "order_cancelled" });
   });
 
+  it("takes no money for an order cancelled after PayPal opened", async () => {
+    const repo = memoryRepository();
+    await repo.setUsdRate(RATE, NOW.toISOString());
+    const { handler, paypal, payments } = app(repo);
+    const { id } = await placeOrder(handler);
+    const { id: ppId } = (await (await handler(post("/paypal/orders", { orderId: id }))).json()) as { id: string };
+    await repo.setStatus(id, "new", "cancelled", 0, NOW.toISOString(), "c1");
+    paypal.approve(ppId);
+    const res = await handler(post("/paypal/capture", { orderId: id, paypalOrderId: ppId }));
+    assert.equal(res.status, 409);
+    assert.deepEqual(await res.json(), { error: "order_cancelled" });
+    assert.equal(paypal.calls.filter((c) => c.startsWith("capture:")).length, 0);
+    assert.equal((await repo.getOrder(id))?.paypal?.paidAt, null);
+    assert.equal(payments.length, 0);
+  });
+
   it("a declined card lets the customer try again; a payment PayPal holds is not marked paid", async () => {
     const repo = memoryRepository();
     await repo.setUsdRate(RATE, NOW.toISOString());
