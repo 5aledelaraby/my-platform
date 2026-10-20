@@ -1,6 +1,8 @@
 // Articles live in /content/articles/*.md (source of truth). Frontmatter is validated at build time.
 // Arabic and English guides share /journal/style-guides/. An article may name its version in the other language
 // (`translation`, written on one side); the pages then link to each other and carry hreflang alternates.
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { parseArticleFrontmatter } from "@platform/content";
 import type { ArticleFrontmatter, ArticleLang } from "@platform/content";
 import { JOURNAL_PATH } from "../site.ts";
@@ -98,4 +100,14 @@ export function articlesAbout(lang: ArticleLang, ids: readonly string[]): Articl
 export function formatDate(iso: string, lang: ArticleLang = "ar"): string {
   const locale = lang === "ar" ? "ar-EG-u-nu-latn" : "en-GB";
   return new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
+}
+
+/**
+ * The smaller copies of an article's cover that exist (look photos have 400/640/800/1200 px copies), as a srcset, so a
+ * phone downloads the size it shows. Empty when the cover has no copies. Build time only (reads public/).
+ */
+export function coverSrcset(src: string): string {
+  if (!/-1200\.webp$/.test(src)) return "";
+  const sizes = [400, 640, 800, 1200].filter((w) => w === 1200 || existsSync(join(process.cwd(), "public", src.replace(/-1200\.webp$/, `-${w}.webp`))));
+  return sizes.length > 1 ? sizes.map((w) => `${src.replace(/-1200\.webp$/, `-${w}.webp`)} ${w}w`).join(", ") : "";
 }

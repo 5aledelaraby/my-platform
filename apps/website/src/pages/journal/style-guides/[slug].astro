@@ -5,7 +5,7 @@ import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "@platform/seo"
 import Base from "../../../layouts/Base.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import ProductCard from "../../../components/ProductCard.astro";
-import { articleUrl, articlesIn, formatDate, getArticle, translationOf, articles } from "../../../lib/articles.ts";
+import { articleUrl, articlesIn, coverSrcset, formatDate, getArticle, translationOf, articles } from "../../../lib/articles.ts";
 import { beltsUrl, getProduct } from "../../../store.ts";
 import { JOURNAL_PATH, site } from "../../../site.ts";
 
@@ -50,7 +50,7 @@ const jsonLd = serializeJsonLd([
 const titleTag = `${article.title} | ${ar ? "فيكونا" : "Vicuna"}`;
 ---
 
-<Base title={titleTag.length <= 70 ? titleTag : article.title} description={article.description} lang={lang} jsonLd={jsonLd} image={article.image} alternates={alternates}>
+<Base title={titleTag.length <= 70 ? titleTag : article.title} description={article.description} lang={lang} jsonLd={jsonLd} image={article.image} alternates={alternates} lcpImage={article.image} lcpSrcset={coverSrcset(article.image) || undefined}>
   <Breadcrumbs items={crumbs} />
   <article class="wrap article">
     <header>
@@ -60,7 +60,7 @@ const titleTag = `${article.title} | ${ar ? "فيكونا" : "Vicuna"}`;
         {other && <> · <a class="textlink" href={articleUrl(other.slug)} hreflang={other.lang} lang={other.lang}>{t.other}</a></>}
       </p>
     </header>
-    <img class="cover" src={article.image} alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} fetchpriority="high" />
+    <img class="cover" src={article.image} srcset={coverSrcset(article.image) || undefined} sizes="(min-width: 820px) 780px, calc(100vw - 40px)" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} fetchpriority="high" />
     <div class="prose"><Content /></div>
   </article>
   {related.length > 0 && (

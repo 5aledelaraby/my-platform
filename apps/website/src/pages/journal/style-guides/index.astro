@@ -4,7 +4,7 @@
 import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../../../layouts/Base.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
-import { articlesIn, articleUrl, formatDate } from "../../../lib/articles.ts";
+import { articlesIn, articleUrl, coverSrcset, formatDate } from "../../../lib/articles.ts";
 import type { Article } from "../../../lib/articles.ts";
 import { JOURNAL_PATH, site } from "../../../site.ts";
 import { beltsUrl } from "../../../store.ts";
@@ -27,13 +27,13 @@ const groups: { lang: "en" | "ar"; heading: string; list: Article[] }[] = [
     <h1>Journal</h1>
     <p class="muted lede">How to choose, tie and style a waist belt, in English and Arabic.</p>
   </div>
-  {groups.filter((g) => g.list.length > 0).map((g) => (
+  {groups.filter((g) => g.list.length > 0).map((g, gi) => (
     <section class="wrap journal-group" lang={g.lang} dir={g.lang === "ar" ? "rtl" : "ltr"}>
       <h2 class="section-title">{g.heading}</h2>
       <div class="posts">
-        {g.list.map((a) => (
+        {g.list.map((a, i) => (
           <a class="post" href={articleUrl(a.slug)}>
-            <img src={a.image} alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
+            <img src={a.image} srcset={coverSrcset(a.image) || undefined} sizes="(min-width: 760px) 30vw, calc(100vw - 40px)" alt={a.imageAlt} width={a.imageWidth} height={a.imageHeight} loading={gi === 0 && i === 0 ? "eager" : "lazy"} fetchpriority={gi === 0 && i === 0 ? "high" : undefined} decoding="async" />
             <time datetime={a.datePublished} class="muted">{formatDate(a.datePublished, a.lang)}</time>
             <h3>{a.title}</h3>
             <p class="muted">{a.description}</p>

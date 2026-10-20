@@ -1,9 +1,7 @@
 ---
 // "Style guides" on the belts, design and product pages: up to three journal guides that show these belts or link to
 // them, in the page's language, and a link to the journal. Links pages to the guides and the guides back to the belts.
-import { existsSync } from "node:fs";
-import { join } from "node:path";
-import { articlesAbout, articlesIn, articleUrl } from "../lib/articles.ts";
+import { articlesAbout, articlesIn, articleUrl, coverSrcset } from "../lib/articles.ts";
 import { JOURNAL_PATH } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -12,11 +10,6 @@ const { lang, ids = [] } = Astro.props;
 const ar = lang === "ar";
 const about = ids.length ? articlesAbout(lang, ids) : [];
 const list = (about.length ? about : articlesIn(lang)).slice(0, 3);
-// The small copy of the cover when there is one (look photos have 400 px copies), else the cover itself.
-const thumb = (src: string) => {
-  const small = src.replace(/-1200\.webp$/, "-400.webp");
-  return small !== src && existsSync(join(process.cwd(), "public", small)) ? small : src;
-};
 ---
 
 {list.length > 0 && (
@@ -26,7 +19,7 @@ const thumb = (src: string) => {
       {list.map((a) => (
         <li>
           <a href={articleUrl(a.slug)}>
-            <img src={thumb(a.image)} alt="" width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
+            <img src={a.image} srcset={coverSrcset(a.image) || undefined} sizes="(min-width: 760px) 30vw, 62vw" alt="" width={a.imageWidth} height={a.imageHeight} loading="lazy" decoding="async" />
             <span class="guides-name">{a.title}</span>
           </a>
         </li>
