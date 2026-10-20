@@ -25,7 +25,8 @@
   --ease: cubic-bezier(.22, 1, .36, 1);
 }
 @media (min-width: 900px) { :root { --gutter: 48px; --head-h: 77px; } }
-html[lang="ar"] { --font: "IBM Plex Sans Arabic", "Poppins", system-ui, sans-serif; }
+html[lang="ar"], [lang="ar"] { --font: "IBM Plex Sans Arabic", "Poppins", system-ui, sans-serif; }
+[lang="ar"]:not(html) { font-family: var(--font); }
 
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -408,9 +409,21 @@ dialog.cart::backdrop { background: rgb(17 17 17 / .5); }
 @media (min-width: 760px) { .posts { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
 .post { display: grid; gap: 6px; text-decoration: none; }
 .post img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--stone); }
-.post h2 { font-size: 20px; }
+.post :is(h2, h3) { font-size: 20px; }
+.journal-group { padding-top: 40px; }
+.article-meta { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.article-links { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 28px; }
 .group-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-bottom: 18px; }
 .group-head :is(h1, h2) { font-size: clamp(24px, 4.6vw, 36px); }
+.guides { padding-block: 8px var(--space); }
+.guides-list { display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 12px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.guides-list::-webkit-scrollbar { display: none; }
+@media (min-width: 760px) { .guides-list { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+.guides-list li { scroll-snap-align: start; }
+.guides-list a { display: grid; gap: 10px; text-decoration: none; }
+.guides-list img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--stone); }
+.guides-name { color: var(--text); font-size: 14px; line-height: 1.45; }
+.guides-more { margin-top: 28px; }
 .more-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .fav-empty { display: grid; justify-items: start; gap: 16px; padding: 12px 0; color: var(--muted); }
 .thanks { max-width: 640px; margin: 0 auto; padding-block: 48px 72px; text-align: center; }

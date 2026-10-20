@@ -6,6 +6,7 @@ import { beltsUrl, coverOf, imageOf, srcsetOf, priceOfProduct, productName, prod
 import { PIASTERS_PER_EGP, SHIPPING, priceOf } from "@platform/commerce";
 import type { CatalogProduct } from "@platform/commerce";
 import ProductCard from "./ProductCard.astro";
+import Guides from "./Guides.astro";
 import Icon from "./ui/Icon.astro";
 import { langPath, site } from "../site.ts";
 import { filmOf, looksOf } from "../lib/looks.ts";
@@ -179,6 +180,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       {related.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </section>
+  <Guides lang={lang} ids={[product.id, product.style]} />
   <script type="application/json" id="pdp-colours" set:html={colourJson} />
 </Base>
 

@@ -11,8 +11,7 @@
       "mayImport": [
         "commerce",
         "seo",
-        "content",
-        "ui"
+        "content"
       ],
       "frameworkFree": false
     },
@@ -27,10 +26,6 @@
     "packages/seo": {
       "mayImport": [],
       "frameworkFree": true
-    },
-    "packages/ui": {
-      "mayImport": [],
-      "frameworkFree": false
     }
   }
 }

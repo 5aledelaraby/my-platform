@@ -15,4 +15,4 @@ The legacy site turned the cart into a WhatsApp message. That tied the idea of "
 ## Consequences
 - Without an API and without online payment, the cart alone cannot complete a purchase. In phase 1 the only way for a customer to finish is the WhatsApp link (or the site acts as a catalogue). Whether to switch it on at launch is a business decision for the owner.
 - Removing or replacing WhatsApp later does not touch pricing, cart or product code.
-- The legacy Meta CAPI Worker is a tracking relay, not part of the order system; it stays deferred (see MIGRATION.md).
+- The legacy Meta CAPI Worker is a tracking relay, not part of the order system; it stays deferred (the old `vicuna-capi` Worker was later replaced by `apps/api/src/meta.ts`).

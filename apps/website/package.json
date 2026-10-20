@@ -14,7 +14,6 @@
     "@platform/commerce": "workspace:*",
     "@platform/content": "workspace:*",
     "@platform/seo": "workspace:*",
-    "@platform/ui": "workspace:*",
     "astro": "^7.3.8"
   },
   "devDependencies": {

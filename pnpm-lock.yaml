@@ -45,9 +45,6 @@ importers:
       '@platform/seo':
         specifier: workspace:*
         version: link:../../packages/seo
-      '@platform/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       astro:
         specifier: ^7.3.8
         version: 7.3.8(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.9.1)
@@ -64,8 +61,6 @@ importers:
   packages/content: {}
 
   packages/seo: {}
-
-  packages/ui: {}
 
 packages:
 

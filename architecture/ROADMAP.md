@@ -21,8 +21,7 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 |---|---|---|
 | منتجات، سلة، أسعار، خصم، شحن | `packages/commerce` | جاهز ومختبر |
 | SEO (canonical، robots، sitemap، JSON-LD) | `packages/seo` | جاهز ومختبر |
-| محتوى ومقالات | `packages/content` | نموذج التحقق جاهز |
-| مكونات التصميم | `packages/ui` | هيكل فاضي (لحد ما يظهر مكون مشترك) |
+| محتوى ومقالات | `packages/content` + `content/articles` | نموذج التحقق جاهز، والمقالات عربي وإنجليزي (ADR 0016) |
 | الواجهة الأمامية | `apps/website` | منشور على `vicuna-eg.com` (Astro)، ونسخة تجريبية على `staging.vicuna-eg.com` |
 | إنشاء الطلبات وتخزينها (D1) | `apps/api` | منشور (`vicuna-api`)، ومعاه صفحة الإدارة وإشعارات Telegram والنسخ الاحتياطي (ADR 0008، 0010) |
 | التتبع والإعلانات (Pixel وCAPI) | البيكسل في `apps/website` (`scripts/tracking.ts`)، والـ CAPI في `apps/api` (`meta.ts`) | **اتبنى** (2026-10-17): حدث الشراء بيتبعت من المتصفح والسيرفر بنفس `event_id`. اتعمل جوه التطبيقين بدل `packages/tracking` و`apps/capi-worker`، لأن مفيش مستهلك تاني. الـ Worker القديم `vicuna-capi` مش مستخدم |
@@ -34,19 +33,19 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 |---|---|---|---|
 | لوحة الإدارة | **بدأت** داخل `apps/api` على `admin.vicuna-eg.com` (الطلبات والمخزون، ADR 0010). تتنقل لـ `apps/admin` لما تعدّل المنتجات والمحتوى من واجهة | تعدّل المنتجات والمحتوى من واجهة بدل ملفات | api + `packages/auth` |
 | المخزون | **اتبنى** في `commerce` (`inventory.ts`) وD1 (ADR 0010) | — | commerce |
-| الدفع الأونلاين | `packages/payments` | تختار مزود دفع | commerce (وapi يستدعيه) |
+| الدفع الأونلاين | **اتبنى** جوه `apps/api` (PayPal، ADR 0014). يتنقل لـ `packages/payments` لو ظهر مزود تاني | مزود دفع تاني | commerce |
 | الإيميل والإشعارات | `packages/notifications` | تبعت تأكيدات أو نشرات | لا شيء داخلي |
 | الخدمات (مثل التفصيل بجلد طبيعي) | صفحات في `content/` أولًا، وحزمة `services` لو احتجت حجز وقت أو تسعير خاص | الخدمة ليها منطق (حجز، عروض أسعار) | content, commerce |
-| السفر | تطبيق منفصل `apps/travel` (أو براند آخر) يعيد استخدام `ui`/`seo`/`content` | يبقى له كتالوج ونموذج بيانات خاص | ui, seo, content |
+| السفر | تطبيق منفصل `apps/travel` (أو براند آخر) يعيد استخدام `seo`/`content`، و`packages/ui` يتعمل ساعتها لو التطبيقين محتاجين نفس المكونات | يبقى له كتالوج ونموذج بيانات خاص | seo, content |
 | الميديا والصور | `packages/media` + تخزين R2 | ترفع صور من لوحة الإدارة | لا شيء داخلي |
 | النشر على السوشيال | `apps/social-worker` + `packages/social` | توصل أول منصة فعلًا | content, media |
 | تكامل مع خدمة خارجية | `packages/integration-<اسم الخدمة>` (واحدة لكل خدمة) | تحتاجها فعلًا | حسب الحاجة |
-| تعدد اللغات | داخل `content` و`apps/website` (routing)، مش حزمة جديدة | تضيف لغة تانية | content |
+| تعدد اللغات | داخل `content` و`apps/website`: المقالات عربي وإنجليزي (ADR 0016)، والمتجر إنجليزي (ADR 0015) | تضيف لغة تانية للمتجر | content |
 | المصادقة | `packages/auth` | تظهر لوحة الإدارة | لا شيء داخلي |
 
 ## هيكل الموقع (ADR 0009)
 
-الرئيسية `/` تعريف بالبراند فقط، والمتجر تحت `/collections/vicuna-belts/`، والمقالات تحت `/journal/style-guides/`. كل مجال جديد (خدمات، سفر، مقالات...) ياخد قسم رئيسي خاص بيه، والرئيسية بتربط عليه لما يتطلق بدون ما تعرض محتواه.
+الرئيسية `/` تعريف بالبراند فقط، والمتجر تحت `/collections/vicuna-belts/`، والمقالات (عربي وإنجليزي) تحت `/journal/style-guides/`، مربوطة من الفوتر وصفحات الأحزمة (ADR 0016). كل مجال جديد (خدمات، سفر، مقالات...) ياخد قسم رئيسي خاص بيه، والرئيسية بتربط عليه لما يتطلق بدون ما تعرض محتواه.
 
 ## قواعد ثابتة مهما كبرنا
 

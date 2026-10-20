@@ -24,9 +24,11 @@ interface Props {
   lcpSrcset?: string;
   /** The header sits on the first photo (home page). */
   overlayHeader?: boolean;
+  /** The same page in each language, this page included (journal articles that have a translation). */
+  alternates?: readonly { lang: Lang; href: string }[];
 }
 
-const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage, lcpSrcset, overlayHeader = false } = Astro.props;
+const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage, lcpSrcset, overlayHeader = false, alternates = [] } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
@@ -46,6 +48,8 @@ const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} ج
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex,nofollow" : robotsDirective(env)} />
     <link rel="canonical" href={canonical} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={new URL(a.href, site).toString()} />)}
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={new URL((alternates.find((a) => a.lang === "en") ?? alternates[0]!).href, site).toString()} />}
     <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
     <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

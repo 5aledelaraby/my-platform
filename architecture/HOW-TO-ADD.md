@@ -2,7 +2,7 @@
 
 | عايز تضيف | تعمل إيه |
 |---|---|
-| **مقال** | ملف `content/articles/<slug>.md` فيه frontmatter (title, description, slug, datePublished). `parseArticleFrontmatter` بيرفض أي خطأ. الـ slug حروف لاتينية صغيرة وشرطات فقط |
+| **مقال** | ملف `content/articles/<slug>.md` فيه frontmatter (`lang` "ar" أو "en"، title، description، slug، datePublished، image وimageAlt وimageWidth وimageHeight، وproducts اختياري). لو ليه نسخة باللغة التانية اكتبي `translation: "<slug التاني>"` في واحد منهم بس. `parseArticleFrontmatter` و`test/articles.test.ts` بيرفضوا أي خطأ (لينك لحزام مش موجود، سعر قديم، لغة ناقصة). الـ slug حروف لاتينية صغيرة وشرطات فقط. المقال بيظهر لوحده في صفحة المقالات وفي "Style guides" على صفحات الأحزمة اللي بيذكرها |
 | **منتج** | سطر في `packages/commerce/data/catalog.json` (id ثابت للأبد، style، color، hex، texture) + صورة بنفس اسم الـ id. السعر من الستايل بالقروش. بعد التعديل: انشر الموقع **والـ API** |
 | **صفحة ثابتة** | `content/pages/` (بعد نقلها). لو غيرت الـ slug لازم redirect (ADR 0004) |
 | **منطق جديد (مجال)** | الأول اسأل الأسئلة الثلاثة في `ROADMAP.md`. لو أيوه: `node tools/architecture/new-unit.mjs package <name>` |

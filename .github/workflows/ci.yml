@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # main is the live site; staging is what "publish" deploys, so a mistake shows up before it goes live.
+    branches: [main, staging]
   pull_request:
 
 permissions:

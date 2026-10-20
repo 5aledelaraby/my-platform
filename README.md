@@ -1,62 +1,113 @@
 # my-platform
 
-منصة Vicuna (فيكونا): متجر أحزمة نسائية + محتوى SEO، مبنية كـ **Modular Monolith** داخل monorepo واحد.
+منصة **Vicuna (فيكونا)**: متجر أحزمة الخصر على [vicuna-eg.com](https://vicuna-eg.com)، والـ API بتاع الطلبات، وصفحة الإدارة. كله في ريبو واحد (monorepo) مبني كـ **Modular Monolith**: كل جزء في مكانه وبحدود واضحة، من غير microservices.
 
-- القواعد لأي مبرمج أو AI: [`AGENTS.md`](AGENTS.md)
+- القواعد لأي مبرمج أو AI: [`AGENTS.md`](AGENTS.md) (أهم ملف في الريبو)
 - قرارات المعمارية: [`architecture/adr/`](architecture/adr)
-- جرد ما سيتم نقله من الموقع القديم: [`MIGRATION.md`](MIGRATION.md)
-- هيكل الموقع (الرئيسية تعريف، المتجر `/collections/vicuna-belts/`): [`ADR 0009`](architecture/adr/0009-homepage-is-brand-introduction.md)
-- خريطة التوسع (كل مجال مستقبلي: أين يعيش ومتى يتبني): [`architecture/ROADMAP.md`](architecture/ROADMAP.md)
 - إزاي تضيف أي حاجة جديدة: [`architecture/HOW-TO-ADD.md`](architecture/HOW-TO-ADD.md)
+- خريطة التوسع (كل مجال مستقبلي: فين يعيش وإمتى يتبني): [`architecture/ROADMAP.md`](architecture/ROADMAP.md)
+- تفاصيل الموقع: [`apps/website/README.md`](apps/website/README.md)، وتفاصيل الـ API: [`apps/api/README.md`](apps/api/README.md)
 
-## الحالة الحالية
+## العناوين
 
-| الجزء | الحالة |
-|---|---|
-| `packages/commerce` (فلوس، أكواد الخصم، إجماليات السلة، المخزون) | جاهز ومختبر |
-| `packages/seo` (canonical، robots، sitemap، JSON-LD) | جاهز ومختبر |
-| `packages/content` (التحقق من بيانات المقالات) | جاهز ومختبر |
-| `packages/ui` | هيكل فاضي لحد ما نحتاج مكون مشترك |
-| `apps/api` (الطلبات، المخزون، أكواد الخصم، D1) | منشور على Cloudflare Workers (`vicuna-api`) ومربوط بقاعدة D1، ومعاه صفحة الإدارة على `admin.vicuna-eg.com`، وإشعارات Telegram، وحدث الشراء لـ Meta (CAPI)، ونسخة احتياطية يومية وفحص كل ساعة (`apps/api/README.md`) |
-| `apps/website` | منشور على **vicuna-eg.com** (`vicuna-site-production` من `main`)، ونسخة تجريبية على `staging.vicuna-eg.com` (`vicuna-site` من `staging`). رئيسية تعريفية، المتجر `/collections/vicuna-belts/` (5 تصميمات و18 منتج) عربي/إنجليزي، المقالات `/journal/style-guides/`، السلة (شحن عادي وسريع واستلام من المقر)، صفحة الشكر، صفحات السياسات، شريط الكوكيز، Meta Pixel وGA4، وملف الكتالوج `/catalog/products.csv` لـ Meta وGoogle. Worker صغير بيخفي أي حزام مخزونه صفر (ADR 0013). PageSpeed: 100 في الأربعة على الموبايل والكمبيوتر (2026-10-18) (`apps/website/README.md`) |
-| حدود الاعتمادية + فحص الأسرار + CI | جاهزين |
+| العنوان | إيه هو | بيتنشر من |
+|---|---|---|
+| `vicuna-eg.com` | الموقع العام | فرع `main` (Worker اسمه `vicuna-site-production`) |
+| `staging.vicuna-eg.com` | النسخة التجريبية (مش بتظهر في جوجل، ومن غير أكواد إعلانات) | فرع `staging` (Worker اسمه `vicuna-site`) |
+| `admin.vicuna-eg.com` | صفحة الإدارة: الطلبات والمخزون وأكواد الخصم وسعر الدولار | فرع `main` (جوه `vicuna-api`) |
+| `vicuna-eg.com/api/...` | الـ API بتاع الطلبات | فرع `main` (`vicuna-api` + قاعدة D1) |
 
-## تشغيل المشروع (أول مرة)
+## هيكل الريبو
 
-على جهاز أو GitHub Codespaces عنده إنترنت عادي:
+```
+apps/website        الموقع (Astro، صفحات HTML ثابتة، والسلة سكربت صغير)
+apps/api            الطلبات والمخزون وأكواد الخصم وPayPal وصفحة الإدارة (Cloudflare Worker + D1)
+packages/commerce   الفلوس والأسعار والخصم والشحن والمخزون، والكتالوج (data/catalog.json)
+packages/seo        canonical وrobots وsitemap وJSON-LD
+packages/content    التحقق من بيانات المقالات (frontmatter)
+content/articles    المقالات، عربي وإنجليزي (Markdown)
+tools/architecture  فحص الحدود بين الأجزاء، وفحص الأسرار، وأداة إضافة جزء جديد
+architecture/       القرارات (ADR) والحدود (boundaries.json) والخطط
+```
+
+## التشغيل
+
+محتاج Node 22 (الرقم في `.nvmrc`) وpnpm (النسخة متحددة في `package.json`، وcorepack بيجيبها لوحده):
 
 ```bash
 corepack enable
-pnpm install --frozen-lockfile   # ملف pnpm-lock.yaml موجود في الريبو: لا تعدّله يدويًا
-pnpm run check                   # لازم ينجح كله (بيبني نسخة الإنتاج للفحص)
+pnpm install --frozen-lockfile   # pnpm بس، مش npm ولا yarn. ملف pnpm-lock.yaml ما يتعدلش باليد
+pnpm run check                   # كل الفحوصات + بناء نسخة الإنتاج. لازم ينجح قبل أي commit
 ```
 
-بناء الموقع لوحده لازم يحدد البيئة صراحةً، ومفيش قيمة افتراضية: `DEPLOY_ENV=production|staging|preview`. أي بناء من غيرها بيفشل برسالة واضحة، علشان ولا نسخة تجريبية تتفهرس في جوجل بالغلط، ولا نسخة الإنتاج تتقفل بالغلط.
+`pnpm run check` بيشغّل بالترتيب: فحص الأسرار، وفحص الحدود بين الأجزاء، وكل الاختبارات، وtypecheck، وlint، وبناء الموقع، وبعد البناء `check-dist` اللي بيفحص كل صفحة.
 
-الـ CI بيشغّل الحراس والاختبارات وtypecheck وlint وبناء الإنتاج مع كل push على `main` وكل pull request. الـ typecheck بيشمل الموقع كمان (ملفات Astro وTypeScript) بـ `astro-check`.
-
-## إضافة وحدة جديدة
+أوامر تانية:
 
 ```bash
-node tools/architecture/new-unit.mjs package <name> [--may-import a,b]
-node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
+pnpm --filter @platform/website dev                          # تجربة الموقع على جهازك (noindex تلقائيًا)
+DEPLOY_ENV=production pnpm --filter @platform/website build  # بناء الموقع لوحده
+pnpm test                                                    # الاختبارات بس
 ```
 
-بيعمل الهيكل ويسجّل الوحدة ويشغّل فحص الحدود. المبدأ: لا وحدة قبل مستهلك حقيقي.
+**Turborepo** بيشغّل typecheck والبناء: الأجزاء بتشتغل مع بعض، والنتيجة بتتحفظ في `.turbo/`، فلو مفيش حاجة اتغيرت بياخد أقل من ثانية. أي تغيير في `packages/*` أو `content/` أو الكتالوج بيلغي الحفظ ويعيد البناء (اتجرب 2026-10-20). الاختبارات وlint بيشتغلوا كاملين كل مرة عن قصد لأنهم ثواني.
 
-## قرار واتساب والطلبات
+`DEPLOY_ENV` إجباري في أي بناء للموقع (`production` أو `staging` أو `preview`) ومالوش قيمة افتراضية، علشان نسخة تجريبية ما تتفهرسش في جوجل بالغلط، ونسخة الإنتاج ما تتقفلش بالغلط.
 
-واتساب قناة اختيارية بعد إنشاء الطلب، مش أساس نظام الطلبات ([ADR 0007](architecture/adr/0007-whatsapp-is-an-optional-channel.md)). الطلب بيتسجل عبر الـ API ([ADR 0008](architecture/adr/0008-order-api.md)). صفحة الإدارة (الطلبات والمخزون وأكواد الخصم) شغالة على `admin.vicuna-eg.com` ([ADR 0010](architecture/adr/0010-inventory-and-owner-admin.md)). الدفع: عند الاستلام، أو أونلاين بالكارت أو PayPal بالدولار في صفحة الشكر ([ADR 0014](architecture/adr/0014-paypal-in-us-dollars.md))؛ InstaPay اتشال (2026-10-18).
+## النشر (خطوة بخطوة)
 
-## الخطوة التالية
+1. الشغل كله بيروح على فرع **`pending`**.
+2. **"انشر"** = نقل `pending` لـ **`staging`**. Cloudflare بيبني `staging.vicuna-eg.com` لوحده، والـ CI بيفحص نفس الكود.
+3. نراجع على الموبايل في `staging.vicuna-eg.com`.
+4. **"انشر على العام"** = Pull Request من `pending` لـ `main`، ونستنى الفحوصات `guards-and-tests` و`full` و`CodeQL` تخضر، وبعدها `main` بياخد الكود و`vicuna-eg.com` بيتبني لوحده.
 
-1. (تم) lockfile وCI، والموقع (Astro)، ونقل المقالات، ونشر الـ API والموقع على Cloudflare Workers، وصفحة الإدارة، والمخزون، وأكواد الخصم.
-2. (تم) الـ migrations من 0001 لـ 0005 متنفذة على القاعدتين. على `vicuna-db` (الإنتاج) اتنفذت يدويًا من الـ Console، فمفيش فيها جدول `d1_migrations`: **ممنوع** تشغيل `wrangler d1 migrations apply` عليها قبل ما الجدول يتعمل وتتسجل فيه 0001 لـ 0005 (زي ما اتعمل في `vicuna-db-staging`)، وإلا هيحاول ينفذ 0001 تاني.
-3. (تم 2026-10-17) تحويل الدومين: `vicuna-eg.com` على `vicuna-site-production`، بداية نظيفة من غير تحويلات من روابط الموقع القديم. ملف الكتالوج على نفس الرابط القديم.
-4. (تم 2026-10-18) السرعة: PageSpeed 100 في الأربعة على الموبايل والكمبيوتر.
-5. طلب تجربة حقيقي من الموقع العام، والتأكد إن حدث الشراء وصل لـ Meta من المتصفح والسيرفر (Events Manager) ولـ GA4، وبعدها يتلغي من صفحة الإدارة. بعدها يتمسح الـ Worker القديم `vicuna-capi`.
-6. (تم) حماية `main`: Ruleset «Protect main» شغال، ويشترط نجاح `guards-and-tests` و`full`.
+`main` محمي (Ruleset «Protect main»): ما بيقبلش كود من غير ما الفحوصات تنجح.
+
+## إيه اللي بيشتغل لوحده
+
+| إيه | فين | بيعمل إيه |
+|---|---|---|
+| CI | `.github/workflows/ci.yml` | مع كل push على `main` و`staging` وكل Pull Request: الفحوصات كلها وبناء نسخة الإنتاج |
+| CodeQL | GitHub | فحص أمان للكود |
+| Dependabot | `.github/dependabot.yml` | كل أسبوع بيفتح Pull Requests لتحديث المكتبات وGitHub Actions |
+| فحص كل ساعة | `apps/api/src/scheduled.ts` | بيفتح الموقع و`/api/health`، ولو فيه مشكلة بيبعتلك على Telegram |
+| نسخة احتياطية يومية | `apps/api/src/scheduled.ts` | نسخة من قاعدة البيانات في R2 (`vicuna-backups`) وعلى Telegram |
+| إخفاء الحزام اللي خلص | `apps/website/src/worker.ts` | أي حزام مخزونه صفر بيختفي من الموقع والكتالوج وsitemap، ويرجع لوحده لما تزوّد الكمية |
+
+## أخطاء شائعة وإزاي بنمنعها
+
+الهدف: الغلطة تتمسك قبل ما توصل للموقع العام، مش بعدها. اللي في الجدول ده بيتفحص لوحده، وأي واحد فيهم بيوقف البناء.
+
+| الغلطة | اللي بيمسكها |
+|---|---|
+| لينك داخلي مكسور، أو صورة مش موجودة | `check-dist` (كل صفحة بعد البناء) |
+| صفحة ما فيش صفحة تانية بتوصلها (orphan) | `check-dist` |
+| صفحة من غير title أو description أو canonical، أو title طويل، أو أكتر من h1 | `check-dist` |
+| النسخة التجريبية تتفهرس في جوجل، أو الموقع العام يتقفل | `check-dist` + `DEPLOY_ENV` الإجباري |
+| صفحة ناقصة من sitemap، أو sitemap فيه صفحة مش موجودة | `check-dist` |
+| hreflang من ناحية واحدة بين مقال عربي وإنجليزي | `check-dist` |
+| مقال فيه لينك لحزام اتشال، أو سعر أو مصاريف شحن قديمة، أو InstaPay، أو "جلد طبيعي" لحزام PU | `apps/website/test/articles.test.ts` |
+| صورة اتمسحت وهي لسه مستخدمة في مقال أو صفحة | اختبارات الصور + `check-dist` |
+| منتج جديد من غير صورة الكتالوج (`public/catalog/img/<id>.jpg`) | اختبار الكتالوج |
+| سياسات بأرقام مكتوبة باليد مختلفة عن الحقيقة | الأرقام كلها جاية من `site.ts` و`@platform/commerce` |
+| سر (token أو مفتاح) اتكتب في الكود | `check-secrets` |
+| جزء بيستورد جزء ممنوع عليه | `check-boundaries` |
+| JavaScript تقيل بيبطّأ الموقع | ميزانية JS في `check-dist` (90 KB) |
+| صورة اتغيرت والزوار شايفين القديمة | البصمة: كل صورة وخط ليها عنوان فيه hash، فالجديد بيظهر فورًا |
+
+وحاجات لازم تتعمل باليد (ما ينفعش تتفحص لوحدها):
+
+- **المخزون:** بيتظبط من صفحة الإدارة بس. منتج جديد كميته صفر لحد ما تزوّدها، فصفحته بتحوّل على صفحة تصميمه.
+- **قاعدة البيانات:** أي migration جديدة تتنفذ على قاعدة الـ staging الأول، وعلى قاعدة الإنتاج **أنت بنفسك** من الـ Console، وقبل ما الكود اللي محتاجها يتنشر. ممنوع `wrangler d1 migrations apply` على قاعدة الإنتاج (اتعملت يدوي من الأول، ومفيش فيها جدول `d1_migrations`).
+- **Merchant Center وMeta:** لغة الكتالوج إنجليزي، والشحن 3 أيام والاسترجاع 14 يوم لازم يطابقوا الموقع.
+- **سعر الدولار لـ PayPal:** من صفحة الإدارة.
+
+## إضافة حاجة جديدة
+
+- **مقال:** ملف في `content/articles/` (التفاصيل في [`HOW-TO-ADD.md`](architecture/HOW-TO-ADD.md)). لازم يكون فيه `lang`، ولو ليه نسخة باللغة التانية تتكتب `translation` في واحد منهم. بيظهر لوحده في صفحة المقالات وفي "Style guides" تحت صفحات الأحزمة اللي بيذكرها.
+- **حزام جديد:** سطر في `packages/commerce/data/catalog.json` (الـ id ثابت للأبد)، وصورته في `public/img/products/` وصورة الكتالوج في `public/catalog/img/<id>.jpg`، وصور على الموديل في `public/img/looks/` مع العدد في `lib/looks.ts`، وبعدين المخزون من صفحة الإدارة.
+- **جزء جديد في الريبو:** `node tools/architecture/new-unit.mjs package|app <name>`، ومن غير ما يكون فيه حد محتاجه فعلًا ما يتعملش.
 
 ## قاعدة أمان
 
-لا تعطي أي AI أو أي شخص: كلمات سر، أو tokens، أو مفاتيح API. الأسرار (Telegram وCloudflare Access ومفتاح Meta Conversions API باسم `META_TOKEN`) بتتحط في Cloudflare Secrets بس. التتبع بيشتغل بعد موافقة الزائرة على الكوكيز بس، ومع الموافقة دي الـ API بيبعت حدث الشراء لـ Meta من السيرفر كمان (الموبايل مشفّر، من غير الاسم والعنوان).
+ما تديش أي AI أو أي شخص كلمات سر أو tokens أو مفاتيح API. الأسرار (Telegram وCloudflare Access وMeta `META_TOKEN` وPayPal) بتتحط في Cloudflare Secrets بس. لو سر اتكتب في git بالغلط، لازم يتغير؛ مسح الـ commit مش كفاية.

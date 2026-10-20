@@ -12,6 +12,10 @@ const JS_BUDGET_BYTES = 90 * 1024;
 const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/", "/favorites/", "/en/favorites/", "/404.html"]);
 
 const errors = [];
+/** Pages and the hreflang alternates they declare, checked both ways after every page is read. */
+const alternateMap = new Map();
+/** Every page that some other page links to (orphan check). */
+const linkedTo = new Set();
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
 
 function walk(dir) {
@@ -65,8 +69,15 @@ for (const file of pages) {
   const h1s = html.match(/<h1[\s>]/g)?.length ?? 0;
   if (h1s !== 1) fail(name, `expected exactly one <h1>, found ${h1s}`);
 
-  // English only since 2026-10-19: one version of every page, so no hreflang alternates.
-  if (/<link rel="alternate" hreflang=/.test(html)) fail(name, "hreflang alternates point at pages that no longer exist (English only)");
+  // hreflang (journal guides with a translation only): every alternate is a page of this build, the page lists
+  // itself, and the other page lists it back (Google ignores one-sided pairs).
+  const alternates = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)].map((m) => ({ lang: m[1], href: m[2] }));
+  if (alternates.length) {
+    alternateMap.set(url, alternates);
+    if (!alternates.some((a) => a.href === SITE + url)) fail(name, "hreflang alternates must include the page itself");
+    if (!alternates.some((a) => a.lang === "x-default")) fail(name, "hreflang alternates need an x-default");
+    for (const a of alternates) if (!known.has(a.href.replace(SITE, ""))) fail(name, `hreflang points at a missing page ${a.href}`);
+  }
 
   // Markdown article bodies cannot carry width/height; their images are square and sized by CSS (aspect-ratio).
   const prose = /<div class="prose">[\s\S]*?<\/div>/.exec(html)?.[0] ?? "";
@@ -75,8 +86,13 @@ for (const file of pages) {
     if (!/\bwidth=/.test(m[0]) || !/\bheight=/.test(m[0])) fail(name, "image without width/height (layout shift)");
   }
 
+  for (const m of html.matchAll(/<img\b[^>]*\ssrc="(\/[^"]+)"/g)) {
+    if (!m[1].startsWith("/v/") && !existsSync(join(DIST, m[1]))) fail(name, `missing image ${m[1]}`);
+  }
+
   for (const m of html.matchAll(/<a\b[^>]*\shref="(\/[^"#?]*)"/g)) {
     const href = m[1];
+    if (href !== url) linkedTo.add(href);
     const isAsset = /\.[a-z0-9]+$/i.test(href);
     if (isAsset) {
       if (!existsSync(join(DIST, href))) fail(name, `broken asset link ${href}`);
@@ -86,6 +102,20 @@ for (const file of pages) {
   }
 
   if (url.startsWith("/en/")) fail(name, "English pages live at the root since 2026-10-19; /en/ only redirects");
+}
+
+for (const [url, alternates] of alternateMap) {
+  for (const a of alternates) {
+    const other = a.href.replace(SITE, "");
+    if (other === url || a.lang === "x-default") continue;
+    if (!(alternateMap.get(other) ?? []).some((b) => b.href === SITE + url)) fail(url, `hreflang pair is one-sided: ${other} does not point back`);
+  }
+}
+
+// Orphans: a page nothing links to is hard for visitors and Google to find. Every indexable page needs a link from
+// at least one other page (menus, footer, belts pages, guides).
+for (const u of known) {
+  if (u !== "/" && !NOINDEX_PAGES.has(u) && !linkedTo.has(u)) fail(u, "no page links here (orphan page): link it from a menu, the footer or a related page");
 }
 
 for (const f of ["sitemap.xml", "robots.txt"]) {
@@ -125,7 +155,7 @@ if (jsBytes > JS_BUDGET_BYTES) fail("dist", `JavaScript ${jsBytes} bytes exceeds
 
 // Every versioned asset a page links to (scripts/fingerprint.mjs) must be in the build.
 for (const file of pages) {
-  for (const m of readFileSync(file, "utf8").matchAll(/\/v\/[0-9a-f]+\/(?:img|video|brand)\/[A-Za-z0-9._/-]+/g)) {
+  for (const m of readFileSync(file, "utf8").matchAll(/\/v\/[0-9a-f]+\/(?:img|video|brand|fonts)\/[A-Za-z0-9._/-]+/g)) {
     if (!existsSync(join(DIST, m[0]))) fail(urlOf(file), `missing versioned asset ${m[0]}`);
   }
 }

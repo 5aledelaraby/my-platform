@@ -5,6 +5,7 @@ import { SHIPPING, formatEgp } from "@platform/commerce";
 import Base from "../layouts/Base.astro";
 import { homeCopy } from "../home-copy.ts";
 import { policyPath } from "../policies/index.ts";
+import { articleUrl } from "../lib/articles.ts";
 import { langPath, site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
@@ -97,6 +98,10 @@ const groups = ar
       <a href={policyPath(lang, "shipping")}>{ar ? "الشحن والتوصيل" : "Shipping and delivery"}</a> ·
       <a href={policyPath(lang, "returns")}>{ar ? "الاسترجاع والاستبدال" : "Returns and exchanges"}</a> ·
       <a href={langPath(lang, "/contact/")}>{ar ? "تواصلي معنا" : "Contact us"}</a>
+    </p>
+    <p class="fine-print">
+      <a href={articleUrl(ar ? "waist-belt-size-material-guide" : "waist-belt-size-and-material-guide")}>{ar ? "دليل المقاسات والخامات" : "Size and material guide"}</a> ·
+      <a href={articleUrl(ar ? "how-to-tie-wrap-belt" : "how-to-tie-a-waist-belt")}>{ar ? "طرق ربط حزام الخصر" : "How to tie a waist belt"}</a>
     </p>
   </section>
 </Base>

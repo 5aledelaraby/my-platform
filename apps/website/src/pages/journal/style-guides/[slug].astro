@@ -1,9 +1,11 @@
 ---
+// One style guide, in Arabic or English. Its page links to the belts it shows, to the same guide in the other
+// language (with hreflang alternates), and to more guides in its language.
 import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
 import Base from "../../../layouts/Base.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import ProductCard from "../../../components/ProductCard.astro";
-import { articles, articleUrl, formatDate, getArticle } from "../../../lib/articles.ts";
+import { articleUrl, articlesIn, formatDate, getArticle, translationOf, articles } from "../../../lib/articles.ts";
 import { beltsUrl, getProduct } from "../../../store.ts";
 import { JOURNAL_PATH, site } from "../../../site.ts";
 
@@ -13,10 +15,18 @@ export function getStaticPaths() {
 
 const article = getArticle(Astro.params.slug!)!;
 const { Content } = article;
+const lang = article.lang;
+const ar = lang === "ar";
+const t = ar
+  ? { home: "الرئيسية", belts: "أحزمة الخصر", journal: "المقالات", products: "أحزمة الخصر في المقال", more: "اقرئي أيضًا", other: "Read this guide in English", all: "كل المقالات", shop: "تسوّقي أحزمة الخصر", brand: site.nameAr }
+  : { home: "Home", belts: "Waist belts", journal: "Journal", products: "Belts in this guide", more: "Read next", other: "اقرئي المقال بالعربي", all: "All guides", shop: "Shop all waist belts", brand: "Vicuna" };
 const related = article.products.map((id) => getProduct(id)).filter((p) => p !== undefined).slice(0, 4);
-const more = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
+const more = articlesIn(lang).filter((a) => a.slug !== article.slug).slice(0, 3);
+const other = translationOf(article);
+const alternates = other ? [{ lang, href: articleUrl(article.slug) }, { lang: other.lang, href: articleUrl(other.slug) }] : [];
 const url = `${site.url}${articleUrl(article.slug)}`;
-const crumbs = [{ name: "الرئيسية", href: "/" }, { name: "الأحزمة", href: beltsUrl("ar") }, { name: "المقالات", href: JOURNAL_PATH }, { name: article.title }];
+// The belts pages are English (ADR 0015), so their crumb keeps its English address in both languages.
+const crumbs = [{ name: t.home, href: "/" }, { name: t.belts, href: beltsUrl("en") }, { name: t.journal, href: JOURNAL_PATH }, { name: article.title }];
 const jsonLd = serializeJsonLd([
   articleJsonLd({
     headline: article.title,
@@ -25,40 +35,45 @@ const jsonLd = serializeJsonLd([
     images: [`${site.url}${article.image}`],
     datePublished: article.datePublished,
     ...(article.dateModified ? { dateModified: article.dateModified } : {}),
-    authorName: site.nameAr,
+    authorName: t.brand,
     authorType: "Organization",
-    publisherName: site.nameAr,
+    publisherName: t.brand,
     publisherLogo: `${site.url}/brand/vicuna-logo.png`,
   }),
   breadcrumbJsonLd([
-    { name: "الرئيسية", url: `${site.url}/` },
-    { name: "الأحزمة", url: `${site.url}${beltsUrl("ar")}` },
-    { name: "المقالات", url: `${site.url}${JOURNAL_PATH}` },
+    { name: t.home, url: `${site.url}/` },
+    { name: t.belts, url: `${site.url}${beltsUrl("en")}` },
+    { name: t.journal, url: `${site.url}${JOURNAL_PATH}` },
     { name: article.title, url },
   ]),
 ]);
+const titleTag = `${article.title} | ${ar ? "فيكونا" : "Vicuna"}`;
 ---
 
-<Base title={`${article.title} | فيكونا`} description={article.description} lang="ar" jsonLd={jsonLd} image={article.image}>
+<Base title={titleTag.length <= 70 ? titleTag : article.title} description={article.description} lang={lang} jsonLd={jsonLd} image={article.image} alternates={alternates}>
   <Breadcrumbs items={crumbs} />
   <article class="wrap article">
     <header>
       <h1>{article.title}</h1>
-      <time datetime={article.datePublished} class="muted">{formatDate(article.datePublished)}</time>
+      <p class="article-meta muted">
+        <time datetime={article.datePublished}>{formatDate(article.datePublished, lang)}</time>
+        {other && <> · <a class="textlink" href={articleUrl(other.slug)} hreflang={other.lang} lang={other.lang}>{t.other}</a></>}
+      </p>
     </header>
     <img class="cover" src={article.image} alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} fetchpriority="high" />
     <div class="prose"><Content /></div>
   </article>
   {related.length > 0 && (
     <section class="wrap style-group">
-      <div class="group-head"><h2>أحزمة من المقال</h2></div>
-      <div class="grid">{related.map((p) => <ProductCard product={p} lang="ar" />)}</div>
+      <div class="group-head"><h2>{t.products}</h2></div>
+      <div class="grid">{related.map((p) => <ProductCard product={p} lang={lang} />)}</div>
     </section>
   )}
   <section class="wrap style-group">
-    <div class="group-head"><h2>اقرئي أيضًا</h2></div>
+    <div class="group-head"><h2>{t.more}</h2></div>
     <ul class="more-list">
       {more.map((a) => <li><a class="textlink" href={articleUrl(a.slug)}>{a.title}</a></li>)}
     </ul>
+    <p class="article-links"><a class="text-btn" href={JOURNAL_PATH}>{t.all}</a> <a class="text-btn" href={beltsUrl("en")}>{t.shop}</a></p>
   </section>
 </Base>

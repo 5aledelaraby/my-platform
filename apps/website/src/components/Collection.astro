@@ -5,6 +5,7 @@
 // which leads to that belt. Cards are <article class="card" data-product>, which the site Worker removes when sold out (ADR 0013).
 import Breadcrumbs from "./Breadcrumbs.astro";
 import ProductCard from "./ProductCard.astro";
+import Guides from "./Guides.astro";
 import { beltsUrl, getProduct, productName, productsOfStyle, products, styleText, styles } from "../store.ts";
 import { looksOf } from "../lib/looks.ts";
 import { langPath } from "../site.ts";
@@ -53,4 +54,5 @@ const photos = styleId
       {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
     </div>
   </div>
+  <Guides lang={lang} ids={styleId ? [styleId, ...list.map((p) => p.id)] : []} />
 </div>
