@@ -191,8 +191,12 @@ export function createHandler(deps: HandlerDeps): (request: Request) => Promise<
         deps.reportError?.("paypal_mismatch");
         return json(409, { error: "payment_mismatch" }, cors);
       }
-      if (before.status === "APPROVED") await paypal.api.captureOrder(paypalOrderId);
-      else if (before.status !== "COMPLETED") return json(409, { error: "not_approved" }, cors);
+      if (before.status === "APPROVED") {
+        // The owner cancelled the order (its stock is back) after PayPal opened: take no money for it. A payment
+        // PayPal already completed is still recorded below, so the owner sees it and can refund it.
+        if (order.status === "cancelled") return json(409, { error: "order_cancelled" }, cors);
+        await paypal.api.captureOrder(paypalOrderId);
+      } else if (before.status !== "COMPLETED") return json(409, { error: "not_approved" }, cors);
       return await settle(paypalOrderId, await paypal.api.getOrder(paypalOrderId));
     } catch (error) {
       if (error instanceof PaypalDeclined) return json(402, { error: "payment_declined" }, cors);
