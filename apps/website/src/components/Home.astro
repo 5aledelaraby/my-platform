@@ -30,6 +30,8 @@ const t = ar
       discover: "اكتشفي المزيد",
       note: "أحزمة خصر نصنعها بأيدينا في القاهرة، لتكتمل كل إطلالة.",
       about: "من نحن",
+      mannequin: "فنّ الخصر",
+      mannequinAlt: "حزام خصر أزرق من فيكونا على مانيكان، يفتح صفحة أحزمة الخصر",
       script: "حوّلي فستانكِ",
       heroAlt: "خالد العربي، مؤسس فيكونا، مع المانيكان وحزام خصر أزرق",
       laceAlt: "مع فستان ساتان أبيض",
@@ -44,6 +46,8 @@ const t = ar
       discover: "Discover more",
       note: "Waist belts we make by hand in Cairo, so every outfit feels finished.",
       about: "About us",
+      mannequin: "The art of the waist",
+      mannequinAlt: "A blue Vicuna waist belt on a dress form; opens the waist belts",
       script: "Transform your dress",
       heroAlt: "Khaled Elaraby, Vicuna's founder, with a dress form and a blue waist belt",
       laceAlt: "worn with a white satin dress",
@@ -75,6 +79,13 @@ const rows = styles
     <h1>{t.h1}</h1>
     <a class="text-btn" href={beltsUrl(lang)}>{t.discover}</a>
   </div>
+</section>
+
+<section class="home-feature home-mannequin">
+  <a href={beltsUrl(lang)}>
+    <img src="/img/editorial/about-mannequin-1200.webp" srcset="/img/editorial/about-mannequin-640.webp 640w, /img/editorial/about-mannequin-1200.webp 1200w" sizes="(min-width: 900px) 760px, 100vw" alt={t.mannequinAlt} width="1200" height="1200" loading="lazy" decoding="async" />
+    <span class="home-feature-text"><span class="script">{t.mannequin}</span></span>
+  </a>
 </section>
 
 <section class="home-note wrap">

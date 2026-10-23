@@ -41,3 +41,9 @@ header and footer, so the work was routing, copy for the home page, and the chec
   after a visitor lands on the home, belts, design or product pages, once per visit (`vicuna-howto` in session storage,
   listed in the cookie policy). It never shows over the cart, the menu or the cookie box, nor to someone whose cart
   already has a belt, and it goes away with the close button, Escape, or the first belt added.
+
+## Update (2026-10-23, later): the dress-form photo on the home page and a language button in the header
+- The home page shows the owner's dress-form photo (with the line "The art of the waist" / "فنّ الخصر" across it, as on
+  About) right under the collage and its words. It opens the belts page.
+- The language button ("العربية" / "English") sits at the top of every page next to the menu button, so it no longer
+  hides in the menu; the menu and footer links stay. It follows the colour on product pages like the others.
