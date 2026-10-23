@@ -26,9 +26,13 @@ const line = (d: string, size = 24) => `<svg viewBox="0 0 24 24" width="${size}"
 
 <header class={overlay ? "site-header is-overlay" : "site-header"}>
   <div class="wrap header-bar">
-    <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
-      <Fragment set:html={line('<path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17"/>', 26)} />
-    </button>
+    <div class="header-start">
+      <button type="button" class="icon-btn menu-btn" data-open-menu aria-controls="menu" aria-expanded="false" aria-label={ar ? "القائمة" : "Menu"}>
+        <Fragment set:html={line('<path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17"/>', 26)} />
+      </button>
+      {/* The language button (owner, 2026-10-23): always in view at the top, next to the menu. */}
+      {ar ? <a class="lang-btn lang-switch" href={switchHref} hreflang="en" lang="en">English</a> : <a class="lang-btn lang-switch" href={switchHref} hreflang="ar" lang="ar">العربية</a>}
+    </div>
     <a class="brand" href={home}><Logo size={30} both={overlay} /></a>
     <div class="header-end">
       <a class="icon-btn fav-link" href={langPath(lang, "/favorites/")} aria-label={ar ? "المفضلة" : "Wishlist"}>

@@ -78,7 +78,8 @@ button, input, select, textarea { font-family: var(--font); }
 .announce p { padding: 10px 16px; font-size: 10px; font-weight: 500; letter-spacing: .14em; line-height: 1.4; text-align: center; text-transform: uppercase; }
 .site-header { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); }
 .header-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; min-height: 60px; }
-.menu-btn { justify-self: start; margin-inline-start: -8px; }
+.header-start { justify-self: start; display: flex; align-items: center; gap: 2px; margin-inline-start: -8px; }
+.lang-btn { display: inline-grid; place-items: center; min-height: 44px; padding: 0 8px; color: var(--ink); font-size: 14px; font-weight: 500; letter-spacing: 0; text-decoration: none; }
 .brand { justify-self: center; color: var(--ink); text-decoration: none; }
 .header-end { justify-self: end; display: flex; align-items: center; gap: 2px; margin-inline-end: -8px; }
 .icon-btn { position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; }
@@ -94,7 +95,7 @@ button, input, select, textarea { font-family: var(--font); }
 /* the home header sits on the first photo, in white, and becomes the white bar once the page scrolls */
 .site-header.is-overlay { margin-bottom: calc(-1 * var(--head-h)); background: transparent; border-bottom-color: transparent; color: #fff;
   transition: background-color .35s var(--ease), border-color .35s var(--ease), color .35s var(--ease); }
-.site-header.is-overlay:not([data-scrolled]) :is(.icon-btn, .logo-en, .logo-sub) { color: #fff; }
+.site-header.is-overlay:not([data-scrolled]) :is(.icon-btn, .lang-btn, .logo-en, .logo-sub) { color: #fff; }
 .site-header.is-overlay:not([data-scrolled]) .logo-mark-dark { display: none; }
 .site-header.is-overlay:not([data-scrolled]) .logo-mark-light { display: block; }
 .site-header.is-overlay:not([data-scrolled]) .count-badge { background: #fff; color: var(--ink); }
@@ -145,6 +146,11 @@ dialog.menu::backdrop { background: rgb(17 17 17 / .5); }
 .home-feature-text { position: absolute; z-index: 1; inset-inline: 0; bottom: clamp(32px, 7vw, 56px); display: grid; justify-items: center; gap: 14px; padding: 0 24px; text-align: center; }
 .home-feature-text .script { font-size: clamp(38px, 10vw, 64px); line-height: 1; }
 .home-feature-text .text-btn { color: #fff; }
+/* the dress-form photo (owner, 2026-10-23): white background, the line written in ink across the middle */
+.home-mannequin > a { background: #fff; color: var(--ink); }
+.home-mannequin img { aspect-ratio: 1; object-fit: contain; }
+.home-mannequin > a::after { display: none; }
+.home-mannequin .home-feature-text { top: 47%; bottom: auto; padding: 0 24px; color: #3a3a3a; }
 
 /* the designs as large words; under them one row of on-model photos that slides sideways */
 .looks { padding-block: var(--space); }
@@ -434,7 +440,7 @@ dialog.cart::backdrop { background: rgb(17 17 17 / .5); }
   .text-btn:hover { opacity: .65; }
   .btn:hover { background: #000; }
   .btn-white:hover { background: var(--ink); color: #fff; }
-  .icon-btn:hover { opacity: .7; }
+  .icon-btn:hover, .lang-btn:hover { opacity: .7; }
   .menu-main a:hover, .menu-small a:hover { color: var(--ink); }
   .quick-add:hover { background: #000; }
   .footer-group a:hover, .footer-cookies:hover { text-decoration: underline; text-underline-offset: 4px; }
