@@ -24,7 +24,7 @@ const crumbs = [
 const photos = styleId
   ? []
   : [
-      { id: "pattern-brown", n: 2, alt: "worn with an olive kimono" },
+      { id: "pattern-brown", n: 2, alt: ar ? "مع كيمونو زيتي" : "worn with an olive kimono" },
     ].flatMap(({ id, n, alt }) => {
       const p = getProduct(id);
       const look = p ? looksOf(p)[n - 1] : undefined;
@@ -42,7 +42,7 @@ const photos = styleId
       ))}
     </div>
   )}
-  <Breadcrumbs items={crumbs} />
+  <Breadcrumbs items={crumbs} lang={lang} />
   <h1 class="collection-title">{name}</h1>
   <nav class="collection-tabs" aria-label={ar ? "التصميمات" : "Designs"}>
     <a href={beltsUrl(lang)} aria-current={!styleId ? "page" : undefined}>{ar ? "الكل" : "All"}</a>

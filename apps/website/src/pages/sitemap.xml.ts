@@ -6,22 +6,23 @@ import { POLICY_IDS, policyPath } from "../policies/index.ts";
 
 export function GET(): Response {
   const paths = [
-    ...(["en"] as const).flatMap((lang) => [
+    ...(["en", "ar"] as const).flatMap((lang) => [
       langPath(lang, "/"),
       beltsUrl(lang),
       ...styles.map((s) => beltsUrl(lang, s.id)),
       ...products.map((p) => beltsUrl(lang, p.id)),
-      ...POLICY_IDS.map((id) => policyPath(lang, id)),
       langPath(lang, "/about/"),
       langPath(lang, "/contact/"),
       langPath(lang, "/faq/"),
     ]),
+    // The policies are English only: one page for both languages.
+    ...POLICY_IDS.map((id) => policyPath("en", id)),
     JOURNAL_PATH,
     ...articles.map((a) => articleUrl(a.slug)),
   ];
   const lastmod = new Map<string, string>([
     ...articles.map((a) => [articleUrl(a.slug), a.dateModified ?? a.datePublished] as [string, string]),
-    ...(["en"] as const).flatMap((lang) => POLICY_IDS.map((id) => [policyPath(lang, id), site.policiesUpdated] as [string, string])),
+    ...POLICY_IDS.map((id) => [policyPath("en", id), site.policiesUpdated] as [string, string]),
   ]);
   const entries = paths.map((p) => {
     const date = lastmod.get(p);

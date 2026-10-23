@@ -7,7 +7,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import ProductCard from "../../../components/ProductCard.astro";
 import { articleUrl, articlesIn, coverSrcset, formatDate, getArticle, translationOf, articles } from "../../../lib/articles.ts";
 import { beltsUrl, getProduct } from "../../../store.ts";
-import { JOURNAL_PATH, site } from "../../../site.ts";
+import { JOURNAL_PATH, langPath, site } from "../../../site.ts";
 
 export function getStaticPaths() {
   return articles.map((a) => ({ params: { slug: a.slug } }));
@@ -25,8 +25,8 @@ const more = articlesIn(lang).filter((a) => a.slug !== article.slug).slice(0, 3)
 const other = translationOf(article);
 const alternates = other ? [{ lang, href: articleUrl(article.slug) }, { lang: other.lang, href: articleUrl(other.slug) }] : [];
 const url = `${site.url}${articleUrl(article.slug)}`;
-// The belts pages are English (ADR 0015), so their crumb keeps its English address in both languages.
-const crumbs = [{ name: t.home, href: "/" }, { name: t.belts, href: beltsUrl("en") }, { name: t.journal, href: JOURNAL_PATH }, { name: article.title }];
+// An Arabic guide links to the Arabic store pages (ADR 0017), an English one to the English ones.
+const crumbs = [{ name: t.home, href: langPath(lang, "/") }, { name: t.belts, href: beltsUrl(lang) }, { name: t.journal, href: JOURNAL_PATH }, { name: article.title }];
 const jsonLd = serializeJsonLd([
   articleJsonLd({
     headline: article.title,
@@ -41,8 +41,8 @@ const jsonLd = serializeJsonLd([
     publisherLogo: `${site.url}/brand/vicuna-logo.png`,
   }),
   breadcrumbJsonLd([
-    { name: t.home, url: `${site.url}/` },
-    { name: t.belts, url: `${site.url}${beltsUrl("en")}` },
+    { name: t.home, url: `${site.url}${langPath(lang, "/")}` },
+    { name: t.belts, url: `${site.url}${beltsUrl(lang)}` },
     { name: t.journal, url: `${site.url}${JOURNAL_PATH}` },
     { name: article.title, url },
   ]),
@@ -51,7 +51,7 @@ const titleTag = `${article.title} | ${ar ? "فيكونا" : "Vicuna"}`;
 ---
 
 <Base title={titleTag.length <= 70 ? titleTag : article.title} description={article.description} lang={lang} jsonLd={jsonLd} image={article.image} alternates={alternates} lcpImage={article.image} lcpSrcset={coverSrcset(article.image) || undefined}>
-  <Breadcrumbs items={crumbs} />
+  <Breadcrumbs items={crumbs} lang={lang} />
   <article class="wrap article">
     <header>
       <h1>{article.title}</h1>
@@ -74,6 +74,6 @@ const titleTag = `${article.title} | ${ar ? "فيكونا" : "Vicuna"}`;
     <ul class="more-list">
       {more.map((a) => <li><a class="textlink" href={articleUrl(a.slug)}>{a.title}</a></li>)}
     </ul>
-    <p class="article-links"><a class="text-btn" href={JOURNAL_PATH}>{t.all}</a> <a class="text-btn" href={beltsUrl("en")}>{t.shop}</a></p>
+    <p class="article-links"><a class="text-btn" href={JOURNAL_PATH}>{t.all}</a> <a class="text-btn" href={beltsUrl(lang)}>{t.shop}</a></p>
   </section>
 </Base>

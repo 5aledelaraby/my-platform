@@ -53,12 +53,30 @@ export const tracking = {
 
 export type Lang = "ar" | "en";
 
+/** The Arabic site lives under this prefix (owner, 2026-10-23, ADR 0017); English stays at the root (ADR 0015). */
+export const AR_PREFIX = "/ar";
+
 /**
- * The site is English only, at the root (owner, 2026-10-19). Old /en/ addresses redirect to the root (worker.ts).
- * "ar" remains only for the Arabic articles under JOURNAL_PATH, kept for search; their links lead to the same pages.
+ * The address of `path` (site-relative, starting with "/") in `lang`: English at the root, Arabic under /ar/. Only the
+ * store pages exist in both languages (see `otherLanguagePath`); the policy pages and the journal are shared.
  */
-export function langPath(_lang: Lang, path: string): string {
-  return path.startsWith("/") ? path : `/${path}`;
+export function langPath(lang: Lang, path: string): string {
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return lang === "ar" ? `${AR_PREFIX}${p}` : p;
+}
+
+/** Pages that exist in English and Arabic. Everything else (policies, journal, files) is one page for both. */
+const TRANSLATED = ["/about/", "/contact/", "/faq/", "/favorites/", "/thanks/", "/collections/vicuna-belts/"];
+
+/**
+ * The same page in the other language, for the language switch and hreflang: Arabic pages sit under /ar/, English ones
+ * at the root. null for a page that has only one version (policies, journal, 404).
+ */
+export function otherLanguagePath(pathname: string): { lang: Lang; path: string } | null {
+  const arabic = pathname === AR_PREFIX || pathname.startsWith(`${AR_PREFIX}/`);
+  const base = arabic ? pathname.slice(AR_PREFIX.length) || "/" : pathname;
+  if (base !== "/" && !TRANSLATED.some((t) => base.startsWith(t))) return null;
+  return arabic ? { lang: "en", path: base } : { lang: "ar", path: langPath("ar", base) };
 }
 
 /** The articles index (Arabic only for now). */

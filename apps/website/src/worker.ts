@@ -21,7 +21,7 @@ export interface Env {
 }
 
 const STOCK_TIMEOUT_MS = 1500;
-const BELTS_PREFIX = /^\/(?:en\/)?collections\/vicuna-belts\//;
+const BELTS_PREFIX = /^\/(?:ar\/)?collections\/vicuna-belts\//;
 
 /** Ids of the catalogue products that are sold out right now, or null when the stock is unknown. */
 async function soldOutIds(env: Env, pageUrl: URL): Promise<string[] | null> {
@@ -110,13 +110,13 @@ export default {
     if (!soldOut || file.status !== 200) return untransformed(file, request);
 
     if (page && soldOut.includes(page.product.id)) {
-      return new Response(null, { status: 302, headers: { Location: designPath(page.product, page.en), "Cache-Control": "no-store" } });
+      return new Response(null, { status: 302, headers: { Location: designPath(page.product, page.ar), "Cache-Control": "no-store" } });
     }
     if (isFeed) return rewritten(file, feedWithStock(await file.text(), (id) => soldOut.includes(id)));
     if (isSitemap) return rewritten(file, sitemapWithoutSoldOut(await file.text(), soldOut));
     if (!(file.headers.get("Content-Type") ?? "").includes("text/html")) return file;
     let html = hideSoldOut(await file.text(), soldOut);
-    if (page) html = skipSoldOutSiblings(html, page.product, page.en, soldOut);
+    if (page) html = skipSoldOutSiblings(html, page.product, page.ar, soldOut);
     return untransformed(rewritten(file, html), request);
   },
 };

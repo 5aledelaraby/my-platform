@@ -25,7 +25,8 @@ function productPage(id: string, prev: string, next: string, n: number, total: n
 describe("hiding sold-out belts", () => {
   it("finds product pages in both languages and ignores other pages", () => {
     assert.equal(productIdFromPath(`${B}lace-white/`), "lace-white");
-    assert.deepEqual(productFromPath(`/en${B}ruffle-red/`)?.en, true);
+    assert.deepEqual(productFromPath(`/ar${B}ruffle-red/`)?.ar, true);
+    assert.equal(productFromPath(`/en${B}ruffle-red/`), null, "old /en/ addresses are redirected, not pages");
     assert.equal(productIdFromPath(`${B}thin-tie/`), null, "a style page");
     assert.equal(productIdFromPath(B), null);
     assert.equal(productIdFromPath(`${B}not-a-product/`), null);
@@ -40,7 +41,7 @@ describe("hiding sold-out belts", () => {
   it("a sold-out product page sends the visitor to its design, in the same language", () => {
     const p = catalog.products.find((x) => x.id === "ruffle-red")!;
     assert.equal(designPath(p, false), `${B}ruffle/`);
-    assert.equal(designPath(p, true), `/en${B}ruffle/`);
+    assert.equal(designPath(p, true), `/ar${B}ruffle/`);
   });
 
   it("removes the cards and colour swatches of sold-out belts, and nothing else", () => {
@@ -66,7 +67,7 @@ describe("hiding sold-out belts", () => {
   });
 
   it("removes sold-out product pages (both languages) from the sitemap", () => {
-    const xml = ["ruffle-red", "ruffle-brown"].flatMap((id) => [`<url><loc>https://vicuna-eg.com${B}${id}/</loc></url>`, `<url><loc>https://vicuna-eg.com/en${B}${id}/</loc></url>`]).join("\n");
+    const xml = ["ruffle-red", "ruffle-brown"].flatMap((id) => [`<url><loc>https://vicuna-eg.com${B}${id}/</loc></url>`, `<url><loc>https://vicuna-eg.com/ar${B}${id}/</loc></url>`]).join("\n");
     const out = sitemapWithoutSoldOut(xml, ["ruffle-red"]);
     assert.doesNotMatch(out, /ruffle-red/);
     assert.equal((out.match(/ruffle-brown/g) ?? []).length, 2);
@@ -105,6 +106,16 @@ describe("site Worker", () => {
     const res = await worker.fetch(get(`${B}ruffle-red/`), { ASSETS: assets("page"), API: api({ "ruffle-red": 0 }) });
     assert.equal(res.status, 302);
     assert.equal(res.headers.get("Location"), `${B}ruffle/`);
+  });
+
+  it("the Arabic pages under /ar/ get the same treatment: redirect to the Arabic design page, and cards removed", async () => {
+    const res = await worker.fetch(get(`/ar${B}ruffle-red/`), { ASSETS: assets("page"), API: api({ "ruffle-red": 0 }) });
+    assert.equal(res.status, 302);
+    assert.equal(res.headers.get("Location"), `/ar${B}ruffle/`);
+    const list = await worker.fetch(get(`/ar${B}`), { ASSETS: assets(card("ruffle-red") + card("ruffle-brown")), API: api({ "ruffle-red": 0 }) });
+    const html = await list.text();
+    assert.doesNotMatch(html, /ruffle-red/);
+    assert.match(html, /ruffle-brown/);
   });
 
   it("old /en/ addresses move to the same page at the root for good (English only since 2026-10-19)", async () => {

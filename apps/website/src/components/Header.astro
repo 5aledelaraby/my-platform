@@ -9,8 +9,8 @@ import Logo from "./ui/Logo.astro";
 import { langPath } from "../site.ts";
 import type { Lang } from "../site.ts";
 
-interface Props { lang: Lang; overlay?: boolean }
-const { lang, overlay = false } = Astro.props;
+interface Props { lang: Lang; overlay?: boolean; switchHref: string }
+const { lang, overlay = false, switchHref } = Astro.props;
 const ar = lang === "ar";
 const home = langPath(lang, "/");
 const here = (href: string) => Astro.url.pathname === href;
@@ -58,6 +58,7 @@ const line = (d: string, size = 24) => `<svg viewBox="0 0 24 24" width="${size}"
       <ul class="menu-small">
         {help.map((h) => <li><a href={h.href} aria-current={here(h.href) ? "page" : undefined}>{h.label}</a></li>)}
         {POLICY_IDS.map((id) => <li><a href={policyPath(lang, id)}>{getPolicy(id).title}</a></li>)}
+        <li>{ar ? <a class="menu-lang" href={switchHref} hreflang="en" lang="en">English</a> : <a class="menu-lang" href={switchHref} hreflang="ar" lang="ar">العربية</a>}</li>
       </ul>
     </nav>
   </div>

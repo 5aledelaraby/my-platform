@@ -1,0 +1,32 @@
+---
+// The Arabic home page (owner, 2026-10-23, ADR 0017): the same page as the English one at the root, in Arabic.
+import Base from "../../layouts/Base.astro";
+import Home from "../../components/Home.astro";
+import { organizationJsonLd, serializeJsonLd, websiteJsonLd } from "@platform/seo";
+import { site } from "../../site.ts";
+import { getProduct } from "../../store.ts";
+import { looksOf } from "../../lib/looks.ts";
+
+// The hero photo (Home.astro): fetched first, at the size the screen needs.
+const heroProduct = getProduct("pattern-brown");
+const hero = heroProduct ? looksOf(heroProduct)[2] : undefined;
+
+const title = "فيكونا | أحزمة خصر تُكمل كل إطلالة";
+const description = "فيكونا علامة مصرية متخصصة في صناعة الجلود وتصميم المواقع وخدمات التواصل الاجتماعي. أحزمة خصر تُكمل كل إطلالة، وتوصيل إلى كل مصر.";
+const jsonLd = serializeJsonLd([
+  organizationJsonLd({
+    name: site.nameAr,
+    legalName: site.legalNameAr,
+    url: site.url,
+    logo: `${site.url}/brand/vicuna-logo.png`,
+    email: site.email,
+    telephone: `+${site.whatsappInternational}`,
+    address: site.addressParts,
+  }),
+  websiteJsonLd({ name: site.nameAr, url: `${site.url}/ar/`, language: "ar" }),
+]);
+---
+
+<Base title={title} description={description} lang="ar" jsonLd={jsonLd} image="/img/looks/lace-white-1200.webp" lcpImage={hero?.src} lcpSrcset={hero?.srcset} overlayHeader>
+  <Home lang="ar" />
+</Base>

@@ -1,0 +1,20 @@
+---
+import { breadcrumbJsonLd, serializeJsonLd } from "@platform/seo";
+import Base from "../../../../layouts/Base.astro";
+import BeltsHome from "../../../../components/BeltsHome.astro";
+import { homeCopy } from "../../../../home-copy.ts";
+import { langPath, site } from "../../../../site.ts";
+import { beltsUrl } from "../../../../store.ts";
+
+const c = homeCopy.ar;
+const jsonLd = serializeJsonLd(
+  breadcrumbJsonLd([
+    { name: "الرئيسية", url: `${site.url}${langPath("ar", "/")}` },
+    { name: "أحزمة الخصر", url: `${site.url}${beltsUrl("ar")}` },
+  ]),
+);
+---
+
+<Base title={c.title} description={c.description} lang="ar" jsonLd={jsonLd}>
+  <BeltsHome lang="ar" />
+</Base>

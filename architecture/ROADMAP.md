@@ -40,7 +40,7 @@ node tools/architecture/new-unit.mjs app <name> [--may-import a,b]
 | الميديا والصور | `packages/media` + تخزين R2 | ترفع صور من لوحة الإدارة | لا شيء داخلي |
 | النشر على السوشيال | `apps/social-worker` + `packages/social` | توصل أول منصة فعلًا | content, media |
 | تكامل مع خدمة خارجية | `packages/integration-<اسم الخدمة>` (واحدة لكل خدمة) | تحتاجها فعلًا | حسب الحاجة |
-| تعدد اللغات | داخل `content` و`apps/website`: المقالات عربي وإنجليزي (ADR 0016)، والمتجر إنجليزي (ADR 0015) | تضيف لغة تانية للمتجر | content |
+| تعدد اللغات | داخل `content` و`apps/website`: المقالات عربي وإنجليزي (ADR 0016)، والمتجر إنجليزي على الجذر وعربي تحت `/ar/` (ADR 0015 و0017) | تضيف لغة تالتة للمتجر | content |
 | المصادقة | `packages/auth` | تظهر لوحة الإدارة | لا شيء داخلي |
 
 ## هيكل الموقع (ADR 0009)

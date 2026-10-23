@@ -5,7 +5,7 @@
 // pages too. Any new way the site handles personal data (analytics, ad pixels, a new service that receives order
 // data) must update privacy.ts in the same change.
 import { SHIPPING, formatEgp } from "@platform/commerce";
-import { langPath, site } from "../site.ts";
+import { site } from "../site.ts";
 import type { Lang } from "../site.ts";
 
 export const POLICY_IDS = ["shipping", "returns", "terms", "privacy", "cookies"] as const;
@@ -17,8 +17,11 @@ export interface PolicyDoc {
   html: string;
 }
 
-/** The cookie policy sits under the privacy policy (/privacy/cookies/); the others are top-level pages. */
-export const policyPath = (lang: Lang, id: PolicyId) => langPath(lang, id === "cookies" ? "/privacy/cookies/" : `/${id}/`);
+/**
+ * The cookie policy sits under the privacy policy (/privacy/cookies/); the others are top-level pages. The policies are
+ * English only (owner, 2026-10-20), so the Arabic pages link to the same English page (`lang` is kept for callers).
+ */
+export const policyPath = (_lang: Lang, id: PolicyId) => (id === "cookies" ? "/privacy/cookies/" : `/${id}/`);
 
 /** Isolates a left-to-right value (phone, email, number) inside Arabic text. */
 export const ltr = (text: string | number) => `<bdi dir="ltr">${text}</bdi>`;

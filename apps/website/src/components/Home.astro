@@ -20,6 +20,37 @@ const photo = (id: string, n: number): { href: string; name: string; look: Look 
   if (!p || !look) throw new Error(`Home: no photo ${n} for ${id}`);
   return { href: beltsUrl(lang, p.id), name: productName(lang, p), look };
 };
+const ar = lang === "ar";
+// The words on the page, in both languages (the Arabic site lives under /ar/, ADR 0017).
+const t = ar
+  ? {
+      kicker: "أحزمة الخصر",
+      h1: "لتكتمل كل إطلالة",
+      discover: "اكتشفي المزيد",
+      note: "أحزمة خصر نصنعها بأيدينا في القاهرة، لتكتمل كل إطلالة.",
+      about: "من نحن",
+      script: "حوّلي فستانكِ",
+      heroAlt: "مع فستان أبيض",
+      laceAlt: "مع فستان ساتان أبيض",
+      worn: "على الخصر",
+      designs: "التصميمات",
+      all: "عرض الكل",
+      price: (v: string) => `${v} جنيه`,
+    }
+  : {
+      kicker: "Waist belts",
+      h1: "Made to finish the look",
+      discover: "Discover more",
+      note: "Waist belts we make by hand in Cairo, so every outfit feels finished.",
+      about: "About us",
+      script: "Transform your dress",
+      heroAlt: "worn with a white dress",
+      laceAlt: "worn with a white satin dress",
+      worn: "worn",
+      designs: "Designs",
+      all: "View all",
+      price: (v: string) => `LE ${v}`,
+    };
 const hero = photo("pattern-brown", 3);
 const lace = photo("lace-white", 1);
 
@@ -37,31 +68,31 @@ const rows = styles
 
 <section class="home-hero">
   <a class="home-hero-photo" href={hero.href} aria-label={hero.name}>
-    <img src={hero.look.src} srcset={hero.look.srcset} sizes="100vw" alt={`${hero.name}, worn with a white dress`} width="1200" height="1500" fetchpriority="high" decoding="async" />
+    <img src={hero.look.src} srcset={hero.look.srcset} sizes="100vw" alt={`${hero.name}, ${t.heroAlt}`} width="1200" height="1500" fetchpriority="high" decoding="async" />
   </a>
   <div class="home-hero-text">
-    <p class="kicker">Waist belts</p>
-    <h1>Made to finish the look</h1>
-    <a class="text-btn" href={beltsUrl(lang)}>Discover more</a>
+    <p class="kicker">{t.kicker}</p>
+    <h1>{t.h1}</h1>
+    <a class="text-btn" href={beltsUrl(lang)}>{t.discover}</a>
   </div>
 </section>
 
 <section class="home-note wrap">
-  <p>Waist belts we make by hand in Cairo, so every outfit feels finished.</p>
-  <a class="text-btn" href={langPath(lang, "/about/")}>About us</a>
+  <p>{t.note}</p>
+  <a class="text-btn" href={langPath(lang, "/about/")}>{t.about}</a>
 </section>
 
 <section class="home-feature">
   <a href={lace.href}>
-    <img src={lace.look.src} srcset={lace.look.srcset} sizes="(min-width: 900px) 760px, 100vw" alt={`${lace.name}, worn with a white satin dress`} width="640" height="800" loading="lazy" decoding="async" />
+    <img src={lace.look.src} srcset={lace.look.srcset} sizes="(min-width: 900px) 760px, 100vw" alt={`${lace.name}, ${t.laceAlt}`} width="640" height="800" loading="lazy" decoding="async" />
     <span class="home-feature-text">
-      <span class="script">Transform your dress</span>
+      <span class="script">{t.script}</span>
       <span class="text-btn">{lace.name}</span>
     </span>
   </a>
 </section>
 
-<section class="looks" aria-label="Designs">
+<section class="looks" aria-label={t.designs}>
   <div class="looks-tabs" role="tablist">
     {rows.map((r, i) => <button type="button" role="tab" id={`looks-tab-${r.id}`} aria-controls={`looks-${r.id}`} aria-selected={i === 0 ? "true" : "false"} data-looks-tab={r.id}>{r.name}</button>)}
   </div>
@@ -70,15 +101,15 @@ const rows = styles
       {r.slides.map((s) => (
         <article class="card look-card" data-product={s.p.id}>
           <a href={s.href}>
-            <img src={s.look.src} srcset={s.look.srcset} sizes="(min-width: 900px) 28vw, calc(74vw - 30px)" alt={`${s.name}, worn`} width="640" height="800" loading="lazy" decoding="async" />
+            <img src={s.look.src} srcset={s.look.srcset} sizes="(min-width: 900px) 28vw, calc(74vw - 30px)" alt={`${s.name}, ${t.worn}`} width="640" height="800" loading="lazy" decoding="async" />
             <span class="look-name">{s.name}</span>
-            <span class="look-price">LE {s.price}</span>
+            <span class="look-price">{t.price(s.price)}</span>
           </a>
         </article>
       ))}
     </div>
   ))}
-  <p class="looks-more"><a class="text-btn" href={beltsUrl(lang)}>View all</a></p>
+  <p class="looks-more"><a class="text-btn" href={beltsUrl(lang)}>{t.all}</a></p>
 </section>
 
 <script>

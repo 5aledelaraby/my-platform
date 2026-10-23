@@ -47,7 +47,7 @@ function load(): Article[] {
     const alt = fm["imageAlt"];
     if (typeof alt !== "string" || alt === "") throw new TypeError(`${meta.slug}: frontmatter.imageAlt is required`);
     const products = Array.isArray(fm["products"]) ? (fm["products"] as unknown[]).map(String) : [];
-    const links = [...new Set([...mod.rawContent().matchAll(/\]\(\/collections\/vicuna-belts\/([a-z0-9-]+)\/\)/g)].map((m) => m[1] ?? ""))];
+    const links = [...new Set([...mod.rawContent().matchAll(/\]\(\/(?:ar\/)?collections\/vicuna-belts\/([a-z0-9-]+)\/\)/g)].map((m) => m[1] ?? ""))];
     return { ...meta, image: meta.image, imageAlt: alt, imageWidth: num("imageWidth"), imageHeight: num("imageHeight"), products, links, Content: mod.Content };
   });
   return list.sort((a, b) => b.datePublished.localeCompare(a.datePublished));

@@ -55,6 +55,8 @@ button, input, select, textarea { font-family: var(--font); }
   font: 400 12px/15px var(--font); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
 .textlink { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 5px; }
 .script { font-family: var(--script); font-style: italic; font-weight: 400; letter-spacing: 0; text-transform: none; }
+/* Arabic letters are not slanted: the Arabic line on a photo uses the Arabic font as it is. */
+[lang="ar"] .script { font-family: var(--font); font-style: normal; font-weight: 600; }
 .kicker, .intro-kicker { margin: 0 0 10px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
 .fine-print { margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center; }
 .fine-print a { text-underline-offset: 3px; }
