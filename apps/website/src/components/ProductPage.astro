@@ -117,8 +117,8 @@ const orderText = ar
 const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(orderText)}`;
 ---
 
-<Base title={title} description={description} lang={lang} jsonLd={jsonLd} image={imageOf(product)}>
-  <Breadcrumbs items={crumbs} />
+<Base title={title} description={description} lang={lang} jsonLd={jsonLd} image={imageOf(product)} howto>
+  <Breadcrumbs items={crumbs} lang={lang} />
   <div class="wrap product">
     <div class="pdp-media">
       <div class="pdp-looks" data-pdp-looks hidden={looks.length === 0 && !detail}>
@@ -144,7 +144,7 @@ const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponen
       )}
     </figure>
     <figure class="pdp-film" data-pdp-film hidden={!film}>
-      <video data-src={film?.src} poster={film?.poster} muted loop playsinline preload="none" aria-label={`${name}, a short film`} width="540" height="948"></video>
+      <video data-src={film?.src} poster={film?.poster} muted loop playsinline preload="none" aria-label={ar ? `${name}، فيلم قصير` : `${name}, a short film`} width="540" height="948"></video>
     </figure>
     {nextP && <link rel="prefetch" href={beltsUrl(lang, nextP.id)} />}
     {prevP && prevP !== nextP && <link rel="prefetch" href={beltsUrl(lang, prevP.id)} />}

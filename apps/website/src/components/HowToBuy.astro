@@ -1,0 +1,81 @@
+---
+// "How to order" tip (owner, 2026-10-23): a small card that rises in after the visitor has been on a store page for a
+// while, tells her the three steps, and goes away with the ✕, with Escape, or as soon as she adds a belt. Shown once per
+// visit (sessionStorage), never while the cart, the menu or the cookie box is open, and not to someone whose cart
+// already has a belt in it. It only shows or hides: nothing is measured while the page loads.
+import { site } from "../site.ts";
+import type { Lang } from "../site.ts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === "ar";
+const wa = `https://wa.me/${site.whatsappInternational}?text=${encodeURIComponent(ar ? "أهلاً فيكونا، عايزة أسأل عن الطلب" : "Hello Vicuna, I have a question about ordering")}`;
+const t = ar
+  ? {
+      title: "الطلب سهل وبياخد دقيقة",
+      steps: ["اختاري حزام الخصر واللون اللي يعجبك.", "اضغطي «+» أو «أضيفي للسلة».", "افتحي السلة واضغطي «إتمام الطلب»، وادفعي عند الاستلام أو بالكارت."],
+      help: "محتاجة مساعدة؟",
+      chat: "كلمينا على واتساب",
+      close: "إغلاق",
+    }
+  : {
+      title: "Ordering takes a minute",
+      steps: ["Choose your waist belt and colour.", "Tap “+” or “Add to cart”.", "Open your cart, press “Checkout”, and pay on delivery or by card."],
+      help: "Need a hand?",
+      chat: "Chat with us on WhatsApp",
+      close: "Close",
+    };
+---
+
+<aside class="howto" data-howto hidden aria-labelledby="howto-title">
+  <button type="button" class="howto-close" data-howto-close aria-label={t.close}>✕</button>
+  <h2 id="howto-title">{t.title}</h2>
+  <ol>
+    {t.steps.map((s) => <li>{s}</li>)}
+  </ol>
+  <p>{t.help} <a href={wa} rel="noopener noreferrer">{t.chat}</a></p>
+</aside>
+
+<script>
+  const tip = document.querySelector<HTMLElement>("[data-howto]");
+  const SHOW_AFTER_MS = 12000;
+  if (tip) {
+    const hide = () => {
+      tip.hidden = true;
+    };
+    const cartHasBelts = () => {
+      try {
+        const lines: unknown = JSON.parse(localStorage.getItem("vicuna-cart-v1") ?? "[]");
+        return Array.isArray(lines) && lines.length > 0;
+      } catch {
+        return false;
+      }
+    };
+    const seen = () => {
+      try {
+        return sessionStorage.getItem("vicuna-howto") === "1";
+      } catch {
+        return false;
+      }
+    };
+    setTimeout(() => {
+      const busy = document.querySelector("dialog[open]") || document.querySelector("[data-consent]:not([hidden])") || document.querySelector("#cart-toast:not([hidden])");
+      if (seen() || busy || cartHasBelts()) return;
+      try {
+        sessionStorage.setItem("vicuna-howto", "1");
+      } catch {
+        /* storage unavailable: it may show again on the next page */
+      }
+      tip.hidden = false;
+      tip.classList.add("show");
+    }, SHOW_AFTER_MS);
+    tip.querySelector("[data-howto-close]")?.addEventListener("click", hide);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !tip.hidden) hide();
+    });
+    // She found how it works: adding a belt or opening the cart closes the tip.
+    document.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("[data-add], [data-open-cart]")) hide();
+    });
+  }
+</script>

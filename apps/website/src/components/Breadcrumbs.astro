@@ -1,9 +1,9 @@
 ---
-interface Props { items: readonly { name: string; href?: string }[] }
-const { items } = Astro.props;
+interface Props { items: readonly { name: string; href?: string }[]; lang?: "ar" | "en" }
+const { items, lang = "en" } = Astro.props;
 ---
 
-<nav class="crumbs" aria-label="breadcrumb">
+<nav class="crumbs" aria-label={lang === "ar" ? "مسار الصفحة" : "breadcrumb"}>
   <div class="wrap">
     {items.map((it, i) => (
       <>

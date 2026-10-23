@@ -26,6 +26,7 @@ ${li("vicuna-cart-v1", "Vicuna, local storage", "keeps your cart so it is not lo
 ${li("vicuna-last-order", "Vicuna, session storage", "shows your order number and total on the thank-you page (with the belts in it, never your name, number or address).", "Deleted when you close the tab.")}
 ${li("vicuna-tracked-&lt;order number&gt;", "Vicuna, session storage", "set on the thank-you page so an order is counted at most once, and never later if you had turned the tools off.", "Deleted when you close the tab.")}
 ${li("vicuna-cart-peeked", "Vicuna, session storage", "the cart opens by itself only after your first added belt.", "Deleted when you close the tab.")}
+${li("vicuna-howto", "Vicuna, session storage", "the small \"how to order\" tip shows only once per visit.", "Deleted when you close the tab.")}
 ${li("vicuna-swipe-hint", "Vicuna, session storage", "the small swipe hint on the product photo shows only once.", "Deleted when you close the tab.")}
 ${li("vicuna-consent", "Vicuna, local storage", "remembers your choice for analytics and advertising cookies in \"Cookie settings\".", "Until you clear your browser data.")}
 ${li("vicuna-favorites", "Vicuna, local storage", "keeps the belts you marked with a heart, on this device only; it is never sent to us.", "Until you remove them or clear your browser data.")}

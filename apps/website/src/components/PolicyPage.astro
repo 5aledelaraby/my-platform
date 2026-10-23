@@ -21,7 +21,7 @@ const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "
 ---
 
 <Base title={`${doc.title} | ${ar ? site.nameAr : site.nameEn}`} description={doc.description} lang={lang}>
-  <Breadcrumbs items={crumbs} />
+  <Breadcrumbs items={crumbs} lang={lang} />
   <article class="wrap article policy">
     <header>
       <h1>{doc.title}</h1>

@@ -1,6 +1,6 @@
 # ADR 0015: English only, one calm look, and a light home page that leads to the belts
 
-Status: accepted (owner, 2026-10-19). Supersedes the language parts of ADR 0009 (Arabic at the root, English under
+Status: accepted (owner, 2026-10-19); an Arabic copy under `/ar/` was added on 2026-10-23 (ADR 0017), English stays at the root. Supersedes the language parts of ADR 0009 (Arabic at the root, English under
 `/en/` with hreflang alternates). Confirms ADR 0009's rule that `/` is not the store.
 
 ## Context

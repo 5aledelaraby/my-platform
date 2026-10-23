@@ -5,8 +5,8 @@ import { JOURNAL_PATH, langPath, site } from "../site.ts";
 import { beltsUrl, styleText, styles } from "../store.ts";
 import type { Lang } from "../site.ts";
 
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props { lang: Lang; switchHref: string }
+const { lang, switchHref } = Astro.props;
 const ar = lang === "ar";
 // Footer (owner, 2026-10-19/20): his dark photo of a black bow belt behind it, with the words in white over it; the
 // links in three groups that open on phones, the social marks, then the company details. No moving strip. The photo is
@@ -39,6 +39,7 @@ const socialIcon: Record<string, string> = {
           <li><a href={langPath(lang, "/faq/")}>{ar ? "الأسئلة الشائعة" : "FAQ"}</a></li>
           <li><a href={JOURNAL_PATH}>{ar ? "المقالات" : "Journal"}</a></li>
           <li><a href={`mailto:${site.email}`}>{ar ? "تجار الجملة" : "Wholesale"}</a></li>
+          <li>{ar ? <a class="lang-switch" href={switchHref} hreflang="en" lang="en">English</a> : <a class="lang-switch" href={switchHref} hreflang="ar" lang="ar">العربية</a>}</li>
         </ul>
       </details>
       <details class="footer-group">
@@ -60,7 +61,7 @@ const socialIcon: Record<string, string> = {
     <div class="wrap">
       <a class="brand" href={langPath(lang, "/")}><Logo size={28} light /></a>
       <p>{ar ? site.legalNameAr : site.legalNameEn} · {ar ? "سجل تجاري" : "Commercial register"} <bdi dir="ltr">{site.commercialRegister}</bdi> · {ar ? "رقم التسجيل الضريبي" : "Tax no."} <bdi dir="ltr">{site.taxNumber}</bdi></p>
-      <p>{ar ? site.addressAr : site.addressEn} · <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a></p>
+      <p>{ar ? site.addressAr : site.addressEn} · <a href={`mailto:${site.supportEmail}`}><bdi dir="ltr">{site.supportEmail}</bdi></a></p>
       <p class="signature" lang="en" dir="ltr">
         <span>© Vicuna · Designed by</span>
         <img src="/img/signature-600.webp" srcset="/img/signature-600.webp 600w, /img/signature-1200.webp 1200w" sizes="160px" width="600" height="87" alt="Khaled Elaraby" loading="lazy" decoding="async" />

@@ -6,6 +6,8 @@ import Header from "../components/Header.astro";
 import Consent from "../components/Consent.astro";
 import Footer from "../components/Footer.astro";
 import Cart from "../components/Cart.astro";
+import HowToBuy from "../components/HowToBuy.astro";
+import { langPath, otherLanguagePath } from "../site.ts";
 import type { Lang } from "../site.ts";
 import "../styles/global.css";
 
@@ -24,11 +26,13 @@ interface Props {
   lcpSrcset?: string;
   /** The header sits on the first photo (home page). */
   overlayHeader?: boolean;
+  /** Shows the small "how to order" tip after a while (store pages: home, belts, designs, products). */
+  howto?: boolean;
   /** The same page in each language, this page included (journal articles that have a translation). */
   alternates?: readonly { lang: Lang; href: string }[];
 }
 
-const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage, lcpSrcset, overlayHeader = false, alternates = [] } = Astro.props;
+const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage, lcpSrcset, overlayHeader = false, howto = false, alternates: given = [] } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
@@ -36,6 +40,13 @@ const site = Astro.site!.toString();
 const canonical = canonicalUrl(site, Astro.url.pathname);
 const ogImage = new URL(image, site).toString();
 const ar = lang === "ar";
+// The store pages exist in English (root) and Arabic (/ar/): each declares the other as its alternate (hreflang, both
+// ways), except pages that stay out of search. Journal guides pass their own pair; other pages have none.
+const pair = otherLanguagePath(Astro.url.pathname);
+const alternates = given.length > 0 || !pair || noindex ? given : [{ lang, href: Astro.url.pathname }, { lang: pair.lang, href: pair.path }];
+// Where the language switch leads: the same page in the other language, else the other language's home page.
+const otherLang: Lang = ar ? "en" : "ar";
+const switchHref = given.find((a) => a.lang === otherLang)?.href ?? pair?.path ?? langPath(otherLang, "/");
 const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} جنيه` : `Free shipping from EGP ${formatEgp(SHIPPING.freeOver)}`;
 ---
 
@@ -73,12 +84,13 @@ const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} ج
     <a class="skip" href="#main">{lang === "ar" ? "تخطَّ إلى المحتوى" : "Skip to content"}</a>
     <Consent lang={lang} />
     <div class="announce"><p>{announce}</p></div>
-    <Header lang={lang} overlay={overlayHeader} />
+    <Header lang={lang} overlay={overlayHeader} switchHref={switchHref} />
     <main id="main">
       <slot />
     </main>
-    <Footer lang={lang} />
+    <Footer lang={lang} switchHref={switchHref} />
     <Cart lang={lang} />
+    {howto && <HowToBuy lang={lang} />}
     <button type="button" class="to-top" data-to-top aria-label={ar ? "الرجوع لأعلى الصفحة" : "Back to top"}>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" /></svg>
     </button>

@@ -534,8 +534,8 @@ async function submit(event: SubmitEvent): Promise<void> {
       }
       lines = [];
       save();
-      // English at the root (ADR 0015): /en/ addresses only redirect, and not at all on the dev server.
-      location.assign("/thanks/");
+      // English at the root (ADR 0015), Arabic under /ar/ (ADR 0017).
+      location.assign(lang === "ar" ? "/ar/thanks/" : "/thanks/");
       return;
     }
     if (res.status === 409 && Array.isArray(data.items)) {

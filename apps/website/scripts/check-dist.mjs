@@ -9,7 +9,7 @@ const SITE = "https://vicuna-eg.com";
 const PLANNED_PREFIXES = [];
 const JS_BUDGET_BYTES = 90 * 1024;
 // Pages that must stay out of search results and the sitemap even in production.
-const NOINDEX_PAGES = new Set(["/thanks/", "/en/thanks/", "/favorites/", "/en/favorites/", "/404.html"]);
+const NOINDEX_PAGES = new Set(["/thanks/", "/ar/thanks/", "/favorites/", "/ar/favorites/", "/404.html"]);
 
 const errors = [];
 /** Pages and the hreflang alternates they declare, checked both ways after every page is read. */
@@ -69,7 +69,7 @@ for (const file of pages) {
   const h1s = html.match(/<h1[\s>]/g)?.length ?? 0;
   if (h1s !== 1) fail(name, `expected exactly one <h1>, found ${h1s}`);
 
-  // hreflang (journal guides with a translation only): every alternate is a page of this build, the page lists
+  // hreflang (journal guides with a translation, and the store pages that exist in English and Arabic): every alternate is a page of this build, the page lists
   // itself, and the other page lists it back (Google ignores one-sided pairs).
   const alternates = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)].map((m) => ({ lang: m[1], href: m[2] }));
   if (alternates.length) {

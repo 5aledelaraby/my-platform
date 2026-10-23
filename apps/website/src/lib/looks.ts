@@ -28,6 +28,9 @@ export const LOOK_COUNTS: Readonly<Record<string, number>> = {
 export const LOOK_IDS: ReadonlySet<string> = new Set(Object.keys(LOOK_COUNTS));
 export const LOOK_SIZES = [400, 640, 800, 1200] as const;
 
+/** The owner's photo with the dress form and a belt: the home page's first photo (2026-10-23) and the About page's. */
+export const COLLAGE_SRCSET = "/img/founder-collage-800.webp 800w, /img/founder-collage-1400.webp 1400w";
+
 export interface Look { src: string; srcset: string }
 
 /** The file name stem of a product's n-th look photo (n starts at 1). */
