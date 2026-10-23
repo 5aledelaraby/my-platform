@@ -6,6 +6,7 @@ import Header from "../components/Header.astro";
 import Consent from "../components/Consent.astro";
 import Footer from "../components/Footer.astro";
 import Cart from "../components/Cart.astro";
+import HowToBuy from "../components/HowToBuy.astro";
 import { langPath, otherLanguagePath } from "../site.ts";
 import type { Lang } from "../site.ts";
 import "../styles/global.css";
@@ -25,11 +26,13 @@ interface Props {
   lcpSrcset?: string;
   /** The header sits on the first photo (home page). */
   overlayHeader?: boolean;
+  /** Shows the small "how to order" tip after a while (store pages: home, belts, designs, products). */
+  howto?: boolean;
   /** The same page in each language, this page included (journal articles that have a translation). */
   alternates?: readonly { lang: Lang; href: string }[];
 }
 
-const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage, lcpSrcset, overlayHeader = false, alternates: given = [] } = Astro.props;
+const { title, description, lang = "en", jsonLd, noindex = false, image = "/img/looks/lace-white-1200.webp", lcpImage, lcpSrcset, overlayHeader = false, howto = false, alternates: given = [] } = Astro.props;
 
 // Only the production build may be indexed (ADR 0005). DEPLOY_ENV is required at build time (see deploy-env.ts).
 const env = deployEnvironment();
@@ -87,6 +90,7 @@ const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} ج
     </main>
     <Footer lang={lang} switchHref={switchHref} />
     <Cart lang={lang} />
+    {howto && <HowToBuy lang={lang} />}
     <button type="button" class="to-top" data-to-top aria-label={ar ? "الرجوع لأعلى الصفحة" : "Back to top"}>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" /></svg>
     </button>

@@ -126,17 +126,14 @@ dialog.menu::backdrop { background: rgb(17 17 17 / .5); }
 .crumbs span[aria-hidden] { padding: 0 6px; }
 
 /* ---------- home (ADR 0015): light, every photo leads to its belt ---------- */
-.home-hero { position: relative; overflow: hidden; background: var(--stone); }
+.home-hero { background: #fff; text-align: center; }
 .home-hero-photo { display: block; }
-.home-hero-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-.home-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / .45), rgb(0 0 0 / 0) 42%), linear-gradient(to bottom, rgb(0 0 0 / .28), rgb(0 0 0 / 0) 22%); pointer-events: none; }
-.home-hero-text { position: absolute; z-index: 1; inset-inline: 0; bottom: 32px; padding: 0 24px; color: #fff; text-align: center; pointer-events: none; }
-.home-hero-text a { pointer-events: auto; }
-.home-hero h1 { max-width: 12em; margin: 0 auto 18px; color: #fff; font-size: clamp(2.2rem, 10vw, 5.4rem); line-height: 1; }
-.home-hero .text-btn { color: #fff; }
+.home-hero-photo img { width: 100%; aspect-ratio: 1400 / 726; object-fit: cover; background: var(--stone); }
+.home-hero-text { padding: 28px 24px 4px; }
+.home-hero h1 { max-width: 12em; margin: 0 auto 18px; font-size: clamp(2.2rem, 9vw, 5rem); line-height: 1.05; }
 @media (min-width: 900px) {
-  .home-hero-photo img { aspect-ratio: auto; height: calc(100svh - 35px); min-height: 600px; max-height: 1080px; object-position: 50% 30%; }
-  .home-hero-text { bottom: clamp(48px, 9vh, 96px); }
+  .home-hero-photo img { max-height: calc(100svh - 160px); }
+  .home-hero-text { padding-top: 44px; }
 }
 .home-note { display: grid; justify-items: center; gap: 24px; padding-block: var(--space); text-align: center; }
 .home-note p { max-width: 22em; color: var(--text); font-size: clamp(20px, 2.6vw, 32px); letter-spacing: -.04em; line-height: 1.25; }
@@ -457,3 +454,15 @@ dialog.cart::backdrop { background: rgb(17 17 17 / .5); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- "how to order" tip (owner, 2026-10-23): a small card that rises in after a while ---------- */
+.howto { position: fixed; z-index: 35; inset-inline: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; max-width: 420px; margin-inline: auto; padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 40px -14px rgb(0 0 0 / .35); }
+.howto[hidden] { display: none; }
+.howto.show { animation: rise .45s var(--ease); }
+.howto h2 { margin: 0; font-size: 17px; font-weight: 500; }
+.howto ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: step; font-size: 14.5px; line-height: 1.45; }
+.howto li { display: grid; grid-template-columns: 24px 1fr; align-items: start; gap: 10px; counter-increment: step; }
+.howto li::before { content: counter(step); display: grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; }
+.howto p { margin: 0; color: var(--muted); font-size: 13px; }
+.howto-close { position: absolute; top: 6px; inset-inline-end: 6px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; background: none; color: var(--ink); font-size: 18px; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .howto.show { animation: none; } }

@@ -32,3 +32,12 @@ header and footer, so the work was routing, copy for the home page, and the chec
   line in `TRANSLATED` in `src/site.ts`. Text added to a component needs its Arabic next to the English.
 - Arabic wording rules in AGENTS.md apply on `/ar/` ("حزام وسط" / "حزام خصر", "جلد PU").
 - About 30 more pages are built (87 instead of 56); the JavaScript size is unchanged.
+
+## Update (2026-10-23): hero photo and "how to order" tip
+- The home page opens on the owner's collage photo (him with the dress form and a blue belt), which also stays on About,
+  instead of the white-dress photo with the header over it. The header is the normal white bar; the words sit under the
+  photo. The photo opens the belts page (the blue belt is not a catalogue product).
+- A small "how to order" tip (`HowToBuy.astro`, three steps and a WhatsApp link, in both languages) appears 12 seconds
+  after a visitor lands on the home, belts, design or product pages, once per visit (`vicuna-howto` in session storage,
+  listed in the cookie policy). It never shows over the cart, the menu or the cookie box, nor to someone whose cart
+  already has a belt, and it goes away with the close button, Escape, or the first belt added.

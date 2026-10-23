@@ -1,7 +1,8 @@
 ---
 // The home page (owner, 2026-10-19, ADR 0015): light and simple, not a sales page. Every photo leads to the belt in
-// it, and the belts are bought on the belts and product pages. From the top: the white-dress photo with the signature
-// pattern belt (the header sits on it), one line about the brand, the lace white photo with "Transform your dress"
+// it, and the belts are bought on the belts and product pages. From the top: the owner's photo with the dress form and
+// a belt (owner, 2026-10-23: it shows at once that we make and sell belts; it opens the belts page), one line about
+// the brand, the lace white photo with "Transform your dress"
 // written on it, then the designs as large words with their on-model
 // photos in a row that slides sideways (the layout of the store he showed), and a link to all the belts.
 // Slides are <article class="card ..." data-product>, so the site Worker removes a sold-out belt's photos (ADR 0013).
@@ -30,7 +31,7 @@ const t = ar
       note: "أحزمة خصر نصنعها بأيدينا في القاهرة، لتكتمل كل إطلالة.",
       about: "من نحن",
       script: "حوّلي فستانكِ",
-      heroAlt: "مع فستان أبيض",
+      heroAlt: "خالد العربي، مؤسس فيكونا، مع المانيكان وحزام خصر أزرق",
       laceAlt: "مع فستان ساتان أبيض",
       worn: "على الخصر",
       designs: "التصميمات",
@@ -44,14 +45,13 @@ const t = ar
       note: "Waist belts we make by hand in Cairo, so every outfit feels finished.",
       about: "About us",
       script: "Transform your dress",
-      heroAlt: "worn with a white dress",
+      heroAlt: "Khaled Elaraby, Vicuna's founder, with a dress form and a blue waist belt",
       laceAlt: "worn with a white satin dress",
       worn: "worn",
       designs: "Designs",
       all: "View all",
       price: (v: string) => `LE ${v}`,
     };
-const hero = photo("pattern-brown", 3);
 const lace = photo("lace-white", 1);
 
 // Every on-model photo of every belt, grouped by design; designs without one are left out.
@@ -67,8 +67,8 @@ const rows = styles
 ---
 
 <section class="home-hero">
-  <a class="home-hero-photo" href={hero.href} aria-label={hero.name}>
-    <img src={hero.look.src} srcset={hero.look.srcset} sizes="100vw" alt={`${hero.name}, ${t.heroAlt}`} width="1200" height="1500" fetchpriority="high" decoding="async" />
+  <a class="home-hero-photo" href={beltsUrl(lang)}>
+    <img src="/img/founder-collage-1400.webp" srcset="/img/founder-collage-800.webp 800w, /img/founder-collage-1400.webp 1400w" sizes="100vw" alt={t.heroAlt} width="1400" height="726" fetchpriority="high" decoding="async" />
   </a>
   <div class="home-hero-text">
     <p class="kicker">{t.kicker}</p>
