@@ -5,6 +5,7 @@ import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "@platform/seo"
 import Base from "../../../layouts/Base.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import ProductCard from "../../../components/ProductCard.astro";
+import ProseImages from "../../../components/ProseImages.astro";
 import { articleUrl, articlesIn, coverSrcset, formatDate, getArticle, translationOf, articles } from "../../../lib/articles.ts";
 import { beltsUrl, getProduct } from "../../../store.ts";
 import { JOURNAL_PATH, langPath, site } from "../../../site.ts";
@@ -61,7 +62,7 @@ const titleTag = `${article.title} | ${ar ? "فيكونا" : "Vicuna"}`;
       </p>
     </header>
     <img class="cover" src={article.image} srcset={coverSrcset(article.image) || undefined} sizes="(min-width: 820px) 780px, calc(100vw - 40px)" alt={article.imageAlt} width={article.imageWidth} height={article.imageHeight} fetchpriority="high" />
-    <div class="prose"><Content /></div>
+    <div class="prose"><ProseImages><Content /></ProseImages></div>
   </article>
   {related.length > 0 && (
     <section class="wrap style-group">

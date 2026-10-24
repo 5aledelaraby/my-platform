@@ -18,6 +18,39 @@ const alternateMap = new Map();
 const linkedTo = new Set();
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
 
+const ARABIC = /[\u0600-\u06FF]/;
+const VOID_TAGS = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
+/**
+ * Arabic words on an English page outside an element marked lang="ar" (AGENTS.md: English pages carry no Arabic text,
+ * except the language button and the journal's Arabic section, which are marked lang="ar"). Reads the visible text and
+ * the alt, aria-label, title and placeholder attributes; scripts and styles are skipped.
+ */
+function arabicOnEnglishPage(html) {
+  const found = [];
+  const stack = [];
+  const inArabic = () => stack.some((e) => e.ar);
+  const body = html.replace(/<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<!--[\s\S]*?-->/g, "");
+  for (const m of body.matchAll(/<(\/?)([a-zA-Z][\w-]*)([^>]*)>|([^<]+)/g)) {
+    const [, close, tag, attrs, text] = m;
+    if (text !== undefined) {
+      if (ARABIC.test(text) && !inArabic()) found.push(text.trim().slice(0, 60));
+      continue;
+    }
+    const name = tag.toLowerCase();
+    if (close) {
+      const i = stack.map((e) => e.tag).lastIndexOf(name);
+      if (i >= 0) stack.length = i;
+      continue;
+    }
+    const ar = /\slang="ar"/.test(attrs);
+    for (const a of attrs.matchAll(/\s(alt|aria-label|title|placeholder)="([^"]*)"/g)) {
+      if (ARABIC.test(a[2]) && !ar && !inArabic()) found.push(`${a[1]}="${a[2].slice(0, 60)}"`);
+    }
+    if (!VOID_TAGS.has(name) && !attrs.trimEnd().endsWith("/")) stack.push({ tag: name, ar });
+  }
+  return found;
+}
+
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
     const p = join(dir, name);
@@ -47,6 +80,10 @@ for (const file of pages) {
   const url = urlOf(file);
   const html = readFileSync(file, "utf8");
   const name = url;
+
+  if (!/<html[^>]*\slang="ar"/.test(html)) {
+    for (const text of arabicOnEnglishPage(html)) fail(name, `Arabic text on an English page outside lang="ar": ${text}`);
+  }
 
   const title = /<title>([^<]*)<\/title>/.exec(html)?.[1]?.trim();
   if (!title) fail(name, "missing <title>");

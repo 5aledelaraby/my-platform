@@ -83,7 +83,7 @@ const rows = styles
 
 <section class="home-feature home-mannequin">
   <a href={beltsUrl(lang)}>
-    <img src="/img/editorial/about-mannequin-1200.webp" srcset="/img/editorial/about-mannequin-640.webp 640w, /img/editorial/about-mannequin-1200.webp 1200w" sizes="(min-width: 900px) 760px, 100vw" alt={t.mannequinAlt} width="1200" height="1200" loading="lazy" decoding="async" />
+    <img src="/img/editorial/about-mannequin-1200.webp" srcset="/img/editorial/about-mannequin-640.webp 640w, /img/editorial/about-mannequin-1200.webp 1200w" sizes="(min-width: 900px) 760px, 100vw" alt={t.mannequinAlt} width="1200" height="1200" fetchpriority="high" decoding="async" />
     <span class="home-feature-text"><span class="script">{t.mannequin}</span></span>
   </a>
 </section>

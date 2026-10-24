@@ -53,3 +53,11 @@ header and footer, so the work was routing, copy for the home page, and the chec
   steps, and a "Start shopping" button that opens the belts page (or only closes the tip when she is already there).
   Everything else is as before: once per visit, never over the cart, the menu or the cookie box, closed by the ✕,
   Escape or the first belt added. It is a card at the bottom, not a full-screen window, so the page stays visible.
+
+## Update (2026-10-24): checks after the full review
+- `check-dist` now fails when an English page shows Arabic outside an element marked `lang="ar"` (the language button and
+  the journal's Arabic section are marked), so the English pages stay English as components gain Arabic text.
+- Speed: the dress-form photo on the home page (the largest thing on a phone's first screen) loads at once instead of
+  lazily; photos in the articles' text get smaller copies (srcset) and load lazily; the two lace close-ups got 400/640/800
+  copies; the back-to-top button no longer reads the layout while the page loads. Belt names on cards are `h2` on the
+  belts and favourites pages, so the headings go in order for screen readers.

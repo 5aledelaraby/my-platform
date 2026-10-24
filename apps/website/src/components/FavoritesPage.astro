@@ -26,7 +26,7 @@ const crumbs = [{ name: ar ? "الرئيسية" : "Home", href: langPath(lang, "
       <a class="btn" href={beltsUrl(lang)}>{ar ? "تسوّقي أحزمة الخصر" : "Shop waist belts"}</a>
     </div>
     <div class="grid" data-fav-grid>
-      {products.map((p, i) => <div class="fav-item" data-product={p.id} hidden><ProductCard product={p} lang={lang} index={i} /></div>)}
+      {products.map((p, i) => <div class="fav-item" data-product={p.id} hidden><ProductCard product={p} lang={lang} index={i} heading="h2" /></div>)}
     </div>
   </section>
 </Base>
