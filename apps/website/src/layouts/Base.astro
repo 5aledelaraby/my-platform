@@ -117,7 +117,7 @@ const announce = ar ? `شحن مجاني من ${formatEgp(SHIPPING.freeOver)} ج
       if (toTop) {
         const paint = () => toTop.classList.toggle("show", window.scrollY > innerHeight * 1.2);
         addEventListener("scroll", paint, { passive: true });
-        paint();
+        requestAnimationFrame(paint);
         toTop.addEventListener("click", (e) => {
           scrollTo({ top: 0, behavior: calm ? "auto" : "smooth" });
           // From the keyboard, continue from the top of the page too.

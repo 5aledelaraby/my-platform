@@ -51,7 +51,7 @@ const photos = styleId
   <div class="wrap">
     <p class="collection-count">{ar ? `${list.length} منتج` : `Showing ${list.length} products`}</p>
     <div class="card-grid">
-      {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} />)}
+      {list.map((p, i) => <ProductCard product={p} lang={lang} index={i} heading="h2" />)}
     </div>
   </div>
   <Guides lang={lang} ids={styleId ? [styleId, ...list.map((p) => p.id)] : []} />

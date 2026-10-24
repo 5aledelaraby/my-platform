@@ -18,6 +18,46 @@ const alternateMap = new Map();
 const linkedTo = new Set();
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
 
+const ARABIC = /[\u0600-\u06FF]/;
+const VOID_TAGS = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
+/** Elements whose content is not page text: everything up to their closing tag is skipped. */
+const RAW_TAGS = new Set(["script", "style"]);
+/**
+ * Arabic words on an English page outside an element marked lang="ar" (AGENTS.md: English pages carry no Arabic text,
+ * except the language button and the journal's Arabic section, which are marked lang="ar"). Reads the visible text and
+ * the alt, aria-label, title and placeholder attributes; comments, scripts and styles are skipped.
+ */
+function arabicOnEnglishPage(html) {
+  const found = [];
+  const stack = [];
+  const inArabic = () => stack.some((e) => e.ar);
+  for (const m of html.matchAll(/<!--[\s\S]*?-->|<(\/?)([a-zA-Z][\w-]*)([^>]*)>|([^<]+)|</g)) {
+    const [token, close, tag, attrs = "", text] = m;
+    const top = stack.at(-1);
+    const name = tag?.toLowerCase();
+    if (top && RAW_TAGS.has(top.tag)) {
+      if (close && name === top.tag) stack.pop();
+      continue;
+    }
+    if (token.startsWith("<!--") || token === "<") continue;
+    if (text !== undefined) {
+      if (ARABIC.test(text) && !inArabic()) found.push(text.trim().slice(0, 60));
+      continue;
+    }
+    if (close) {
+      const i = stack.map((e) => e.tag).lastIndexOf(name);
+      if (i >= 0) stack.length = i;
+      continue;
+    }
+    const ar = /\slang="ar"/i.test(attrs);
+    for (const a of attrs.matchAll(/\s(alt|aria-label|title|placeholder)="([^"]*)"/gi)) {
+      if (ARABIC.test(a[2]) && !ar && !inArabic()) found.push(`${a[1]}="${a[2].slice(0, 60)}"`);
+    }
+    if (!VOID_TAGS.has(name) && !attrs.trimEnd().endsWith("/")) stack.push({ tag: name, ar });
+  }
+  return found;
+}
+
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
     const p = join(dir, name);
@@ -47,6 +87,10 @@ for (const file of pages) {
   const url = urlOf(file);
   const html = readFileSync(file, "utf8");
   const name = url;
+
+  if (!/<html[^>]*\slang="ar"/.test(html)) {
+    for (const text of arabicOnEnglishPage(html)) fail(name, `Arabic text on an English page outside lang="ar": ${text}`);
+  }
 
   const title = /<title>([^<]*)<\/title>/.exec(html)?.[1]?.trim();
   if (!title) fail(name, "missing <title>");

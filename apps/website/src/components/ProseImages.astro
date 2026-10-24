@@ -1,0 +1,9 @@
+---
+// Wraps an article's rendered Markdown: its photos become lazy, with a srcset of the smaller copies (lib/prose-images.ts).
+// The Markdown is the repo's own content, so its HTML is trusted.
+import { proseImagesHtml } from "../lib/prose-images.ts";
+
+const html = proseImagesHtml(await Astro.slots.render("default"));
+---
+
+<Fragment set:html={html} />
