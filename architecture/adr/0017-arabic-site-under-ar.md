@@ -47,3 +47,9 @@ header and footer, so the work was routing, copy for the home page, and the chec
   About) right under the collage and its words. It opens the belts page.
 - The language button ("العربية" / "English") sits at the top of every page next to the menu button, so it no longer
   hides in the menu; the menu and footer links stay. It follows the colour on product pages like the others.
+
+## Update (2026-10-24): the tip comes sooner and is bigger
+- The "how to order" tip appears after 6 seconds (was 12), as a larger card with a title and a line for each of the three
+  steps, and a "Start shopping" button that opens the belts page (or only closes the tip when she is already there).
+  Everything else is as before: once per visit, never over the cart, the menu or the cookie box, closed by the ✕,
+  Escape or the first belt added. It is a card at the bottom, not a full-screen window, so the page stays visible.
